@@ -5,6 +5,7 @@
     uv run python -m setas_pipeline.exportar meteo      # Fase 3: puntos meteo + teselas de Voronoi
     uv run python -m setas_pipeline.exportar manifest
     uv run python -m setas_pipeline.exportar todo
+    uv run python -m setas_pipeline.exportar respaldo  # Fase 7: OsmAnd/Locus (data/out/respaldo/)
 
 Salida en data/out/app/ (no se versiona; la app la enlaza en app/public/data).
 """
@@ -441,7 +442,7 @@ def escribir_manifest(out: Path = APP) -> dict:
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("pasos", nargs="+", choices=["capas", "base", "meteo", "manifest", "todo"])
+    ap.add_argument("pasos", nargs="+", choices=["capas", "base", "meteo", "manifest", "respaldo", "todo"])
     ap.add_argument("--maxzoom", type=int, default=ZOOM_BASE_MAX)
     a = ap.parse_args(argv)
     pasos = set(a.pasos)
@@ -454,6 +455,10 @@ def main(argv=None):
         exportar_base(maxzoom=a.maxzoom)
     if pasos & {"meteo", "todo"}:
         print("meteo…", flush=True); exportar_meteo()
+    if pasos == {"respaldo"}:
+        from .respaldo import exportar_respaldo
+        print("respaldo…", flush=True); exportar_respaldo(malla)
+        return
     m = escribir_manifest()
     print(f"manifest: {len(m['archivos'])} archivos, {m['total_bytes'] / 1e6:.1f} MB")
 

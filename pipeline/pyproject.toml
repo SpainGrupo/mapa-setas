@@ -15,6 +15,7 @@ dependencies = [
   "pyyaml>=6.0",
   "matplotlib>=3.9",
   "pmtiles>=3.8.1",
+  "numba>=0.68.0",
 ]
 
 [dependency-groups]

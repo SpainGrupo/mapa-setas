@@ -36,7 +36,7 @@ MARGEN_M = 2000             # margen alrededor de la zona para base, curvas y so
 PASO_METEO = 12000          # m entre puntos de la rejilla meteo
 RADIO_BOSQUE = 6000         # m: un punto meteo se conserva si hay bosque hospedador a esta distancia
 IDON_BOSQUE = 30            # idoneidad mínima (cualquier especie) para contar como bosque hospedador
-ACCESO_ARCHIVOS = ("acceso.json", "acceso.bin", "aparcamientos.json")
+ACCESO_ARCHIVOS = ("acceso.json", "acceso.bin.gz", "aparcamientos.json")   # acceso.bin sin comprimir no se publica
 PROTOMAPS_BUILDS = "https://build-metadata.protomaps.dev/builds.json"
 PROTOMAPS_URL = "https://build.protomaps.com/{key}"
 
@@ -404,6 +404,72 @@ def exportar_protegidos(out: Path = APP):
     print(f"  protegidos: {len(gdf)} espacios", flush=True)
 
 
+# Capa legal (docs/investigacion/2026-10-14-factores-y-trucos.md §4). Textos breves; no sustituyen a la norma.
+TEXTO_RESTRICCION = {
+    "zona_reserva": "Zona de Reserva del espacio protegido: recolectar setas exige autorización previa.",
+    "reserva_natural": "Reserva Natural: recolectar setas exige autorización previa.",
+    "parque_nacional": "Parque Nacional Sierra de las Nieves: trátalo como recolección con autorización "
+                       "(Ley 9/2021); no recolectes sin permiso.",
+}
+AVISO_LEGAL = ("Málaga (Res. 23-09-2026, BOJA 196, vigente hasta 31-05-2027): autoconsumo ≤3 kg por persona y día "
+               "sin autorización en montes públicos, salvo Zonas de Reserva; de día, sin rastrillos ni remover el "
+               "mantillo. Fincas privadas: permiso del propietario. Cádiz: la última resolución encontrada es de 2019, "
+               "sin confirmar su vigencia.")
+TIPOS_ZONA_RESERVA = ("A", "ARE", "R")      # Codigo_zona de los PORN con "Reserva" en la descripción
+
+
+def clasificar_restriccion(codigo_zona: str, descripcion: str) -> str | None:
+    """Zonificación PORN → tipo de restricción (o None si la zona no restringe la recolección)."""
+    c, d = (codigo_zona or "").strip(), (descripcion or "").strip().lower()
+    if "marino" in d:
+        return None
+    if c == "RN" or d == "reserva natural":
+        return "reserva_natural"
+    if c in TIPOS_ZONA_RESERVA and "reserva" in d:
+        return "zona_reserva"
+    return None
+
+
+def restricciones_gdf():
+    """Zonas de Reserva y Reservas Naturales (PORN REDIAM) + Parque Nacional (RENPA) en la zona, EPSG:4326."""
+    import geopandas as gpd
+    import pandas as pd
+    cfg = yaml.safe_load((BASE / "fuentes.yaml").read_text())["zonificacion_porn"]
+    malla = Malla.cargar(OUT / "malla.json")
+    xmin, ymin, xmax, ymax = (int(v) for v in malla.bounds)
+    from .descargas import obtener
+    datos = obtener(cfg["url"].format(xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax),
+                    BASE / f"data/raw/zonificacion/porn_vigentes_{xmin}_{ymin}_{xmax}_{ymax}.json", timeout=600)
+    porn = gpd.GeoDataFrame.from_features(datos["features"], crs="EPSG:25830")
+    porn["tipo"] = [clasificar_restriccion(c, d) for c, d in zip(porn["Codigo_zona"], porn["Descripcion_zona"])]
+    porn = porn[porn["tipo"].notna()].assign(nombre=lambda g: g["Nombre"].str.strip(),
+                                             zona=lambda g: g["Descripcion_zona"].str.strip())
+    trozos = [gpd.read_file(p) for p in sorted((BASE / "data/raw/enp").glob("*_0.json"))]
+    enp = pd.concat([t for t in trozos if len(t)], ignore_index=True)
+    enp = gpd.GeoDataFrame(enp, geometry="geometry", crs=trozos[0].crs).to_crs("EPSG:25830")
+    pn = enp[enp["FIGURA"].str.strip() == "Parque Nacional"].drop_duplicates(subset="CODIGOESPA")
+    pn = pn.assign(tipo="parque_nacional", nombre=pn["NOMBRE"].str.strip(), zona="Parque Nacional")
+    gdf = gpd.GeoDataFrame(pd.concat([porn[["tipo", "nombre", "zona", "geometry"]],
+                                      pn[["tipo", "nombre", "zona", "geometry"]]], ignore_index=True),
+                           crs="EPSG:25830")
+    zona = gpd.read_file(OUT / "zona.geojson").to_crs("EPSG:25830").union_all()
+    gdf = gdf[gdf.intersects(zona)].copy()
+    gdf["texto"] = gdf["tipo"].map(TEXTO_RESTRICCION)
+    return gdf.to_crs("EPSG:4326")
+
+
+def exportar_restricciones(out: Path = APP):
+    gdf = restricciones_gdf()
+    with tempfile.TemporaryDirectory() as tmp:
+        gj = Path(tmp) / "restricciones.geojson"
+        gj.write_text(gdf.to_json())
+        _tippecanoe(gj, out / "restricciones.pmtiles", "restricciones", 6, 14,
+                    ["--no-tile-size-limit", "--detect-shared-borders",
+                     "--attribution=REDIAM CC BY 4.0 (zonificación PORN, RENPA)"])
+    print(f"  restricciones: {len(gdf)} recintos {gdf['tipo'].value_counts().to_dict()}", flush=True)
+    return gdf
+
+
 def exportar_base(out: Path = APP, maxzoom: int = ZOOM_BASE_MAX, build: str | None = None):
     """Extracto del build diario de Protomaps recortado a la zona (+ margen)."""
     import requests
@@ -438,23 +504,29 @@ def escribir_manifest(out: Path = APP) -> dict:
         "meteo": ({"puntos": "meteo_puntos.json", "zonas": "meteo_zonas.pmtiles"}
                   if (out / "meteo_puntos.json").exists() else None),
         # Fase 8: acceso a pie (binario + cabecera + aparcamientos) y rutas señalizadas.
-        "acceso": ({"cabecera": "acceso.json", "datos": "acceso.bin", "aparcamientos": "aparcamientos.json"}
+        "acceso": ({"cabecera": "acceso.json", "datos": "acceso.bin.gz", "aparcamientos": "aparcamientos.json"}
                    if all((out / n).exists() for n in ACCESO_ARCHIVOS) else None),
         "rutas": "rutas.pmtiles" if (out / "rutas.pmtiles").exists() else None,
+        # Modelo v2: capa legal (Zonas de Reserva de los PORN, Reservas Naturales, Parque Nacional).
+        "restricciones": ({"capa": "restricciones.pmtiles", "tipos": TEXTO_RESTRICCION, "aviso": AVISO_LEGAL}
+                          if (out / "restricciones.pmtiles").exists() else None),
         "archivos": archivos,
         "total_bytes": sum(a["bytes"] for a in archivos),
     }
     # Reconocedor (modelo/construir.py): descarga opcional aparte; no cuenta en archivos ni en total_bytes.
     paquete = out / "modelo" / "paquete.json"
+    previo = out / "manifest.json"
     if paquete.exists():
         m["modelo"] = json.loads(paquete.read_text())
+    elif previo.exists() and "modelo" in (anterior := json.loads(previo.read_text())):
+        m["modelo"] = anterior["modelo"]          # escrito por modelo/construir.py: se conserva tal cual
     (out / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=1))
     return m
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("pasos", nargs="+", choices=["capas", "base", "meteo", "acceso", "rutas", "manifest", "respaldo", "todo"])
+    ap.add_argument("pasos", nargs="+", choices=["capas", "restricciones", "base", "meteo", "acceso", "rutas", "manifest", "respaldo", "todo"])
     ap.add_argument("--maxzoom", type=int, default=ZOOM_BASE_MAX)
     a = ap.parse_args(argv)
     pasos = set(a.pasos)
@@ -463,6 +535,9 @@ def main(argv=None):
         print("rasters…", flush=True); exportar_rasters(malla)
         print("curvas…", flush=True); exportar_curvas(malla)
         print("protegidos…", flush=True); exportar_protegidos()
+        print("restricciones…", flush=True); exportar_restricciones()
+    if pasos == {"restricciones"}:
+        print("restricciones…", flush=True); exportar_restricciones()
     if pasos & {"base", "todo"}:
         exportar_base(maxzoom=a.maxzoom)
     if pasos & {"meteo", "todo"}:

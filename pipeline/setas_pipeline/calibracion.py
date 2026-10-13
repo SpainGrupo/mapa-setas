@@ -124,14 +124,33 @@ def tierra_en_zona(out_dir: Path) -> np.ndarray:
     return (leer_tif(Path(out_dir) / "altitud.tif") != NODATA_F) & (leer_tif(Path(out_dir) / "arbol.tif") != 255)
 
 
-def calibrar(out_dir: Path, raw_dir: Path, perfiles: dict) -> dict:
+# Los registros GBIF son históricos (p. ej. de 2003 en celdas quemadas en 2026): la penalización por incendio
+# del año en curso no se puede juzgar con ellos, así que la calibración mide el hábitat sin ese factor.
+SIN_FACTORES = frozenset({"fuego"})
+
+
+def _idoneidad_calibracion(out_dir: Path, clave: str, perfil: dict, capas) -> np.ndarray:
+    if capas is None:
+        return leer_tif(out_dir / f"idoneidad_{clave}.tif")
+    from .idoneidad import puntuar
+    base, v2 = capas
+    return puntuar(perfil, base["arbol"], base["altitud"], base["orientacion"], base["pendiente"],
+                   base["suelo"], v2, SIN_FACTORES)
+
+
+def calibrar(out_dir: Path, raw_dir: Path, perfiles: dict, recalcular: bool = True) -> dict:
+    """recalcular=True: idoneidad recalculada sin SIN_FACTORES; False: lee idoneidad_<clave>.tif."""
     out_dir = Path(out_dir)
     malla = Malla.cargar(out_dir / "malla.json")
     zona = cargar_zona(out_dir / "zona.geojson")
     tierra = tierra_en_zona(out_dir)
+    capas = None
+    if recalcular:
+        from .idoneidad import cargar_capas
+        capas = cargar_capas(out_dir)
     res = {}
     for clave, perfil in perfiles.items():
-        r = leer_tif(out_dir / f"idoneidad_{clave}.tif")
+        r = _idoneidad_calibracion(out_dir, clave, perfil, capas)
         rmax = maximum_filter(np.where(tierra, r, 0), size=VENTANA)
         pts = ocurrencias(perfil, zona, raw_dir)
         kept, n_ok, n_sin = filtrar_incertidumbre(pts)
@@ -166,7 +185,9 @@ def informe(out_dir: Path, perfiles: dict, raw_dir: Path | None = None) -> Path:
          f"Umbral de idoneidad buena: ≥{UMBRAL}. Lift = % obs. buenas / % zona buena (celdas de tierra).",
          f"Variante «500 m»: puntuación = máximo en una ventana {VENTANA}×{VENTANA} celdas alrededor del punto "
          "(las coordenadas GBIF son imprecisas); el % de zona se calcula con el mismo filtro para que el lift sea comparable.",
-         f"Con menos de {MIN_OBS} observaciones la especie no se juzga.", "",
+         f"Con menos de {MIN_OBS} observaciones la especie no se juzga.",
+         f"Modelo v2: idoneidad recalculada sin {', '.join(sorted(SIN_FACTORES))} (los registros GBIF son "
+         "anteriores a los incendios recientes; el factor sí se aplica en las capas exportadas).", "",
          "| especie | n bruto | incert. ≤1 km | sin incert. | en tierra | mediana | %obs≥50 | %zona≥50 | lift "
          "| mediana 500 m | %obs≥50 500 m | %zona≥50 500 m | lift 500 m |",
          "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
@@ -178,7 +199,7 @@ def informe(out_dir: Path, perfiles: dict, raw_dir: Path | None = None) -> Path:
         L.append(f"| {d['nombre']} | {d['n_bruto']} | {d['n_incert_ok']} | {d['n_sin_incert']} | {c['n']} | "
                  f"{f(c['mediana_obs'])} | {c['pct_obs_buenas']} | {c['pct_zona_buena']} | {lift} | "
                  f"{f(v['mediana_obs'])} | {v['pct_obs_buenas']} | {v['pct_zona_buena']} | {f(v['lift'])} |")
-    L += ["", "Fuente: GBIF.org (api.gbif.org/v1/occurrence/search). Perfiles: especies.yaml (heurístico v1)."]
+    L += ["", "Fuente: GBIF.org (api.gbif.org/v1/occurrence/search). Perfiles: especies.yaml (heurístico v2)."]
     ruta = out_dir / "calibracion.md"
     ruta.write_text("\n".join(L) + "\n")
     return ruta

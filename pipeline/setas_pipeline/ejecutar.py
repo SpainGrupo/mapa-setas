@@ -41,6 +41,28 @@ def _suelo():
     construir_suelo(_malla(), RAW, OUT, FUENTES, ZONA)
 
 
+def _estructura():
+    from .vegetacion import construir_estructura
+    construir_estructura(_malla(), RAW, OUT, FUENTES, ZONA)
+
+
+def _cubierta():
+    from .vegetacion import construir_cubierta
+    construir_cubierta(_malla(), RAW, OUT, FUENTES, ZONA)
+
+
+def _incendios():
+    from .incendios import construir_fuego
+    from .vegetacion import _mfe_arbolado
+    from .descargas import cargar_zona
+    construir_fuego(_malla(), RAW, OUT, FUENTES, mfe=_mfe_arbolado(RAW, FUENTES, cargar_zona(ZONA)))
+
+
+def _humedad():
+    from .hidrologia import construir_humedad
+    construir_humedad(_malla(), RAW, OUT)
+
+
 def _protegidos():
     from .protegidos import construir_protegidos
     construir_protegidos(_malla(), RAW, OUT, FUENTES, ZONA)
@@ -76,7 +98,9 @@ def _geo():
 
 
 def _entradas_idoneidad():
-    return [ESPECIES, *(OUT / f"{n}.tif" for n in ("arbol", "altitud", "orientacion", "pendiente", "suelo"))]
+    from .idoneidad import CAPAS_V2
+    return [ESPECIES, *(OUT / f"{n}.tif" for n in ("arbol", "altitud", "orientacion", "pendiente", "suelo",
+                                                    *CAPAS_V2))]
 
 
 # paso → (función, salidas, entradas): se rehace si falta una salida o alguna es más antigua que una entrada
@@ -85,6 +109,11 @@ PASOS = {
     "relieve": (_relieve, lambda: [OUT / f"{n}.tif" for n in ("altitud", "pendiente", "orientacion")], _geo),
     "vegetacion": (_vegetacion, lambda: [OUT / "arbol.tif"], _geo),
     "suelo": (_suelo, lambda: [OUT / "suelo.tif"], _geo),
+    "estructura": (_estructura, lambda: [OUT / "fcc.tif", OUT / "estado.tif"], _geo),
+    "cubierta": (_cubierta, lambda: [OUT / "cubierta.tif", OUT / "dist_matorral.tif"], _geo),
+    "incendios": (_incendios, lambda: [OUT / "fuego.tif"], _geo),
+    "humedad": (_humedad, lambda: [OUT / f"{n}.tif" for n in ("twi", "dist_cauce", "humedad")],
+                lambda: [*_geo(), OUT / "altitud.tif"]),
     "protegidos": (_protegidos, lambda: [OUT / "protegido.tif"], _geo),
     "accesos": (_accesos, lambda: [OUT / "distancia_acceso.tif"], _geo),
     "idoneidad": (_idoneidad, _por_especie("idoneidad_{}.tif"), _entradas_idoneidad),

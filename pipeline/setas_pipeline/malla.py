@@ -12,6 +12,10 @@ NODATA_F = -9999.0
 ARBOL = {"sin_arbolado": 0, "alcornoque": 1, "encina": 2, "quejigo": 3,
          "castano": 4, "pino": 5, "pinsapo": 6, "otro": 7}
 SUELO = {"desconocido": 0, "acido": 1, "basico": 2, "ultrabasico": 3, "otro": 4}
+# Modelo v2 (2026-10-14): estructura del rodal y cubierta desarbolada (MFE), años desde el último incendio
+ESTADO = {"sin_dato": 0, "monte_bravo": 1, "latizal": 2, "fustal": 3}     # estado de masa de la especie 1
+CUBIERTA = {"ninguna": 0, "matorral": 1, "pastizal_matorral": 2, "pastizal": 3}
+SIN_FUEGO = 255        # fuego.tif: sin incendio registrado (si no, años desde el último, 0..254)
 
 
 @dataclass(frozen=True)

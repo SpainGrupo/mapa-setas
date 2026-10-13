@@ -124,9 +124,27 @@ def test_especies_exporta_reglas_de_tiempo():
     from setas_pipeline.exportar import especies
     es = {e["id"]: e for e in especies()}
     assert es["boletus_aereus"]["tiempo"] == {"episodio_mm": 25, "ventana_dias": [8, 20],
-                                              "tmin_media": [8, 18], "tmax_media": [15, 27]}
+                                              "tmin_media": [8, 18], "tmax_media": [15, 27],
+                                              "balance_30d_min_mm": -30, "dias_lluvia_30d_min": 3,
+                                              "humedad_suelo_min": 0.15, "meses": [5, 6, 9, 10, 11, 12]}
     assert es["amanita_caesarea"]["tiempo"]["ventana_dias"] == [7, 16]
+    assert es["amanita_ponderosa"]["tiempo"]["meses"] == [2, 3, 4]
+    obligatorias = {"episodio_mm", "ventana_dias", "tmin_media", "tmax_media", "meses"}
+    opcionales = {"balance_30d_min_mm", "dias_lluvia_30d_min", "humedad_suelo_min"}
     for e in es.values():
         t = e["tiempo"]
-        assert set(t) == {"episodio_mm", "ventana_dias", "tmin_media", "tmax_media"}
+        assert obligatorias <= set(t) <= obligatorias | opcionales, e["id"]
         assert t["ventana_dias"][0] < t["ventana_dias"][1]
+        assert all(1 <= m <= 12 for m in t["meses"])
+
+
+def test_clasificar_restriccion_porn():
+    from setas_pipeline.exportar import clasificar_restriccion, TEXTO_RESTRICCION
+    assert clasificar_restriccion("A", "A. Zona de Reserva") == "zona_reserva"
+    assert clasificar_restriccion("ARE", "Área de Reserva") == "zona_reserva"
+    assert clasificar_restriccion("A", "A. Zona de Reserva. Ámbito marino") is None
+    assert clasificar_restriccion("RN", "Reserva Natural") == "reserva_natural"
+    assert clasificar_restriccion("B", "B. Zona de Regulación Especial") is None
+    assert clasificar_restriccion("ZPP", "Zona de protección de la Reserva Natural") is None
+    assert clasificar_restriccion("A", "A. Área de Regulación") is None
+    assert set(TEXTO_RESTRICCION) == {"zona_reserva", "reserva_natural", "parque_nacional"}

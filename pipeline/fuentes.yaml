@@ -186,3 +186,68 @@ rediam_senderos:
   catalogo: "portalrediam.cica.es/geonetwork, ficha e6f9aac9-eadb-4cdf-888d-a04c68909f34 ('Equipamientos y senderos de Uso Público de Andalucía, información actualizada (septiembre 2026)')"
   licencia: "CC BY 4.0 (ficha de metadatos REDIAM); el GetCapabilities del WFS: uso libre y gratuito mencionando a autores y propietarios. Fees: Gratuito."
   atribucion: "REDIAM, Consejería de Sostenibilidad y Medio Ambiente, Junta de Andalucía (CC BY 4.0)"
+
+# ---------------------------------------------------------------- Modelo v2 (2026-10-14)
+mfe_estructura:
+  nombre: "MFE (mismo WFS y caché que mfe): nm_fccarb (FCC arbolada %), nom_e1 (estado de masa especie 1), id_evento/fc_evento"
+  verificacion: >-
+    2026-10-14 sobre la caché data/raw/mfe (20 776 recintos arbolados): nom_e1 Fustal 11 836, Latizal 7 227,
+    Monte bravo 1 435, Repoblado 278; nm_fccarb 10–100 %; nb_evento "Procede de incendio con fecha" 22
+    (fc_evento 2015–2021), "…sin fecha…" 58 (sin año: no se usan).
+  salidas: [fcc.tif, estado.tif]
+  licencia: "© MITECO (ver mfe)"
+
+mfe_desarbolado:
+  nombre: "MFE, recintos 'Desarbolado' forestal (id_clamfe = 140) → cubierta abierta (matorral / pastizal)"
+  metodo: wfs
+  filtro: "id_clamfe=140"
+  pagina: 300
+  verificacion: >-
+    2026-10-14: 11 954 recintos en la caja de la malla (resultType=hits); descargados 10 444 dentro de la zona
+    (caché data/raw/mfe_desarbolado). Por superficie: Pastizal-Matorral 107 710 ha, Arbustedos 75 367 ha,
+    Herbazal-Pastizal 65 978 ha. El MFE no distingue especies de matorral (no hay jara): el gurumelo usa
+    "matorral a ≤300 m" como proxy de jaral (heurístico).
+  decision_siose: >-
+    SIOSE no se pudo obtener de forma automatizable: el WFS INSPIRE de ocupación del suelo del IGN
+    (servicios.idee.es/wfs-inspire/ocupacion-suelo) devolvió respuestas vacías el 2026-10-14 y REDIAM no publica
+    SIOSE por WFS (solo MUCVA 2007). La investigación (§3) da el nb_tipestr del MFE como primera aproximación:
+    es la misma fuente y escala 1:25 000 que el arbolado. PENDIENTE: SIOSE-AR por descarga del CNIG si hace falta.
+  # id_tipestr → clase de CUBIERTA (malla.py). Lo no listado → ninguna (roquedo, humedal, quemado, playas…).
+  mapeo_cubierta:
+    matorral: [21, 22, 25, 27]       # Arbustedos, Galerías arbustivas, Msc matorral/cultivo, Sup. forestal residual arbustiva
+    pastizal_matorral: [23, 24]      # Pastizal-Matorral, Msc matorral/pastizal
+    pastizal: [31, 32, 33, 37]       # Herbazal-Pastizal, Msc pastizal/cultivo, Galería de herbáceas, Sup. forestal residual herbácea
+  salidas: [cubierta.tif, dist_matorral.tif]
+  licencia: "© MITECO (ver mfe)"
+
+incendios:
+  nombre: "Perímetros de incendios: REDIAM/INFOCA 2008–2025 + EFFIS (MODIS burnt areas) + MFE con fecha"
+  rediam_url: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_perimetros_incendios_forestales?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:perim_incendios_{anio}&outputFormat=application/json;%20subtype=geojson&srsName=EPSG:25830&bbox={xmin},{ymin},{xmax},{ymax},urn:ogc:def:crs:EPSG::25830"
+  rediam_desde: 2008
+  rediam_hasta: 2025
+  rediam_catalogo: "portalrediam.cica.es/geonetwork, ficha 933fa6f2-1316-4e99-9baa-49c86d0cfc0c ('Perímetros de incendios forestales en Andalucía 2008-2025', incendios > 10 ha, Centro Operativo Regional del Infoca)"
+  rediam_licencia: "CC BY 4.0 (ficha de metadatos REDIAM: 'Creative Commons Attribution 4.0 International Public License'); GetCapabilities: uso libre y gratuito mencionando autores y propietarios"
+  rediam_verificacion: "2026-10-14: capas ms:perim_incendios_2008 … _2025. En la caja de la malla: 2021 → 25 perímetros (Genalguacil/Sierra Bermeja 8 401 ha), 2022 → 27 (Júzcar/Pujerra 4 866 ha), 2023 → 22, 2024 → 11, 2025 → 6. La de 2023 pesa 105 MB (geometría muy detallada)."
+  effis_url: "https://maps.effis.emergency.copernicus.eu/effis?service=WFS&request=getfeature&typename=ms:modis.ba.poly&version=1.1.0&outputformat=geojson&bbox={lat0},{lon0},{lat1},{lon1},EPSG:4326"
+  effis_verificacion: "2026-10-14: 196 perímetros 2016–2026 en la caja; 39 de 2026 (p. ej. Igualeja 542 ha 27-09-2026, Benahavís 343 ha 13-09-2026). Enlace del WFS tomado de forest-fire.emergency.copernicus.eu/applications/data-and-services."
+  effis_licencia: "CC BY 4.0 (forest-fire.emergency.copernicus.eu/about-effis/data-license)"
+  atribucion: "REDIAM/INFOCA, Junta de Andalucía (CC BY 4.0) · EFFIS, Copernicus Emergency Management Service (CC BY 4.0) · © MITECO MFE"
+  regla: "años = año en curso − año del último incendio: 0–2 → ×0,3; 3–5 → ×0,6 (solo especies micorrícicas)"
+  salidas: [fuego.tif, fuego_resumen.json]
+
+hidrologia:
+  nombre: "TWI y distancia a cauces derivados del MDT25 IGN (dem, arriba) a 50 m, agregados a 100 m"
+  metodo: "priority-flood con épsilon + D8 + acumulación (setas_pipeline/hidrologia.py); cauce = ≥0,5 km² drenados"
+  decision: "Cauces derivados de la acumulación de flujo en vez de la red hidrográfica IGN/REDIAM: misma fuente que el relieve, sin descarga nueva, e incluye barrancos y canutos que la red oficial omite."
+  licencia: "Derivado de IGN/CNIG MDT25, CC BY 4.0 scne.es"
+  salidas: [twi.tif, dist_cauce.tif, humedad.tif]
+
+zonificacion_porn:
+  nombre: "REDIAM — WFS Zonificación de los PORN vigentes (capa ms:porn_vigentes)"
+  metodo: wfs
+  url: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_zonificacion_PORN_vigentes?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:porn_vigentes&outputFormat=application/json;%20subtype=geojson&srsName=EPSG:25830&bbox={xmin},{ymin},{xmax},{ymax},urn:ogc:def:crs:EPSG::25830"
+  catalogo: "portalrediam.cica.es/geonetwork, ficha 4c51660f84b4b17a0f8b74d2ac70251ae2bfad4c (WMS/WFS Zonificación de los PORN vigentes)"
+  campos: "Codigo_espacio, Figura, Nombre, Fecha_publicacion_Plan, Normativa_declaracion_Plan, Codigo_zona, Descripcion_zona, Codigo_subzona, Descripcion_subzona"
+  verificacion: "2026-10-14: 118 recintos en la caja de la malla; Zonas de Reserva (A/ARE/R) en Grazalema, Sierra de las Nieves, Los Alcornocales, Tejeda-Almijara-Alhama, Del Estrecho, Maro-Cerro Gordo…; Reservas Naturales (RN) en lagunas."
+  licencia: "Uso libre y gratuito mencionando autores y propietarios (GetCapabilities: Fees 'Gratuito'); REDIAM publica sus datos con CC BY 4.0"
+  parque_nacional: "Parque Nacional Sierra de las Nieves: de la caché RENPA (enp, FIGURA = 'Parque Nacional')."

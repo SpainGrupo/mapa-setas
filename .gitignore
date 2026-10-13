@@ -3,3 +3,8 @@ pipeline/data/
 __pycache__/
 *.pyc
 .DS_Store
+app/node_modules/
+app/dist/
+app/public/data
+app/test-results/
+app/e2e/capturas/error.png

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1b4332" />
+  <meta name="description" content="Mapa offline de idoneidad para setas." />
+  <link rel="icon" href="iconos/icono-192.png" />
+  <link rel="apple-touch-icon" href="iconos/apple-touch-icon.png" />
+  <title>Mapa de setas</title>
+</head>
+<body>
+  <main id="pantallas">
+    <section id="p-mapa" class="pantalla activa" aria-label="Mapa">
+      <div id="mapa"></div>
+      <div class="panel-sup">
+        <label class="campo">
+          <span class="etq">Especie</span>
+          <select id="sel-especie"></select>
+        </label>
+        <label class="campo">
+          <span class="etq">Lejos del acceso: <b id="txt-umbral">≥ 0 m</b></span>
+          <input id="rng-umbral" type="range" min="0" max="1000" step="200" value="0" />
+        </label>
+        <div class="leyenda">
+          <span>Idoneidad</span><span class="rampa" id="rampa"></span><span>baja → alta</span>
+          <button id="btn-capas" class="btn-chico" aria-expanded="false">Capas</button>
+        </div>
+        <div id="capas" class="capas" hidden>
+          <label><input type="checkbox" data-capa="sombreado" checked /> Sombreado del relieve</label>
+          <label><input type="checkbox" data-capa="curvas" checked /> Curvas de nivel (20 m)</label>
+          <label><input type="checkbox" data-capa="protegidos" checked /> <span class="muestra-enp"></span> Espacios protegidos</label>
+          <label><input type="checkbox" data-capa="idoneidad" checked /> Idoneidad</label>
+          <p class="nota">Idoneidad estimada por un modelo heurístico. No indica que haya setas ni que sean comestibles.</p>
+        </div>
+      </div>
+      <div class="fabs">
+        <button id="btn-centrar" class="fab" aria-label="Centrar en mí">◎<span>Centrar</span></button>
+        <button id="btn-aqui" class="fab fab-acento" aria-label="Guardar sitio aquí">＋<span>Sitio aquí</span></button>
+      </div>
+      <p id="sin-datos" class="sin-datos" hidden>No hay mapas. Conéctate a internet o descárgalos en Ajustes.</p>
+    </section>
+
+    <section id="p-sitios" class="pantalla" aria-label="Mis sitios">
+      <header class="cab"><h1>Mis sitios</h1></header>
+      <div class="cuerpo">
+        <label class="campo"><span class="etq">Filtrar por especie</span><select id="filtro-especie"></select></label>
+        <div class="fila-botones">
+          <button id="btn-gpx" class="btn">Exportar GPX</button>
+          <button id="btn-json" class="btn">Exportar JSON</button>
+          <label class="btn">Importar<input id="inp-importar" type="file" accept=".gpx,.json,application/gpx+xml,application/json" hidden /></label>
+        </div>
+        <ul id="lista-sitios" class="lista"></ul>
+      </div>
+    </section>
+
+    <section id="p-ajustes" class="pantalla" aria-label="Ajustes">
+      <header class="cab"><h1>Ajustes y descargas</h1></header>
+      <div class="cuerpo">
+        <div class="aviso-seguridad" role="note">No consumas ninguna seta sin confirmación de un experto</div>
+        <h2>Mapas sin cobertura</h2>
+        <p id="estado-descarga" class="estado">Comprobando…</p>
+        <progress id="prog-descarga" max="1" value="0" hidden></progress>
+        <button id="btn-descargar" class="btn btn-grande">Descargar mapas para uso sin cobertura</button>
+        <button id="btn-borrar-mapas" class="btn btn-peligro" hidden>Borrar mapas descargados</button>
+        <p id="estado-almacen" class="nota"></p>
+        <h2>Datos</h2>
+        <p class="nota" id="info-datos"></p>
+        <p class="atribucion">Datos: IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, © OpenStreetMap ODbL, Protomaps</p>
+      </div>
+    </section>
+  </main>
+
+  <nav class="pestanas" aria-label="Secciones">
+    <button data-p="p-mapa" class="activa">🗺️<span>Mapa</span></button>
+    <button data-p="p-sitios">📍<span>Mis sitios</span></button>
+    <button class="prox" aria-disabled="true" data-prox="Zona">🚦<span>Zona</span><small>próximamente</small></button>
+    <button class="prox" aria-disabled="true" data-prox="Guía">📖<span>Guía</span><small>próximamente</small></button>
+    <button class="prox" aria-disabled="true" data-prox="Reconocer">📷<span>Reconocer</span><small>próximamente</small></button>
+    <button data-p="p-ajustes">⚙️<span>Ajustes</span></button>
+  </nav>
+
+  <dialog id="dlg-inicio" class="dlg">
+    <h2>Antes de empezar</h2>
+    <div class="aviso-seguridad" role="note">No consumas ninguna seta sin confirmación de un experto</div>
+    <p>El mapa muestra zonas con condiciones favorables según un modelo heurístico. No garantiza que haya setas ni identifica especies.</p>
+    <p class="atribucion">Datos: IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, © OpenStreetMap ODbL, Protomaps</p>
+    <form method="dialog"><button class="btn btn-grande" value="ok">Entendido</button></form>
+  </dialog>
+
+  <dialog id="dlg-sitio" class="dlg">
+    <form id="frm-sitio" method="dialog">
+      <h2 id="tit-sitio">Nuevo sitio</h2>
+      <p id="coord-sitio" class="nota"></p>
+      <fieldset class="estrellas">
+        <legend>Valoración</legend>
+        <label><input type="radio" name="estrellas" value="1" checked /><span>★</span></label>
+        <label><input type="radio" name="estrellas" value="2" /><span>★★</span></label>
+        <label><input type="radio" name="estrellas" value="3" /><span>★★★</span></label>
+      </fieldset>
+      <label class="campo"><span class="etq">Especie</span><select name="especie" id="sitio-especie"></select></label>
+      <label class="campo"><span class="etq">Nota</span><textarea name="nota" rows="3" maxlength="2000"></textarea></label>
+      <label class="campo"><span class="etq">Foto (opcional)</span><input name="foto" type="file" accept="image/*" capture="environment" /></label>
+      <img id="foto-sitio" class="foto" alt="" hidden />
+      <div class="fila-botones">
+        <button type="button" id="btn-sitio-borrar" class="btn btn-peligro" hidden>Borrar</button>
+        <button type="button" id="btn-sitio-cancelar" class="btn">Cancelar</button>
+        <button type="submit" id="btn-sitio-guardar" class="btn btn-primario">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="aviso" class="toast" role="status" aria-live="polite" hidden></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

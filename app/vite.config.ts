@@ -29,14 +29,23 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,mjs,css,html,png,svg,pbf,json,webmanifest}'],
+        globPatterns: ['**/*.{js,mjs,css,html,png,svg,pbf,json,webmanifest}', 'guia/miniaturas/*.jpg'],
         // La guía: especies.json e indice.json van en el precache; las fotos (~18 MB), en su propia caché
         // «guia-fotos», que rellena la página (ver src/guia-ui.ts) y aquí se sirve con CacheFirst.
         globIgnores: ['data/**', 'guia/fotos/**'],
+        // Las miniaturas se piden con ?v=<hash> (como las fotos); el precache ya versiona por su cuenta.
+        ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^v$/],
         runtimeCaching: [{
           urlPattern: /\/guia\/fotos\/[^/]+\.jpg(\?.*)?$/,
           handler: 'CacheFirst',
           options: { cacheName: 'guia-fotos', cacheableResponse: { statuses: [200] } },
+        }, {
+          // Ortofoto PNOA (vista Satélite, solo con conexión): guarda las ~500 teselas más recientes para que
+          // al volver a una zona vista no se pidan otra vez. No sustituye a la descarga de mapas.
+          urlPattern: /^https:\/\/www\.ign\.es\/wmts\/pnoa-ma\?/,
+          handler: 'CacheFirst',
+          options: { cacheName: 'pnoa-teselas', cacheableResponse: { statuses: [200] },
+            expiration: { maxEntries: 500, maxAgeSeconds: 60 * 60 * 24 * 90 } },
         }],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         navigateFallback: 'index.html',

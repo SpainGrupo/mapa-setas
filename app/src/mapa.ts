@@ -9,6 +9,11 @@ import { BASE_DATOS } from './datos';
 import type { Manifest } from './tipos';
 
 export const ATRIBUCION = 'IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, © OpenStreetMap ODbL, Protomaps';
+/** Ortofoto PNOA del IGN (WMTS, solo KVP según GetCapabilities; GoogleMapsCompatible hasta el nivel 19, JPEG). */
+export const URL_PNOA = 'https://www.ign.es/wmts/pnoa-ma?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OI.OrthoimageCoverage'
+  + '&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg';
+export const ATRIBUCION_PNOA = 'PNOA © IGN (CC BY 4.0)';
+export type Base = 'mapa' | 'satelite';
 export const COLORES_IDONEIDAD = ['#d9f0a3', '#addd8e', '#78c679', '#41ab5d', '#238443', '#006837', '#004529'];
 
 maplibregl.setWorkerUrl(urlTrabajador);
@@ -65,9 +70,10 @@ function estilo(conMeteo: boolean): StyleSpecification {
       sombreado: { type: 'raster', url: pm('sombreado.pmtiles'), tileSize: 256 },
       curvas: { type: 'vector', url: pm('curvas.pmtiles') },
       protegidos: { type: 'vector', url: pm('protegidos.pmtiles') },
+      pnoa: { type: 'raster', tiles: [URL_PNOA], tileSize: 256, maxzoom: 19, attribution: ATRIBUCION_PNOA },
       ...(conMeteo ? { meteo_zonas: { type: 'vector' as const, url: pm('meteo_zonas.pmtiles') } } : {}),
     },
-    layers: [...base.slice(0, primerSimbolo), ...propias.filter((l) => conMeteo || l.id !== 'semaforo'),
+    layers: [{ id: 'pnoa', type: 'raster', source: 'pnoa', layout: { visibility: 'none' } }, ...base.slice(0, primerSimbolo), ...propias.filter((l) => conMeteo || l.id !== 'semaforo'),
       ...base.slice(primerSimbolo), etiquetasCurvas],
   };
 }
@@ -119,4 +125,30 @@ export function verCapa(mapa: MapaML, ids: string[], visible: boolean) {
 /** Colorea los polígonos de Voronoi de la capa Semáforo (expresión de zona.ts expresionColores). */
 export function colorearSemaforo(mapa: MapaML, expresion: any) {
   if (mapa.getLayer('semaforo')) mapa.setPaintProperty('semaforo', 'fill-color', expresion);
+}
+
+// ---------------------------------------------------------------- base: mapa o satélite
+
+const originales = new WeakMap<MapaML, Map<string, unknown>>();
+
+/**
+ * Mapa base vectorial o ortofoto PNOA (solo con conexión: no va en la descarga OPFS). En satélite se ocultan
+ * los rellenos del mapa base y el sombreado, y las carreteras, ríos y límites quedan semitransparentes encima
+ * (sin sus bordes); las etiquetas, curvas, idoneidad, espacios protegidos, GPS y sitios siguen igual.
+ */
+export function ponerBase(mapa: MapaML, base: Base, sombreado: boolean) {
+  const sat = base === 'satelite';
+  let orig = originales.get(mapa);
+  if (!orig) originales.set(mapa, (orig = new Map()));
+  for (const l of mapa.getStyle().layers) {
+    if ((l as { source?: string }).source !== 'protomaps' && l.type !== 'background') continue;
+    if (l.type === 'background' || l.type === 'fill') mapa.setLayoutProperty(l.id, 'visibility', sat ? 'none' : 'visible');
+    else if (l.type === 'line') {
+      if (/casing/.test(l.id)) { mapa.setLayoutProperty(l.id, 'visibility', sat ? 'none' : 'visible'); continue; }
+      if (!orig.has(l.id)) orig.set(l.id, mapa.getPaintProperty(l.id, 'line-opacity'));
+      mapa.setPaintProperty(l.id, 'line-opacity', sat ? 0.55 : orig.get(l.id) as number | undefined);
+    }
+  }
+  mapa.setLayoutProperty('pnoa', 'visibility', sat ? 'visible' : 'none');
+  verCapa(mapa, ['sombreado'], !sat && sombreado);
 }

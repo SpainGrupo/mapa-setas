@@ -63,6 +63,24 @@ const mapaListo = () => p.waitForSelector('body[data-mapa=listo]', { state: 'att
 const reposo = () => p.evaluate(() => new Promise((r) => {
   const m = window.__setas.mapa; m.loaded() && m.areTilesLoaded() ? r() : m.once('idle', r);
 }));
+// Selector de especie con fotos: abre la hoja y elige la fila (el <select> que guarda el valor está oculto).
+const elegirEspecie = async (id) => {
+  await p.locator('#btn-especie').click();
+  await p.locator('#dlg-especie[open]').waitFor();
+  await p.locator(`#lista-especies [role=option][data-especie=${id}]`).click();
+  await p.locator('#dlg-especie').waitFor({ state: 'hidden' });
+};
+const miniaturasCargadas = () => p.$$eval('#lista-especies [role=option]', (os) => os.map((o) => {
+  const img = o.querySelector('img');
+  return { id: o.dataset.especie, ok: !!img && img.complete && img.naturalWidth > 0 };
+}));
+// Ortofoto PNOA simulada: una tesela JPEG fija (foto de la guía recortada) para cualquier petición al WMTS del IGN.
+const TESELA_PNOA = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'fixtures/pnoa-tesela.jpg'));
+let teselasPnoa = 0;
+await ctx.route('https://www.ign.es/wmts/pnoa-ma?**', (r) => {
+  teselasPnoa++;
+  return r.fulfill({ status: 200, contentType: 'image/jpeg', headers: { 'access-control-allow-origin': '*' }, body: TESELA_PNOA });
+});
 
 try {
   await p.goto(URL_APP);
@@ -72,6 +90,79 @@ try {
   ok('carga en línea con el service worker activo');
   await reposo();
   await captura('01-inicio.png');
+  // Conteos de la guía servida (la guía puede crecer; no se fijan números).
+  const guiaServida = await p.evaluate(async () => (await fetch('guia/especies.json')).json());
+  const N_FICHAS = guiaServida.length;
+  const N_FOTOS = new Set(guiaServida.flatMap((f) => f.fotos.map((x) => x.archivo))).size;
+  const N_CREDITOS = guiaServida.reduce((n, f) => n + f.fotos.length, 0);
+
+  // Selector de especie con fotos.
+  const idsMapa = await p.evaluate(async () => (await (await fetch('data/manifest.json')).json()).especies.map((e) => e.id));
+  comprobar(await p.locator('#sel-especie').isHidden() && await p.locator('#btn-especie[aria-haspopup=dialog]').isVisible(),
+    'el <select> de especie queda oculto tras un botón con miniatura');
+  await p.locator('#btn-especie').click();
+  await p.locator('#dlg-especie[open]').waitFor();
+  await p.waitForFunction(() => [...document.querySelectorAll('#lista-especies img')].every((i) => i.complete));
+  const minis = await miniaturasCargadas();
+  const alturas = await p.$$eval('#lista-especies [role=option]', (os) => os.map((o) => o.getBoundingClientRect().height));
+  comprobar(minis.length === idsMapa.length && minis.every((m) => m.ok) && alturas.every((h) => h >= 48),
+    `hoja de especies: ${minis.length} filas con miniatura (${minis.map((m) => m.id).join(', ')}), filas ≥ 48 px`);
+  comprobar(await p.locator('#lista-especies [aria-selected=true]').evaluate((o) => o === document.activeElement),
+    'al abrir, el foco está en la especie elegida (aria-selected)');
+  comprobar(/Boletus reticulatus|Boletus aestivalis/.test(await p.locator('#lista-especies [data-especie=boletus_aestivalis]').textContent()),
+    'B. aestivalis muestra la foto y el nombre de la ficha de B. reticulatus');
+  await captura('selector-lista.png');
+  await p.keyboard.press('End');
+  const ultima = idsMapa.at(-1);
+  comprobar(await p.locator(`#lista-especies [data-especie=${ultima}]`).evaluate((o) => o === document.activeElement), 'teclado: Fin lleva a la última especie');
+  await p.keyboard.press('Home');
+  await p.keyboard.press('ArrowDown');
+  const segunda = await p.evaluate(() => document.activeElement.dataset.especie);
+  await p.keyboard.press('Enter');
+  await p.locator('#dlg-especie').waitFor({ state: 'hidden' });
+  await reposo();
+  const capa = await p.evaluate(() => window.__setas.mapa.getSource('idoneidad').url);
+  comprobar(segunda === idsMapa[1] && capa.includes(`idoneidad_${segunda}_`) && await p.locator('#sel-especie').inputValue() === segunda
+    && await p.locator('#btn-especie').evaluate((b) => b === document.activeElement && b.dataset.especie) === segunda,
+    `teclado: ↓ + Intro elige ${segunda}, cambia la capa (${capa.split('/').pop()}) y devuelve el foco al botón`);
+  await elegirEspecie('boletus_edulis');
+  await reposo();
+  comprobar((await p.evaluate(() => window.__setas.mapa.getSource('idoneidad').url)).includes('idoneidad_boletus_edulis_')
+    && /Boletus edulis/.test(await p.locator('#btn-especie').textContent()), 'tocar una fila cambia la capa de idoneidad');
+  await captura('selector-boton.png');
+
+  // Fondo Satélite (PNOA del IGN, teselas simuladas) y vuelta al mapa.
+  await p.locator('#btn-capas').click();
+  await p.locator('.base-mapa span', { hasText: 'Satélite' }).click();
+  await p.waitForSelector('body[data-base=satelite]', { state: 'attached' });
+  await reposo();
+  const sat = await p.evaluate(() => {
+    const m = window.__setas.mapa;
+    const vis = (id) => m.getLayoutProperty(id, 'visibility') !== 'none';
+    return { pnoa: vis('pnoa'), tierra: vis('earth'), agua: vis('water'), sombreado: vis('sombreado'), idoneidad: vis('idoneidad'),
+      protegidos: vis('protegidos-linea'), sitios: vis('sitios'), atrib: document.querySelector('.maplibregl-ctrl-attrib').textContent,
+      guardado: localStorage.getItem('setas:base') };
+  });
+  comprobar(sat.pnoa && !sat.tierra && !sat.agua && !sat.sombreado && sat.idoneidad && sat.protegidos && sat.sitios && teselasPnoa > 0
+    && /PNOA © IGN \(CC BY 4\.0\)/.test(sat.atrib) && sat.guardado === 'satelite',
+    `Satélite: ortofoto PNOA (${teselasPnoa} teselas simuladas) bajo idoneidad, protegidos y sitios; atribución PNOA; preferencia guardada`);
+  await p.locator('#btn-capas').click();
+  await captura('satelite-online.png');
+  await p.reload();
+  await mapaListo();
+  comprobar(await p.evaluate(() => document.body.dataset.base) === 'satelite', 'tras recargar se recuerda el fondo Satélite');
+  await p.locator('#btn-capas').click();
+  await p.locator('.base-mapa span', { hasText: 'Mapa' }).click();
+  await p.waitForSelector('body[data-base=mapa]', { state: 'attached' });
+  await reposo();
+  comprobar(await p.evaluate(() => {
+    const m = window.__setas.mapa;
+    return m.getLayoutProperty('pnoa', 'visibility') === 'none' && m.getLayoutProperty('earth', 'visibility') !== 'none'
+      && m.getLayoutProperty('sombreado', 'visibility') !== 'none' && localStorage.getItem('setas:base') === 'mapa';
+  }), 'vuelta a «Mapa»: base vectorial y sombreado otra vez visibles');
+  await captura('satelite-vuelta-mapa.png');
+  await p.locator('#btn-capas').click();
+  await elegirEspecie(idsMapa[0]);   // el resto del recorrido parte de la especie por defecto
 
   await p.getByRole('button', { name: /Ajustes/ }).click();
   const btn = p.locator('#btn-descargar');
@@ -181,12 +272,12 @@ try {
   // Fase 4: Guía de especies.
   await p.waitForSelector('body[data-guia-fotos=completas]', { state: 'attached', timeout: 180000 });
   const enCache = await p.evaluate(async () => (await (await caches.open('guia-fotos')).keys()).length);
-  comprobar(enCache === 78, `fotos de la guía guardadas en la caché «guia-fotos» (${enCache})`);
+  comprobar(enCache === N_FOTOS, `fotos de la guía guardadas en la caché «guia-fotos» (${enCache})`);
   const tabGuia = p.locator('.pestanas button[data-p=p-guia]');
   await tabGuia.click();
   await p.locator('.tarjeta-guia').first().waitFor();
   const grupos = await p.$$eval('.grupo-guia h2', (hs) => hs.map((h) => h.textContent));
-  comprobar(await p.locator('.tarjeta-guia').count() === 26 && grupos.length === 4, `Guía: 26 especies en 4 grupos (${grupos.join(', ')})`);
+  comprobar(await p.locator('.tarjeta-guia').count() === N_FICHAS && grupos.length === 4, `Guía: ${N_FICHAS} especies en 4 grupos (${grupos.join(', ')})`);
   const textosInsignias = await p.$$eval('.insignia', (xs) => [...new Set(xs.map((x) => x.textContent))]);
   comprobar(!textosInsignias.some((t) => /comestible/i.test(t)) && textosInsignias.includes('☠ MORTAL'),
     `ninguna insignia dice «comestible» (${textosInsignias.join(', ')})`);
@@ -227,7 +318,7 @@ try {
   await p.locator('.pestanas button[data-p=p-guia].activa').waitFor();
   if (await p.locator('#guia-ficha').isVisible()) await p.locator('.btn-volver').click();
   await p.locator('.tarjeta-guia').first().waitFor();
-  comprobar(await p.locator('.tarjeta-guia').count() === 26, 'sin conexión la guía carga (precache)');
+  comprobar(await p.locator('.tarjeta-guia').count() === N_FICHAS, 'sin conexión la guía carga (precache)');
   await p.locator('.tarjeta-guia[data-id=amanita_phalloides]').click();
   await p.locator('#guia-ficha[data-id=amanita_phalloides]').waitFor();
   const foto = p.locator('#guia-ficha .carrusel-guia img').first();
@@ -321,7 +412,28 @@ try {
   const mz = await p.evaluate(() => window.__setas.origenes()['meteo_zonas.pmtiles']);
   comprobar(mz?.origen === 'opfs' && mz.http === 0, `capa Semáforo (Voronoi) desde OPFS sin red (${mz?.opfs} lecturas)`);
   await p.getByRole('button', { name: /Mapa/ }).click();
-  await p.selectOption('#sel-especie', 'amanita_caesarea');
+  // Sin conexión: las miniaturas del selector salen del precache y el Satélite cae al mapa con aviso.
+  await p.locator('#btn-especie').click();
+  await p.locator('#dlg-especie[open]').waitFor();
+  await p.waitForFunction(() => [...document.querySelectorAll('#lista-especies img')].every((i) => i.complete));
+  const minisOff = await miniaturasCargadas();
+  comprobar(minisOff.length > 0 && minisOff.every((m) => m.ok), `sin conexión las ${minisOff.length} miniaturas del selector cargan (precache)`);
+  await captura('selector-offline.png');
+  await p.keyboard.press('Escape');
+  await p.locator('#dlg-especie').waitFor({ state: 'hidden' });
+  const teselasAntes = teselasPnoa;
+  await p.locator('#btn-capas').click();
+  await p.locator('.base-mapa span', { hasText: 'Satélite' }).click();
+  await p.waitForFunction(() => /La vista satélite necesita cobertura/.test(document.querySelector('#aviso').textContent)
+    && !document.querySelector('#aviso').hidden);
+  const off = await p.evaluate(() => ({ base: document.body.dataset.base, pnoa: window.__setas.mapa.getLayoutProperty('pnoa', 'visibility'),
+    mapa: document.querySelector('input[name=base][value=mapa]').checked }));
+  comprobar(off.base === 'mapa' && off.pnoa === 'none' && off.mapa && teselasPnoa === teselasAntes,
+    'sin conexión, «Satélite» avisa «La vista satélite necesita cobertura» y se queda en el mapa');
+  await captura('satelite-offline-aviso.png');
+  await p.locator('.base-mapa span', { hasText: 'Mapa' }).click();
+  await p.locator('#btn-capas').click();
+  await elegirEspecie('amanita_caesarea');
   await p.evaluate(({ latitude, longitude }) => window.__setas.mapa.jumpTo({ center: [longitude, latitude], zoom: 12 }), PUNTO);
   await reposo();
   const est = await p.evaluate(() => {
@@ -342,13 +454,13 @@ try {
   await p.locator('#guia-ficha[data-id=amanita_caesarea]').waitFor();
   comprobar(await p.locator('#p-guia').isVisible(), '«Ver ficha» en el panel del mapa abre la ficha de la especie elegida');
   await p.getByRole('button', { name: /Mapa/ }).click();
-  await p.selectOption('#sel-especie', 'boletus_aestivalis');
+  await elegirEspecie('boletus_aestivalis');
   await verFicha.waitFor();
   await verFicha.click();
   await p.locator('#guia-ficha[data-id=boletus_reticulatus]').waitFor();
   ok('«Ver ficha» de Boletus aestivalis abre la ficha de B. reticulatus (sinónimo)');
   await p.getByRole('button', { name: /Mapa/ }).click();
-  await p.selectOption('#sel-especie', 'amanita_caesarea');
+  await elegirEspecie('amanita_caesarea');
 
   await p.getByRole('button', { name: 'Guardar sitio aquí' }).click();
   await p.locator('#dlg-sitio[open]').waitFor();
@@ -372,10 +484,10 @@ try {
 
   await p.getByRole('button', { name: /Ajustes/ }).click();
   await captura('06-ajustes-offline.png');
-  comprobar(/Guía lista sin cobertura: textos y 78 fotos/.test(await p.locator('#estado-guia').textContent()), `Ajustes: «${await p.locator('#estado-guia').textContent()}»`);
+  comprobar(new RegExp(`Guía lista sin cobertura: textos y ${N_FOTOS} fotos`).test(await p.locator('#estado-guia').textContent()), `Ajustes: «${await p.locator('#estado-guia').textContent()}»`);
   await p.locator('#creditos-fotos summary').click();
   await p.locator('#lista-creditos .credito-especie').first().waitFor();
-  comprobar(await p.locator('#lista-creditos li').count() === 78, 'Créditos de fotos: 78 entradas con autor y licencia');
+  comprobar(await p.locator('#lista-creditos li').count() === N_CREDITOS, `Créditos de fotos: ${N_CREDITOS} entradas con autor y licencia`);
   await p.locator('#creditos-fotos').scrollIntoViewIfNeeded();
   await captura('guia-creditos.png');
 

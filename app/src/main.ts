@@ -3,7 +3,8 @@ import './estilos.css';
 import { registerSW } from 'virtual:pwa-register';
 import type { Map as MapaML, GeoJSONSource, LngLat } from 'maplibre-gl';
 import { BASE_DATOS, cargarJson, cargarManifest, mb } from './datos';
-import { COLORES_IDONEIDAD, colorearSemaforo, crearMapa, origenes, ponerIdoneidad, verCapa } from './mapa';
+import { COLORES_IDONEIDAD, colorearSemaforo, crearMapa, origenes, ponerBase, ponerIdoneidad, verCapa, type Base } from './mapa';
+import { iniciarSelectorEspecie, pintarSelectorEspecie } from './selector-especie';
 import { Gps } from './gps';
 import { borrarMapas, descargarMapas, estadoDescarga } from './opfs';
 import { borrarSitio, guardarSitio, guardarVarios, leerSitio, listarSitios } from './sitios';
@@ -90,6 +91,7 @@ function aplicarIdoneidad() {
   pintarSemaforoMapa();
   pintarTarjeta();
   pintarBotonFicha();
+  pintarSelectorEspecie();
 }
 
 /** «Ver ficha» junto al selector de especie, solo si la especie del mapa tiene ficha en la guía. */
@@ -118,7 +120,8 @@ async function iniciarMapa() {
   manifest = await cargarManifest();
   if (!manifest) { $('#sin-datos').hidden = false; return; }
   for (const e of manifest.especies) nombres[e.id] = e.nombre;
-  cargarGuia().then((ok) => { if (ok) for (const f of fichasGuia()) nombres[f.id] ??= binomio(f); });
+  iniciarSelectorEspecie(() => manifest?.especies ?? []);
+  cargarGuia().then((ok) => { if (ok) for (const f of fichasGuia()) nombres[f.id] ??= binomio(f); pintarSelectorEspecie(); });
   rellenarEspecies($<HTMLSelectElement>('#sel-especie'));
   rellenarEspecies($<HTMLSelectElement>('#filtro-especie'), ['', 'Todas']);
   rellenarEspecies($<HTMLSelectElement>('#sitio-especie'), ['', 'Sin especificar']);
@@ -130,6 +133,7 @@ async function iniciarMapa() {
       $<HTMLInputElement>('#rng-umbral').value = String(g.umbral);
     }
   } catch { /* preferencia corrupta: se ignora */ }
+  pintarSelectorEspecie();
 
   mapa = crearMapa($('#mapa'), manifest);
   gps = new Gps(mapa, (m) => avisar(m));
@@ -141,6 +145,7 @@ async function iniciarMapa() {
     })) };
   mapa.on('load', async () => {
     aplicarIdoneidad();
+    aplicarBase(false);
     mapa!.addSource('sitios', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
     mapa!.addLayer({ id: 'sitios', type: 'circle', source: 'sitios', paint: {
       'circle-radius': ['+', 6, ['*', 2, ['get', 'estrellas']]], 'circle-color': '#b23a0b',
@@ -162,8 +167,34 @@ async function iniciarMapa() {
   $('#rng-umbral').addEventListener('input', aplicarIdoneidad);
   document.querySelectorAll<HTMLInputElement>('[data-capa]').forEach((c) =>
     c.addEventListener('change', () => mapa && verCapa(mapa, CAPAS[c.dataset.capa!], c.checked)));
+  document.querySelectorAll<HTMLInputElement>('input[name=base]').forEach((r) => r.addEventListener('change', () => {
+    try { localStorage.setItem(CLAVE_BASE, r.value); } catch { /* sin almacenamiento: solo esta sesión */ }
+    aplicarBase(true);
+  }));
+  window.addEventListener('offline', () => aplicarBase(true));
+  window.addEventListener('online', () => aplicarBase(false));
   instalarPulsacionLarga(mapa);
   iniciarMeteo();
+}
+
+// ---------------------------------------------------------------- fondo: mapa o satélite (PNOA, solo en línea)
+
+const CLAVE_BASE = 'setas:base';
+function baseGuardada(): Base {
+  try { return localStorage.getItem(CLAVE_BASE) === 'satelite' ? 'satelite' : 'mapa'; } catch { return 'mapa'; }
+}
+/** Aplica el fondo guardado; sin conexión el satélite cae al mapa (la preferencia se conserva para cuando vuelva). */
+function aplicarBase(avisarSiCae: boolean) {
+  if (!mapa?.getLayer('pnoa')) return;
+  const quiere = baseGuardada();
+  const base: Base = quiere === 'satelite' && !navigator.onLine ? 'mapa' : quiere;
+  if (base !== quiere && avisarSiCae) avisar('La vista satélite necesita cobertura');
+  const somb = $<HTMLInputElement>('[data-capa=sombreado]');
+  somb.disabled = base === 'satelite';
+  somb.closest('label')?.classList.toggle('desactivada', somb.disabled);
+  document.querySelectorAll<HTMLInputElement>('input[name=base]').forEach((r) => (r.checked = r.value === base));
+  ponerBase(mapa, base, somb.checked);
+  document.body.dataset.base = base;
 }
 
 $('#btn-capas').addEventListener('click', () => {

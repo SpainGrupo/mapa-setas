@@ -18,7 +18,8 @@ export interface Ficha {
   fotos: Foto[];
   fuentes: { titulo: string; url: string }[];
 }
-export interface IndiceGuia { especies: string; fotos: Record<string, string> }
+/** indice.json (scripts/enlazar-guia.mjs): hash corto por foto y por miniatura (id de ficha → hash). */
+export interface IndiceGuia { especies: string; fotos: Record<string, string>; miniaturas?: Record<string, string> }
 
 /** Orden de los grupos en la lista: primero lo que se busca, después lo peligroso (mortales antes que tóxicas). */
 export const ORDEN_GRUPOS: Grupo[] = ['apreciada', 'comestible_menor', 'mortal', 'toxica'];
@@ -85,4 +86,14 @@ export const fichaDeEspecieMapa = (id: string) => FICHA_DE_ESPECIE_MAPA[id] ?? i
 export function especieMapaDeFicha(idFicha: string, idsMapa: string[]): string {
   const delMapa = idsMapa.find((m) => fichaDeEspecieMapa(m) === idFicha);
   return delMapa ?? idFicha;
+}
+
+/**
+ * Miniatura (128 px, generada en el build a partir de la primera foto de la ficha) de una especie del mapa,
+ * con el alias de sinónimos de FICHA_DE_ESPECIE_MAPA; null si la especie no tiene ficha con foto.
+ */
+export function miniaturaEspecie(idMapa: string, indice: IndiceGuia | null): string | null {
+  const ficha = fichaDeEspecieMapa(idMapa);
+  const v = indice?.miniaturas?.[ficha];
+  return v ? `guia/miniaturas/${ficha}.jpg?v=${v}` : null;
 }

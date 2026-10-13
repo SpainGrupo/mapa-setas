@@ -42,6 +42,9 @@ export function cargarGuia(): Promise<boolean> {
 }
 
 export const hayFicha = (id: string) => porId.has(id);
+export const fichaGuia = (id: string): Ficha | undefined => porId.get(id);
+/** indice.json cargado (null hasta que cargarGuia() termina o si falta). */
+export const indiceGuia = (): IndiceGuia | null => indice;
 /** Fichas cargadas (vacío hasta que cargarGuia() termina). */
 export const fichasGuia = (): Ficha[] => fichas;
 

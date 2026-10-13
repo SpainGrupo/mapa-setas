@@ -14,9 +14,11 @@ uv run python construir.py       # ~2 min en un M3; baja ~600 MB de pesos de Hug
   Solo la torre de visión, en ONNX int8 cuantizando solo MatMul/Gemm (onnxruntime-web no tiene ConvInteger).
 - Vocabulario (zero-shot, plantilla `a photo of <especie>.`): las 1.577 especies de DF20
   (`vocabulario/df20_especies.txt`, distractores europeos para que una seta ajena a la guía no se fuerce
-  sobre una especie de la guía) + `vocabulario/extra.txt` (mediterráneas que faltan) + las 26 de la guía.
+  sobre una especie de la guía) + `vocabulario/extra.txt` (mediterráneas que faltan) + las especies de la guía (30). Tras ampliar el vocabulario basta `uv run python construir.py --solo-texto`
+  (rehace texto, etiquetas y referencia con la misma torre de visión).
   `vocabulario/alias.json` une sinónimos (B. aestivalis → B. reticulatus, C. rachodes/brunneum → C. rhacodes,
-  Collybia nuda → Lepista nuda) y marca especies afines (L. vinosus, L. sanguifluus → ficha de L. deliciosus).
+  Collybia nuda → Lepista nuda, S. verrucosum → S. citrinum, T. claveryi → T. arenaria) y marca especies afines
+  (L. vinosus, L. sanguifluus → L. deliciosus; A. vidua → A. verna; A. curtipes → gurumelo; T. leptoderma → criadilla).
 - Salida (no versionada): `pipeline/data/out/app/modelo/` y la clave `modelo` del `manifest.json`.
   `referencia.json` (versionado) guarda el top-5 de Python para las fotos de prueba y la estadística del
   coseno máximo con que se calibra «no reconocido».

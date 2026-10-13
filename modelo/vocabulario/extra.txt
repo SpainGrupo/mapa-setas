@@ -18,3 +18,9 @@ Lepiota josserandii
 Pleurotus eryngii
 Hygrophorus russula
 Tricholoma equestre
+# Fase 8: hipogeos y parecidas del gurumelo (distractores; las de la guía se añaden solas)
+Amanita boudieri
+Choiromyces meandriformis
+Choiromyces magnusii
+Tuber melanosporum
+Pisolithus arhizus

@@ -89,6 +89,13 @@ function sitioDeJSON(s: unknown): Sitio | null {
     especie: typeof o.especie === 'string' ? o.especie : '',
     fecha,
   };
+  const a = o.acceso as Record<string, unknown> | undefined;
+  if (a && typeof a === 'object') {
+    const [alat, alon, t, sub] = [num(a.lat), num(a.lon), num(a.tiempo_min), num(a.subida_m)];
+    if ([alat, alon, t, sub].every(Number.isFinite) && Math.abs(alat) <= 90 && Math.abs(alon) <= 180) {
+      sitio.acceso = { lat: alat, lon: alon, via: typeof a.via === 'string' ? a.via : '', tiempo_min: t, subida_m: sub };
+    }
+  }
   const f = o.foto as { tipo?: unknown; base64?: unknown } | undefined;
   if (f && typeof f.base64 === 'string') {
     try { sitio.foto = deBase64(f.base64, typeof f.tipo === 'string' ? f.tipo : 'image/jpeg'); } catch { /* foto corrupta: sin foto */ }

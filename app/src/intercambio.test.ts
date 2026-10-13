@@ -75,6 +75,21 @@ describe('JSON', () => {
     expect(Date.parse(s.fecha)).toBeGreaterThanOrEqual(antes - 1000);
   });
 
+  it('conserva el aparcamiento guardado (ficha «Acceso») y descarta uno inválido', async () => {
+    const acceso = { lat: 36.59074, lon: -5.24772, via: 'CO-6202', tiempo_min: 25, subida_m: 120 };
+    const { sitios: [s] } = deJSON(await aJSON([{ ...sitios[1], acceso }]));
+    expect(s).toEqual({ ...sitios[1], acceso });
+    const txt = JSON.stringify({ formato: 'mapa-setas', sitios: [
+      { id: 'a', lat: 1, lon: 2, acceso: { lat: 1, lon: 'x', via: 'v', tiempo_min: 1, subida_m: 1 } },
+      { id: 'b', lat: 1, lon: 2, acceso: { lat: 1, lon: 2, tiempo_min: '3', subida_m: 0 } },
+      { id: 'c', lat: 1, lon: 2, acceso: { lat: 100, lon: 2, via: 'v', tiempo_min: 1, subida_m: 1 } },
+    ] });
+    const l = deJSON(txt).sitios;
+    expect(l[0].acceso).toBeUndefined();
+    expect(l[1].acceso).toEqual({ lat: 1, lon: 2, via: '', tiempo_min: 3, subida_m: 0 });
+    expect(l[2].acceso).toBeUndefined();
+  });
+
   it('una foto corrupta no descarta el sitio', () => {
     const txt = JSON.stringify({ formato: 'mapa-setas', sitios: [{ id: 'f', lat: 1, lon: 2, foto: { tipo: 'image/jpeg', base64: '%%%' } }] });
     const { sitios: [s], descartados } = deJSON(txt);

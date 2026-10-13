@@ -59,6 +59,7 @@
           <label><input type="checkbox" data-capa="protegidos" checked /> <span class="muestra-enp"></span> Espacios protegidos</label>
           <label><input type="checkbox" data-capa="idoneidad" checked /> Idoneidad</label>
           <label><input type="checkbox" data-capa="semaforo" /> <span class="muestra-semaforo"></span> Semáforo (especie elegida)</label>
+          <label id="capa-rutas"><input type="checkbox" data-capa="rutas" /> <span class="muestra-rutas" aria-hidden="true"><i data-t="GR"></i><i data-t="PR"></i><i data-t="SL"></i></span> Rutas y caminos</label>
           <p class="nota">Idoneidad estimada por un modelo heurístico. No indica que haya setas ni que sean comestibles.</p>
         </div>
       </div>
@@ -70,6 +71,22 @@
         <div class="tz-texto"><b id="tz-estado"></b><span id="tz-motivo"></span></div>
         <button id="tz-ver" class="btn btn-primario">Ver zona</button>
         <button id="tz-cerrar" class="btn-x" aria-label="Cerrar">×</button>
+      </div>
+      <div id="tarjeta-acceso" class="tarjeta-acceso" role="region" aria-label="Acceso a pie desde el coche" hidden>
+        <div class="ta-cab"><b>Acceso a pie</b><span id="ta-coord" class="ta-coord"></span></div>
+        <p id="ta-estado" class="ta-estado" role="status"></p>
+        <dl id="ta-datos" class="ta-datos" hidden>
+          <div class="ta-via"><dt>Aparcar en</dt><dd id="ta-via"></dd></div>
+          <div><dt>A pie</dt><dd id="ta-tiempo"></dd></div>
+          <div><dt>Subida</dt><dd id="ta-subida"></dd></div>
+        </dl>
+        <p class="ta-aviso">Estimación: puede haber fincas privadas, vallas o barrancos.</p>
+        <div class="ta-botones">
+          <button id="ta-coche" class="btn btn-primario">Cómo llegar en coche</button>
+          <button id="ta-otra" class="btn">Abrir en otra app</button>
+          <button id="ta-guardar" class="btn">Guardar sitio</button>
+        </div>
+        <button id="ta-cerrar" class="btn-x" aria-label="Cerrar">×</button>
       </div>
       <p id="sin-datos" class="sin-datos" role="status" hidden>No hay mapas. Conéctate a internet o descárgalos en Ajustes.</p>
     </section>
@@ -238,6 +255,7 @@
     <form id="frm-sitio" method="dialog">
       <h2 id="tit-sitio">Nuevo sitio</h2>
       <p id="coord-sitio" class="nota"></p>
+      <p id="acceso-sitio" class="nota" hidden></p>
       <fieldset class="estrellas">
         <legend>Valoración</legend>
         <label><input type="radio" name="estrellas" value="1" checked /><span>★</span></label>

@@ -4,11 +4,16 @@
     "Boletus aestivalis": "boletus_reticulatus",
     "Chlorophyllum rachodes": "chlorophyllum_rhacodes",
     "Chlorophyllum brunneum": "chlorophyllum_rhacodes",
-    "Collybia nuda": "lepista_nuda"
+    "Collybia nuda": "lepista_nuda",
+    "Scleroderma verrucosum": "scleroderma_citrinum",
+    "Terfezia claveryi": "terfezia_arenaria"
   },
   "afin": {
     "Lactarius vinosus": "lactarius_deliciosus",
     "Lactarius sanguifluus": "lactarius_deliciosus",
-    "Lactarius deterrimus": "lactarius_deliciosus"
+    "Lactarius deterrimus": "lactarius_deliciosus",
+    "Amanita vidua": "amanita_verna",
+    "Amanita curtipes": "amanita_ponderosa",
+    "Terfezia leptoderma": "terfezia_arenaria"
   }
 }

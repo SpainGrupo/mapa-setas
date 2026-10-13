@@ -20,6 +20,9 @@ const URL_APP = (process.env.URL_APP ?? 'http://127.0.0.1:8765/') + '?e2e=1';
 const CAPTURAS = join(dirname(fileURLToPath(import.meta.url)), 'capturas');
 mkdirSync(CAPTURAS, { recursive: true });
 const PUNTO = { latitude: 36.589, longitude: -5.244 };   // máximo local de idoneidad de caesarea
+// Fase 8: celda de acceso con `uv run python -m setas_pipeline.acceso --consultar 36.61083 -5.24579` →
+// 35 min, +128 m, 9 pasos de 100 m, aparcamiento 88960 (36.60911, −5.25328, vía «service» sin nombre).
+const ACCESO = { lat: 36.61083, lon: -5.24579, tiempo: '35 min', subida: '+128 m', via: 'camino de servicio sin nombre', aparc: [36.60911, -5.25328] };
 const FIXTURE = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'fixtures/open-meteo.json'), 'utf8'));
 const NOTA = 'Ñandú & <castaños> "junto" al \'arroyo\' ✓';
 const FOTOS_GUIA = join(dirname(fileURLToPath(import.meta.url)), '../../guia/fotos');
@@ -59,6 +62,15 @@ await ctx.route('**/api.open-meteo.com/**', async (r) => {
 const estadosZona = () => p.$$eval('#lista-semaforo .semaforo-fila', (bs) => Object.fromEntries(bs.map((b) => [b.dataset.especie, b.dataset.estado])));
 const igual = (a, b) => JSON.stringify(Object.entries(a).sort()) === JSON.stringify(Object.entries(b).sort());
 const p = await ctx.newPage();
+// Enlaces externos: window.open y los <a href="geo:"> se anotan en vez de abrirse.
+await p.addInitScript(() => {
+  window.__abiertos = [];
+  window.open = (u) => { window.__abiertos.push(String(u)); return null; };
+  document.addEventListener('click', (e) => {
+    const a = e.target?.closest?.('a[href^="geo:"]');
+    if (a) { e.preventDefault(); window.__abiertos.push(a.getAttribute('href')); }
+  }, true);
+});
 const errores = [];
 p.on('pageerror', (e) => errores.push(e.message));
 const captura = (n) => p.screenshot({ path: join(CAPTURAS, n) });
@@ -66,6 +78,39 @@ const mapaListo = () => p.waitForSelector('body[data-mapa=listo]', { state: 'att
 const reposo = () => p.evaluate(() => new Promise((r) => {
   const m = window.__setas.mapa; m.loaded() && m.areTilesLoaded() ? r() : m.once('idle', r);
 }));
+/** Pulsación larga (mouse, 800 ms) sobre un punto del mapa. */
+const pulsarLargo = async (lat, lon) => {
+  const pt = await p.evaluate(([la, lo]) => {
+    const m = window.__setas.mapa, r = m.getCanvas().getBoundingClientRect(), q = m.project([lo, la]);
+    return { x: r.left + q.x, y: r.top + q.y };
+  }, [lat, lon]);
+  await p.mouse.move(pt.x, pt.y);
+  await p.mouse.down();
+  await p.waitForTimeout(800);
+  await p.mouse.up();
+};
+const km = (a, b) => Math.hypot(a[0] - b[0], (a[1] - b[1]) * Math.cos((a[0] * Math.PI) / 180)) * 111.2;
+/** Pulsación larga en ACCESO → ficha «Acceso» completa; devuelve lo que la app expone y la traza dibujada. */
+const fichaAcceso = async (origenEsperado) => {
+  await p.evaluate(({ lat, lon }) => window.__setas.mapa.jumpTo({ center: [lon, lat], zoom: 15 }), ACCESO);
+  await reposo();
+  await pulsarLargo(ACCESO.lat, ACCESO.lon);
+  await p.locator('#tarjeta-acceso[data-estado=ok]').waitFor({ timeout: 15000 });
+  const r = await p.evaluate(() => ({ a: window.__setas.acceso(),
+    traza: window.__setas.trazaAcceso(),
+    via: document.querySelector('#ta-via').textContent, tiempo: document.querySelector('#ta-tiempo').textContent,
+    subida: document.querySelector('#ta-subida').textContent, zona: document.querySelector('#tarjeta-zona').hidden,
+    aviso: document.querySelector('.ta-aviso').textContent }));
+  const linea = r.traza.find((f) => f.geometry.type === 'LineString');
+  comprobar(r.tiempo === ACCESO.tiempo && r.subida === ACCESO.subida && r.via === ACCESO.via && r.zona,
+    `pulsación larga → ficha «Acceso»: ${r.via}, ${r.tiempo}, ${r.subida} (sin tarjeta de zona)`);
+  comprobar(r.aviso === 'Estimación: puede haber fincas privadas, vallas o barrancos.', 'aviso de estimación en la ficha');
+  comprobar(linea && linea.geometry.coordinates.length >= 2 && r.a.traza.completa && r.a.traza.pasos === 9
+    && r.traza.some((f) => f.properties.tipo === 'aparcamiento') && km([r.a.acceso.lat, r.a.acceso.lon], ACCESO.aparc) < 0.4,
+    `trazado a pie dibujado: ${r.a.traza.pasos} pasos, ${linea?.geometry.coordinates.length} vértices, aparcamiento a ${km([r.a.acceso.lat, r.a.acceso.lon], ACCESO.aparc).toFixed(2)} km del de Python`);
+  comprobar(r.a.lector.origen === origenEsperado, `bytes de acceso.bin desde ${r.a.lector.origen} (${r.a.lector.lecturas} lecturas, ${r.a.lector.bytes} B; consulta ${r.a.ms.consulta} ms, traza ${r.a.ms.traza} ms)`);
+  return r.a;
+};
 // Selector de especie con fotos: abre la hoja y elige la fila (el <select> que guarda el valor está oculto).
 const elegirEspecie = async (id) => {
   await p.locator('#btn-especie').click();
@@ -166,6 +211,57 @@ try {
   await captura('satelite-vuelta-mapa.png');
   await p.locator('#btn-capas').click();
   await elegirEspecie(idsMapa[0]);   // el resto del recorrido parte de la especie por defecto
+
+  // Fase 8 en línea: capa «Rutas y caminos» y ficha «Acceso» leyendo acceso.bin por HTTP Range.
+  await p.locator('#btn-capas').click();
+  await p.locator('[data-capa=rutas]').check();
+  await p.locator('#btn-capas').click();
+  await p.evaluate(({ latitude, longitude }) => window.__setas.mapa.jumpTo({ center: [longitude, latitude], zoom: 12 }), PUNTO);
+  await reposo();
+  const rutas = await p.evaluate(() => {
+    const m = window.__setas.mapa;
+    const vis = ['rutas-fondo', 'rutas-marca', 'rutas-otros', 'rutas-etiqueta'].map((id) => m.getLayoutProperty(id, 'visibility'));
+    const fs = m.queryRenderedFeatures({ layers: ['rutas-marca', 'rutas-otros'] });
+    // Un vértice con nombre en la zona libre del mapa (sin el panel de arriba ni los botones de abajo), lejos de otros tramos.
+    const r = m.getCanvas().getBoundingClientRect();
+    const libre = (q) => q.x > 60 && q.x < r.width - 110 && q.y > r.height * 0.45 && q.y < r.height - 140;
+    const orden = [...fs].sort((a, b) => Number(b.properties.tipo === 'GR') - Number(a.properties.tipo === 'GR'));
+    for (const f of orden) {
+      if (!f.properties.name) continue;
+      const lineas = f.geometry.type === 'LineString' ? [f.geometry.coordinates] : f.geometry.coordinates;
+      for (const cs of lineas) for (const c of cs) {
+        const q = m.project(c);
+        if (!libre(q)) continue;
+        const cerca = m.queryRenderedFeatures([[q.x - 10, q.y - 10], [q.x + 10, q.y + 10]], { layers: ['rutas-marca', 'rutas-otros'] });
+        if (cerca[0]?.properties.name !== f.properties.name) continue;
+        return { vis, n: fs.length, tipos: [...new Set(fs.map((x) => x.properties.tipo))].sort(), props: f.properties, x: r.left + q.x, y: r.top + q.y };
+      }
+    }
+    return { vis, n: fs.length, tipos: [], props: {}, x: 0, y: 0 };
+  });
+  comprobar(rutas.vis.every((v) => v === 'visible') && rutas.n > 0, `capa Rutas activada: ${rutas.n} tramos visibles (${rutas.tipos.join(', ')})`);
+  await p.mouse.click(rutas.x, rutas.y);
+  await p.locator('.popup-ruta').waitFor();
+  const pop = await p.locator('.popup-ruta').textContent();
+  comprobar(pop.includes(String(rutas.props.name ?? rutas.props.ref)) && /Fuente: (OpenStreetMap|REDIAM)/.test(pop)
+    && /(Gran|Pequeño) Recorrido|Sendero Local|Otro sendero/.test(pop), `popup de la ruta: «${pop}»`);
+  await captura('rutas-popup.png');
+  await p.locator('.maplibregl-popup-close-button').click();
+  await p.evaluate(() => window.__setas.mapa.jumpTo({ zoom: 14 }));
+  await reposo();
+  await captura('rutas-etiquetas.png');
+  await p.locator('#btn-capas').click();
+  await p.locator('[data-capa=rutas]').uncheck();
+  await p.locator('#btn-capas').click();
+  comprobar(await p.evaluate(() => ['rutas-fondo', 'rutas-marca', 'rutas-otros', 'rutas-etiqueta']
+    .every((id) => window.__setas.mapa.getLayoutProperty(id, 'visibility') === 'none')), 'capa Rutas desactivada: sus cuatro capas ocultas');
+  if (!(await p.locator('#tarjeta-zona').isHidden())) await p.locator('#tz-cerrar').click();
+  const enLinea = await fichaAcceso('http');
+  informe.acceso_http = { ms: enLinea.ms, lector: enLinea.lector };
+  await captura('acceso-online.png');
+  await p.locator('#ta-cerrar').click();
+  comprobar(await p.locator('#tarjeta-acceso').isHidden() && await p.evaluate(() =>
+    window.__setas.trazaAcceso().length === 0), 'cerrar la ficha borra el trazado');
 
   await p.getByRole('button', { name: /Ajustes/ }).click();
   const btn = p.locator('#btn-descargar');
@@ -489,6 +585,52 @@ try {
   const gpx = readFileSync(ruta, 'utf8');
   comprobar(gpx.includes('<wpt lat="36.589" lon="-5.244">') && gpx.includes('★★★ Amanita caesarea')
     && gpx.includes('&lt;castaños&gt;'), `GPX exportado (${descarga.suggestedFilename()})`);
+  await p.locator('.sitio .acciones button', { hasText: 'Cómo llegar' }).first().click();
+  comprobar((await p.evaluate(() => window.__abiertos.at(-1))) === 'https://www.google.com/maps/dir/?api=1&destination=36.58900,-5.24400&travelmode=driving',
+    'Mis sitios: «Cómo llegar» de un sitio sin aparcamiento lleva al propio sitio en Google Maps');
+
+  // Fase 8 sin conexión: ficha «Acceso» desde OPFS, enlaces y «Guardar sitio» con el aparcamiento.
+  await p.getByRole('button', { name: /Mapa/ }).click();
+  const accOff = await fichaAcceso('opfs');
+  informe.acceso_opfs = { ms: accOff.ms, lector: accOff.lector, traza: accOff.traza };
+  await captura('acceso-offline.png');
+  const destino = `${accOff.acceso.lat.toFixed(5)},${accOff.acceso.lon.toFixed(5)}`;
+  await p.locator('#ta-coche').click();
+  comprobar((await p.evaluate(() => window.__abiertos.at(-1))) === `https://www.google.com/maps/dir/?api=1&destination=${destino}&travelmode=driving`,
+    `«Cómo llegar en coche» abre Google Maps hacia el aparcamiento (${destino})`);
+  await p.locator('#ta-otra').click();
+  const geo = await p.evaluate(() => window.__abiertos.at(-1));
+  comprobar(geo.startsWith(`geo:${destino}?q=${destino}(`) && geo.includes(encodeURIComponent(ACCESO.via)), `«Abrir en otra app» (Android): ${geo}`);
+  await p.locator('#ta-guardar').click();
+  await p.locator('#dlg-sitio[open]').waitFor();
+  const txtAcceso = await p.locator('#acceso-sitio').textContent();
+  comprobar(/^Aparcar en camino de servicio sin nombre · 35 min a pie, \+128 m de subida$/.test(txtAcceso)
+    && km((await p.locator('#coord-sitio').textContent()).split(' · ')[0].split(', ').map(Number), [ACCESO.lat, ACCESO.lon]) < 0.01,
+    `«Guardar sitio» abre el formulario en el punto pulsado: «${txtAcceso}»`);
+  await captura('acceso-guardar.png');
+  await p.locator('#btn-sitio-guardar').click();
+  await p.locator('#dlg-sitio').waitFor({ state: 'hidden' });
+  await p.getByRole('button', { name: /Mis sitios/ }).click();
+  const conAcceso = p.locator('.sitio', { has: p.locator('.acceso') });
+  await conAcceso.waitFor();
+  comprobar((await conAcceso.locator('.acceso').textContent()) === txtAcceso, 'Mis sitios muestra el tiempo a pie guardado');
+  await conAcceso.locator('button', { hasText: 'Cómo llegar' }).click();
+  comprobar((await p.evaluate(() => window.__abiertos.at(-1))) === `https://www.google.com/maps/dir/?api=1&destination=${destino}&travelmode=driving`,
+    'Mis sitios: «Cómo llegar» lleva al aparcamiento guardado');
+  await captura('acceso-mis-sitios.png');
+  await p.getByRole('button', { name: /Mapa/ }).click();
+  await p.locator('#btn-capas').click();
+  await p.locator('[data-capa=rutas]').check();
+  await p.locator('#btn-capas').click();
+  await p.evaluate(({ latitude, longitude }) => window.__setas.mapa.jumpTo({ center: [longitude, latitude], zoom: 12 }), PUNTO);
+  await reposo();
+  const ru = await p.evaluate(() => window.__setas.origenes()['rutas.pmtiles']);
+  comprobar(ru?.origen === 'opfs' && ru.http === 0 && ru.opfs > 0, `capa Rutas sin conexión desde OPFS (${ru?.opfs} lecturas)`);
+  await captura('rutas-offline.png');
+  await p.locator('#btn-capas').click();
+  await p.locator('[data-capa=rutas]').uncheck();
+  await p.locator('#btn-capas').click();
+  await p.locator('#ta-cerrar').click().catch(() => {});
 
   await p.getByRole('button', { name: /Ajustes/ }).click();
   await captura('06-ajustes-offline.png');

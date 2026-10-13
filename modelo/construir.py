@@ -2,6 +2,8 @@
 
     cd modelo && uv run python construir.py            # todo
     uv run python construir.py --solo-paquete          # solo rehace paquete.json y el manifest
+    uv run python construir.py --solo-texto            # vocabulario nuevo: rehace texto_f16.bin, etiquetas.json y
+                                                       # referencia.json con la misma torre de visión ya exportada
 
 Salida en pipeline/data/out/app/modelo/ (no versionada):
   vision_int8.onnx            torre de visión de BioCLIP (ViT-B/16), int8 solo en MatMul/Gemm (onnxruntime-web
@@ -75,7 +77,7 @@ def version_ort() -> Path:
     return ORT_APP / "dist/ort-wasm-simd-threaded.wasm"
 
 
-def construir():
+def construir(solo_texto: bool = False):
     import numpy as np
     import onnx
     import open_clip
@@ -84,6 +86,9 @@ def construir():
 
     wasm = version_ort()
     SALIDA.mkdir(parents=True, exist_ok=True)
+    i8 = SALIDA / "vision_int8.onnx"
+    if solo_texto and not i8.exists():
+        sys.exit(f"--solo-texto necesita {i8} (ejecuta construir.py sin opciones)")
     tmp = RAIZ / ".tmp"
     tmp.mkdir(exist_ok=True)
 
@@ -119,18 +124,20 @@ def construir():
             f = s.m.encode_image(x)
             return f / f.norm(dim=-1, keepdim=True)
 
-    f32 = tmp / "vision_fp32.onnx"
-    torch.onnx.export(Vision(model).eval(), torch.randn(1, 3, tam, tam), str(f32), input_names=["input"],
-                      output_names=["emb"], opset_version=17, dynamo=False)
-    onnx.checker.check_model(str(f32))
-    i8 = SALIDA / "vision_int8.onnx"
-    quantize_dynamic(str(f32), str(i8), weight_type=QuantType.QInt8, op_types_to_quantize=["MatMul", "Gemm"],
-                     per_channel=True)
-    tipos = {n.op_type for n in onnx.load(str(i8)).graph.node}
-    if "ConvInteger" in tipos:
-        sys.exit("el modelo int8 contiene ConvInteger (no soportado por onnxruntime-web)")
-    print(f"visión int8: {i8.stat().st_size / 1e6:.1f} MB")
-    shutil.copyfile(wasm, SALIDA / wasm.name)
+    if not solo_texto:
+        f32 = tmp / "vision_fp32.onnx"
+        torch.onnx.export(Vision(model).eval(), torch.randn(1, 3, tam, tam), str(f32), input_names=["input"],
+                          output_names=["emb"], opset_version=17, dynamo=False)
+        onnx.checker.check_model(str(f32))
+        quantize_dynamic(str(f32), str(i8), weight_type=QuantType.QInt8, op_types_to_quantize=["MatMul", "Gemm"],
+                         per_channel=True)
+        tipos = {n.op_type for n in onnx.load(str(i8)).graph.node}
+        if "ConvInteger" in tipos:
+            sys.exit("el modelo int8 contiene ConvInteger (no soportado por onnxruntime-web)")
+        print(f"visión int8: {i8.stat().st_size / 1e6:.1f} MB")
+        shutil.copyfile(wasm, SALIDA / wasm.name)
+    else:
+        print(f"visión int8: se conserva {i8.name} ({i8.stat().st_size / 1e6:.1f} MB)")
 
     meta = {
         "modelo": f"{HF_REPO} (ViT-B/16), MIT",
@@ -213,7 +220,8 @@ def paquete():
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--solo-paquete", action="store_true")
+    ap.add_argument("--solo-texto", action="store_true")
     a = ap.parse_args()
     if not a.solo_paquete:
-        construir()
+        construir(solo_texto=a.solo_texto)
     paquete()

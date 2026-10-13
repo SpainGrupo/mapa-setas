@@ -2,7 +2,7 @@
 //
 // Reglas:
 // 1. El modelo solo propone. La ausencia de una especie en el top-5 (o en el vocabulario) NO la descarta.
-// 2. Cada candidato activa su grupo morfológico (amanitoide, boletoide, cantareloide, lepiotoide, lactarioide).
+// 2. Cada candidato activa su grupo morfológico (amanitoide, boletoide, cantareloide, lepiotoide, lactarioide, hipogeo).
 //    Las peligrosas (mortales y tóxicas de la guía) de cada grupo activo se listan SIEMPRE como «no descartadas»,
 //    más las peligrosas que la guía cita en «No confundir con…» de cada candidato.
 // 3. Una peligrosa solo sale de la lista cuando las respuestas guiadas cumplen una regla de descarte basada en
@@ -15,7 +15,7 @@ import { genero } from './reconocer-nucleo';
 
 export const AVISO_EXPERTO = 'No consumas ninguna seta sin la confirmación de un experto.';
 
-export type GrupoMorfo = 'amanitoide' | 'boletoide' | 'cantareloide' | 'lepiotoide' | 'lactarioide' | 'otros';
+export type GrupoMorfo = 'amanitoide' | 'boletoide' | 'cantareloide' | 'lepiotoide' | 'lactarioide' | 'hipogeo' | 'otros';
 export type Nivel = 'mortal' | 'toxica';
 
 export const NOMBRE_GRUPO: Record<GrupoMorfo, string> = {
@@ -24,6 +24,7 @@ export const NOMBRE_GRUPO: Record<GrupoMorfo, string> = {
   cantareloide: 'Rebozuelos y parecidas (pliegues)',
   lepiotoide: 'Parasoles y lepiotas',
   lactarioide: 'Níscalos y otros Lactarius (látex)',
+  hipogeo: 'Criadillas, trufas y bolas (sin sombrero ni pie)',
   otros: 'Otras setas',
 };
 
@@ -31,12 +32,19 @@ export const NOMBRE_GRUPO: Record<GrupoMorfo, string> = {
 const GENEROS: Record<string, GrupoMorfo[]> = {};
 const asignar = (g: GrupoMorfo, generos: string) => generos.split(/\s+/).forEach((x) => (GENEROS[x] = [...(GENEROS[x] ?? []), g]));
 asignar('amanitoide', 'Amanita Volvariella Volvopluteus Agaricus Leucoagaricus');
+// Bolas blancas y «huevos»: un pedo de lobo o un Phallus cerrado se confunden con el huevo de una amanita (el
+// reconocedor propone Calvatia o Phallus para fotos del gurumelo): activan también el grupo amanitoide.
+asignar('amanitoide', 'Lycoperdon Bovista Calvatia Handkea Apioperdon Phallus');
 asignar('boletoide', 'Boletus Rubroboletus Caloboletus Tylopilus Suillus Leccinum Leccinellum Xerocomus Xerocomellus Imleria '
   + 'Neoboletus Suillellus Hortiboletus Butyriboletus Cyanoboletus Chalciporus Gyroporus Porphyrellus Strobilomyces '
   + 'Aureoboletus Hemileccinum Pulveroboletus Rheubarbariboletus Imperator Lanmaoa Baorangia Boletinus');
 asignar('cantareloide', 'Cantharellus Craterellus Pseudocraterellus Omphalotus Hygrophoropsis Hydnum Gomphus Turbinellus');
 asignar('lepiotoide', 'Macrolepiota Lepiota Chlorophyllum Leucoagaricus Leucocoprinus Echinoderma Cystolepiota');
 asignar('lactarioide', 'Lactarius Lactifluus');
+// Bola o trufa, sin sombrero ni pie: criadillas y trufas (bajo tierra), falsas trufas, Scleroderma y los pedos de
+// lobo con los que también se confunde. Pleurotus (seta de cardo) no tiene parecidas peligrosas en la guía: «otros».
+asignar('hipogeo', 'Terfezia Tirmania Picoa Tuber Choiromyces Balsamia Genea Hydnotrya Elaphomyces Rhizopogon '
+  + 'Melanogaster Hymenogaster Scleroderma Pisolithus Lycoperdon Bovista Calvatia Handkea Apioperdon');
 
 export function gruposDe(nombreCientifico: string): GrupoMorfo[] {
   return GENEROS[genero(nombreCientifico)] ?? ['otros'];
@@ -49,6 +57,7 @@ export const PELIGROSAS_GRUPO: Record<GrupoMorfo, string[]> = {
   cantareloide: ['omphalotus_olearius'],
   lepiotoide: ['lepiota_brunneoincarnata', 'chlorophyllum_rhacodes', 'amanita_pantherina'],
   lactarioide: ['lactarius_torminosus', 'lactarius_chrysorrheus'],
+  hipogeo: ['scleroderma_citrinum'],
   otros: [],
 };
 
@@ -91,6 +100,14 @@ export const PREGUNTAS: Pregunta[] = [
   { id: 'color_latex', grupo: 'lactarioide', texto: 'Corta una lámina: ¿de qué color es el látex (la gota que sale)?',
     opciones: [op('naranja_zanahoria', 'Naranja zanahoria'), op('rojo_vino', 'Rojo vino'), op('blanco', 'Blanco'),
       op('blanco_amarillea', 'Blanco que amarillea en segundos'), op(NO_SE, 'No sé')] },
+
+  { id: 'interior_gleba', grupo: 'hipogeo', texto: 'Córtala por la mitad, de arriba abajo: ¿cómo es por dentro?',
+    ayuda: 'Haz una foto del corte. La criadilla es crema rosada con vetas más claras; la Scleroderma pasa pronto de blanca a negro violácea. Si dentro se ve el dibujo de una seta (sombrero y pie), es un huevo de amanita.',
+    opciones: [op('crema_vetas', 'Crema rosado, con vetas más claras'), op('negro_violaceo', 'Negro violáceo o pardo púrpura, o polvo oscuro'),
+      op('blanco_liso', 'Blanco y uniforme, sin vetas'), op('silueta_seta', 'Se ve el dibujo de una seta dentro'), op(NO_SE, 'No sé')] },
+  { id: 'piel_dura_escamosa', grupo: 'hipogeo', texto: '¿La piel es dura y gruesa, con escamas o verrugas?', opciones: SI_NO },
+  { id: 'cordones_base', grupo: 'hipogeo', texto: '¿Estaba sobre el suelo, unida por cordones blancos o por un falso pie?',
+    ayuda: 'La criadilla crece enterrada: se nota porque agrieta y abulta el suelo.', opciones: SI_NO },
 ];
 export const PREGUNTA = Object.fromEntries(PREGUNTAS.map((p) => [p.id, p])) as Record<string, Pregunta>;
 
@@ -133,6 +150,10 @@ export const DESCARTES: Regla[] = [
   // Lactarius tóxicos: látex blanco (L. chrysorrheus amarillea).
   ...['lactarius_torminosus', 'lactarius_chrysorrheus'].map((especie): Regla => (
     { especie, si: { color_latex: ['naranja_zanahoria', 'rojo_vino'] }, motivo: 'látex naranja o rojo vino' })),
+
+  // Scleroderma frente a criadilla: hacen falta los tres rasgos de la guía (interior, piel y cómo crece).
+  { especie: 'scleroderma_citrinum', si: { interior_gleba: ['crema_vetas'], piel_dura_escamosa: ['no'], cordones_base: ['no'] },
+    motivo: 'interior crema rosado con vetas claras, piel sin escamas duras y crecía enterrada' },
 ];
 
 export const ALERTAS: ReglaAlerta[] = [
@@ -144,6 +165,12 @@ export const ALERTAS: ReglaAlerta[] = [
     texto: 'Parasol pequeño (menos de 10 cm): hay lepiotas pequeñas MORTALES, como Lepiota brunneoincarnata.' },
   { nivel: 'toxica', especies: ['omphalotus_olearius'], si: { himenio_cantarelo: ['laminas'], en_matas_madera: ['si'] },
     texto: 'Láminas finas y en matas sobre madera: rasgos de Omphalotus olearius, TÓXICA.' },
+  { nivel: 'mortal', especies: ['amanita_phalloides', 'amanita_verna'], si: { interior_gleba: ['silueta_seta'] },
+    texto: 'Dentro se ve el dibujo de una seta: es un huevo de amanita, y puede ser Amanita phalloides o Amanita verna, MORTALES.' },
+  { nivel: 'toxica', especies: ['scleroderma_citrinum'], si: { interior_gleba: ['negro_violaceo'] },
+    texto: 'Interior negro violáceo o pardo púrpura: rasgo de Scleroderma, TÓXICA.' },
+  { nivel: 'toxica', especies: ['scleroderma_citrinum'], si: { piel_dura_escamosa: ['si'], cordones_base: ['si'] },
+    texto: 'Piel dura y escamosa y unida al suelo por cordones: rasgos de Scleroderma, TÓXICA.' },
 ];
 
 // ---------------------------------------------------------------- evaluación

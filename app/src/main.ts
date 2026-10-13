@@ -3,13 +3,16 @@ import './estilos.css';
 import { registerSW } from 'virtual:pwa-register';
 import type { Map as MapaML, GeoJSONSource, LngLat } from 'maplibre-gl';
 import { BASE_DATOS, cargarJson, cargarManifest, mb } from './datos';
-import { COLORES_IDONEIDAD, colorearSemaforo, crearMapa, origenes, ponerBase, ponerIdoneidad, verCapa, type Base } from './mapa';
+import { CAPAS_RUTAS, COLORES_IDONEIDAD, colorearSemaforo, crearMapa, origenes, ponerBase, ponerIdoneidad, verCapa, type Base } from './mapa';
+import { aparcamiento, centroCelda, consultar, esIOS, nombreVia, simplificar, textoSubida, textoTiempo, trazar, urlGoogleCoche, urlOtraApp } from './acceso';
+import { datosAcceso } from './acceso-datos';
 import { iniciarSelectorEspecie, pintarSelectorEspecie } from './selector-especie';
 import { Gps } from './gps';
 import { borrarMapas, descargarMapas, estadoDescarga } from './opfs';
 import { borrarSitio, guardarSitio, guardarVarios, leerSitio, listarSitios } from './sitios';
 import { aGPX, aJSON, deGPX, deJSON, nuevoId } from './intercambio';
-import type { Manifest, Sitio } from './tipos';
+import type { AccesoSitio, Manifest, Sitio } from './tipos';
+import type { Feature } from 'geojson';
 import { edadHoras, fechaMadrid, obtener, CADUCIDAD_H, type DatosMeteo, type PuntoMeteo } from './meteo';
 import { bandaAltitud, ddmm, humedadAcumulada, semaforo, sumarDias, textoBanda, type ResultadoSemaforo } from './semaforo';
 import { expresionColores, haceTexto, ICONO_ESTADO, NOMBRE_ESTADO, puntoMasCercano } from './zona';
@@ -107,6 +110,7 @@ $('#btn-ver-ficha').addEventListener('click', () => {
 const CAPAS: Record<string, string[]> = {
   sombreado: ['sombreado'], curvas: ['curvas', 'curvas-cota'],
   protegidos: ['protegidos-relleno', 'protegidos-linea'], idoneidad: ['idoneidad'], semaforo: ['semaforo'],
+  rutas: CAPAS_RUTAS,
 };
 
 function pintarSitiosMapa(lista: Sitio[]) {
@@ -125,6 +129,7 @@ async function iniciarMapa() {
   rellenarEspecies($<HTMLSelectElement>('#sel-especie'));
   rellenarEspecies($<HTMLSelectElement>('#filtro-especie'), ['', 'Todas']);
   rellenarEspecies($<HTMLSelectElement>('#sitio-especie'), ['', 'Sin especificar']);
+  $('#capa-rutas').hidden = !manifest.rutas;
   $('#rampa').style.background = `linear-gradient(90deg, ${COLORES_IDONEIDAD.join(',')})`;
   try {
     const g = JSON.parse(localStorage.getItem('setas:capa') ?? 'null');
@@ -138,6 +143,7 @@ async function iniciarMapa() {
   mapa = crearMapa($('#mapa'), manifest);
   gps = new Gps(mapa, (m) => avisar(m));
   if (import.meta.env.DEV || new URLSearchParams(location.search).get('e2e') === '1') (window as any).__setas = { mapa, origenes, meteo: () => ({ datos: meteo, origen: meteoOrigen, punto: puntoSel }),
+    acceso: () => ultimoAcceso, trazaAcceso: () => trazaAcceso,
     resumenSemaforo: () => Object.fromEntries((manifest?.especies ?? []).map((e) => {
       const n: Record<string, number> = { verde: 0, amarillo: 0, rojo: 0, gris: 0 };
       for (const p of puntosMeteo) n[estadoEn(p, e.id)?.estado ?? 'gris']++;
@@ -155,10 +161,14 @@ async function iniciarMapa() {
       if (id) leerSitio(String(id)).then((s) => s && abrirSitio(s));
     });
     pintarSitiosMapa(await listarSitios());
+    instalarCapaAcceso(mapa!);
     mapa!.addSource('punto-meteo', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
     mapa!.addLayer({ id: 'punto-meteo', type: 'circle', source: 'punto-meteo', paint: {
       'circle-radius': 7, 'circle-color': '#111', 'circle-stroke-color': '#fff', 'circle-stroke-width': 3 } });
-    mapa!.on('click', (ev) => elegirPunto(ev.lngLat.lat, ev.lngLat.lng, true));
+    mapa!.on('click', (ev) => {
+      if (Date.now() - tPulsacionLarga < 800) return;   // el «click» que sigue a soltar la pulsación larga
+      elegirPunto(ev.lngLat.lat, ev.lngLat.lng, true);
+    });
     pintarSemaforoMapa();
     pintarPuntoMapa();
     document.body.dataset.mapa = 'listo';
@@ -221,17 +231,19 @@ $('#btn-aqui').addEventListener('click', async () => {
   if (p) abrirSitio(null, { lat: p.lat, lon: p.lon });
 });
 
-/** Pulsación larga (600 ms sin moverse) en el mapa → nuevo sitio en ese punto. */
+let tPulsacionLarga = 0;
+/** Pulsación larga (600 ms sin moverse) en el mapa → ficha «Acceso» de ese punto (desde ella, «Guardar sitio»). */
 function instalarPulsacionLarga(m: MapaML) {
-  let t = 0, origen: { x: number; y: number } | null = null;
-  const cancelar = () => { clearTimeout(t); origen = null; };
+  let t = 0, origen: { x: number; y: number } | null = null, disparada = false;
+  // Al soltar tras una pulsación larga se anota la hora: el «click» que MapLibre emite justo después se ignora.
+  const cancelar = () => { clearTimeout(t); origen = null; if (disparada) { disparada = false; tPulsacionLarga = Date.now(); } };
   const empezar = (e: { point: { x: number; y: number }; lngLat: LngLat; originalEvent: Event }) => {
     if ((e.originalEvent as TouchEvent).touches?.length > 1) return cancelar();
     if (m.getLayer('sitios') && m.queryRenderedFeatures([e.point.x, e.point.y], { layers: ['sitios'] }).length) return cancelar();
     origen = e.point;
     const ll = e.lngLat;
     clearTimeout(t);
-    t = window.setTimeout(() => { origen = null; navigator.vibrate?.(30); abrirSitio(null, { lat: ll.lat, lon: ll.lng }); }, 600);
+    t = window.setTimeout(() => { origen = null; disparada = true; tPulsacionLarga = Date.now(); navigator.vibrate?.(30); mostrarAcceso(ll.lat, ll.lng); }, 600);
   };
   const mover = (e: { point: { x: number; y: number } }) => {
     if (origen && Math.hypot(e.point.x - origen.x, e.point.y - origen.y) > 10) cancelar();
@@ -241,6 +253,153 @@ function instalarPulsacionLarga(m: MapaML) {
   m.on('dragstart', cancelar); m.on('zoomstart', cancelar);
   m.getCanvas().addEventListener('contextmenu', (e) => e.preventDefault());
 }
+
+// ---------------------------------------------------------------- ficha «Acceso» (pulsación larga)
+
+interface UltimoAcceso {
+  punto: { lat: number; lon: number };
+  estado: 'cargando' | 'ok' | 'fuera' | 'sin_dato' | 'sin_datos' | 'error';
+  acceso?: AccesoSitio;
+  traza?: { pasos: number; vertices: number; completa: boolean; bloques: number };
+  ms?: { consulta: number; traza: number; total: number };
+  lector?: unknown;
+}
+let ultimoAcceso: UltimoAcceso | null = null;
+let consultaAcceso = 0;
+
+function instalarCapaAcceso(m: MapaML) {
+  m.addSource('acceso', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+  m.addLayer({ id: 'acceso-traza-fondo', type: 'line', source: 'acceso', filter: ['==', ['geometry-type'], 'LineString'],
+    layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#fff', 'line-width': 7, 'line-opacity': 0.9 } });
+  m.addLayer({ id: 'acceso-traza', type: 'line', source: 'acceso', filter: ['==', ['geometry-type'], 'LineString'],
+    layout: { 'line-join': 'round' }, paint: { 'line-color': '#1565c0', 'line-width': 4, 'line-dasharray': [1.6, 1.2] } });
+  m.addLayer({ id: 'acceso-puntos', type: 'circle', source: 'acceso', filter: ['==', ['geometry-type'], 'Point'], paint: {
+    'circle-radius': ['match', ['get', 'tipo'], 'aparcamiento', 11, 7],
+    'circle-color': ['match', ['get', 'tipo'], 'aparcamiento', '#1565c0', '#111'],
+    'circle-stroke-color': '#fff', 'circle-stroke-width': 3 } });
+  m.addLayer({ id: 'acceso-p', type: 'symbol', source: 'acceso', filter: ['==', ['get', 'tipo'], 'aparcamiento'],
+    layout: { 'text-field': 'P', 'text-font': ['Noto Sans Medium'], 'text-size': 14, 'text-allow-overlap': true, 'text-ignore-placement': true },
+    paint: { 'text-color': '#fff' } });
+}
+
+let trazaAcceso: Feature[] = [];
+function pintarTrazaAcceso(features: Feature[]) {
+  trazaAcceso = features;
+  (mapa?.getSource('acceso') as GeoJSONSource | undefined)?.setData({ type: 'FeatureCollection', features });
+}
+
+function cerrarAcceso() {
+  consultaAcceso++;
+  $('#tarjeta-acceso').hidden = true;
+  pintarTrazaAcceso([]);
+}
+
+function estadoAcceso(texto: string, conDatos: boolean) {
+  $('#ta-estado').textContent = texto;
+  $('#ta-estado').hidden = !texto;
+  $('#ta-datos').hidden = !conDatos;
+  $<HTMLButtonElement>('#ta-coche').disabled = !conDatos;
+  $<HTMLButtonElement>('#ta-otra').disabled = !conDatos;
+}
+
+/** Ficha «Acceso» del punto: aparcamiento, tiempo y subida a pie y trazado aproximado (todo con los datos locales). */
+async function mostrarAcceso(lat: number, lon: number) {
+  const n = ++consultaAcceso;
+  const t0 = performance.now();
+  ultimoAcceso = { punto: { lat, lon }, estado: 'cargando' };
+  $('#tarjeta-zona').hidden = true;
+  $('#tarjeta-acceso').hidden = false;
+  $('#tarjeta-acceso').dataset.estado = 'cargando';
+  $('#ta-coord').textContent = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+  estadoAcceso('Calculando el acceso…', false);
+  pintarTrazaAcceso([{ type: 'Feature', properties: { tipo: 'destino' }, geometry: { type: 'Point', coordinates: [lon, lat] } }]);
+  const fin = (estado: UltimoAcceso['estado'], texto: string) => {
+    if (n !== consultaAcceso) return;
+    ultimoAcceso = { ...ultimoAcceso!, estado };
+    $('#tarjeta-acceso').dataset.estado = estado;
+    estadoAcceso(texto, false);
+  };
+  let d;
+  try { d = manifest ? await datosAcceso(manifest) : null; } catch (e) {
+    console.warn('acceso', e);
+    return fin('error', 'No se pudieron leer los datos de acceso. Si no tienes cobertura, descarga los mapas en Ajustes cuando la tengas.');
+  }
+  if (!d) return fin('sin_datos', navigator.onLine ? 'Esta versión de los mapas no trae datos de acceso.'
+    : 'Sin conexión y sin los datos de acceso descargados: descárgalos en Ajustes cuando tengas cobertura.');
+  try {
+    const c = await consultar(d.cab, d.lector, lat, lon);
+    const t1 = performance.now();
+    if (c.estado === 'fuera') return fin('fuera', 'Este punto queda fuera de la zona con datos de acceso.');
+    if (c.estado === 'sin_dato') return fin('sin_dato', 'No hay estimación de acceso para este punto: está fuera de la zona estudiada o en agua.');
+    const ap = aparcamiento(d.aparcamientos, c.origen);
+    if (!ap) return fin('sin_dato', 'No se encontró el aparcamiento de este punto en los datos.');
+    const tr = await trazar(d.cab, d.lector, c.celda);
+    const t2 = performance.now();
+    if (n !== consultaAcceso) return;
+    const vertices = simplificar(tr.celdas).map((x) => centroCelda(d.cab, x));
+    const linea: [number, number][] = [[lon, lat], ...vertices];
+    // Con la traza completa se aparca donde acaba (la celda de vía a la que llega); si se corta, en el punto
+    // representativo del aparcamiento (uno por vía y bloque de 300 m).
+    const [plon, plat] = tr.completa ? linea[linea.length - 1] : [ap.lon, ap.lat];
+    const via = nombreVia(ap);
+    const acceso: AccesoSitio = { lat: +plat.toFixed(5), lon: +plon.toFixed(5), via, tiempo_min: c.tiempo_min, subida_m: c.subida_m };
+    ultimoAcceso = { punto: { lat, lon }, estado: 'ok', acceso,
+      traza: { pasos: tr.celdas.length - 1, vertices: linea.length, completa: tr.completa, bloques: tr.bloquesLeidos },
+      ms: { consulta: Math.round(t1 - t0), traza: Math.round(t2 - t1), total: Math.round(t2 - t0) }, lector: { ...d.estado } };
+    $('#tarjeta-acceso').dataset.estado = 'ok';
+    $('#ta-via').textContent = via;
+    $('#ta-tiempo').textContent = textoTiempo(c.tiempo_min);
+    $('#ta-subida').textContent = textoSubida(c.subida_m);
+    estadoAcceso(tr.completa ? '' : 'El trazado se corta antes de llegar al coche: síguelo solo como orientación.', true);
+    pintarTrazaAcceso([
+      { type: 'Feature', properties: { tipo: 'traza' }, geometry: { type: 'LineString', coordinates: linea } },
+      { type: 'Feature', properties: { tipo: 'destino' }, geometry: { type: 'Point', coordinates: [lon, lat] } },
+      { type: 'Feature', properties: { tipo: 'aparcamiento', via }, geometry: { type: 'Point', coordinates: [acceso.lon, acceso.lat] } },
+    ]);
+    encuadrar(linea);
+  } catch (e) {
+    console.warn('acceso', e);
+    fin('error', 'No se pudieron leer los datos de acceso de este punto.');
+  }
+}
+
+/** Si el trazado no cabe en la vista (por encima de la ficha), la mueve sin acercar. */
+function encuadrar(linea: [number, number][]) {
+  if (!mapa) return;
+  const lons = linea.map((p) => p[0]), lats = linea.map((p) => p[1]);
+  const sw: [number, number] = [Math.min(...lons), Math.min(...lats)], ne: [number, number] = [Math.max(...lons), Math.max(...lats)];
+  const alto = $('#tarjeta-acceso').getBoundingClientRect().height;
+  const caja = mapa.getContainer().getBoundingClientRect();
+  const a = mapa.project(sw), b = mapa.project(ne);
+  const panel = document.querySelector('.panel-sup')?.getBoundingClientRect();
+  const arriba = panel ? Math.max(24, panel.bottom - caja.top + 16) : 24;
+  const dentro = (p: { x: number; y: number }) => p.x > 24 && p.x < caja.width - 24 && p.y > arriba && p.y < caja.height - alto - 40;
+  if (dentro(a) && dentro(b)) return;
+  mapa.fitBounds([sw, ne], { padding: { top: arriba + 20, left: 40, right: 40, bottom: alto + 50 }, maxZoom: mapa.getZoom(), duration: 400 });
+}
+
+/** https en otra pestaña; geo: con un enlace (así lo abre Android con la app elegida). */
+function abrirEnlace(url: string) {
+  if (url.startsWith('https:')) { window.open(url, '_blank', 'noopener'); return; }
+  const a = document.createElement('a'); a.href = url; a.rel = 'noopener';
+  document.body.append(a); a.click(); a.remove();
+}
+const ios = () => esIOS(navigator.userAgent, navigator.maxTouchPoints);
+
+$('#ta-cerrar').addEventListener('click', cerrarAcceso);
+$('#ta-coche').addEventListener('click', () => {
+  const a = ultimoAcceso?.acceso;
+  if (a) abrirEnlace(urlGoogleCoche(a.lat, a.lon));
+});
+$('#ta-otra').addEventListener('click', () => {
+  const a = ultimoAcceso?.acceso;
+  if (a) abrirEnlace(urlOtraApp(a.lat, a.lon, `Aparcamiento: ${a.via}`, ios()));
+});
+$('#ta-guardar').addEventListener('click', () => {
+  if (!ultimoAcceso) return;
+  const { punto, acceso } = ultimoAcceso;
+  abrirSitio(null, punto, { acceso });
+});
 
 // ---------------------------------------------------------------- formulario de sitio
 
@@ -272,15 +431,18 @@ function asegurarOpcion(sel: HTMLSelectElement, id: string) {
   sel.add(new Option(nombres[id] ?? id, id));
 }
 
-function abrirSitio(s: Sitio | null, punto?: { lat: number; lon: number }, previo?: { especie?: string; foto?: Blob }) {
+function abrirSitio(s: Sitio | null, punto?: { lat: number; lon: number }, previo?: { especie?: string; foto?: Blob; acceso?: AccesoSitio }) {
   const frm = $<HTMLFormElement>('#frm-sitio');
   frm.reset();
   fotoNueva = undefined;
   editando = s ?? { id: nuevoId(), lat: punto!.lat, lon: punto!.lon, estrellas: 1, nota: '',
-    especie: previo?.especie ?? ($<HTMLSelectElement>('#sel-especie').value || ''), fecha: new Date().toISOString() };
+    especie: previo?.especie ?? ($<HTMLSelectElement>('#sel-especie').value || ''), fecha: new Date().toISOString(),
+    ...(previo?.acceso ? { acceso: previo.acceso } : {}) };
   asegurarOpcion($<HTMLSelectElement>('#sitio-especie'), editando.especie);
   $('#tit-sitio').textContent = s ? 'Editar sitio' : 'Nuevo sitio';
   $('#coord-sitio').textContent = `${editando.lat.toFixed(5)}, ${editando.lon.toFixed(5)} · ${new Date(editando.fecha).toLocaleString('es-ES')}`;
+  $('#acceso-sitio').textContent = editando.acceso ? textoAccesoSitio(editando.acceso) : '';
+  $('#acceso-sitio').hidden = !editando.acceso;
   (frm.elements.namedItem('nota') as HTMLTextAreaElement).value = editando.nota;
   (frm.elements.namedItem('especie') as HTMLSelectElement).value = editando.especie;
   frm.querySelector<HTMLInputElement>(`input[name=estrellas][value="${editando.estrellas}"]`)!.checked = true;
@@ -320,6 +482,8 @@ $('#frm-sitio').addEventListener('submit', async (e) => {
 
 // ---------------------------------------------------------------- Mis sitios
 
+const textoAccesoSitio = (a: AccesoSitio) => `Aparcar en ${a.via} · ${textoTiempo(a.tiempo_min)} a pie, ${textoSubida(a.subida_m)} de subida`;
+
 async function refrescarSitios() {
   const l = await listarSitios();
   pintarSitiosMapa(l);
@@ -347,13 +511,17 @@ async function pintarLista(l?: Sitio[]) {
     li.append(est);
     if (s.foto) { const img = document.createElement('img'); const u = URL.createObjectURL(s.foto); urlsLista.push(u); img.src = u; img.alt = ''; li.append(img); }
     li.append(meta);
+    if (s.acceso) { const t = document.createElement('div'); t.className = 'acceso'; t.textContent = textoAccesoSitio(s.acceso); li.append(t); }
     if (s.nota) { const t = document.createElement('div'); t.className = 'txt'; t.textContent = s.nota; li.append(t); }
     const acc = document.createElement('div'); acc.className = 'acciones';
     const ver = document.createElement('button'); ver.className = 'btn'; ver.textContent = 'Ver en mapa';
     ver.onclick = () => { irA('p-mapa'); mapa?.flyTo({ center: [s.lon, s.lat], zoom: 15 }); };
     const ed = document.createElement('button'); ed.className = 'btn'; ed.textContent = 'Editar';
     ed.onclick = () => abrirSitio(s);
-    acc.append(ver, ed); li.append(acc);
+    const ir = document.createElement('button'); ir.className = 'btn'; ir.textContent = 'Cómo llegar';
+    ir.title = s.acceso ? 'En coche hasta el aparcamiento guardado (Google Maps)' : 'En coche hasta el sitio (Google Maps)';
+    ir.onclick = () => abrirEnlace(urlGoogleCoche(s.acceso?.lat ?? s.lat, s.acceso?.lon ?? s.lon));
+    acc.append(ver, ir, ed); li.append(acc);
     ul.append(li);
   }
 }
@@ -435,7 +603,7 @@ function elegirPunto(lat: number, lon: number, conTarjeta: boolean) {
   puntoSel = p;
   localStorage.setItem(CLAVE_PUNTO, String(p.id));
   pintarPuntoMapa();
-  if (conTarjeta) $('#tarjeta-zona').hidden = false;
+  if (conTarjeta) { if (!$('#tarjeta-acceso').hidden) cerrarAcceso(); $('#tarjeta-zona').hidden = false; }
   pintarTarjeta();
 }
 

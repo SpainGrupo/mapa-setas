@@ -61,6 +61,10 @@ describe('grupos morfológicos', () => {
     ['Boletus edulis', ['boletoide']], ['Suillus bellinii', ['boletoide']], ['Cantharellus cibarius', ['cantareloide']],
     ['Omphalotus olearius', ['cantareloide']], ['Macrolepiota procera', ['lepiotoide']], ['Lactarius deliciosus', ['lactarioide']],
     ['Leucoagaricus leucothites', ['amanitoide', 'lepiotoide']], ['Russula cyanoxantha', ['otros']], ['Trametes versicolor', ['otros']],
+    ['Terfezia arenaria', ['hipogeo']], ['Tuber aestivum', ['hipogeo']], ['Choiromyces meandriformis', ['hipogeo']],
+    ['Scleroderma verrucosum', ['hipogeo']], ['Rhizopogon obtextus', ['hipogeo']], ['Lycoperdon perlatum', ['amanitoide', 'hipogeo']],
+    ['Calvatia gigantea', ['amanitoide', 'hipogeo']], ['Phallus impudicus', ['amanitoide']],
+    ['Amanita ponderosa', ['amanitoide']], ['Pleurotus eryngii', ['otros']],
   ])('%s → %j', (n, g) => expect(gruposDe(n)).toEqual(g));
 });
 
@@ -225,6 +229,70 @@ describe('níscalos', () => {
   it('una especie afín (L. vinosus → ficha de L. deliciosus) activa también el grupo', () => {
     const e = evaluar([{ nombre: 'Lactarius vinosus', idGuia: 'lactarius_deliciosus' }], fichas, {});
     expect(e.grupos).toEqual(['lactarioide']);
+  });
+});
+
+describe('criadillas, trufas y Scleroderma (grupo hipogeo)', () => {
+  const RESP_CRIADILLA: Respuestas = { interior_gleba: 'crema_vetas', piel_dura_escamosa: 'no', cordones_base: 'no' };
+  it('una criadilla en el top-1 lista Scleroderma (grupo y «no confundir») y las mortales, con las preguntas del corte', () => {
+    const e = evaluar(cand('terfezia_arenaria'), fichas, {});
+    expect(e.grupos).toEqual(['hipogeo']);
+    const sc = e.peligrosas.find((p) => p.id === 'scleroderma_citrinum')!;
+    expect(sc).toMatchObject({ nivel: 'toxica', descartada: false, alerta: false });
+    expect(sc.origen).toEqual(expect.arrayContaining(['se confunde con Terfezia arenaria', `grupo: ${'Criadillas, trufas y bolas (sin sombrero ni pie)'}`]));
+    mortalesPresentes(e);
+    expect(e.preguntas.map((p) => p.id)).toEqual(expect.arrayContaining(['interior_gleba', 'piel_dura_escamosa', 'cordones_base']));
+  });
+  it('solo los tres rasgos de la criadilla descartan Scleroderma; las mortales siguen', () => {
+    const e = evaluar(cand('terfezia_arenaria'), fichas, RESP_CRIADILLA);
+    expect(descartadas(e)).toEqual(['scleroderma_citrinum']);
+    mortalesPresentes(e);
+    for (const q of Object.keys(RESP_CRIADILLA)) {
+      expect(noDescartadas(evaluar(cand('terfezia_arenaria'), fichas, { ...RESP_CRIADILLA, [q]: NO_SE }))).toContain('scleroderma_citrinum');
+    }
+    expect(noDescartadas(evaluar(cand('terfezia_arenaria'), fichas, { ...RESP_CRIADILLA, interior_gleba: 'blanco_liso' })))
+      .toContain('scleroderma_citrinum');
+  });
+  it('interior negro violáceo → alerta TÓXICA de Scleroderma, que ya no se descarta', () => {
+    const e = evaluar(cand('terfezia_arenaria'), fichas, { ...RESP_CRIADILLA, interior_gleba: 'negro_violaceo' });
+    expect(e.alertas).toEqual([expect.objectContaining({ nivel: 'toxica', especies: ['scleroderma_citrinum'] })]);
+    expect(e.peligrosas.find((p) => p.id === 'scleroderma_citrinum')).toMatchObject({ descartada: false, alerta: true });
+  });
+  it('piel dura y cordones → alerta aunque el interior parezca de criadilla', () => {
+    const e = evaluar(cand('scleroderma_citrinum'), fichas, { interior_gleba: 'crema_vetas', piel_dura_escamosa: 'si', cordones_base: 'si' });
+    expect(e.alertas.map((a) => a.especies)).toEqual([['scleroderma_citrinum']]);
+    expect(noDescartadas(e)[0]).toBe('amanita_phalloides');
+    expect(noDescartadas(e)).toContain('scleroderma_citrinum');
+  });
+  it('dibujo de una seta dentro → es un huevo: alerta MORTAL de phalloides y verna', () => {
+    const e = evaluar(cand('terfezia_arenaria'), fichas, { interior_gleba: 'silueta_seta' });
+    expect(e.alertas[0]).toMatchObject({ nivel: 'mortal', especies: ['amanita_phalloides', 'amanita_verna'] });
+    expect(noDescartadas(e).slice(0, 2).sort()).toEqual(['amanita_phalloides', 'amanita_verna']);
+  });
+  it('un pedo de lobo o una Scleroderma fuera de la guía activan el grupo', () => {
+    expect(noDescartadas(evaluar([{ nombre: 'Lycoperdon perlatum' }], fichas, {}))).toContain('scleroderma_citrinum');
+    expect(noDescartadas(evaluar([{ nombre: 'Scleroderma areolatum' }], fichas, {}))).toContain('scleroderma_citrinum');
+  });
+});
+
+describe('gurumelo (Amanita ponderosa) y seta de cardo', () => {
+  it('el gurumelo es amanitoide y lista A. verna y A. phalloides «se confunde con»; sus rasgos no las descartan', () => {
+    const resp: Respuestas = { interior_huevo: 'blanco', laminas_pie_color: 'blancos', volva_saco: 'si' };
+    const e = evaluar(cand('amanita_ponderosa'), fichas, resp);
+    expect(e.grupos).toEqual(['amanitoide']);
+    for (const id of ['amanita_verna', 'amanita_phalloides']) {
+      const p = e.peligrosas.find((x) => x.id === id)!;
+      expect(p).toMatchObject({ descartada: false, alerta: true });
+      expect(p.origen).toContain('se confunde con Amanita ponderosa');
+    }
+    expect(e.alertas.every((a) => a.nivel === 'mortal')).toBe(true);
+    expect(noDescartadas(evaluar(cand('amanita_ponderosa'), fichas, { laminas_pie_color: 'otro', volva_saco: 'si' })))
+      .toEqual(expect.arrayContaining(['amanita_verna', 'amanita_phalloides']));
+  });
+  it('la seta de cardo va a «otros» y aun así salen las mortales', () => {
+    const e = evaluar(cand('pleurotus_eryngii'), fichas, {});
+    expect(e.grupos).toEqual(['otros']);
+    mortalesPresentes(e);
   });
 });
 

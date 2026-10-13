@@ -7,7 +7,11 @@ export interface Sitio {
   especie: string;        // id de especie ('' = sin especificar)
   fecha: string;          // ISO 8601
   foto?: Blob;
+  /** Aparcamiento más cercano a pie (ficha «Acceso»), si el sitio se guardó desde ella. */
+  acceso?: AccesoSitio;
 }
+
+export interface AccesoSitio { lat: number; lon: number; via: string; tiempo_min: number; subida_m: number }
 
 import type { Reglas } from './semaforo';
 
@@ -21,6 +25,10 @@ export interface Manifest {
   zoom: { idoneidad: [number, number]; sombreado: [number, number]; base_max: number };
   base: string | null;
   meteo?: { puntos: string; zonas: string } | null;
+  /** Acceso a pie desde el coche (pipeline acceso.py): cabecera JSON, binario (.bin o .bin.gz) y aparcamientos. */
+  acceso?: { cabecera: string; datos: string; aparcamientos: string } | null;
+  /** Rutas y senderos (GR/PR/SL), PMTiles con la capa 'rutas'. */
+  rutas?: string | null;
   archivos: { nombre: string; bytes: number }[];
   total_bytes: number;
   /** Reconocedor offline (modelo/construir.py): descarga opcional aparte, no cuenta en total_bytes. */

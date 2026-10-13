@@ -1,6 +1,6 @@
 import * as maplibregl from 'maplibre-gl';
 import urlTrabajador from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
-import { type Map as MapaML, type MapLayerMouseEvent, type StyleSpecification, type LayerSpecification } from 'maplibre-gl';
+import { type Map as MapaML, type MapMouseEvent, type StyleSpecification, type LayerSpecification } from 'maplibre-gl';
 import { PMTiles, Protocol } from 'pmtiles';
 import { layers, namedFlavor } from '@protomaps/basemaps';
 import { FuenteOpfsHttp } from './fuente';
@@ -38,7 +38,58 @@ function pm(nombre: string): string {
 // leyendo los archivos antiguos, porque la descarga va a un directorio de staging.
 export function origenes() { return Object.fromEntries([...fuentes].map(([k, f]) => [k.split('/').pop(), { origen: f.origen, ...f.lecturas }])); }
 
-function estilo(conMeteo: boolean): StyleSpecification {
+/** Colores de las marcas de sendero (GR rojo y blanco, PR amarillo y blanco, SL verde y blanco). */
+export const COLORES_RUTA: Record<string, string> = { GR: '#d1262b', PR: '#e8b400', SL: '#23913b', otro: '#6f6f6f' };
+export const NOMBRE_TIPO_RUTA: Record<string, string> = {
+  GR: 'Gran Recorrido (GR)', PR: 'Pequeño Recorrido (PR)', SL: 'Sendero Local (SL)', otro: 'Otro sendero o camino',
+};
+export const CAPAS_RUTAS = ['rutas-fondo', 'rutas-marca', 'rutas-otros', 'rutas-etiqueta'];
+const MARCADAS: any = ['in', ['get', 'tipo'], ['literal', ['GR', 'PR', 'SL']]];
+
+function capasRutas(): { lineas: LayerSpecification[]; etiqueta: LayerSpecification } {
+  const oculta = { visibility: 'none' as const };
+  const ancho = (a: number, b: number): any => ['interpolate', ['linear'], ['zoom'], 8, a, 14, b];
+  return {
+    lineas: [
+      { id: 'rutas-fondo', type: 'line', source: 'rutas', 'source-layer': 'rutas', filter: MARCADAS,
+        layout: { ...oculta, 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#ffffff', 'line-width': ancho(2.5, 7), 'line-opacity': 0.95 } },
+      { id: 'rutas-marca', type: 'line', source: 'rutas', 'source-layer': 'rutas', filter: MARCADAS,
+        layout: { ...oculta, 'line-join': 'round' },
+        paint: { 'line-color': ['match', ['get', 'tipo'], 'GR', COLORES_RUTA.GR, 'PR', COLORES_RUTA.PR, COLORES_RUTA.SL],
+          'line-width': ancho(1.5, 4), 'line-dasharray': [2, 1.4] } },
+      { id: 'rutas-otros', type: 'line', source: 'rutas', 'source-layer': 'rutas', filter: ['!', MARCADAS],
+        layout: { ...oculta, 'line-join': 'round' },
+        paint: { 'line-color': COLORES_RUTA.otro, 'line-width': ancho(1, 2.5), 'line-dasharray': [3, 1.5], 'line-opacity': 0.85 } },
+    ],
+    etiqueta: { id: 'rutas-etiqueta', type: 'symbol', source: 'rutas', 'source-layer': 'rutas', minzoom: 13,
+      layout: { ...oculta, 'symbol-placement': 'line', 'text-field': ['coalesce', ['get', 'ref'], ['get', 'name'], ''],
+        'text-font': ['Noto Sans Medium'], 'text-size': 12, 'symbol-spacing': 320 },
+      paint: { 'text-color': ['match', ['get', 'tipo'], 'GR', '#9e1418', 'PR', '#7a5d00', 'SL', '#14612a', '#444'],
+        'text-halo-color': '#fff', 'text-halo-width': 2 } },
+  };
+}
+
+function popupRuta(p: Record<string, unknown>): HTMLElement {
+  const div = document.createElement('div');
+  div.className = 'popup-ruta';
+  const tipo = String(p.tipo ?? 'otro');
+  const b = document.createElement('strong'); b.textContent = String(p.name || p.ref || 'Sendero sin nombre');
+  const linea = (t: string) => { const d = document.createElement('div'); d.textContent = t; return d; };
+  const marca = document.createElement('span'); marca.className = 'marca-ruta'; marca.dataset.tipo = tipo;
+  marca.style.setProperty('--c', COLORES_RUTA[tipo] ?? COLORES_RUTA.otro);
+  const t = linea(`${p.ref && p.name ? `${p.ref} · ` : ''}${NOMBRE_TIPO_RUTA[tipo] ?? NOMBRE_TIPO_RUTA.otro}`);
+  t.prepend(marca);
+  div.append(b, t);
+  if (p.dificultad) div.append(linea(`Dificultad: ${p.dificultad}`));
+  const f = String(p.fuente ?? '');
+  const fu = linea(`Fuente: ${f === 'rediam' ? 'REDIAM (Junta de Andalucía)' : f === 'osm' ? 'OpenStreetMap' : f || '—'}`);
+  fu.className = 'aviso';
+  div.append(fu);
+  return div;
+}
+
+function estilo(conMeteo: boolean, archivoRutas: string | null): StyleSpecification {
   const raiz = new URL('./', document.baseURI).href;
   const base = layers('protomaps', namedFlavor('light'), { lang: 'es' }) as LayerSpecification[];
   const primerSimbolo = base.findIndex((l) => l.type === 'symbol');
@@ -54,6 +105,8 @@ function estilo(conMeteo: boolean): StyleSpecification {
     { id: 'protegidos-linea', type: 'line', source: 'protegidos', 'source-layer': 'protegidos',
       paint: { 'line-color': '#6a1b9a', 'line-width': 2, 'line-dasharray': [3, 2] } },
   ];
+  const rutas = archivoRutas ? capasRutas() : null;
+  if (rutas) propias.push(...rutas.lineas);
   const etiquetasCurvas: LayerSpecification = {
     id: 'curvas-cota', type: 'symbol', source: 'curvas', 'source-layer': 'curvas', minzoom: 13,
     filter: ['get', 'principal'],
@@ -72,9 +125,10 @@ function estilo(conMeteo: boolean): StyleSpecification {
       protegidos: { type: 'vector', url: pm('protegidos.pmtiles') },
       pnoa: { type: 'raster', tiles: [URL_PNOA], tileSize: 256, maxzoom: 19, attribution: ATRIBUCION_PNOA },
       ...(conMeteo ? { meteo_zonas: { type: 'vector' as const, url: pm('meteo_zonas.pmtiles') } } : {}),
+      ...(archivoRutas ? { rutas: { type: 'vector' as const, url: pm(archivoRutas) } } : {}),
     },
     layers: [{ id: 'pnoa', type: 'raster', source: 'pnoa', layout: { visibility: 'none' } }, ...base.slice(0, primerSimbolo), ...propias.filter((l) => conMeteo || l.id !== 'semaforo'),
-      ...base.slice(primerSimbolo), etiquetasCurvas],
+      ...base.slice(primerSimbolo), etiquetasCurvas, ...(rutas ? [rutas.etiqueta] : [])],
   };
 }
 
@@ -83,7 +137,7 @@ export function crearMapa(contenedor: HTMLElement, m: Manifest): MapaML {
   const mx = (e - o) * 0.25, my = (n - s) * 0.25;
   const mapa = new maplibregl.Map({
     container: contenedor,
-    style: estilo(!!m.meteo),
+    style: estilo(!!m.meteo, m.rutas ?? null),
     bounds: [[o, s], [e, n]],
     maxBounds: [[o - mx, s - my], [e + mx, n + my]],
     minZoom: 7,
@@ -95,8 +149,16 @@ export function crearMapa(contenedor: HTMLElement, m: Manifest): MapaML {
   mapa.touchZoomRotate.disableRotation();
   mapa.once('load', () => contenedor.querySelector('.maplibregl-compact-show')?.classList.remove('maplibregl-compact-show'));
   mapa.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-left');
-  mapa.on('click', 'protegidos-relleno', (ev: MapLayerMouseEvent) => {
-    const f = ev.features?.[0];
+  // Un solo manejador: primero senderos (con margen de 10 px, las líneas son finas) y si no, espacio protegido.
+  mapa.on('click', (ev: MapMouseEvent) => {
+    const visibles = CAPAS_RUTAS.slice(0, 3).filter((id) => mapa.getLayer(id) && mapa.getLayoutProperty(id, 'visibility') === 'visible');
+    const { x, y } = ev.point;
+    const ruta = visibles.length ? mapa.queryRenderedFeatures([[x - 10, y - 10], [x + 10, y + 10]], { layers: visibles })[0] : undefined;
+    if (ruta) {
+      new maplibregl.Popup({ maxWidth: '280px', className: 'popup-rutas' }).setLngLat(ev.lngLat).setDOMContent(popupRuta(ruta.properties)).addTo(mapa);
+      return;
+    }
+    const f = mapa.getLayer('protegidos-relleno') ? mapa.queryRenderedFeatures(ev.point, { layers: ['protegidos-relleno'] })[0] : undefined;
     if (!f) return;
     const div = document.createElement('div');
     div.className = 'popup-enp';

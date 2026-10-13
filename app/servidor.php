@@ -1,9 +1,9 @@
 <?php
 // Router para `php -S 127.0.0.1:8765 -t dist servidor.php`: el servidor integrado de PHP no
-// atiende peticiones Range, y PMTiles las necesita. Solo intercepta los .pmtiles.
+// atiende peticiones Range, y PMTiles y acceso.bin las necesitan. Solo intercepta los .pmtiles y los .bin.
 $ruta = rawurldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 if (str_ends_with($ruta, '.webmanifest')) { header('Content-Type: application/manifest+json'); return false; }
-if (!str_ends_with($ruta, '.pmtiles')) return false;
+if (!str_ends_with($ruta, '.pmtiles') && !str_ends_with($ruta, '.bin')) return false;
 if (str_contains($ruta, '..')) { http_response_code(400); return true; }
 $f = realpath($_SERVER['DOCUMENT_ROOT'] . $ruta);
 if ($f === false || !is_file($f)) { http_response_code(404); return true; }

@@ -14,3 +14,14 @@ def test_poligono_zona_une_cuadrados():
     pol = poligono_zona([(300_000, 4_000_000), (305_000, 4_000_000)], paso_m=5000, crs_entrada="EPSG:25830")
     assert abs(pol.area - 10_000 * 5_000) < 1
     assert pol.contains(Point(302_500, 4_000_000))
+
+
+def test_cerrar_zona_une_huecos_y_rellena_agujeros():
+    from shapely.geometry import box, Polygon
+    from setas_pipeline.zona import cerrar_zona
+    # dos bloques separados 4 km → uno solo; un agujero interior → relleno
+    a, b = box(0, 0, 10_000, 10_000), box(14_000, 0, 24_000, 10_000)
+    z = cerrar_zona(a.union(b), distancia_m=5000)
+    assert z.geom_type == "Polygon" and z.contains(Point(12_000, 5_000))
+    con_agujero = Polygon(box(0, 0, 30_000, 30_000).exterior, [box(10_000, 10_000, 20_000, 20_000).exterior.coords])
+    assert cerrar_zona(con_agujero, 5000).contains(Point(15_000, 15_000))

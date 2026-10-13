@@ -4,7 +4,7 @@ import json, time
 from pathlib import Path
 import requests
 from pyproj import Transformer
-from shapely.geometry import box, mapping
+from shapely.geometry import box, mapping, Polygon
 from shapely.ops import unary_union
 from .malla import Malla, CRS
 
@@ -54,10 +54,19 @@ def poligono_zona(puntos, paso_m=5000, crs_entrada="EPSG:4326"):
     return unary_union([box(x - h, y - h, x + h, y + h) for x, y in puntos])
 
 
+def cerrar_zona(pol, distancia_m=5000):
+    """Cierre morfológico + relleno de agujeros: la rejilla de muestreo deja huecos
+    en la sierra (puntos que OSRM ajusta a una carretera lejana) aunque los pueblos
+    de dentro estén a <2 h (p. ej. Grazalema)."""
+    cerrado = pol.buffer(distancia_m, join_style="mitre").buffer(-distancia_m, join_style="mitre")
+    partes = getattr(cerrado, "geoms", [cerrado])
+    return unary_union([Polygon(p.exterior) for p in partes])
+
+
 def construir_zona(out_dir: Path) -> Malla:
     pts = puntos_muestreo()
     res = consultar_osrm(ORIGEN, pts)
-    pol = poligono_zona(filtrar_alcanzables(pts, res))
+    pol = cerrar_zona(poligono_zona(filtrar_alcanzables(pts, res)))
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "zona.geojson").write_text(json.dumps(
         {"type": "FeatureCollection", "crs": {"type": "name", "properties": {"name": CRS}},

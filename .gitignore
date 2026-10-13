@@ -11,3 +11,4 @@ app/e2e/capturas/error.png
 app/public/guia
 modelo/.venv/
 modelo/.tmp/
+app/coverage/

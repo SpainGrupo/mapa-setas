@@ -9,15 +9,18 @@
     "build": "node scripts/enlazar-guia.mjs && tsc --noEmit && vite build && node scripts/enlazar-datos.mjs dist",
     "servir": "php -S 127.0.0.1:8765 -t dist servidor.php",
     "test": "vitest run",
-    "e2e": "node e2e/offline.e2e.mjs"
+    "e2e": "node e2e/offline.e2e.mjs",
+    "cobertura": "vitest run --coverage --coverage.include=src/seguridad.ts --coverage.include=src/reconocer-nucleo.ts --coverage.thresholds.100"
   },
   "dependencies": {
     "@protomaps/basemaps": "5.7.2",
     "idb-keyval": "6.3.0",
     "maplibre-gl": "6.14.0",
+    "onnxruntime-web": "1.20.1",
     "pmtiles": "4.5.0"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "5.0.4",
     "jsdom": "30.1.2",
     "typescript": "7.0.2",
     "vite": "8.3.4",

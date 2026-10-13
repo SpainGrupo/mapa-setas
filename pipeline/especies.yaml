@@ -3,7 +3,7 @@
 boletus_aereus:
   nombre: Boletus aereus
   arboles: {alcornoque: 1.0, castano: 0.9, encina: 0.8, quejigo: 0.7}
-  altitud: {min: 150, opt_min: 400, opt_max: 900, max: 1200}
+  altitud: {min: 0, opt_min: 300, opt_max: 900, max: 1200}   # calibrado 2026-10-13: alcornocal costero 15-150 m
   orientacion: indiferente
   suelo: {acido: 1.0, otro: 0.5, basico: 0.4, ultrabasico: 0.3, desconocido: 0.6}
 boletus_aestivalis:
@@ -26,7 +26,7 @@ boletus_pinophilus:
   suelo: {acido: 1.0, otro: 0.6, basico: 0.4, ultrabasico: 0.4, desconocido: 0.6}
 amanita_caesarea:
   nombre: Amanita caesarea
-  arboles: {alcornoque: 1.0, castano: 1.0, encina: 0.8, quejigo: 0.7}
-  altitud: {min: 100, opt_min: 300, opt_max: 900, max: 1200}
+  arboles: {alcornoque: 1.0, castano: 1.0, encina: 0.8, quejigo: 0.7, pino: 0.4}   # pino: pinares con alcornoque/encina de sotobosque
+  altitud: {min: 0, opt_min: 200, opt_max: 900, max: 1200}
   orientacion: solana
   suelo: {acido: 1.0, otro: 0.5, basico: 0.3, ultrabasico: 0.3, desconocido: 0.6}

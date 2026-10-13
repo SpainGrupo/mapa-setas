@@ -5,7 +5,10 @@
 // pestaña Zona con los estados esperados; y sin conexión, tras recargar, la Zona muestra la caché («actualizado hace»).
 // Fase 4: Guía → buscar «cesar» → ficha de A. caesarea (aviso de comestible y caja de huevo) → comparativa con
 // A. phalloides → su ficha dice MORTAL; sin conexión y tras recargar, la guía y sus fotos siguen cargando.
-// La app solo expone window.__setas con ?e2e=1.
+// Fase 5: descarga aparte del reconocedor (OPFS) → sin conexión, foto CC de A. caesarea → top-5 offline → A. phalloides
+// y A. verna «no descartadas» hasta la pregunta del huevo; interior blanco → alerta roja; «Guardar sitio» rellena especie,
+// foto y GPS; foto de A. phalloides. Fase 6: con conexión, Worker de Gemini simulado (403/413/429/503 y respuesta buena).
+// La app solo expone window.__setas con ?e2e=1 (y solo entonces acepta la URL del Worker desde localStorage).
 // Requiere `npm run build` y el servidor: php -S 127.0.0.1:8765 -t dist servidor.php
 import { createRequire } from 'node:module';
 import { mkdirSync, readFileSync } from 'node:fs';
@@ -19,6 +22,10 @@ mkdirSync(CAPTURAS, { recursive: true });
 const PUNTO = { latitude: 36.589, longitude: -5.244 };   // máximo local de idoneidad de caesarea
 const FIXTURE = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'fixtures/open-meteo.json'), 'utf8'));
 const NOTA = 'Ñandú & <castaños> "junto" al \'arroyo\' ✓';
+const FOTOS_GUIA = join(dirname(fileURLToPath(import.meta.url)), '../../guia/fotos');
+const URL_WORKER = 'https://setas-worker.e2e.invalid/identificar';
+const PROHIBIDO = /comestible|se puede comer/i;
+const informe = {};
 
 let paso = 0;
 const ok = (m) => console.log(`✔ ${++paso}. ${m}`);
@@ -148,6 +155,29 @@ try {
   await p.locator('#zona-grafico').scrollIntoViewIfNeeded();
   await captura('09-zona-grafico.png');
 
+  // Fase 5: descarga aparte y opcional del reconocedor (no entra en la de mapas).
+  await p.getByRole('button', { name: /Ajustes/ }).click();
+  const btnModelo = p.locator('#btn-modelo');
+  const txtModelo = await btnModelo.textContent();
+  comprobar(/^Descargar reconocedor sin cobertura \(≈\d+ MB\)$/.test(txtModelo), `botón del reconocedor: «${txtModelo}»`);
+  comprobar(/Pendiente de configurar/.test(await p.locator('#estado-gemini').textContent()), 'Ajustes: segunda opinión «Pendiente de configurar» sin VITE_WORKER_URL');
+  const mapasAntes = await p.evaluate(() => JSON.parse(localStorage.getItem('setas:mapas-descargados')).archivos);
+  comprobar(!Object.keys(mapasAntes).some((n) => /onnx|wasm|texto_f16/.test(n)), 'la descarga de mapas no incluye el reconocedor');
+  const t0Modelo = Date.now();
+  await btnModelo.click();
+  await p.waitForFunction(() => /Descargado el/.test(document.querySelector('#estado-modelo').textContent), null, { timeout: 600000 });
+  const opfsModelo = await p.evaluate(async () => {
+    const raiz = await navigator.storage.getDirectory();
+    const d = await raiz.getDirectoryHandle('modelo');
+    const r = {};
+    for await (const [n, h] of d.entries()) r[n] = (await h.getFile()).size;
+    return r;
+  });
+  informe.modelo = opfsModelo;
+  comprobar(opfsModelo['vision_int8.onnx'] > 80e6 && opfsModelo['ort-wasm-simd-threaded.wasm'] > 5e6 && Object.keys(opfsModelo).length === 4,
+    `reconocedor en OPFS en ${((Date.now() - t0Modelo) / 1000).toFixed(1)} s: ${Object.entries(opfsModelo).map(([n, b]) => `${n} ${(b / 1e6).toFixed(1)} MB`).join(', ')}`);
+  await captura('reconocer-ajustes.png');
+
   // Fase 4: Guía de especies.
   await p.waitForSelector('body[data-guia-fotos=completas]', { state: 'attached', timeout: 180000 });
   const enCache = await p.evaluate(async () => (await (await caches.open('guia-fotos')).keys()).length);
@@ -205,6 +235,78 @@ try {
   const dims = await foto.evaluate((i) => ({ ok: i.complete, w: i.naturalWidth, src: i.getAttribute('src') }));
   comprobar(dims.ok && dims.w > 0, `sin conexión la foto sale de la caché (${dims.src}, ${dims.w} px de ancho)`);
   await captura('guia-offline.png');
+
+  // Fase 5: reconocedor sin conexión.
+  await p.getByRole('button', { name: /Reconocer/ }).click();
+  comprobar(/Reconocedor listo/.test(await p.locator('#rec-estado').textContent()), 'Reconocer sin conexión: «Reconocedor listo»');
+  const analizar = async (archivo) => {
+    await p.evaluate(() => { delete document.body.dataset.reconocer; });
+    await p.locator('#rec-galeria').setInputFiles(join(FOTOS_GUIA, archivo));
+    await p.locator('#rec-analizar').click();
+    await p.waitForSelector('body[data-reconocer=resultado]', { state: 'attached', timeout: 180000 });
+    return p.evaluate(() => ({
+      ms: Number(document.body.dataset.reconocerMs), inferencia: document.body.dataset.reconocerMsInferencia,
+      carga: Number(document.body.dataset.reconocedorCargaMs ?? 0),
+      top5: [...document.querySelectorAll('.rec-cand')].map((l) => ({ nombre: l.dataset.nombre, id: l.dataset.id, banda: l.dataset.banda })),
+    }));
+  };
+  const noDescartadas = () => p.$$eval('#rec-peligrosas .peligrosa', (ls) => ls.map((l) => l.dataset.id));
+  const responder = async (q, v) => {
+    await p.locator(`fieldset[data-pregunta=${q}] input[value=${v}]`).check();
+  };
+  const rc = await analizar('amanita_caesarea_1.jpg');
+  informe.caesarea = rc;
+  comprobar(rc.top5.length === 5 && rc.top5[0].id === 'amanita_caesarea',
+    `foto de A. caesarea sin red: top-5 ${rc.top5.map((c) => `${c.nombre} (${c.banda})`).join(', ')} · ${rc.ms} ms`);
+  comprobar(await p.locator('.rec-cand .banda').first().textContent() === 'Parecido alto'
+    && !/\d+\s*%/.test(await p.locator('#rec-candidatos').textContent()), 'parecido cualitativo, sin porcentajes');
+  const nd0 = await noDescartadas();
+  comprobar(nd0.includes('amanita_phalloides') && nd0.includes('amanita_verna') && nd0.indexOf('amanita_phalloides') < 2,
+    `A. phalloides y A. verna «no descartadas» en rojo (${nd0.join(', ')})`);
+  comprobar(/NO DESCARTADA/.test(await p.locator('#rec-peligrosas .peligrosa[data-id=amanita_phalloides]').textContent()), 'phalloides marcada «NO DESCARTADA»');
+  const textoRec = async () => p.locator('#p-reconocer').evaluate((e) => e.innerText);
+  comprobar(!PROHIBIDO.test(await textoRec()), 'la pantalla de resultado no dice «comestible» ni «se puede comer»');
+  comprobar((await p.locator('#rec-aviso-final').textContent()) === 'No consumas ninguna seta sin la confirmación de un experto.', 'aviso fijo del experto en el resultado');
+  comprobar(await p.locator('#rec-gemini').isHidden(), 'sin Worker configurado no hay botón de segunda opinión');
+  await p.locator('#rec-resultado').scrollIntoViewIfNeeded();
+  await captura('reconocer-caesarea.png');
+  await responder('interior_huevo', 'no_se');
+  await responder('volva_saco', 'no_se');
+  comprobar((await noDescartadas()).includes('amanita_phalloides'), '«No sé» no descarta phalloides');
+  await responder('interior_huevo', 'naranja_amarillo');
+  const nd1 = await noDescartadas();
+  const desc1 = await p.$$eval('#rec-descartadas li', (ls) => ls.map((l) => l.dataset.id));
+  comprobar(!nd1.includes('amanita_phalloides') && !nd1.includes('amanita_verna') && desc1.includes('amanita_phalloides'),
+    `interior naranja y amarillo: phalloides y verna pasan a «descartadas por tus respuestas» (quedan: ${nd1.join(', ')})`);
+  comprobar(await p.locator('#rec-aviso-final').isVisible() && !PROHIBIDO.test(await textoRec()), 'el aviso del experto sigue tras descartar');
+  await p.locator('fieldset[data-pregunta=interior_huevo]').scrollIntoViewIfNeeded();
+  await captura('reconocer-huevo-naranja.png');
+  await responder('interior_huevo', 'blanco');
+  await p.waitForSelector('body[data-alerta=mortal]', { state: 'attached' });
+  const alerta = p.locator('#rec-alertas .alerta-roja');
+  comprobar(await alerta.isVisible() && /MORTAL/.test(await alerta.textContent()) && (await noDescartadas()).slice(0, 2).sort().join() === 'amanita_phalloides,amanita_verna',
+    'interior blanco: alerta roja MORTAL y phalloides/verna de nuevo arriba');
+  await alerta.scrollIntoViewIfNeeded();
+  await captura('reconocer-alerta.png');
+
+  await p.locator('#rec-guardar').click();
+  await p.locator('#dlg-sitio[open]').waitFor();
+  await p.locator('#foto-sitio:not([hidden])').waitFor();
+  const pre = await p.evaluate(() => ({ especie: document.querySelector('#sitio-especie').value, coord: document.querySelector('#coord-sitio').textContent }));
+  comprobar(pre.especie === 'amanita_caesarea' && pre.coord.startsWith('36.58900, -5.24400'), `«Guardar sitio» rellena especie, foto y GPS (${pre.especie}, ${pre.coord})`);
+  await p.locator('textarea[name=nota]').fill('Desde Reconocer');
+  await captura('reconocer-guardar.png');
+  await p.locator('#btn-sitio-guardar').click();
+  await p.locator('#dlg-sitio').waitFor({ state: 'hidden' });
+
+  await p.locator('.miniatura .btn-x').first().click();
+  const rp = await analizar('amanita_phalloides_1.jpg');
+  informe.phalloides = rp;
+  const nd2 = await noDescartadas();
+  comprobar(rp.top5[0].id === 'amanita_phalloides' && nd2[0] === 'amanita_phalloides',
+    `foto de A. phalloides sin red: top-5 ${rp.top5.map((c) => `${c.nombre} (${c.banda})`).join(', ')} · ${rp.ms} ms; primera peligrosa ${nd2[0]}`);
+  await p.locator('#rec-resultado').scrollIntoViewIfNeeded();
+  await captura('reconocer-phalloides.png');
   const consultasAntes = consultasMeteo;
   await p.getByRole('button', { name: /Zona/ }).click();
   await p.locator('#lista-semaforo .semaforo-fila').first().waitFor();
@@ -240,6 +342,13 @@ try {
   await p.locator('#guia-ficha[data-id=amanita_caesarea]').waitFor();
   comprobar(await p.locator('#p-guia').isVisible(), '«Ver ficha» en el panel del mapa abre la ficha de la especie elegida');
   await p.getByRole('button', { name: /Mapa/ }).click();
+  await p.selectOption('#sel-especie', 'boletus_aestivalis');
+  await verFicha.waitFor();
+  await verFicha.click();
+  await p.locator('#guia-ficha[data-id=boletus_reticulatus]').waitFor();
+  ok('«Ver ficha» de Boletus aestivalis abre la ficha de B. reticulatus (sinónimo)');
+  await p.getByRole('button', { name: /Mapa/ }).click();
+  await p.selectOption('#sel-especie', 'amanita_caesarea');
 
   await p.getByRole('button', { name: 'Guardar sitio aquí' }).click();
   await p.locator('#dlg-sitio[open]').waitFor();
@@ -269,6 +378,71 @@ try {
   comprobar(await p.locator('#lista-creditos li').count() === 78, 'Créditos de fotos: 78 entradas con autor y licencia');
   await p.locator('#creditos-fotos').scrollIntoViewIfNeeded();
   await captura('guia-creditos.png');
+
+  // Fase 6: segunda opinión con el Worker simulado (la URL de pruebas solo se acepta con ?e2e=1).
+  await p.evaluate((u) => localStorage.setItem('setas:e2e-worker-url', u), URL_WORKER);
+  await ctx.setOffline(false);
+  await p.reload();
+  await mapaListo();
+  await p.getByRole('button', { name: /Ajustes/ }).click();
+  comprobar(/Configurada/.test(await p.locator('#estado-gemini').textContent()), 'Ajustes: segunda opinión configurada');
+  const peticiones = [];
+  const errorWorker = (status, codigo) => ({ status, contentType: 'application/json', body: JSON.stringify({ error: { codigo, mensaje: 'x' } }) });
+  const respuestas = [errorWorker(403, 'origen_no_permitido'), errorWorker(413, 'carga_demasiado_grande'),
+    errorWorker(429, 'limite_diario_superado'), errorWorker(503, 'gemini_saturado'),
+    { status: 200, contentType: 'application/json', body: JSON.stringify({
+      candidatos: [{ nombre_cientifico: 'Amanita caesarea', nombre_comun: 'oronja', confianza: 'media',
+        rasgos_observados: ['sombrero naranja', 'excelente comestible'], rasgos_que_faltan_ver: ['base del pie con la volva'] }],
+      peligrosas_posibles: [{ nombre_cientifico: 'Amanita phalloides', motivo: 'el huevo cerrado es igual por fuera' },
+        { nombre_cientifico: 'Amanita virosa', motivo: 'amanita blanca mortal' }],
+      fotos_recomendadas: ['corte vertical del huevo'], aviso: 'Se puede comer' }) }];
+  await ctx.route(URL_WORKER, async (r) => {
+    const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type', 'access-control-allow-methods': 'POST, OPTIONS' };
+    if (r.request().method() === 'OPTIONS') return r.fulfill({ status: 204, headers: cors });
+    peticiones.push(JSON.parse(r.request().postData()));
+    const resp = respuestas[Math.min(peticiones.length - 1, respuestas.length - 1)];
+    await r.fulfill({ ...resp, headers: cors });
+  });
+  await p.getByRole('button', { name: /Reconocer/ }).click();
+  await analizar('amanita_caesarea_1.jpg');
+  await responder('interior_huevo', 'naranja_amarillo');
+  const btnG = p.locator('#rec-gemini');
+  comprobar(await btnG.isVisible() && await btnG.isEnabled(), 'con conexión y Worker configurado: botón «Segunda opinión (Gemini)» activo');
+  await ctx.setOffline(true);
+  await p.waitForFunction(() => document.querySelector('#rec-gemini').disabled);
+  comprobar(/Sin conexión/.test(await p.locator('#rec-gemini-nota').textContent()), 'sin conexión el botón de Gemini se desactiva');
+  await ctx.setOffline(false);
+  await p.waitForFunction(() => !document.querySelector('#rec-gemini').disabled);
+  for (const [estado, re] of [[403, /no está autorizada/], [413, /pesan demasiado/], [429, /límite diario/], [503, /saturado/]]) {
+    await p.evaluate(() => { delete document.body.dataset.gemini; });
+    await btnG.click();
+    await p.waitForSelector('body[data-gemini=error]', { state: 'attached', timeout: 30000 });
+    const t = await p.locator('#rec-gemini-nota').textContent();
+    comprobar(re.test(t), `Worker ${estado}: «${t}»`);
+    if (estado === 429) { await p.locator('#rec-gemini-nota').scrollIntoViewIfNeeded(); await captura('reconocer-gemini-error.png'); }
+  }
+  await p.evaluate(() => { delete document.body.dataset.gemini; });
+  await btnG.click();
+  await p.waitForSelector('body[data-gemini=ok]', { state: 'attached', timeout: 30000 });
+  const pet = peticiones.at(-1);
+  const bytesFoto = Math.floor(pet.fotos[0].length * 3 / 4);
+  comprobar(pet.fotos.length === 1 && pet.fotos[0].startsWith('/9j/') && bytesFoto <= 1.5 * 1024 * 1024
+    && pet.respuestas_guiadas.interior_huevo === 'Naranja y amarillo' && pet.respuestas_guiadas.volva_saco === null
+    && /^\d{4}-\d{2}-\d{2}$/.test(pet.contexto.fecha) && pet.contexto.lat === 36.589 && pet.contexto.lon === -5.244
+    && pet.candidatos_offline.length === 5 && pet.candidatos_offline[0].id === 'amanita_caesarea'
+    && pet.candidatos_offline.every((c) => c.score >= 0 && c.score <= 1),
+    `petición al Worker: 1 foto JPEG de ${(bytesFoto / 1024).toFixed(0)} KB, respuestas, fecha y GPS, 5 candidatos offline`);
+  const ndG = await noDescartadas();
+  comprobar(ndG.includes('amanita_phalloides') && ndG.includes('Amanita virosa'),
+    `unión con Gemini: phalloides vuelve a la lista roja y se añade A. virosa (${ndG.join(', ')})`);
+  comprobar(await p.locator('#rec-gemini-resultado').isVisible() && !PROHIBIDO.test(await textoRec()),
+    'respuesta de Gemini con la misma presentación y sin «comestible» ni «se puede comer»');
+  await p.locator('#rec-gemini-resultado').scrollIntoViewIfNeeded();
+  await captura('reconocer-gemini.png');
+  await p.locator('#rec-peligrosas').scrollIntoViewIfNeeded();
+  await captura('reconocer-gemini-peligrosas.png');
+  console.log('INFORME', JSON.stringify(informe));
+
   comprobar(errores.length === 0, `sin errores de página${errores.length ? ': ' + errores.join(' | ') : ''}`);
   console.log('e2e OK');
 } catch (e) {

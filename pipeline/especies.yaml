@@ -1,0 +1,32 @@
+# HEURÍSTICO v1 — valores de partida de literatura micológica divulgativa;
+# se recalibran con GBIF (Tarea 9) y hallazgos propios. No son ciencia exacta.
+boletus_aereus:
+  nombre: Boletus aereus
+  arboles: {alcornoque: 1.0, castano: 0.9, encina: 0.8, quejigo: 0.7}
+  altitud: {min: 150, opt_min: 400, opt_max: 900, max: 1200}
+  orientacion: indiferente
+  suelo: {acido: 1.0, otro: 0.5, basico: 0.4, ultrabasico: 0.3, desconocido: 0.6}
+boletus_aestivalis:
+  nombre: Boletus aestivalis / reticulatus
+  arboles: {castano: 1.0, quejigo: 0.9, alcornoque: 0.7, encina: 0.7}
+  altitud: {min: 300, opt_min: 500, opt_max: 1100, max: 1400}
+  orientacion: indiferente
+  suelo: {acido: 1.0, otro: 0.6, basico: 0.6, ultrabasico: 0.3, desconocido: 0.6}
+boletus_edulis:
+  nombre: Boletus edulis
+  arboles: {castano: 1.0, pino: 0.7, pinsapo: 0.6, quejigo: 0.5}
+  altitud: {min: 600, opt_min: 900, opt_max: 1500, max: 1900}
+  orientacion: umbria
+  suelo: {acido: 1.0, otro: 0.6, basico: 0.5, ultrabasico: 0.4, desconocido: 0.6}
+boletus_pinophilus:
+  nombre: Boletus pinophilus
+  arboles: {pino: 1.0, castano: 0.5}
+  altitud: {min: 700, opt_min: 1000, opt_max: 1600, max: 2000}
+  orientacion: umbria
+  suelo: {acido: 1.0, otro: 0.6, basico: 0.4, ultrabasico: 0.4, desconocido: 0.6}
+amanita_caesarea:
+  nombre: Amanita caesarea
+  arboles: {alcornoque: 1.0, castano: 1.0, encina: 0.8, quejigo: 0.7}
+  altitud: {min: 100, opt_min: 300, opt_max: 900, max: 1200}
+  orientacion: solana
+  suelo: {acido: 1.0, otro: 0.5, basico: 0.3, ultrabasico: 0.3, desconocido: 0.6}

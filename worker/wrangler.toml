@@ -15,9 +15,15 @@ GEMINI_MODEL = "gemini-3.8-flash"
 ALLOWED_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173"
 # Reconocimientos por IP y día.
 DAILY_LIMIT = "50"
+# Tope global de reconocimientos por día (todas las IPs). Cubre la rotación de IP: la cabecera
+# Origin la falsifica cualquier cliente que no sea un navegador, así que el límite por IP no basta.
+GLOBAL_DAILY_LIMIT = "300"
+# "true" en producción: sin KV (o si KV falla) el Worker responde 503 y no llama a Gemini.
+# Poner "false" solo en desarrollo local sin KV.
+REQUIRE_KV = "true"
 
 # Contador del límite diario. Crear con `npx wrangler kv namespace create RATE_LIMIT`
-# y pegar aquí el id que devuelve. Sin este binding el Worker funciona pero NO limita.
+# y pegar aquí el id que devuelve. Con REQUIRE_KV="true", sin este binding el Worker responde 503.
 # [[kv_namespaces]]
 # binding = "RATE_LIMIT"
 # id = "PEGAR_AQUI_EL_ID"

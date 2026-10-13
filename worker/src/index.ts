@@ -10,13 +10,15 @@ import {
 import { MAX_BYTES_CUERPO, validarPeticion } from "./validar";
 import { llamarGemini } from "./gemini";
 import { postProcesar, validarSalida } from "./seguridad";
-import { consumir, limiteDiario } from "./limite";
+import { consumir, limiteDiario, limiteGlobal } from "./limite";
 
 export interface Env {
   GEMINI_API_KEY?: string;
   GEMINI_MODEL?: string;
   ALLOWED_ORIGINS?: string;
   DAILY_LIMIT?: string;
+  GLOBAL_DAILY_LIMIT?: string;
+  REQUIRE_KV?: string;
   RATE_LIMIT?: KVNamespace;
 }
 
@@ -62,7 +64,10 @@ export default {
       const peticion = validarPeticion(cuerpo);
 
       const ip = request.headers.get("CF-Connecting-IP") ?? "desconocida";
-      const restantes = await consumir(env.RATE_LIMIT, ip, limiteDiario(env.DAILY_LIMIT));
+      const restantes = await consumir(env.RATE_LIMIT, ip, limiteDiario(env.DAILY_LIMIT), {
+        limiteGlobal: limiteGlobal(env.GLOBAL_DAILY_LIMIT),
+        requerirKv: env.REQUIRE_KV === "true",
+      });
 
       const bruto = await llamarGemini(peticion, env.GEMINI_API_KEY, env.GEMINI_MODEL || MODELO_POR_DEFECTO);
       const resultado = postProcesar(validarSalida(bruto), peticion.respuestas_guiadas);

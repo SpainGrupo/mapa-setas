@@ -203,6 +203,60 @@ describe("límite diario por IP", () => {
   });
 });
 
+describe("tope global diario y KV obligatorio", () => {
+  const hoy = () => new Date().toISOString().slice(0, 10);
+  it("429 global al alcanzar GLOBAL_DAILY_LIMIT aunque se rote la IP", async () => {
+    const e = env({ DAILY_LIMIT: "50", GLOBAL_DAILY_LIMIT: "2" });
+    expect((await llamar(peticion(valida, { ip: "1.1.1.1" }), e)).status).toBe(200);
+    expect((await llamar(peticion(valida, { ip: "2.2.2.2" }), e)).status).toBe(200);
+    const r = await llamar(peticion(valida, { ip: "3.3.3.3" }), e);
+    expect(r.status).toBe(429);
+    const err = (await r.json()).error;
+    expect(err.codigo).toBe("limite_global_superado");
+    expect(err.mensaje).toBe("El servicio ha alcanzado su límite diario. Vuelve a intentarlo mañana.");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+  it("cuenta IP y global a la vez", async () => {
+    const kv = new KVMemoria();
+    const e = env({ RATE_LIMIT: kv as unknown as KVNamespace });
+    await llamar(peticion(valida, { ip: "9.9.9.9" }), e);
+    expect(kv.datos.get(`rl:${hoy()}:9.9.9.9`)).toBe("1");
+    expect(kv.datos.get(`rl:${hoy()}:__global__`)).toBe("1");
+  });
+  it("si se supera el límite por IP no incrementa el global", async () => {
+    const kv = new KVMemoria();
+    const e = env({ RATE_LIMIT: kv as unknown as KVNamespace, DAILY_LIMIT: "1" });
+    await llamar(peticion(valida), e);
+    expect((await llamar(peticion(valida), e)).status).toBe(429);
+    expect(kv.datos.get(`rl:${hoy()}:__global__`)).toBe("1");
+  });
+  it("usa 300 por defecto si GLOBAL_DAILY_LIMIT no es válido", async () => {
+    const kv = new KVMemoria();
+    kv.datos.set(`rl:${hoy()}:__global__`, "299");
+    const e = env({ RATE_LIMIT: kv as unknown as KVNamespace, GLOBAL_DAILY_LIMIT: "x" });
+    expect((await llamar(peticion(valida), e)).status).toBe(200);
+    expect((await llamar(peticion(valida), e)).status).toBe(429);
+  });
+  it("REQUIRE_KV=true sin KV -> 503 y no llama a Gemini", async () => {
+    const r = await llamar(peticion(valida), env({ RATE_LIMIT: undefined, REQUIRE_KV: "true" }));
+    expect(r.status).toBe(503);
+    expect((await r.json()).error.codigo).toBe("servicio_no_disponible");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+  it("REQUIRE_KV=true y KV.get lanza -> 503 y no llama a Gemini", async () => {
+    const kv = { get: async () => { throw new Error("kv caído"); }, put: async () => {} };
+    const r = await llamar(peticion(valida), env({ RATE_LIMIT: kv as unknown as KVNamespace, REQUIRE_KV: "true" }));
+    expect(r.status).toBe(503);
+    expect((await r.json()).error.codigo).toBe("servicio_no_disponible");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+  it("sin REQUIRE_KV=true sigue fail-open si KV.get lanza", async () => {
+    const kv = { get: async () => { throw new Error("kv caído"); }, put: async () => {} };
+    const r = await llamar(peticion(valida), env({ RATE_LIMIT: kv as unknown as KVNamespace, REQUIRE_KV: "false" }));
+    expect(r.status).toBe(200);
+  });
+});
+
 describe("llamada a Gemini", () => {
   it("usa generateContent, cabecera de clave y salida JSON con esquema", async () => {
     await llamar(peticion(valida));

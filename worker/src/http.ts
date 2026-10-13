@@ -8,6 +8,8 @@ export type CodigoError =
   | "carga_demasiado_grande"
   | "solicitud_invalida"
   | "limite_diario_superado"
+  | "limite_global_superado"
+  | "servicio_no_disponible"
   | "configuracion_incompleta"
   | "gemini_tiempo_agotado"
   | "gemini_saturado"

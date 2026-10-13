@@ -55,7 +55,9 @@ Errores: `{ "error": { "codigo": "…", "mensaje": "…" } }`.
 | `GEMINI_MODEL` | var | `gemini-3.8-flash` (ver comentario y fuentes en `wrangler.toml`) |
 | `ALLOWED_ORIGINS` | var | Orígenes separados por comas, sin barra final |
 | `DAILY_LIMIT` | var | Peticiones por IP y día. Por defecto 50 |
-| `RATE_LIMIT` | KV | Contador diario. Si falta, el Worker funciona pero no limita (útil en local) |
+| `GLOBAL_DAILY_LIMIT` | var | Tope global de peticiones por día (todas las IPs). Por defecto 300. 429 `limite_global_superado` |
+| `REQUIRE_KV` | var | `"true"` en producción: sin KV o si KV falla, 503 `servicio_no_disponible` y no se llama a Gemini. Con otro valor, fail-open (solo desarrollo) |
+| `RATE_LIMIT` | KV | Contadores diarios (por IP y global). Con `REQUIRE_KV` distinto de `"true"`, si falta no limita (útil en local) |
 
 El límite usa KV, que es eventualmente consistente: varias peticiones simultáneas pueden pasar
 un poco del tope. Para frenar abuso basta; no es una cuota exacta.
@@ -70,12 +72,15 @@ npm run typecheck
 ```
 
 Para `wrangler dev` en local crea `worker/.dev.vars` (está en `.gitignore`) con
-`GEMINI_API_KEY=...`. Sin KV en local, el límite diario queda desactivado y se avisa en el log.
+`GEMINI_API_KEY=...`. Para trabajar sin KV en local pon `REQUIRE_KV = "false"` en `.dev.vars`; entonces el límite diario queda desactivado y se avisa en el log.
 
 ## Desplegar (lo hace Alexander)
 
 1. Crear la clave en Google AI Studio (https://aistudio.google.com/apikey). Conviene activar la
-   facturación con un límite de gasto o una alerta de presupuesto en Google Cloud.
+   facturación con un límite de gasto o una alerta de presupuesto en Google Cloud. Esta alerta
+   sigue siendo obligatoria: la cabecera Origin la puede falsificar cualquier cliente que no sea un
+   navegador, así que el límite por IP y el tope global (`GLOBAL_DAILY_LIMIT`) reducen el riesgo
+   pero no sustituyen al presupuesto de Google.
 2. Iniciar sesión en Cloudflare:
    ```bash
    cd /Users/alexanderkrupnov/Documents/Claude/setas/worker
@@ -87,6 +92,7 @@ Para `wrangler dev` en local crea `worker/.dev.vars` (está en `.gitignore`) con
    ```bash
    npx wrangler kv namespace create RATE_LIMIT
    ```
+   Dejar `REQUIRE_KV = "true"` y ajustar `GLOBAL_DAILY_LIMIT` (por defecto 300/día) al gasto asumible.
 4. Poner en `wrangler.toml` el origen de GitHub Pages, por ejemplo
    `ALLOWED_ORIGINS = "https://USUARIO.github.io"` (solo esquema y host; la ruta del repo no
    forma parte del origen). Quitar los `localhost` si no se van a usar.

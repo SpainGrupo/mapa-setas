@@ -1,6 +1,6 @@
 """Calibración: ¿caen las observaciones reales de GBIF en celdas de alta idoneidad?"""
 from __future__ import annotations
-import json, re
+import hashlib, json, logging, re
 from pathlib import Path
 import numpy as np, requests
 from pyproj import Transformer
@@ -16,6 +16,7 @@ UMBRAL = 50
 INCERTIDUMBRE_MAX = 1000     # m; los registros con más se descartan (los que no la declaran se quedan)
 VENTANA = 5                  # 5x5 celdas de 100 m ≈ radio de 200-250 m (variante "máx. en 500 m")
 MIN_OBS = 10                 # por debajo no se juzga la especie
+log = logging.getLogger(__name__)
 _a_utm = Transformer.from_crs("EPSG:4326", CRS, always_xy=True)
 _a_wgs = Transformer.from_crs(CRS, "EPSG:4326", always_xy=True)
 
@@ -35,10 +36,15 @@ def wkt_zona(zona) -> str:
     return orient(z, 1.0).wkt
 
 
-def clave_taxon(nombre: str) -> int:
-    """Clave GBIF aceptada (un sinónimo, p. ej. B. aestivalis → B. reticulatus, da la del aceptado)."""
+def clave_taxon(nombre: str) -> int | None:
+    """Clave GBIF aceptada (un sinónimo, p. ej. B. aestivalis → B. reticulatus, da la del aceptado).
+    None si GBIF no reconoce el nombre (matchType NONE)."""
     j = requests.get(f"{GBIF}/species/match", params={"name": nombre}, timeout=30).json()
-    return j.get("acceptedUsageKey") or j["usageKey"]
+    clave = j.get("acceptedUsageKey") or j.get("usageKey")
+    if clave is None:
+        log.warning("GBIF no reconoce el taxón %r (matchType=%s)", nombre, j.get("matchType"))
+        print(f"  WARNING: GBIF no reconoce el taxón {nombre!r}; se omite")
+    return clave
 
 
 def descargar_ocurrencias(nombre: str, wkt: str, max_registros=5000, clave: int | None = None):
@@ -60,16 +66,19 @@ def descargar_ocurrencias(nombre: str, wkt: str, max_registros=5000, clave: int 
 
 def ocurrencias(perfil: dict, zona, raw_dir: Path) -> list:
     """Observaciones de todos los nombres del perfil, con caché en raw_dir/gbif/."""
-    cache = Path(raw_dir) / "gbif" / (re.sub(r"\W+", "_", perfil["nombre"]).strip("_").lower() + ".json")
+    wkt = wkt_zona(zona)
+    nombre = re.sub(r"\W+", "_", perfil["nombre"]).strip("_").lower()
+    cache = Path(raw_dir) / "gbif" / f"{nombre}_{hashlib.sha1(wkt.encode()).hexdigest()[:8]}.json"
     if cache.exists():
         return [tuple(p) for p in json.loads(cache.read_text())]
-    wkt = wkt_zona(zona)
     pts = []
     claves = {clave_taxon(n) for n in nombres_cientificos(perfil["nombre"])}   # sin duplicar sinónimos
-    for c in claves:
+    completo = None not in claves
+    for c in claves - {None}:
         pts += descargar_ocurrencias(perfil["nombre"], wkt, clave=c)
-    cache.parent.mkdir(parents=True, exist_ok=True)
-    cache.write_text(json.dumps(pts))
+    if completo:                          # no se cachea un resultado con nombres sin resolver
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        cache.write_text(json.dumps(pts))
     return pts
 
 
@@ -86,11 +95,6 @@ def _indices(malla: Malla, xy_utm):
     filas = np.floor((malla.y1 - ys) / malla.celda).astype(int)
     dentro = (cols >= 0) & (cols < malla.ancho) & (filas >= 0) & (filas < malla.alto)
     return filas[dentro], cols[dentro]
-
-
-def _en_tierra(malla: Malla, tierra: np.ndarray, p) -> bool:
-    f, c = _indices(malla, [p])
-    return bool(f.size and tierra[f[0], c[0]])
 
 
 def valores_en_puntos(malla: Malla, raster: np.ndarray, xy_utm) -> np.ndarray:
@@ -132,7 +136,16 @@ def calibrar(out_dir: Path, raw_dir: Path, perfiles: dict) -> dict:
         pts = ocurrencias(perfil, zona, raw_dir)
         kept, n_ok, n_sin = filtrar_incertidumbre(pts)
         xy = a_utm(kept)
-        xy_t = [p for p in xy if _en_tierra(malla, tierra, p)]
+        if xy:
+            xs = np.array([p[0] for p in xy]); ys = np.array([p[1] for p in xy])
+            cols = np.floor((xs - malla.x0) / malla.celda).astype(int)
+            filas = np.floor((malla.y1 - ys) / malla.celda).astype(int)
+            dentro = (cols >= 0) & (cols < malla.ancho) & (filas >= 0) & (filas < malla.alto)
+            mascara = np.zeros(len(xy), bool)
+            mascara[dentro] = tierra[filas[dentro], cols[dentro]]
+            xy_t = [p for p, k in zip(xy, mascara) if k]
+        else:
+            xy_t = []
         res[clave] = {
             "nombre": perfil["nombre"], "n_bruto": len(pts), "n_incert_ok": n_ok, "n_sin_incert": n_sin,
             "n_conservados": len(kept), "xy": xy_t,

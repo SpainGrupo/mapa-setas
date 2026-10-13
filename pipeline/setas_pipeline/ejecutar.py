@@ -3,7 +3,7 @@
     uv run python -m setas_pipeline.ejecutar idoneidad calibracion vista
     uv run python -m setas_pipeline.ejecutar todo [--forzar]
 
-Cada paso se salta si todas sus salidas existen, salvo con --forzar.
+Cada paso se salta si todas sus salidas existen y no son más antiguas que sus entradas, salvo con --forzar.
 """
 from __future__ import annotations
 import argparse
@@ -71,18 +71,35 @@ def _por_especie(patron: str):
     return lambda: [OUT / patron.format(k) for k in cargar_perfiles(ESPECIES)]
 
 
-# paso → (función, salidas)
+def _geo():
+    return [OUT / "malla.json", FUENTES]
+
+
+def _entradas_idoneidad():
+    return [ESPECIES, *(OUT / f"{n}.tif" for n in ("arbol", "altitud", "orientacion", "pendiente", "suelo"))]
+
+
+# paso → (función, salidas, entradas): se rehace si falta una salida o alguna es más antigua que una entrada
 PASOS = {
-    "zona": (_zona, lambda: [ZONA, OUT / "malla.json"]),
-    "relieve": (_relieve, lambda: [OUT / f"{n}.tif" for n in ("altitud", "pendiente", "orientacion")]),
-    "vegetacion": (_vegetacion, lambda: [OUT / "arbol.tif"]),
-    "suelo": (_suelo, lambda: [OUT / "suelo.tif"]),
-    "protegidos": (_protegidos, lambda: [OUT / "protegido.tif"]),
-    "accesos": (_accesos, lambda: [OUT / "distancia_acceso.tif"]),
-    "idoneidad": (_idoneidad, _por_especie("idoneidad_{}.tif")),
-    "calibracion": (_calibracion, lambda: [OUT / "calibracion.md"]),
-    "vista": (_vista, _por_especie("vista_{}.png")),
+    "zona": (_zona, lambda: [ZONA, OUT / "malla.json"], lambda: []),
+    "relieve": (_relieve, lambda: [OUT / f"{n}.tif" for n in ("altitud", "pendiente", "orientacion")], _geo),
+    "vegetacion": (_vegetacion, lambda: [OUT / "arbol.tif"], _geo),
+    "suelo": (_suelo, lambda: [OUT / "suelo.tif"], _geo),
+    "protegidos": (_protegidos, lambda: [OUT / "protegido.tif"], _geo),
+    "accesos": (_accesos, lambda: [OUT / "distancia_acceso.tif"], _geo),
+    "idoneidad": (_idoneidad, _por_especie("idoneidad_{}.tif"), _entradas_idoneidad),
+    "calibracion": (_calibracion, lambda: [OUT / "calibracion.md"], _por_especie("idoneidad_{}.tif")),
+    "vista": (_vista, _por_especie("vista_{}.png"), _por_especie("idoneidad_{}.tif")),
 }
+
+
+def _al_dia(salidas: list[Path], entradas: list[Path]) -> bool:
+    if not all(s.exists() for s in salidas):
+        return False
+    if not entradas:
+        return True
+    ultima_entrada = max(e.stat().st_mtime for e in entradas if e.exists()) if any(e.exists() for e in entradas) else 0
+    return all(s.stat().st_mtime >= ultima_entrada for s in salidas)
 
 
 def ejecutar(pasos: list[str], forzar: bool = False) -> list[str]:
@@ -91,9 +108,9 @@ def ejecutar(pasos: list[str], forzar: bool = False) -> list[str]:
         pasos = list(PASOS)
     hechos = []
     for p in pasos:
-        funcion, salidas = PASOS[p]
-        if not forzar and all(s.exists() for s in salidas()):
-            print(f"[{p}] salidas existentes, se salta (usa --forzar para rehacer)")
+        funcion, salidas, entradas = PASOS[p]
+        if not forzar and _al_dia(salidas(), entradas()):
+            print(f"[{p}] salidas al día, se salta (usa --forzar para rehacer)")
             continue
         print(f"[{p}] ejecutando…", flush=True)
         funcion()

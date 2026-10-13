@@ -43,7 +43,7 @@ def construir_relieve(malla: Malla, raw_dir: Path, out_dir: Path, fuentes: Path)
     dir_dem.mkdir(parents=True, exist_ok=True)
     rutas = []
     for xmin, ymin, xmax, ymax in teselas_wcs(malla, dem["tesela_m"]):
-        ruta = dir_dem / f"mdt25_{int(xmin)}_{int(ymin)}.tif"
+        ruta = dir_dem / f"mdt25_{int(xmin)}_{int(ymin)}_{int(xmax)}_{int(ymax)}.tif"
         if not ruta.exists():
             url = dem["url_patron"].format(coverage_id=dem["coverage_id"], xmin=int(xmin),
                                            xmax=int(xmax), ymin=int(ymin), ymax=int(ymax))

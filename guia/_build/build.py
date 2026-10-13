@@ -1,0 +1,556 @@
+# Genera guia/especies.json a partir de los datos de abajo + meta/fotos.json
+import json, sys
+
+FOTOS = json.load(open(sys.argv[1]))
+OUT = sys.argv[2]
+
+AV = "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia)."
+
+# ---------- fuentes ----------
+def ac(slug, nombre):
+    return {"titulo": f"AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de {nombre}", "url": f"https://www.amanitacesarea.com/{slug}.html"}
+def fn(slug, nombre):
+    return {"titulo": f"First Nature (P. O'Reilly), ficha de {nombre}", "url": f"https://www.first-nature.com/fungi/{slug}.php"}
+def sf(rid, nombre):
+    return {"titulo": f"Species Fungorum / Index Fungorum, registro de {nombre}", "url": f"https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID={rid}"}
+def wp(lang, page, nombre):
+    return {"titulo": f"Wikipedia ({lang}), {nombre} (fuente secundaria)", "url": f"https://{lang}.wikipedia.org/wiki/{page}"}
+
+GUIA = {"titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)", "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"}
+LEI = {"titulo": "Leiva Morales, J. A., Introducción al orden Boletales en la provincia de Cádiz (Rev. Soc. Gaditana Hist. Nat. 3)", "url": "https://sociedadgaditanahistorianatural.com/wp-content/uploads/2012/02/15-Leiva-SGHN-Rev-Vol3.pdf"}
+SOG = {"titulo": "Hongos del Parque Natural Los Alcornocales y Campo de Gibraltar, ampliación (Instituto de Estudios Campogibraltareños)", "url": "https://institutoecg.es/wp-content/uploads/2019/06/HONGOS-DEL-PARQUE-NATURAL-LOS-ALCORNOCALES-Y-CAMPO-DE-GIBRALTAR-AMPLIACI%C3%93N.pdf"}
+ALV = {"titulo": "Alvarado et al. (2022), Amanita sect. Phalloideae en el Mediterráneo, Biology 11:770", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9138314"}
+DON = {"titulo": "Hospital Donostia, protocolo IT-114 Intoxicaciones por setas (alojado en Fungipedia)", "url": "https://www.fungipedia.org/media/kunena/attachments/267/IT-114_Intoxicaciones_por_Setas_v01.pdf"}
+TOX = {"titulo": "Toxicidad de las setas: tabla por especies y síndromes (alojado en Fungipedia)", "url": "https://fungipedia.org/media/kunena/attachments/267/TOXICIDADDELASSETAS_v004.pdf"}
+EFI = {"titulo": "Enciclopedia dei Funghi Italiani, glosario: Caesarea (corte del huevo)", "url": "https://enciclopedia.funghiitaliani.it/termine.php?show=299"}
+NAT = {"titulo": "Naturnext, Ovolo buono (Amanita caesarea): guía micológica (fuente secundaria)", "url": "https://www.naturnext.eu/it/ovolo-buono-amanita-caesarea-guida-micologica-completa"}
+BEATY = {"titulo": "Beaty Biodiversity Museum (UBC), Amanita phalloides", "url": "https://explore.beatymuseum.ubc.ca/mushroomsup/A_phalloides.html"}
+FUNG = {"titulo": "Fungipedia (Asociación Micológica Fungipedia), Amanita phalloides", "url": "https://www.fungipedia.org/hongos/amanita-phalloides.html"}
+
+E = []
+def sp(**k):
+    E.append(k)
+
+# ================= APRECIADAS =================
+sp(id="boletus_edulis", nombre_cientifico="Boletus edulis Bull.", nombres_comunes=["calabaza", "seta de calabaza", "hongo blanco"],
+   grupo="apreciada", toxicidad_nota=AV,
+   sombrero="Hasta 25-30 cm. Marrón claro, pardo o canela, más oscuro en el centro y con el borde más pálido, casi blanco. Cutícula algo viscosa con humedad.",
+   himenio="Tubos y poros blancos en ejemplares jóvenes, luego amarillos y al final verdosos. No azulean al roce.",
+   pie="Robusto, a menudo panzudo. Retículo blanco y fino en la parte alta sobre fondo color avellana.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanca y gruesa. No cambia de color al corte; bajo la cutícula puede ser algo rojiza.",
+   olor_sabor="Olor y sabor agradables, que recuerdan a la avellana.",
+   esporada="Ocre olivácea.",
+   habitat="Bajo frondosas o coníferas, prefiere suelos ácidos. En Cádiz se cita en la sierra norte o en suelos calizos, asociado sobre todo a Quercus. La guía andaluza no da localidades concretas.",
+   temporada="Finales de verano a finales de otoño.",
+   rasgos_clave=["Poros blancos a amarillo verdosos que no azulean", "Carne blanca que no cambia al corte", "Retículo blanco en la parte alta del pie", "Borde del sombrero más claro que el centro"],
+   no_confundir_con=[
+     {"id": "boletus_aereus", "diferencias": ["B. aereus tiene el sombrero mucho más oscuro, casi negro, seco y aterciopelado", "Retículo del pie del mismo color que el fondo, no blanco"]},
+     {"id": "boletus_reticulatus", "diferencias": ["B. reticulatus tiene el sombrero de color avellana uniforme, sin borde claro", "Retículo muy marcado hasta abajo, pardo claro"]},
+     {"id": "boletus_pinophilus", "diferencias": ["B. pinophilus tiene el sombrero rojizo, caoba, de color uniforme", "Carne algo vinosa bajo la cutícula; prefiere pinares viejos"]},
+     {"id": "tylopilus_felleus", "diferencias": ["Tylopilus felleus tiene los poros rosados, no blanco amarillentos", "Retículo pardo oscuro en el pie", "Sabor muy amargo"]},
+     {"id": "rubroboletus_satanas", "diferencias": ["R. satanas tiene poros rojos o anaranjados", "Pie rojo, bulboso", "Carne que azulea al corte; sombrero blanquecino"]},
+     {"id": "caloboletus_calopus", "diferencias": ["C. calopus tiene poros amarillos que azulean al tocarlos", "Pie amarillo arriba y rojo hacia la base", "Carne amarilla pálida que azulea; sabor muy amargo"]},
+     {"id": "caloboletus_radicans", "diferencias": ["C. radicans tiene el sombrero blanquecino y los poros amarillos que azulean", "Pie amarillo y radicante", "Carne que azulea al corte; muy amarga"]}],
+   fuentes=[ac("boletus-edulis", "Boletus edulis"), GUIA, LEI, fn("boletus-edulis", "Boletus edulis"), sf(356530, "Boletus edulis")])
+
+sp(id="boletus_aereus", nombre_cientifico="Boletus aereus Bull.", nombres_comunes=["tentullo", "tontullo", "hongo negro"],
+   grupo="apreciada", toxicidad_nota=AV,
+   sombrero="De 10-15 cm (hasta 35). Casi negro de joven, luego pardo oscuro con zonas ocres. Cutícula seca y aterciopelada; con tiempo seco se agrieta.",
+   himenio="Tubos y poros blancos de jóvenes, luego amarillentos y verdosos. No cambian de color al roce.",
+   pie="Duro y macizo, más claro que el sombrero, con un retículo fino del mismo tono que el fondo.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanca, firme y compacta. No cambia al corte, ni siquiera bajo la cutícula.",
+   olor_sabor="Agradables.",
+   esporada="Amarillo ocrácea a amarillo olivácea.",
+   habitat="Alcornocales y castañares de Andalucía occidental; asociado a robles, encinas, alcornoques y castaños en suelos ácidos. En Cádiz es frecuente en los bosques de Quercus.",
+   temporada="Otoño en Andalucía. First Nature indica octubre a febrero en zonas del sur de Europa.",
+   rasgos_clave=["Sombrero casi negro y aterciopelado", "Poros blancos a amarillo verdosos que no azulean", "Carne blanca que no cambia, también bajo la cutícula", "Bajo alcornoques, encinas y castaños"],
+   no_confundir_con=[
+     {"id": "boletus_edulis", "diferencias": ["B. edulis tiene el sombrero más pálido, algo viscoso y con borde claro", "Retículo blanco sobre fondo crema"]},
+     {"id": "boletus_reticulatus", "diferencias": ["B. reticulatus es de color ocre claro, menos aterciopelado", "Pie mucho más reticulado"]},
+     {"id": "boletus_pinophilus", "diferencias": ["B. pinophilus tiene tonos granate rojizos y prefiere pinares"]},
+     {"id": "tylopilus_felleus", "diferencias": ["Tylopilus felleus tiene los poros rosados", "Retículo oscuro y sabor muy amargo"]},
+     {"id": "rubroboletus_satanas", "diferencias": ["R. satanas tiene sombrero blanquecino, poros rojos y pie rojo bulboso", "Su carne azulea al corte"]},
+     {"id": "caloboletus_calopus", "diferencias": ["C. calopus tiene sombrero claro, poros amarillos que azulean y pie rojo en la base", "Sabor muy amargo"]},
+     {"id": "caloboletus_radicans", "diferencias": ["C. radicans tiene sombrero blanquecino, poros y pie amarillos", "Carne que azulea; muy amarga"]}],
+   fuentes=[ac("boletus-aereus", "Boletus aereus"), GUIA, LEI, fn("boletus-aereus", "Boletus aereus"), sf(159051, "Boletus aereus")])
+
+sp(id="boletus_reticulatus", nombre_cientifico="Boletus reticulatus Schaeff. (= B. aestivalis)", nombres_comunes=["boleto reticulado", "boleto estival"],
+   grupo="apreciada", toxicidad_nota=AV,
+   sombrero="Hasta 25 cm. Marrón claro o avellana, de color uniforme y sin borde más claro. Superficie de lisa a afieltrada; con sequedad se cuartea en placas.",
+   himenio="Tubos y poros blancos, luego amarillentos. No azulean al roce.",
+   pie="Panzudo en ejemplares jóvenes, marrón claro, cubierto por una red (retículo) bien marcada que baja casi hasta la base.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanca, también bajo la cutícula. No cambia al corte; solo amarillea junto a los tubos.",
+   olor_sabor="Agradables, ligeramente dulces.",
+   esporada="Ocre olivácea.",
+   habitat="Sobre todo bajo frondosas (robles, castaños, hayas, encinas), en suelos silíceos. En Cádiz es frecuente en bosques de Quercus; es termófilo y necesita lluvias abundantes.",
+   temporada="Finales de primavera a finales de verano; en Cádiz puede salir en otoño y en primavera.",
+   rasgos_clave=["Retículo muy marcado en todo el pie", "Sombrero avellana uniforme, sin borde claro", "Poros blancos a amarillentos que no azulean", "Carne blanca que no cambia"],
+   no_confundir_con=[
+     {"id": "boletus_edulis", "diferencias": ["B. edulis tiene el borde del sombrero más claro y la cutícula algo viscosa", "Retículo blanco solo en la parte alta"]},
+     {"id": "boletus_aereus", "diferencias": ["B. aereus es mucho más oscuro y su retículo es menos evidente"]},
+     {"id": "boletus_pinophilus", "diferencias": ["B. pinophilus es granate rojizo y suele salir en pinares"]},
+     {"id": "tylopilus_felleus", "diferencias": ["Tylopilus felleus tiene los poros rosados y el retículo oscuro", "Sabor muy amargo"]},
+     {"id": "rubroboletus_satanas", "diferencias": ["R. satanas tiene poros rojos, pie rojo y carne que azulea"]},
+     {"id": "caloboletus_calopus", "diferencias": ["C. calopus tiene poros amarillos que azulean y pie rojo en la base", "Sabor muy amargo"]},
+     {"id": "caloboletus_radicans", "diferencias": ["C. radicans tiene poros y pie amarillos y carne que azulea", "Pie radicante; sabor muy amargo"]}],
+   fuentes=[ac("boletus-reticulatus", "Boletus reticulatus"), LEI, fn("boletus-reticulatus", "Boletus reticulatus"), wp("es", "Boletus_reticulatus", "Boletus reticulatus"), sf(200521, "Boletus reticulatus")])
+
+sp(id="boletus_pinophilus", nombre_cientifico="Boletus pinophilus Pilát & Dermek", nombres_comunes=["hongo de pino", "boleto pinícola"],
+   grupo="apreciada", toxicidad_nota=AV,
+   sombrero="Hasta 30 cm. Marrón rojizo o caoba, de color uniforme y liso.",
+   himenio="Tubos blancos, luego amarillentos y pronto amarillo verde oliva. Poros del mismo color.",
+   pie="Muy grueso y panzudo hacia la base, de color parecido al sombrero pero más claro, con retículo crema a rojizo en el ápice.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanca, consistente; de tono vinoso bajo la cutícula. No se describe cambio de color al corte.",
+   olor_sabor="Agradables, dulces y perfumados.",
+   esporada="Ocre olivácea.",
+   habitat="Pinares viejos, a veces hayedos. En Cádiz, Leiva lo considera difícil de localizar (como B. pinicola). La guía andaluza no lo recoge: su presencia en la zona está por confirmar.",
+   temporada="Primavera y verano con lluvia, y sobre todo otoño.",
+   rasgos_clave=["Sombrero rojo caoba uniforme", "Pie muy grueso con retículo rojizo arriba", "Carne blanca, vinosa bajo la cutícula", "Asociado a pinos grandes"],
+   no_confundir_con=[
+     {"id": "boletus_edulis", "diferencias": ["B. edulis es más pálido, con el borde casi blanco y retículo blanco"]},
+     {"id": "boletus_aereus", "diferencias": ["B. aereus es casi negro y sale con Quercus y castaños"]},
+     {"id": "boletus_reticulatus", "diferencias": ["B. reticulatus es ocre claro y tiene el pie mucho más reticulado"]},
+     {"id": "tylopilus_felleus", "diferencias": ["Tylopilus felleus tiene el himenio rosa, no blanco amarillento", "Sabor muy amargo"]},
+     {"id": "rubroboletus_satanas", "diferencias": ["R. satanas tiene poros rojos, pie rojo y carne que azulea"]},
+     {"id": "caloboletus_calopus", "diferencias": ["C. calopus tiene poros amarillos que azulean y sabor muy amargo"]},
+     {"id": "caloboletus_radicans", "diferencias": ["C. radicans tiene sombrero blanquecino, poros amarillos que azulean y sabor muy amargo"]}],
+   fuentes=[ac("boletus-pinophilus", "Boletus pinophilus"), LEI, fn("boletus-pinophilus", "Boletus pinophilus"), wp("es", "Boletus_pinophilus", "Boletus pinophilus"), sf(309751, "Boletus pinophilus")])
+
+sp(id="amanita_caesarea", nombre_cientifico="Amanita caesarea (Scop.) Pers.", nombres_comunes=["oronja", "tana", "yema", "amanita de los césares"],
+   grupo="apreciada",
+   toxicidad_nota=AV + " En fase de huevo no debe consumirse nunca sin confirmación experta: cerrada puede confundirse con la oronja verde (Amanita phalloides), mortal.",
+   sombrero="De 8 a 25 cm. Naranja vivo, a veces con placas blancas de la volva. Liso, algo viscoso y brillante, con el margen estriado.",
+   himenio="Láminas libres, amarillo pálido al principio y luego amarillo dorado.",
+   pie="Amarillo, del mismo color que las láminas y el anillo, con la base engrosada.",
+   volva="Blanca o algo grisácea, membranosa, amplia y en forma de saco. De joven envuelve toda la seta como un huevo.",
+   anillo="Amarillo, amplio, colgante, frágil y estriado por arriba.",
+   carne_y_corte="Blanca, amarillenta bajo la cutícula. Al cortar el pie se ve amarillo por fuera y blanco en el centro.",
+   olor_sabor="Olor suave; sabor agradable, a nuez.",
+   esporada="Blanca, a veces algo amarillenta.",
+   habitat="Alcornocales y castañares de Andalucía occidental. Muy abundante en el P. N. Los Alcornocales (Cádiz-Málaga); menos frecuente en el resto de Málaga y casi ausente en Andalucía oriental. Bajo encinas, alcornoques, robles y castaños.",
+   temporada="Principios de otoño o pleno verano, siempre tras tormentas abundantes. Es termófila y desaparece cuando el otoño enfría.",
+   fase_huevo="El huevo cerrado es blanco por fuera, igual que el de la oronja verde o el de Amanita verna. Cortado de arriba abajo, el de A. caesarea deja ver ya el sombrero naranja y las láminas y el pie amarillos dentro de una volva blanca, amplia y en forma de saco. El de A. phalloides y A. verna es blanco por dentro, sin naranja ni amarillo. Aun así, un huevo nunca debe consumirse sin la confirmación de un experto.",
+   rasgos_clave=["Láminas, pie y anillo amarillos", "Volva blanca, membranosa y en forma de saco", "Sombrero naranja liso con margen estriado", "En huevo: al cortarlo, interior naranja y amarillo"],
+   no_confundir_con=[
+     {"id": "amanita_muscaria", "diferencias": ["A. muscaria tiene láminas, pie y anillo blancos, nunca amarillos", "Su volva se reduce a verrugas en anillos incompletos, no forma un saco", "Sombrero rojo con muchas verrugas blancas; la lluvia o el sol pueden quitarlas o decolorarlo"]},
+     {"id": "amanita_phalloides", "diferencias": ["En huevo, A. phalloides es blanca o verdosa por dentro al cortarla; A. caesarea muestra naranja y amarillo", "Adulta: sombrero verde amarillento a oliváceo y láminas blanco puro", "Pie blanco con dibujo en zigzag; anillo blanco"]},
+     {"id": "amanita_verna", "diferencias": ["En huevo, A. verna es blanca por dentro al cortarla", "Adulta: toda blanca, láminas blancas y volva en saco", "Sale sobre todo en primavera"]}],
+   fuentes=[ac("amanita-caesarea", "Amanita caesarea"), GUIA, EFI, NAT, fn("amanita-caesarea", "Amanita caesarea"), wp("es", "Amanita_caesarea", "Amanita caesarea"), sf(208468, "Amanita caesarea")])
+
+sp(id="lactarius_deliciosus", nombre_cientifico="Lactarius deliciosus (L.) Gray", nombres_comunes=["níscalo", "mízcalo", "guíscano", "nízcalo"],
+   grupo="apreciada", toxicidad_nota=AV + " Especies próximas: L. sanguifluus (carne y látex que viran a rojo vino) y L. semisanguifluus, también citadas como comestibles. L. vinosus es para Index Fungorum sinónimo de L. sanguifluus.",
+   sombrero="De 4 a 20 cm (hasta 25). Naranja con círculos concéntricos más claros y más oscuros, margen enrollado. Con la edad se hunde en embudo y aparecen manchas verdes.",
+   himenio="Láminas naranjas, apretadas, que se vuelven verdes donde se dañan.",
+   pie="Corto, hueco con la edad, quebradizo, con hoyuelos o manchas más oscuras.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanca o zanahoria, que al corte vira enseguida a naranja y luego a verde. Látex naranja que mantiene su color.",
+   olor_sabor="Olor agradable, algo resinoso; sabor dulce, ligeramente acre.",
+   esporada="Crema a ocre clara.",
+   habitat="Pinares de suelos ácidos; también bosques mixtos de pino y roble. Muy frecuente en toda Andalucía.",
+   temporada="Otoño y principios de invierno; abundante en años lluviosos.",
+   rasgos_clave=["Látex naranja que no cambia a blanco ni a amarillo", "Manchas verdes en láminas y sombrero", "Sombrero naranja con zonas concéntricas", "Bajo pinos"],
+   no_confundir_con=[
+     {"id": "lactarius_torminosus", "diferencias": ["L. torminosus tiene el borde del sombrero muy lanoso, con pelos blancos", "Látex blanco y sabor muy acre", "Láminas crema rosadas, no naranjas; crece con abedules"]},
+     {"id": "lactarius_chrysorrheus", "diferencias": ["L. chrysorrheus da un látex blanco que se vuelve amarillo azufre en segundos", "Es más pequeño y sale con robles y alcornoques, no con pinos"]}],
+   fuentes=[ac("lactarius-deliciosus", "Lactarius deliciosus"), GUIA, fn("lactarius-deliciosus", "Lactarius deliciosus"), wp("es", "Lactarius_sanguifluus", "Lactarius sanguifluus"), sf(224737, "Lactarius deliciosus"), sf(229103, "Lactarius sanguifluus"), sf(456055, "Lactarius vinosus")])
+
+sp(id="cantharellus_cibarius", nombre_cientifico="Cantharellus cibarius Fr.", nombres_comunes=["rebozuelo", "cabrilla", "chantarela"],
+   grupo="apreciada", toxicidad_nota=AV + " La guía andaluza trata el rebozuelo local como C. subpruinosus (hoy C. pallens), muy parecido.",
+   sombrero="De 3 a 10 cm. Amarillo de pálido a yema de huevo, irregular, en forma de embudo con el margen ondulado.",
+   himenio="Sin láminas verdaderas: pliegues gruesos, bifurcados y muy decurrentes por el pie, del color del sombrero.",
+   pie="Del mismo amarillo, lleno, se estrecha hacia abajo.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Firme, blanquecina, algo amarillenta en los bordes.",
+   olor_sabor="Olor afrutado, a albaricoque; sabor dulzón.",
+   esporada="Crema clara a blanco amarillenta.",
+   habitat="Suelos ácidos bajo coníferas, frondosas y jarales. Frecuente en años lluviosos en Cádiz, Córdoba, Huelva y Málaga, y especialmente abundante en el P. N. Los Alcornocales.",
+   temporada="Otoño y finales de primavera. First Nature indica octubre a marzo en el sur de Europa.",
+   rasgos_clave=["Pliegues gruesos y bifurcados en vez de láminas", "Todo amarillo yema, sin tonos naranja intenso", "Olor a albaricoque", "Crece en el suelo, no en matas sobre raíces o tocones"],
+   no_confundir_con=[
+     {"id": "omphalotus_olearius", "diferencias": ["Omphalotus tiene láminas verdaderas, finas y apretadas, no pliegues", "Color naranja a pardo anaranjado más intenso", "Crece en matas al pie de olivos u otros árboles, sobre raíces o tocones", "Olor y sabor desagradables según AmanitaCesarea.com"]},
+     {"id": "hydnum_repandum", "diferencias": ["Hydnum tiene aguijones bajo el sombrero en lugar de pliegues", "Sombrero crema a ocre, más pálido"]}],
+   fuentes=[ac("cantharellus-cibarius", "Cantharellus cibarius"), GUIA, fn("cantharellus-cibarius", "Cantharellus cibarius"), sf(200345, "Cantharellus cibarius")])
+
+sp(id="macrolepiota_procera", nombre_cientifico="Macrolepiota procera (Scop.) Singer", nombres_comunes=["parasol", "paraguas", "gallipierno", "apagador"],
+   grupo="apreciada", toxicidad_nota=AV + " La guía andaluza advierte que no deben recogerse lepiotas de menos de 10 cm: algunas son mortales.",
+   sombrero="De 10 a 30 cm. Ovalado de joven (como un palillo de tambor), luego plano con un mamelón central. Escamas pardas sobre fondo blanco sucio.",
+   himenio="Láminas libres, blanco cremosas, apretadas.",
+   pie="Muy largo (15-40 cm), hueco, fibroso, con bandas en zigzag pardo grisáceas (dibujo de piel de serpiente) y bulbo en la base.",
+   volva="No tiene volva verdadera; solo un bulbo en la base del pie.",
+   anillo="Doble, grande, blanco por arriba y crema por abajo; se desliza por el pie.",
+   carne_y_corte="Blanquecina; vira solo un poco a rosa tostado. No enrojece claramente.",
+   olor_sabor="Suaves y agradables, a nuez.",
+   esporada="Blanquecina.",
+   habitat="Claros herbosos de bosques de coníferas y de Quercus, pastizales y bordes de camino. Muy frecuente y abundante en toda Andalucía.",
+   temporada="Otoño.",
+   rasgos_clave=["Pie con dibujo de piel de serpiente", "Anillo doble que se desliza", "Sombrero grande, de más de 10 cm", "Carne que no enrojece al corte"],
+   no_confundir_con=[
+     {"id": "chlorophyllum_rhacodes", "diferencias": ["Chlorophyllum tiene el pie liso, sin dibujo de serpiente", "Su carne enrojece al corte, sobre todo en el pie", "C. brunneum tiene bulbo brusco y marginado"]},
+     {"id": "lepiota_brunneoincarnata", "diferencias": ["Lepiota brunneoincarnata es pequeña: sombrero de 2 a 6 cm", "Escamas pardas sobre fondo rosado y carne rosa vinosa en la base del pie", "Anillo reducido a un rodete fugaz"]},
+     {"id": "amanita_pantherina", "diferencias": ["A. pantherina tiene verrugas blancas sobre sombrero pardo y margen estriado", "Volva con reborde y anillos en la base del pie", "Anillo membranoso simple, no doble"]}],
+   fuentes=[ac("macrolepiota-procera", "Macrolepiota procera"), GUIA, fn("macrolepiota-procera", "Macrolepiota procera"), sf(287857, "Macrolepiota procera")])
+
+# ================= COMESTIBLES MENORES =================
+sp(id="suillus_bellinii", nombre_cientifico="Suillus bellinii (Inzenga) Kuntze", nombres_comunes=[],
+   grupo="comestible_menor", toxicidad_nota=AV + " Se aconseja retirar la cutícula viscosa.",
+   sombrero="Hasta 15 cm. Pardo, con zonas blanquecinas hacia el borde, muy viscoso.",
+   himenio="Tubos cortos; poros pequeños, blanquecinos a beige y luego amarillentos.",
+   pie="Corto y robusto, blanquecino, con granulaciones rojizas.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanquecina y firme, amarillenta en la base. No se describe cambio de color al corte.",
+   olor_sabor="Sin dato en las fuentes consultadas.",
+   esporada="Parda.",
+   habitat="Pinares mediterráneos litorales y de interior, con Pinus halepensis, P. pinaster y P. pinea. Frecuente en Andalucía y en Cádiz.",
+   temporada="Las fuentes andaluzas citan las especies próximas en otoños y primaveras lluviosas; sin dato específico para S. bellinii.",
+   rasgos_clave=["Sombrero muy viscoso, pardo con borde claro", "Pie corto y robusto con granulaciones rojizas", "Siempre bajo pinos", "Sin anillo"],
+   no_confundir_con=[],
+   fuentes=[GUIA, LEI, wp("en", "Suillus_bellinii", "Suillus bellinii"), sf(324328, "Suillus bellinii")])
+
+sp(id="hydnum_repandum", nombre_cientifico="Hydnum repandum L.", nombres_comunes=["lengua de gato", "lengua de oveja", "lengua de vaca"],
+   grupo="comestible_menor", toxicidad_nota=AV + " Sabor algo amargo, más en ejemplares viejos.",
+   sombrero="De 3 a 15 cm. Crema, blanquecino o amarillento, irregular y lobulado, aterciopelado y seco.",
+   himenio="Aguijones (pinchos) crema, apretados, que se desprenden con facilidad. No tiene láminas ni poros.",
+   pie="Corto, macizo, a veces descentrado, del color del sombrero o más claro.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanca, luego crema amarillenta; dura pero frágil. Sin cambio de color descrito.",
+   olor_sabor="Olor muy suave; sabor algo amargo.",
+   esporada="Crema blanquecina.",
+   habitat="Sobre todo encinares, más raramente pinares. En Andalucía no es muy frecuente; la guía la cita en las sierras de Jaén y Córdoba en otoños lluviosos.",
+   temporada="Otoño avanzado; aguanta el frío y es de las últimas en desaparecer.",
+   rasgos_clave=["Aguijones bajo el sombrero en vez de láminas", "Sombrero crema e irregular", "Pie corto y macizo", "Según la guía andaluza no tiene confusión con setas venenosas"],
+   no_confundir_con=[
+     {"id": "cantharellus_cibarius", "diferencias": ["El rebozuelo tiene pliegues decurrentes, no aguijones", "Es amarillo yema y huele a albaricoque"]}],
+   fuentes=[ac("hydnum-repandum", "Hydnum repandum"), GUIA, fn("hydnum-repandum", "Hydnum repandum"), sf(225014, "Hydnum repandum")])
+
+sp(id="lepista_nuda", nombre_cientifico="Lepista nuda (Bull.) Cooke (Index Fungorum: Collybia nuda)", nombres_comunes=["pie azul"],
+   grupo="comestible_menor", toxicidad_nota=AV,
+   sombrero="De 5 a 15 cm. Violeta, azul violeta o marrón violáceo; con la edad o la sequedad pasa a crema u ocre. Liso, sin estrías.",
+   himenio="Láminas lila violáceas, apretadas, un poco decurrentes en adultos; se separan fácilmente del sombrero.",
+   pie="Violáceo, fibroso, con la base algo bulbosa y micelio blanco violáceo pegado a hojas y tierra.",
+   volva="No tiene.", anillo="No tiene. Sin cortina (tela de araña) en el pie.",
+   carne_y_corte="Blanca con reflejos violetas; tierna. Sin cambio de color descrito.",
+   olor_sabor="Olor afrutado característico; sabor suave y dulce.",
+   esporada="Rosa suave.",
+   habitat="Prados y bosques de pinos y encinas, a menudo en corros de brujas. Muy frecuente en toda Andalucía.",
+   temporada="Otoño, principios de invierno y primaveras lluviosas.",
+   rasgos_clave=["Toda la seta violeta, también láminas y pie", "Esporada rosa, no marrón", "Sin cortina ni anillo", "Olor afrutado"],
+   no_confundir_con=[],
+   fuentes=[ac("lepista-nuda", "Lepista nuda"), GUIA, fn("lepista-nuda", "Lepista nuda"), sf(356735, "Lepista nuda / Collybia nuda")])
+
+sp(id="russula_cyanoxantha", nombre_cientifico="Russula cyanoxantha (Schaeff.) Fr.", nombres_comunes=["carbonera", "seta de cerdos"],
+   grupo="comestible_menor", toxicidad_nota=AV,
+   sombrero="De 5 a 16 cm. Color muy variable: violeta, gris violeta, con manchas gris verdosas o verde lila, nunca rojo. Se hunde en el centro con la edad.",
+   himenio="Láminas blancas a blanco cremosas, apretadas, flexibles y de tacto graso: no se rompen al rozarlas, a diferencia de otras rúsulas.",
+   pie="Blanco, robusto, sin anillo; se vuelve esponjoso.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanca y quebradiza; grisácea suave al corte, algo violácea bajo la cutícula.",
+   olor_sabor="Sabor suave y dulce; olor casi inapreciable, a avellana.",
+   esporada="Blanca.",
+   habitat="Alcornocales, encinares y castañares. Muy abundante en Andalucía occidental y más escasa en la oriental.",
+   temporada="Desde verano hasta octubre o primeros de noviembre; es sensible al frío.",
+   rasgos_clave=["Láminas blancas flexibles, que no se rompen al rozarlas", "Sombrero violeta o verdoso, nunca rojo", "Pie blanco sin anillo ni volva", "Sabor suave"],
+   no_confundir_con=[
+     {"id": "amanita_phalloides", "diferencias": ["A. phalloides tiene anillo blanco colgante y volva blanca en saco: hay que desenterrar la base del pie", "Pie con dibujo en zigzag oliváceo", "La bibliografía cita su confusión con rúsulas de sombrero verde"]}],
+   fuentes=[ac("russula-cyanoxantha", "Russula cyanoxantha"), GUIA, ac("amanita-phalloides", "Amanita phalloides"), fn("russula-cyanoxantha", "Russula cyanoxantha"), sf(190250, "Russula cyanoxantha")])
+
+sp(id="agaricus_campestris", nombre_cientifico="Agaricus campestris L.", nombres_comunes=["champiñón de campo", "hongo"],
+   grupo="comestible_menor", toxicidad_nota=AV + " Se desaconseja recoger ejemplares viejos con láminas negras.",
+   sombrero="De 3 a 12 cm. Blanco, a veces con escamas gris crema; el margen sobresale de las láminas.",
+   himenio="Láminas libres, blanco rosadas o rosa vivo de jóvenes, luego marrón oscuro y negras. Nunca blancas en el adulto.",
+   pie="Blanco, corto, sin bulbo marcado.",
+   volva="No tiene.",
+   anillo="Simple, fino y fugaz, en la parte alta del pie.",
+   carne_y_corte="Blanca, que al corte toma un tono rosado suave, sobre todo entre pie y sombrero. No amarillea.",
+   olor_sabor="AmanitaCesarea.com los describe como agradables; la guía andaluza, como desagradables.",
+   esporada="Marrón oscuro, pardo púrpura.",
+   habitat="Prados y pastizales, sobre todo los abonados por ganado. Muy frecuente en toda Andalucía.",
+   temporada="Primavera y otoño.",
+   rasgos_clave=["Láminas rosas que pasan a marrón y negro", "Sin volva en la base", "Carne que rosea, no amarillea", "En prados, no dentro del bosque"],
+   no_confundir_con=[
+     {"id": "amanita_phalloides", "diferencias": ["Las amanitas mortales tienen láminas blancas siempre, no rosas ni marrones", "Tienen volva blanca en saco en la base: hay que sacar la seta entera", "La forma blanca de A. phalloides comparte hábitat a veces"]},
+     {"id": "amanita_verna", "diferencias": ["A. verna es toda blanca, con láminas blancas y volva en saco", "Sale en primavera, como el champiñón"]}],
+   fuentes=[ac("agaricus-campestris", "Agaricus campestris"), GUIA, fn("agaricus-campestris", "Agaricus campestris"), sf(356498, "Agaricus campestris")])
+
+# ================= MORTALES =================
+sp(id="amanita_phalloides", nombre_cientifico="Amanita phalloides (Vaill. ex Fr.) Link", nombres_comunes=["oronja verde", "cicuta verde", "oronja mortal"],
+   grupo="mortal",
+   toxicidad_nota="MORTAL. Síndrome faloidiano (hepatotóxico, por amatoxinas). Latencia larga, de 6 a 24 h: los primeros síntomas llegan cuando el hígado ya está dañado. Causa la mayoría de las muertes por setas. Las toxinas no se destruyen al cocinar ni al congelar. Si se sospecha una intoxicación, hay que ir a urgencias aunque no haya síntomas.",
+   sombrero="De 6 a 15 cm. Verde amarillento, más oliváceo y oscuro en el centro, con fibrillas radiales; existe una forma blanca. Margen no estriado.",
+   himenio="Láminas libres, apretadas, blanco puro.",
+   pie="Blanco con un jaspeado oliváceo en zigzag, terminado en bulbo.",
+   volva="Blanca, membranosa, amplia, en forma de saco, a veces verdosa por dentro.",
+   anillo="Blanco, colgante como una faldita, persistente, estriado por arriba.",
+   carne_y_corte="Blanca, sin cambio de color.",
+   olor_sabor="Olor dulce o a rosas de joven, desagradable al envejecer. No se debe probar.",
+   esporada="Blanca.",
+   habitat="Micorrícica de Quercus: encinares, alcornocales y robledales; también castaños. Citada en el P. N. Los Alcornocales (Jimena de la Frontera) bajo alcornoque y quejigo.",
+   temporada="Otoño.",
+   fase_huevo="El huevo es blanco por fuera, como el de la oronja (A. caesarea). Cortado a lo largo es blanco por dentro y deja ver la silueta del pie y las láminas en blanco. No tiene naranja ni amarillo.",
+   rasgos_clave=["Volva blanca en saco: sacar siempre la seta entera", "Láminas blanco puro", "Anillo blanco colgante", "Sombrero verde oliváceo con fibrillas radiales (puede ser blanco)"],
+   no_confundir_con=[
+     {"id": "amanita_caesarea", "diferencias": ["A. caesarea tiene láminas, pie y anillo amarillos", "En huevo, al cortarla, la oronja muestra naranja y amarillo; la oronja verde es blanca por dentro"]},
+     {"id": "russula_cyanoxantha", "diferencias": ["Las rúsulas no tienen anillo ni volva", "Sus láminas son blanco cremosas y la carne, quebradiza"]},
+     {"id": "agaricus_campestris", "diferencias": ["El champiñón tiene láminas rosas a marrones, nunca blanco puro", "No tiene volva"]},
+     {"id": "amanita_verna", "diferencias": ["A. verna es igual de mortal; es toda blanca y sale en primavera"]}],
+   fuentes=[ac("amanita-phalloides", "Amanita phalloides"), ALV, DON, TOX, EFI, BEATY, FUNG, fn("amanita-phalloides", "Amanita phalloides"), sf(178962, "Amanita phalloides")])
+
+sp(id="amanita_verna", nombre_cientifico="Amanita verna Bull. ex Lam.", nombres_comunes=["amanita de primavera", "cicuta blanca"],
+   grupo="mortal",
+   toxicidad_nota="MORTAL. Síndrome faloidiano, igual que A. phalloides (amatoxinas), latencia de 8 a 24 h. Taxonomía en revisión: Alvarado et al. (2022) describen como A. vidua la especie primaveral mediterránea que antes se llamaba A. verna o A. decipiens.",
+   sombrero="De 5 a 10 cm. Blanco puro.",
+   himenio="Láminas libres, blancas.",
+   pie="Blanco, con bulbo en la base.",
+   volva="Blanca, grande, en forma de saco.",
+   anillo="Blanco y membranoso.",
+   carne_y_corte="Blanca, sin cambio de color.",
+   olor_sabor="Sin dato fiable en las fuentes consultadas. No se debe probar.",
+   esporada="Blanca.",
+   habitat="Suelos ácidos, probablemente con encina, rebollo y alcornoque. Holotipo de A. vidua en Galaroza (Huelva) bajo encina; los casos andaluces de primavera se concentran en el oeste.",
+   temporada="Primavera: abril a principios de junio.",
+   fase_huevo="Huevo blanco por fuera y blanco por dentro al cortarlo. Puede confundirse con el huevo de la oronja o con un champiñón joven.",
+   rasgos_clave=["Toda blanca", "Volva blanca en saco", "Láminas blancas siempre", "Sale en primavera"],
+   no_confundir_con=[
+     {"id": "amanita_caesarea", "diferencias": ["En huevo la oronja cortada muestra naranja y amarillo; A. verna es toda blanca", "La oronja adulta tiene sombrero naranja y láminas amarillas"]},
+     {"id": "agaricus_campestris", "diferencias": ["El champiñón tiene láminas rosas o marrones y no tiene volva"]},
+     {"id": "amanita_phalloides", "diferencias": ["A. phalloides suele tener el sombrero verde oliváceo y sale en otoño; igual de mortal"]}],
+   fuentes=[ALV, TOX, DON, ac("agaricus-campestris", "Agaricus campestris"), wp("es", "Amanita_verna", "Amanita verna"), sf(163667, "Amanita verna")])
+
+sp(id="lepiota_brunneoincarnata", nombre_cientifico="Lepiota brunneoincarnata Chodat & C. Martín", nombres_comunes=[],
+   grupo="mortal",
+   toxicidad_nota="MORTAL. Síndrome faloidiano (amatoxinas), latencia de 6 a 24 h. Hay intoxicaciones atribuidas a esta especie en España.",
+   sombrero="De 2 a 6 cm. Escamas concéntricas pardo ocráceas, más oscuras y juntas en el centro, sobre fondo blanquecino rosado.",
+   himenio="Láminas libres, densas, blancas a crema.",
+   pie="De 2 a 4 cm, blanquecino rosado y pardo vinoso en la base, con escamas bajo el anillo.",
+   volva="No tiene.",
+   anillo="Reducido a un rodete irregular y fugaz.",
+   carne_y_corte="Blanca y rosa vinosa en la base del pie.",
+   olor_sabor="Olor algo afrutado. No se debe probar.",
+   esporada="Blanca.",
+   habitat="Quejigales y alcornocales; citada en el P. N. Los Alcornocales (Cádiz-Málaga). También zonas herbosas bajo frondosas.",
+   temporada="Otoño.",
+   rasgos_clave=["Parece un parasol en miniatura (menos de 6 cm)", "Escamas pardas sobre fondo rosado", "Base del pie rosa vinosa", "Anillo casi inexistente"],
+   no_confundir_con=[
+     {"id": "macrolepiota_procera", "diferencias": ["El parasol mide más de 10 cm, tiene anillo doble deslizante y pie con dibujo de serpiente", "La guía andaluza aconseja no recoger lepiotas de menos de 10 cm"]}],
+   fuentes=[SOG, TOX, ALV, fn("lepiota-brunneoincarnata", "Lepiota brunneoincarnata"), wp("es", "Lepiota_brunneoincarnata", "Lepiota brunneoincarnata"), sf(247927, "Lepiota brunneoincarnata")])
+
+# ================= TÓXICAS =================
+sp(id="amanita_muscaria", nombre_cientifico="Amanita muscaria (L.) Lam.", nombres_comunes=["matamoscas", "falsa oronja", "oronja pintada"],
+   grupo="toxica",
+   toxicidad_nota="TÓXICA. Síndrome micoatropínico o panterínico (ácido iboténico y muscimol): confusión, agitación, alucinaciones y vómitos entre 0,5 y 3 h después. Rara vez mortal.",
+   sombrero="De 10 a 25 cm. Rojo escarlata que pasa a naranja con la edad, cubierto de verrugas blancas algodonosas en círculos; la lluvia puede quitarlas.",
+   himenio="Láminas libres, blanco puro.",
+   pie="Blanco, con la base engrosada.",
+   volva="No forma saco: queda como verrugas blancas en anillos incompletos alrededor del bulbo.",
+   anillo="Blanco, amplio, membranoso, con el borde algo amarillo.",
+   carne_y_corte="Blanca, anaranjada bajo la cutícula.",
+   olor_sabor="Casi sin olor ni sabor. No se debe probar.",
+   esporada="Blanca.",
+   habitat="Micorrícica de coníferas y caducifolios en suelos ácidos. Sin datos de abundancia en la zona en las fuentes consultadas.",
+   temporada="Finales de verano a finales de otoño.",
+   rasgos_clave=["Láminas y pie blancos", "Verrugas blancas sobre sombrero rojo o naranja", "Base del pie con anillos de verrugas, sin volva en saco"],
+   no_confundir_con=[
+     {"id": "amanita_caesarea", "diferencias": ["La oronja tiene láminas, pie y anillo amarillos", "Volva blanca en saco, no verrugas", "Sombrero naranja liso y estriado. Ojo: un matamoscas descolorido o sin verrugas (var. aureola) se parece más"]}],
+   fuentes=[ac("amanita-muscaria", "Amanita muscaria"), ac("amanita-caesarea", "Amanita caesarea"), TOX, DON, fn("amanita-muscaria", "Amanita muscaria"), wp("es", "Amanita_muscaria", "Amanita muscaria"), sf(161267, "Amanita muscaria")])
+
+sp(id="amanita_pantherina", nombre_cientifico="Amanita pantherina (DC.) Krombh.", nombres_comunes=["pantera", "amanita pantera", "falso galipierno"],
+   grupo="toxica",
+   toxicidad_nota="MUY TÓXICA. Síndrome micoatropínico o panterínico, más grave que el de A. muscaria y excepcionalmente mortal. Síntomas entre 0,5 y 4 h: excitación, delirio, convulsiones, vómitos; pueden durar hasta 3 días.",
+   sombrero="De 4 a 12 cm. Pardo grisáceo a marrón claro, con verrugas blanco puro dispuestas con regularidad. Margen muy estriado.",
+   himenio="Láminas libres, blancas.",
+   pie="Blanco sucio, harinoso, terminado en bulbo redondeado.",
+   volva="Circuncisa: termina en un reborde neto sobre el bulbo, con dos o tres anillos (burletes) por encima.",
+   anillo="Blanco, tipo faldita, membranoso y persistente, algo estriado por arriba; a media altura del pie.",
+   carne_y_corte="Blanca, tierna, sin cambio de color.",
+   olor_sabor="Olor débil. No se debe probar.",
+   esporada="Blanca.",
+   habitat="Bajo coníferas y caducifolios; First Nature la fotografía en alcornocales y pinares mixtos del Algarve y la señala más común en el sur de Europa.",
+   temporada="Verano y otoño; en el extremo sur puede salir hasta tres meses más tarde.",
+   rasgos_clave=["Verrugas blanco puro sobre sombrero pardo", "Margen del sombrero estriado", "Bulbo con reborde neto y anillos encima", "Láminas blancas"],
+   no_confundir_con=[
+     {"id": "macrolepiota_procera", "diferencias": ["El parasol tiene escamas pardas sobre fondo blanco, no verrugas blancas sobre fondo pardo", "Anillo doble que se desliza y pie con dibujo de serpiente", "Sin volva ni reborde en el bulbo"]}],
+   fuentes=[ac("amanita-pantherina", "Amanita pantherina"), ac("macrolepiota-procera", "Macrolepiota procera"), TOX, fn("amanita-pantherina", "Amanita pantherina"), wp("es", "Amanita_pantherina", "Amanita pantherina"), sf(156565, "Amanita pantherina")])
+
+def bol_lookalikes(dif):
+    return [{"id": b, "diferencias": dif} for b in ["boletus_edulis", "boletus_aereus", "boletus_reticulatus", "boletus_pinophilus"]]
+
+sp(id="rubroboletus_satanas", nombre_cientifico="Rubroboletus satanas (Lenz) Kuan Zhao & Zhu L. Yang", nombres_comunes=[],
+   grupo="toxica",
+   toxicidad_nota="TÓXICA. Síndrome gastrointestinal (resinoide): gastroenteritis violenta entre 0,5 y 4 h después; peor en crudo.",
+   sombrero="De 6 a 30 cm. Blanco tiza a gris muy claro, a veces con tonos oliva o rojizos; aterciopelado.",
+   himenio="Poros amarillos de muy jóvenes, luego naranjas y rojos.",
+   pie="Grueso y bulboso, rojo intenso con retículo rojo sobre fondo amarillo anaranjado.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanca a amarillenta; azulea al corte (azul verdoso) y luego se desvanece.",
+   olor_sabor="Olor desagradable en ejemplares viejos. No se debe probar.",
+   esporada="Pardo olivácea.",
+   habitat="Suelos calizos, con encinas y otros Quercus; en Cádiz a veces en alcornocales.",
+   temporada="Finales de verano y otoño.",
+   rasgos_clave=["Poros rojos o anaranjados", "Pie rojo, bulboso, con retículo", "Sombrero blanquecino", "Carne que azulea al corte"],
+   no_confundir_con=bol_lookalikes(["Los boletus de la sección edulis tienen poros blancos a amarillo verdosos, nunca rojos", "Su carne es blanca y no azulea", "Su pie es pardo o avellana, no rojo"]),
+   fuentes=[fn("rubroboletus-satanas", "Rubroboletus satanas"), LEI, TOX, ac("caloboletus-calopus", "Caloboletus calopus"), ac("caloboletus-radicans", "Caloboletus radicans"), sf(809241, "Rubroboletus satanas")])
+
+sp(id="caloboletus_calopus", nombre_cientifico="Caloboletus calopus (Pers.) Vizzini", nombres_comunes=["boleto amargo"],
+   grupo="toxica",
+   toxicidad_nota="NO COMESTIBLE. Muy amargo; el amargor no desaparece al cocinar. Puede que no sea tóxico; se incluye por su parecido con los boletus.",
+   sombrero="Hasta 20 cm. Ocre claro, gamuza o café con leche casi blanco, afieltrado de joven.",
+   himenio="Tubos y poros amarillos que azulean al dañarlos; nunca rojizos.",
+   pie="Amarillento en el ápice y rojo púrpura hacia la base, con retículo blanco arriba y rojo pardo y marcado en el medio.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Amarilla pálida, dura; azulea al corte, sobre todo en ejemplares jóvenes.",
+   olor_sabor="Olor desagradable, entre afrutado y harinoso; sabor muy amargo.",
+   esporada="Amarillenta olivácea.",
+   habitat="Bosques caducifolios, micorrícico de castaños y robles. En Cádiz, poco frecuente en bosques de Quercus.",
+   temporada="Principios de verano a otoño.",
+   rasgos_clave=["Poros amarillos que azulean", "Pie amarillo arriba y rojo abajo", "Carne que azulea al corte", "Sabor muy amargo"],
+   no_confundir_con=bol_lookalikes(["Los boletus de la sección edulis tienen poros blancos a amarillo verdosos que no azulean", "Su carne es blanca y no cambia de color", "Su pie no tiene tonos rojos"]),
+   fuentes=[ac("caloboletus-calopus", "Caloboletus calopus"), LEI, fn("caloboletus-calopus", "Caloboletus calopus"), sf(550547, "Caloboletus calopus")])
+
+sp(id="caloboletus_radicans", nombre_cientifico="Caloboletus radicans (Pers.) Vizzini", nombres_comunes=["hongo blanco", "boleto blanco"],
+   grupo="toxica",
+   toxicidad_nota="NO COMESTIBLE. Muy amargo; en crudo puede ser purgante y se cita que causa vómitos y diarrea intensos.",
+   sombrero="Hasta 20 cm. Blanco, beige o crema muy claro, pardusco en el centro; seco y cuarteado con la edad. Margen muy enrollado de joven.",
+   himenio="Tubos y poros amarillos que pasan a verde; azulean al dañarlos.",
+   pie="Robusto, amarillo claro, con retículo fino casi invisible; la base se hunde en el suelo como una raíz y tiene manchas rojizas.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanco amarillenta; azulea al corte en toda la seta y la base del pie se vuelve pardo rojiza. El azul desaparece en minutos.",
+   olor_sabor="Olor suave pero desagradable; sabor dulce al principio y luego muy amargo.",
+   esporada="Pardo olivácea.",
+   habitat="Planifolios, sobre todo robles, encinas y quejigos. En Cádiz, poco frecuente y termófilo en bosques de Quercus.",
+   temporada="Veranos lluviosos y principios de otoño.",
+   rasgos_clave=["Sombrero blanquecino", "Poros y pie amarillos", "Carne que azulea al corte", "Pie radicante; sabor muy amargo"],
+   no_confundir_con=bol_lookalikes(["Los boletus de la sección edulis tienen la carne blanca que no azulea", "Sus poros son blancos de jóvenes, no amarillo limón", "Su pie es pardo o avellana con retículo visible"]),
+   fuentes=[ac("caloboletus-radicans", "Caloboletus radicans"), LEI, wp("en", "Caloboletus_radicans", "Caloboletus radicans"), sf(550548, "Caloboletus radicans")])
+
+sp(id="tylopilus_felleus", nombre_cientifico="Tylopilus felleus (Bull.) P. Karst.", nombres_comunes=["boleto amargo"],
+   grupo="toxica",
+   toxicidad_nota="NO COMESTIBLE. Probablemente no es tóxico, pero su sabor es extremadamente amargo. Se incluye por su parecido con los boletus.",
+   sombrero="De 6 a 12 cm. Pardo aterciopelado con tonos oliva.",
+   himenio="Poros blanco crema de jóvenes y luego rosados o color coral; se manchan de pardo al tocarlos.",
+   pie="Con un retículo pardo oscuro, más oscuro que el fondo.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanca, sin cambio de color al corte.",
+   olor_sabor="Olor poco marcado; sabor muy amargo.",
+   esporada="Rosa arcilla.",
+   habitat="Bajo robles, hayas y otras frondosas, raramente coníferas. Las fuentes andaluzas consultadas no lo citan en la zona; su presencia está por confirmar.",
+   temporada="Agosto a noviembre (dato de Gran Bretaña).",
+   rasgos_clave=["Poros rosados", "Retículo pardo oscuro en el pie", "Sabor muy amargo", "Carne blanca que no cambia"],
+   no_confundir_con=bol_lookalikes(["Los boletus de la sección edulis tienen poros blancos a amarillo verdosos, nunca rosados", "Su retículo es claro o del color del pie, no pardo oscuro", "Su sabor es suave, no amargo"]),
+   fuentes=[ac("boletus-edulis", "Boletus edulis"), ac("boletus-pinophilus", "Boletus pinophilus"), fn("tylopilus-felleus", "Tylopilus felleus"), sf(122480, "Tylopilus felleus")])
+
+sp(id="omphalotus_olearius", nombre_cientifico="Omphalotus olearius (DC.) Singer", nombres_comunes=["seta de olivo"],
+   grupo="toxica",
+   toxicidad_nota="TÓXICA. Síndrome gastrointestinal con síntomas nerviosos (vértigo, mareo, hormigueos), entre 0,5 y 4 h después de comerla. La guía andaluza la cita como causa de graves trastornos digestivos.",
+   sombrero="De 7 a 20 cm. Naranja vivo a pardo anaranjado, convexo y luego hundido, con el margen ondulado.",
+   himenio="Láminas verdaderas, finas, apretadas, muy decurrentes, del color del sombrero.",
+   pie="Naranja, oscureciendo hacia la base; los pies salen unidos en matas.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Naranja por dentro y por fuera; no cambia de color.",
+   olor_sabor="Desagradables según AmanitaCesarea.com (First Nature describe un olor fuerte agradable). No se debe probar.",
+   esporada="Blanco crema.",
+   habitat="Al pie de olivos o sobre tocones y raíces de otros árboles (encinas, castaños). Crece en matas densas.",
+   temporada="Verano a otoño; First Nature indica septiembre a enero en el sur de Europa.",
+   rasgos_clave=["Láminas verdaderas, no pliegues", "Crece en matas sobre raíces o tocones", "Naranja intenso por fuera y por dentro", "Sale sobre todo al pie de olivos"],
+   no_confundir_con=[
+     {"id": "cantharellus_cibarius", "diferencias": ["El rebozuelo tiene pliegues gruesos y bifurcados, no láminas finas", "Es amarillo yema, crece en el suelo y no en matas sobre madera", "Huele a albaricoque"]}],
+   fuentes=[ac("cantharellus-cibarius", "Cantharellus cibarius"), GUIA, TOX, fn("omphalotus-olearius", "Omphalotus olearius"), wp("es", "Omphalotus_olearius", "Omphalotus olearius"), sf(288943, "Omphalotus olearius")])
+
+sp(id="lactarius_torminosus", nombre_cientifico="Lactarius torminosus (Schaeff.) Pers.", nombres_comunes=["falso níscalo", "níscalo de cabra"],
+   grupo="toxica",
+   toxicidad_nota="TÓXICA. Síndrome gastrointestinal (resinoide), entre 0,5 y 4 h después. Sabor muy acre.",
+   sombrero="De 4 a 12 cm. Naranja claro con círculos rojos, rosas y blancos; el borde, enrollado, está cubierto de pelos blanquecinos largos (aspecto lanoso).",
+   himenio="Láminas blanco rosado cremoso, apretadas.",
+   pie="Crema blanquecino, hueco con la edad.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanco cremosa; látex blanco que no cambia (algo amarillento sobre papel blanco).",
+   olor_sabor="Olor suave a fruta; sabor muy acre.",
+   esporada="Crema.",
+   habitat="Asociado casi siempre al abedul. Las fuentes andaluzas consultadas no lo citan en la zona.",
+   temporada="Otoño y finales de verano tormentosos.",
+   rasgos_clave=["Borde del sombrero lanoso, con pelos", "Látex blanco", "Láminas crema rosadas, no naranjas", "Con abedules"],
+   no_confundir_con=[
+     {"id": "lactarius_deliciosus", "diferencias": ["El níscalo no tiene pelos en el borde", "Su látex y sus láminas son naranjas, con manchas verdes", "Crece bajo pinos"]}],
+   fuentes=[ac("lactarius-torminosus", "Lactarius torminosus"), ac("lactarius-deliciosus", "Lactarius deliciosus"), TOX, fn("lactarius-torminosus", "Lactarius torminosus"), sf(228133, "Lactarius torminosus")])
+
+sp(id="lactarius_chrysorrheus", nombre_cientifico="Lactarius chrysorrheus Fr.", nombres_comunes=["falso níscalo"],
+   grupo="toxica",
+   toxicidad_nota="TÓXICA. Síndrome gastrointestinal (resinoide); tóxica también cocinada. Látex muy acre.",
+   sombrero="De 3 a 8 cm. Rosa salmón con zonas más oscuras, algo grasiento.",
+   himenio="Láminas crema anaranjado.",
+   pie="Claro.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Látex blanco que se vuelve amarillo azufre en pocos segundos al aire.",
+   olor_sabor="Sabor suave y luego amargo y picante. No se debe probar.",
+   esporada="Blanco crema con tinte salmón.",
+   habitat="Casi siempre con robles y otros Quercus. Sin cita concreta en la zona en las fuentes consultadas, aunque la guía andaluza la menciona como posible confusión del níscalo.",
+   temporada="Otoño; First Nature indica que en países mediterráneos llega hasta febrero.",
+   rasgos_clave=["Látex blanco que amarillea en segundos", "Bajo Quercus, no bajo pinos", "Más pequeño que el níscalo", "Sin manchas verdes"],
+   no_confundir_con=[
+     {"id": "lactarius_deliciosus", "diferencias": ["El níscalo tiene látex naranja que no amarillea", "Tiene manchas verdes y sale bajo pinos"]}],
+   fuentes=[GUIA, fn("lactarius-chrysorrheus", "Lactarius chrysorrheus"), TOX, wp("en", "Lactarius_chrysorrheus", "Lactarius chrysorrheus"), sf(233874, "Lactarius chrysorrheus")])
+
+sp(id="chlorophyllum_rhacodes", nombre_cientifico="Chlorophyllum rhacodes (Vittad.) Vellinga y C. brunneum (Farl. & Burt) Vellinga", nombres_comunes=["apagador menor"],
+   grupo="toxica",
+   toxicidad_nota="TÓXICA O DUDOSA. C. brunneum se considera tóxica (gastroenteritis). C. rhacodes se tuvo por comestible, pero hoy hay dudas porque resulta indigesta para algunas personas y su clasificación es confusa. C. molybdites, de láminas verdosas, también es tóxica.",
+   sombrero="Hasta 20 cm. Globoso y luego extendido, sin mamelón o con uno muy leve. Escamas grandes pardo grisáceas sobre fondo blanco rosado.",
+   himenio="Láminas libres, blancas, luego ocres; color herrumbre donde se dañan.",
+   pie="Liso, sin dibujo de piel de serpiente, blanquecino arriba y ocre óxido abajo. Base engrosada poco a poco (C. rhacodes) o bruscamente bulbosa y marginada (C. brunneum).",
+   volva="No tiene.",
+   anillo="Doble y deslizante en C. rhacodes; simple, pardo por debajo, en C. brunneum.",
+   carne_y_corte="Blanquecina, enrojece poco a poco al corte, sobre todo en el pie.",
+   olor_sabor="Olor agradable. No se debe probar.",
+   esporada="Blanquecina (verde en C. molybdites).",
+   habitat="Claros de bosque, pastizales, bordes de caminos y zonas ricas en materia orgánica.",
+   temporada="Otoño.",
+   rasgos_clave=["Carne que enrojece al corte", "Pie liso, sin dibujo de serpiente", "Bulbo brusco y marginado en C. brunneum", "Escamas gruesas sobre el sombrero"],
+   no_confundir_con=[
+     {"id": "macrolepiota_procera", "diferencias": ["El parasol tiene el pie con bandas en zigzag (piel de serpiente)", "Su carne no enrojece al corte", "Sombrero con mamelón marcado, de 10 a 30 cm"]}],
+   fuentes=[ac("chlorophyllum-rhacodes", "Chlorophyllum rhacodes"), ac("macrolepiota-procera", "Macrolepiota procera"), fn("chlorophyllum-rhacodes", "Chlorophyllum rhacodes"), wp("en", "Shaggy_parasol", "Chlorophyllum rhacodes"), sf(374433, "Chlorophyllum rhacodes"), sf(374393, "Chlorophyllum brunneum")])
+
+# ---------- fotos ----------
+import re as _re
+def limpia_autor(a):
+    m = _re.match(r"This image was created by user (.+?) \((.+?)\) at Mushroom Observer", a)
+    if m: return f"{m.group(1)} ({m.group(2)}), Mushroom Observer"
+    a = a.replace("Björn S...", "Björn S. (Flickr)")
+    a = a.replace("No machine-readable author provided. Rigolithe assumed (based on copyright claims).", "Rigolithe")
+    a = a.replace("Russule_charbonniere.jpg: MediAtta derivative work: Ak ccm (talk)", "MediAtta; recorte de Ak ccm")
+    a = a.replace(" (the sole owner and copyright holder of this image)", "")
+    return a.strip()
+DESC = {
+ "fotos/amanita_caesarea_1.jpg": "Láminas amarillas y volva blanca en saco",
+ "fotos/amanita_caesarea_2.jpg": "Huevos abriéndose: sombrero naranja dentro de la volva blanca",
+ "fotos/amanita_caesarea_3.jpg": "Huevos y ejemplares jóvenes",
+ "fotos/amanita_phalloides_1.jpg": "Sombrero verde oliváceo y volva blanca en saco",
+ "fotos/amanita_phalloides_2.jpg": "Huevos de oronja verde cortados: interior blanco",
+ "fotos/amanita_phalloides_3.jpg": "Serie de desarrollo, de huevo a adulto",
+ "fotos/boletus_edulis_1.jpg": "Corte: carne blanca que no cambia",
+ "fotos/boletus_edulis_3.jpg": "Sección: poros amarillentos",
+ "fotos/lactarius_deliciosus_1.jpg": "Corte con látex naranja",
+ "fotos/caloboletus_calopus_1.jpg": "Corte: la carne azulea",
+ "fotos/caloboletus_radicans_2.jpg": "Corte: la carne azulea",
+ "fotos/rubroboletus_satanas_2.jpg": "Corte: carne que azulea",
+ "fotos/tylopilus_felleus_1.jpg": "Poros rosados",
+ "fotos/omphalotus_olearius_1.jpg": "Mata al pie de un olivo",
+ "fotos/cantharellus_cibarius_1.jpg": "Pliegues decurrentes, no láminas",
+ "fotos/macrolepiota_procera_2.jpg": "Pie con dibujo de piel de serpiente",
+ "fotos/lactarius_torminosus_1.jpg": "Ejemplares jóvenes de borde lanoso",
+ "fotos/lactarius_chrysorrheus_1.jpg": "Látex amarillo sobre las láminas",
+ "fotos/hydnum_repandum_1.jpg": "Aguijones bajo el sombrero",
+ "fotos/agaricus_campestris_1.jpg": "Láminas rosas, sin volva",
+}
+for e in E:
+    fs = []
+    for f in FOTOS[e["id"]]:
+        g = {"archivo": f["archivo"], "autor": limpia_autor(f["autor"]), "licencia": f["licencia"], "url_fuente": f["url_fuente"]}
+        if f["archivo"] in DESC: g["descripcion"] = DESC[f["archivo"]]
+        fs.append(g)
+    e["fotos"] = fs
+# orden de campos
+ORDER = ["id","nombre_cientifico","nombres_comunes","grupo","toxicidad_nota","sombrero","himenio","pie","volva","anillo","carne_y_corte","olor_sabor","esporada","habitat","temporada","fase_huevo","rasgos_clave","no_confundir_con","fotos","fuentes"]
+E2 = [{k: e[k] for k in ORDER if k in e} for e in E]
+json.dump(E2, open(OUT, "w"), ensure_ascii=False, indent=2)
+print(len(E2), "especies")

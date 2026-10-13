@@ -1,0 +1,2395 @@
+[
+  {
+    "id": "boletus_edulis",
+    "nombre_cientifico": "Boletus edulis Bull.",
+    "nombres_comunes": [
+      "calabaza",
+      "seta de calabaza",
+      "hongo blanco"
+    ],
+    "grupo": "apreciada",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia).",
+    "sombrero": "Hasta 25-30 cm. Marrón claro, pardo o canela, más oscuro en el centro y con el borde más pálido, casi blanco. Cutícula algo viscosa con humedad.",
+    "himenio": "Tubos y poros blancos en ejemplares jóvenes, luego amarillos y al final verdosos. No azulean al roce.",
+    "pie": "Robusto, a menudo panzudo. Retículo blanco y fino en la parte alta sobre fondo color avellana.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Blanca y gruesa. No cambia de color al corte; bajo la cutícula puede ser algo rojiza.",
+    "olor_sabor": "Olor y sabor agradables, que recuerdan a la avellana.",
+    "esporada": "Ocre olivácea.",
+    "habitat": "Bajo frondosas o coníferas, prefiere suelos ácidos. En Cádiz se cita en la sierra norte o en suelos calizos, asociado sobre todo a Quercus. La guía andaluza no da localidades concretas.",
+    "temporada": "Finales de verano a finales de otoño.",
+    "rasgos_clave": [
+      "Poros blancos a amarillo verdosos que no azulean",
+      "Carne blanca que no cambia al corte",
+      "Retículo blanco en la parte alta del pie",
+      "Borde del sombrero más claro que el centro"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "boletus_aereus",
+        "diferencias": [
+          "B. aereus tiene el sombrero mucho más oscuro, casi negro, seco y aterciopelado",
+          "Retículo del pie del mismo color que el fondo, no blanco"
+        ]
+      },
+      {
+        "id": "boletus_reticulatus",
+        "diferencias": [
+          "B. reticulatus tiene el sombrero de color avellana uniforme, sin borde claro",
+          "Retículo muy marcado hasta abajo, pardo claro"
+        ]
+      },
+      {
+        "id": "boletus_pinophilus",
+        "diferencias": [
+          "B. pinophilus tiene el sombrero rojizo, caoba, de color uniforme",
+          "Carne algo vinosa bajo la cutícula; prefiere pinares viejos"
+        ]
+      },
+      {
+        "id": "tylopilus_felleus",
+        "diferencias": [
+          "Tylopilus felleus tiene los poros rosados, no blanco amarillentos",
+          "Retículo pardo oscuro en el pie",
+          "Sabor muy amargo"
+        ]
+      },
+      {
+        "id": "rubroboletus_satanas",
+        "diferencias": [
+          "R. satanas tiene poros rojos o anaranjados",
+          "Pie rojo, bulboso",
+          "Carne que azulea al corte; sombrero blanquecino"
+        ]
+      },
+      {
+        "id": "caloboletus_calopus",
+        "diferencias": [
+          "C. calopus tiene poros amarillos que azulean al tocarlos",
+          "Pie amarillo arriba y rojo hacia la base",
+          "Carne amarilla pálida que azulea; sabor muy amargo"
+        ]
+      },
+      {
+        "id": "caloboletus_radicans",
+        "diferencias": [
+          "C. radicans tiene el sombrero blanquecino y los poros amarillos que azulean",
+          "Pie amarillo y radicante",
+          "Carne que azulea al corte; muy amarga"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/boletus_edulis_1.jpg",
+        "autor": "Ernie",
+        "licencia": "Public domain",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:AD2009Sep13_Boletus_edulis_04.jpg",
+        "descripcion": "Corte: carne blanca que no cambia"
+      },
+      {
+        "archivo": "fotos/boletus_edulis_2.jpg",
+        "autor": "Holger Krisp",
+        "licencia": "CC BY 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:(Gemeine_Steinpilz)_Boletus_edulis.jpg"
+      },
+      {
+        "archivo": "fotos/boletus_edulis_3.jpg",
+        "autor": "Kornowski",
+        "licencia": "CC BY 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_edulis_Bull._Section.jpg",
+        "descripcion": "Sección: poros amarillentos"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Boletus edulis",
+        "url": "https://www.amanitacesarea.com/boletus-edulis.html"
+      },
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "Leiva Morales, J. A., Introducción al orden Boletales en la provincia de Cádiz (Rev. Soc. Gaditana Hist. Nat. 3)",
+        "url": "https://sociedadgaditanahistorianatural.com/wp-content/uploads/2012/02/15-Leiva-SGHN-Rev-Vol3.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Boletus edulis",
+        "url": "https://www.first-nature.com/fungi/boletus-edulis.php"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Boletus edulis",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=356530"
+      }
+    ]
+  },
+  {
+    "id": "boletus_aereus",
+    "nombre_cientifico": "Boletus aereus Bull.",
+    "nombres_comunes": [
+      "tentullo",
+      "tontullo",
+      "hongo negro"
+    ],
+    "grupo": "apreciada",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia).",
+    "sombrero": "De 10-15 cm (hasta 35). Casi negro de joven, luego pardo oscuro con zonas ocres. Cutícula seca y aterciopelada; con tiempo seco se agrieta.",
+    "himenio": "Tubos y poros blancos de jóvenes, luego amarillentos y verdosos. No cambian de color al roce.",
+    "pie": "Duro y macizo, más claro que el sombrero, con un retículo fino del mismo tono que el fondo.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Blanca, firme y compacta. No cambia al corte, ni siquiera bajo la cutícula.",
+    "olor_sabor": "Agradables.",
+    "esporada": "Amarillo ocrácea a amarillo olivácea.",
+    "habitat": "Alcornocales y castañares de Andalucía occidental; asociado a robles, encinas, alcornoques y castaños en suelos ácidos. En Cádiz es frecuente en los bosques de Quercus.",
+    "temporada": "Otoño en Andalucía. First Nature indica octubre a febrero en zonas del sur de Europa.",
+    "rasgos_clave": [
+      "Sombrero casi negro y aterciopelado",
+      "Poros blancos a amarillo verdosos que no azulean",
+      "Carne blanca que no cambia, también bajo la cutícula",
+      "Bajo alcornoques, encinas y castaños"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "boletus_edulis",
+        "diferencias": [
+          "B. edulis tiene el sombrero más pálido, algo viscoso y con borde claro",
+          "Retículo blanco sobre fondo crema"
+        ]
+      },
+      {
+        "id": "boletus_reticulatus",
+        "diferencias": [
+          "B. reticulatus es de color ocre claro, menos aterciopelado",
+          "Pie mucho más reticulado"
+        ]
+      },
+      {
+        "id": "boletus_pinophilus",
+        "diferencias": [
+          "B. pinophilus tiene tonos granate rojizos y prefiere pinares"
+        ]
+      },
+      {
+        "id": "tylopilus_felleus",
+        "diferencias": [
+          "Tylopilus felleus tiene los poros rosados",
+          "Retículo oscuro y sabor muy amargo"
+        ]
+      },
+      {
+        "id": "rubroboletus_satanas",
+        "diferencias": [
+          "R. satanas tiene sombrero blanquecino, poros rojos y pie rojo bulboso",
+          "Su carne azulea al corte"
+        ]
+      },
+      {
+        "id": "caloboletus_calopus",
+        "diferencias": [
+          "C. calopus tiene sombrero claro, poros amarillos que azulean y pie rojo en la base",
+          "Sabor muy amargo"
+        ]
+      },
+      {
+        "id": "caloboletus_radicans",
+        "diferencias": [
+          "C. radicans tiene sombrero blanquecino, poros y pie amarillos",
+          "Carne que azulea; muy amarga"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/boletus_aereus_1.jpg",
+        "autor": "Nacionalni park Una",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Vrganj_crni_Boletus_aereus.JPG"
+      },
+      {
+        "archivo": "fotos/boletus_aereus_2.jpg",
+        "autor": "Davide Puddu (Davide Puddu), Mushroom Observer",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_aereus_Bull_512322_crop.jpg"
+      },
+      {
+        "archivo": "fotos/boletus_aereus_3.jpg",
+        "autor": "Matthieu Morin",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Young_Boletus_aereus.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Boletus aereus",
+        "url": "https://www.amanitacesarea.com/boletus-aereus.html"
+      },
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "Leiva Morales, J. A., Introducción al orden Boletales en la provincia de Cádiz (Rev. Soc. Gaditana Hist. Nat. 3)",
+        "url": "https://sociedadgaditanahistorianatural.com/wp-content/uploads/2012/02/15-Leiva-SGHN-Rev-Vol3.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Boletus aereus",
+        "url": "https://www.first-nature.com/fungi/boletus-aereus.php"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Boletus aereus",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=159051"
+      }
+    ]
+  },
+  {
+    "id": "boletus_reticulatus",
+    "nombre_cientifico": "Boletus reticulatus Schaeff. (= B. aestivalis)",
+    "nombres_comunes": [
+      "boleto reticulado",
+      "boleto estival"
+    ],
+    "grupo": "apreciada",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia).",
+    "sombrero": "Hasta 25 cm. Marrón claro o avellana, de color uniforme y sin borde más claro. Superficie de lisa a afieltrada; con sequedad se cuartea en placas.",
+    "himenio": "Tubos y poros blancos, luego amarillentos. No azulean al roce.",
+    "pie": "Panzudo en ejemplares jóvenes, marrón claro, cubierto por una red (retículo) bien marcada que baja casi hasta la base.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Blanca, también bajo la cutícula. No cambia al corte; solo amarillea junto a los tubos.",
+    "olor_sabor": "Agradables, ligeramente dulces.",
+    "esporada": "Ocre olivácea.",
+    "habitat": "Sobre todo bajo frondosas (robles, castaños, hayas, encinas), en suelos silíceos. En Cádiz es frecuente en bosques de Quercus; es termófilo y necesita lluvias abundantes.",
+    "temporada": "Finales de primavera a finales de verano; en Cádiz puede salir en otoño y en primavera.",
+    "rasgos_clave": [
+      "Retículo muy marcado en todo el pie",
+      "Sombrero avellana uniforme, sin borde claro",
+      "Poros blancos a amarillentos que no azulean",
+      "Carne blanca que no cambia"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "boletus_edulis",
+        "diferencias": [
+          "B. edulis tiene el borde del sombrero más claro y la cutícula algo viscosa",
+          "Retículo blanco solo en la parte alta"
+        ]
+      },
+      {
+        "id": "boletus_aereus",
+        "diferencias": [
+          "B. aereus es mucho más oscuro y su retículo es menos evidente"
+        ]
+      },
+      {
+        "id": "boletus_pinophilus",
+        "diferencias": [
+          "B. pinophilus es granate rojizo y suele salir en pinares"
+        ]
+      },
+      {
+        "id": "tylopilus_felleus",
+        "diferencias": [
+          "Tylopilus felleus tiene los poros rosados y el retículo oscuro",
+          "Sabor muy amargo"
+        ]
+      },
+      {
+        "id": "rubroboletus_satanas",
+        "diferencias": [
+          "R. satanas tiene poros rojos, pie rojo y carne que azulea"
+        ]
+      },
+      {
+        "id": "caloboletus_calopus",
+        "diferencias": [
+          "C. calopus tiene poros amarillos que azulean y pie rojo en la base",
+          "Sabor muy amargo"
+        ]
+      },
+      {
+        "id": "caloboletus_radicans",
+        "diferencias": [
+          "C. radicans tiene poros y pie amarillos y carne que azulea",
+          "Pie radicante; sabor muy amargo"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/boletus_reticulatus_1.jpg",
+        "autor": "Björn S. (Flickr)",
+        "licencia": "CC BY-SA 2.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_reticulatus_(27473289563).jpg"
+      },
+      {
+        "archivo": "fotos/boletus_reticulatus_2.jpg",
+        "autor": "Björn S. (Flickr)",
+        "licencia": "CC BY-SA 2.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_reticulatus_(28539035004).jpg"
+      },
+      {
+        "archivo": "fotos/boletus_reticulatus_3.jpg",
+        "autor": "Paffka",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_reticulatus2.JPG"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Boletus reticulatus",
+        "url": "https://www.amanitacesarea.com/boletus-reticulatus.html"
+      },
+      {
+        "titulo": "Leiva Morales, J. A., Introducción al orden Boletales en la provincia de Cádiz (Rev. Soc. Gaditana Hist. Nat. 3)",
+        "url": "https://sociedadgaditanahistorianatural.com/wp-content/uploads/2012/02/15-Leiva-SGHN-Rev-Vol3.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Boletus reticulatus",
+        "url": "https://www.first-nature.com/fungi/boletus-reticulatus.php"
+      },
+      {
+        "titulo": "Wikipedia (es), Boletus reticulatus (fuente secundaria)",
+        "url": "https://es.wikipedia.org/wiki/Boletus_reticulatus"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Boletus reticulatus",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=200521"
+      }
+    ]
+  },
+  {
+    "id": "boletus_pinophilus",
+    "nombre_cientifico": "Boletus pinophilus Pilát & Dermek",
+    "nombres_comunes": [
+      "hongo de pino",
+      "boleto pinícola"
+    ],
+    "grupo": "apreciada",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia).",
+    "sombrero": "Hasta 30 cm. Marrón rojizo o caoba, de color uniforme y liso.",
+    "himenio": "Tubos blancos, luego amarillentos y pronto amarillo verde oliva. Poros del mismo color.",
+    "pie": "Muy grueso y panzudo hacia la base, de color parecido al sombrero pero más claro, con retículo crema a rojizo en el ápice.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Blanca, consistente; de tono vinoso bajo la cutícula. No se describe cambio de color al corte.",
+    "olor_sabor": "Agradables, dulces y perfumados.",
+    "esporada": "Ocre olivácea.",
+    "habitat": "Pinares viejos, a veces hayedos. En Cádiz, Leiva lo considera difícil de localizar (como B. pinicola). La guía andaluza no lo recoge: su presencia en la zona está por confirmar.",
+    "temporada": "Primavera y verano con lluvia, y sobre todo otoño.",
+    "rasgos_clave": [
+      "Sombrero rojo caoba uniforme",
+      "Pie muy grueso con retículo rojizo arriba",
+      "Carne blanca, vinosa bajo la cutícula",
+      "Asociado a pinos grandes"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "boletus_edulis",
+        "diferencias": [
+          "B. edulis es más pálido, con el borde casi blanco y retículo blanco"
+        ]
+      },
+      {
+        "id": "boletus_aereus",
+        "diferencias": [
+          "B. aereus es casi negro y sale con Quercus y castaños"
+        ]
+      },
+      {
+        "id": "boletus_reticulatus",
+        "diferencias": [
+          "B. reticulatus es ocre claro y tiene el pie mucho más reticulado"
+        ]
+      },
+      {
+        "id": "tylopilus_felleus",
+        "diferencias": [
+          "Tylopilus felleus tiene el himenio rosa, no blanco amarillento",
+          "Sabor muy amargo"
+        ]
+      },
+      {
+        "id": "rubroboletus_satanas",
+        "diferencias": [
+          "R. satanas tiene poros rojos, pie rojo y carne que azulea"
+        ]
+      },
+      {
+        "id": "caloboletus_calopus",
+        "diferencias": [
+          "C. calopus tiene poros amarillos que azulean y sabor muy amargo"
+        ]
+      },
+      {
+        "id": "caloboletus_radicans",
+        "diferencias": [
+          "C. radicans tiene sombrero blanquecino, poros amarillos que azulean y sabor muy amargo"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/boletus_pinophilus_1.jpg",
+        "autor": "Mariia Goncharskaia",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_pinophilus_15.jpg"
+      },
+      {
+        "archivo": "fotos/boletus_pinophilus_2.jpg",
+        "autor": "Jose Angel Urquia Goitia",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Onddo_pinua_azpitik.jpg"
+      },
+      {
+        "archivo": "fotos/boletus_pinophilus_3.jpg",
+        "autor": "Finnish Biodiversity Information Facility",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_pinophilus_12.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Boletus pinophilus",
+        "url": "https://www.amanitacesarea.com/boletus-pinophilus.html"
+      },
+      {
+        "titulo": "Leiva Morales, J. A., Introducción al orden Boletales en la provincia de Cádiz (Rev. Soc. Gaditana Hist. Nat. 3)",
+        "url": "https://sociedadgaditanahistorianatural.com/wp-content/uploads/2012/02/15-Leiva-SGHN-Rev-Vol3.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Boletus pinophilus",
+        "url": "https://www.first-nature.com/fungi/boletus-pinophilus.php"
+      },
+      {
+        "titulo": "Wikipedia (es), Boletus pinophilus (fuente secundaria)",
+        "url": "https://es.wikipedia.org/wiki/Boletus_pinophilus"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Boletus pinophilus",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=309751"
+      }
+    ]
+  },
+  {
+    "id": "amanita_caesarea",
+    "nombre_cientifico": "Amanita caesarea (Scop.) Pers.",
+    "nombres_comunes": [
+      "oronja",
+      "tana",
+      "yema",
+      "amanita de los césares"
+    ],
+    "grupo": "apreciada",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia). En fase de huevo no debe consumirse nunca sin confirmación experta: cerrada puede confundirse con la oronja verde (Amanita phalloides), mortal.",
+    "sombrero": "De 8 a 25 cm. Naranja vivo, a veces con placas blancas de la volva. Liso, algo viscoso y brillante, con el margen estriado.",
+    "himenio": "Láminas libres, amarillo pálido al principio y luego amarillo dorado.",
+    "pie": "Amarillo, del mismo color que las láminas y el anillo, con la base engrosada.",
+    "volva": "Blanca o algo grisácea, membranosa, amplia y en forma de saco. De joven envuelve toda la seta como un huevo.",
+    "anillo": "Amarillo, amplio, colgante, frágil y estriado por arriba.",
+    "carne_y_corte": "Blanca, amarillenta bajo la cutícula. Al cortar el pie se ve amarillo por fuera y blanco en el centro.",
+    "olor_sabor": "Olor suave; sabor agradable, a nuez.",
+    "esporada": "Blanca, a veces algo amarillenta.",
+    "habitat": "Alcornocales y castañares de Andalucía occidental. Muy abundante en el P. N. Los Alcornocales (Cádiz-Málaga); menos frecuente en el resto de Málaga y casi ausente en Andalucía oriental. Bajo encinas, alcornoques, robles y castaños.",
+    "temporada": "Principios de otoño o pleno verano, siempre tras tormentas abundantes. Es termófila y desaparece cuando el otoño enfría.",
+    "fase_huevo": "El huevo cerrado es blanco por fuera, igual que el de la oronja verde o el de Amanita verna. Cortado de arriba abajo, el de A. caesarea deja ver ya el sombrero naranja y las láminas y el pie amarillos dentro de una volva blanca, amplia y en forma de saco. El de A. phalloides y A. verna es blanco por dentro, sin naranja ni amarillo. Aun así, un huevo nunca debe consumirse sin la confirmación de un experto.",
+    "rasgos_clave": [
+      "Láminas, pie y anillo amarillos",
+      "Volva blanca, membranosa y en forma de saco",
+      "Sombrero naranja liso con margen estriado",
+      "En huevo: al cortarlo, interior naranja y amarillo"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "amanita_muscaria",
+        "diferencias": [
+          "A. muscaria tiene láminas, pie y anillo blancos, nunca amarillos",
+          "Su volva se reduce a verrugas en anillos incompletos, no forma un saco",
+          "Sombrero rojo con muchas verrugas blancas; la lluvia o el sol pueden quitarlas o decolorarlo"
+        ]
+      },
+      {
+        "id": "amanita_phalloides",
+        "diferencias": [
+          "En huevo, A. phalloides es blanca o verdosa por dentro al cortarla; A. caesarea muestra naranja y amarillo",
+          "Adulta: sombrero verde amarillento a oliváceo y láminas blanco puro",
+          "Pie blanco con dibujo en zigzag; anillo blanco"
+        ]
+      },
+      {
+        "id": "amanita_verna",
+        "diferencias": [
+          "En huevo, A. verna es blanca por dentro al cortarla",
+          "Adulta: toda blanca, láminas blancas y volva en saco",
+          "Sale sobre todo en primavera"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/amanita_caesarea_1.jpg",
+        "autor": "Gobrona",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_caesarea._Ekadia_Forest_Park_(2).jpg",
+        "descripcion": "Láminas amarillas y volva blanca en saco"
+      },
+      {
+        "archivo": "fotos/amanita_caesarea_2.jpg",
+        "autor": "Louis Aureglia",
+        "licencia": "CC BY 4.0",
+        "url_fuente": "https://www.inaturalist.org/photos/236769065",
+        "descripcion": "Huevos abriéndose: sombrero naranja dentro de la volva blanca"
+      },
+      {
+        "archivo": "fotos/amanita_caesarea_3.jpg",
+        "autor": "Nikolay Kashpor",
+        "licencia": "CC BY 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_caesarea.Mushrooms_of_Russia.jpg",
+        "descripcion": "Huevos y ejemplares jóvenes"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Amanita caesarea",
+        "url": "https://www.amanitacesarea.com/amanita-caesarea.html"
+      },
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "Enciclopedia dei Funghi Italiani, glosario: Caesarea (corte del huevo)",
+        "url": "https://enciclopedia.funghiitaliani.it/termine.php?show=299"
+      },
+      {
+        "titulo": "Naturnext, Ovolo buono (Amanita caesarea): guía micológica (fuente secundaria)",
+        "url": "https://www.naturnext.eu/it/ovolo-buono-amanita-caesarea-guida-micologica-completa"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Amanita caesarea",
+        "url": "https://www.first-nature.com/fungi/amanita-caesarea.php"
+      },
+      {
+        "titulo": "Wikipedia (es), Amanita caesarea (fuente secundaria)",
+        "url": "https://es.wikipedia.org/wiki/Amanita_caesarea"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Amanita caesarea",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=208468"
+      }
+    ]
+  },
+  {
+    "id": "lactarius_deliciosus",
+    "nombre_cientifico": "Lactarius deliciosus (L.) Gray",
+    "nombres_comunes": [
+      "níscalo",
+      "mízcalo",
+      "guíscano",
+      "nízcalo"
+    ],
+    "grupo": "apreciada",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia). Especies próximas: L. sanguifluus (carne y látex que viran a rojo vino) y L. semisanguifluus, también citadas como comestibles. L. vinosus es para Index Fungorum sinónimo de L. sanguifluus.",
+    "sombrero": "De 4 a 20 cm (hasta 25). Naranja con círculos concéntricos más claros y más oscuros, margen enrollado. Con la edad se hunde en embudo y aparecen manchas verdes.",
+    "himenio": "Láminas naranjas, apretadas, que se vuelven verdes donde se dañan.",
+    "pie": "Corto, hueco con la edad, quebradizo, con hoyuelos o manchas más oscuras.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Blanca o zanahoria, que al corte vira enseguida a naranja y luego a verde. Látex naranja que mantiene su color.",
+    "olor_sabor": "Olor agradable, algo resinoso; sabor dulce, ligeramente acre.",
+    "esporada": "Crema a ocre clara.",
+    "habitat": "Pinares de suelos ácidos; también bosques mixtos de pino y roble. Muy frecuente en toda Andalucía.",
+    "temporada": "Otoño y principios de invierno; abundante en años lluviosos.",
+    "rasgos_clave": [
+      "Látex naranja que no cambia a blanco ni a amarillo",
+      "Manchas verdes en láminas y sombrero",
+      "Sombrero naranja con zonas concéntricas",
+      "Bajo pinos"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "lactarius_torminosus",
+        "diferencias": [
+          "L. torminosus tiene el borde del sombrero muy lanoso, con pelos blancos",
+          "Látex blanco y sabor muy acre",
+          "Láminas crema rosadas, no naranjas; crece con abedules"
+        ]
+      },
+      {
+        "id": "lactarius_chrysorrheus",
+        "diferencias": [
+          "L. chrysorrheus da un látex blanco que se vuelve amarillo azufre en segundos",
+          "Es más pequeño y sale con robles y alcornoques, no con pinos"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/lactarius_deliciosus_1.jpg",
+        "autor": "Roberto Zanon",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Lactarius_deliciosus_cut.jpg",
+        "descripcion": "Corte con látex naranja"
+      },
+      {
+        "archivo": "fotos/lactarius_deliciosus_2.jpg",
+        "autor": "Holger Krisp",
+        "licencia": "CC BY 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Echte_Reizker_Lactarius_deliciosus.JPG"
+      },
+      {
+        "archivo": "fotos/lactarius_deliciosus_3.jpg",
+        "autor": "Retama",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Lactarius_deliciosus,_Spain.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Lactarius deliciosus",
+        "url": "https://www.amanitacesarea.com/lactarius-deliciosus.html"
+      },
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Lactarius deliciosus",
+        "url": "https://www.first-nature.com/fungi/lactarius-deliciosus.php"
+      },
+      {
+        "titulo": "Wikipedia (es), Lactarius sanguifluus (fuente secundaria)",
+        "url": "https://es.wikipedia.org/wiki/Lactarius_sanguifluus"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Lactarius deliciosus",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=224737"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Lactarius sanguifluus",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=229103"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Lactarius vinosus",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=456055"
+      }
+    ]
+  },
+  {
+    "id": "cantharellus_cibarius",
+    "nombre_cientifico": "Cantharellus cibarius Fr.",
+    "nombres_comunes": [
+      "rebozuelo",
+      "cabrilla",
+      "chantarela"
+    ],
+    "grupo": "apreciada",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia). La guía andaluza trata el rebozuelo local como C. subpruinosus (hoy C. pallens), muy parecido.",
+    "sombrero": "De 3 a 10 cm. Amarillo de pálido a yema de huevo, irregular, en forma de embudo con el margen ondulado.",
+    "himenio": "Sin láminas verdaderas: pliegues gruesos, bifurcados y muy decurrentes por el pie, del color del sombrero.",
+    "pie": "Del mismo amarillo, lleno, se estrecha hacia abajo.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Firme, blanquecina, algo amarillenta en los bordes.",
+    "olor_sabor": "Olor afrutado, a albaricoque; sabor dulzón.",
+    "esporada": "Crema clara a blanco amarillenta.",
+    "habitat": "Suelos ácidos bajo coníferas, frondosas y jarales. Frecuente en años lluviosos en Cádiz, Córdoba, Huelva y Málaga, y especialmente abundante en el P. N. Los Alcornocales.",
+    "temporada": "Otoño y finales de primavera. First Nature indica octubre a marzo en el sur de Europa.",
+    "rasgos_clave": [
+      "Pliegues gruesos y bifurcados en vez de láminas",
+      "Todo amarillo yema, sin tonos naranja intenso",
+      "Olor a albaricoque",
+      "Crece en el suelo, no en matas sobre raíces o tocones"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "omphalotus_olearius",
+        "diferencias": [
+          "Omphalotus tiene láminas verdaderas, finas y apretadas, no pliegues",
+          "Color naranja a pardo anaranjado más intenso",
+          "Crece en matas al pie de olivos u otros árboles, sobre raíces o tocones",
+          "Olor y sabor desagradables según AmanitaCesarea.com"
+        ]
+      },
+      {
+        "id": "hydnum_repandum",
+        "diferencias": [
+          "Hydnum tiene aguijones bajo el sombrero en lugar de pliegues",
+          "Sombrero crema a ocre, más pálido"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/cantharellus_cibarius_1.jpg",
+        "autor": "Jose Angel Urquia Goitia",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Cantharellus_cibarius_5.jpg",
+        "descripcion": "Pliegues decurrentes, no láminas"
+      },
+      {
+        "archivo": "fotos/cantharellus_cibarius_2.jpg",
+        "autor": "Laura Tarvainen",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Cantharellus_cibarius_20180928_224540.jpg"
+      },
+      {
+        "archivo": "fotos/cantharellus_cibarius_3.jpg",
+        "autor": "Dr. Hans-Günter Wagner",
+        "licencia": "CC BY-SA 2.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Cantharellus_cibarius_(50199063302).jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Cantharellus cibarius",
+        "url": "https://www.amanitacesarea.com/cantharellus-cibarius.html"
+      },
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Cantharellus cibarius",
+        "url": "https://www.first-nature.com/fungi/cantharellus-cibarius.php"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Cantharellus cibarius",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=200345"
+      }
+    ]
+  },
+  {
+    "id": "macrolepiota_procera",
+    "nombre_cientifico": "Macrolepiota procera (Scop.) Singer",
+    "nombres_comunes": [
+      "parasol",
+      "paraguas",
+      "gallipierno",
+      "apagador"
+    ],
+    "grupo": "apreciada",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia). La guía andaluza advierte que no deben recogerse lepiotas de menos de 10 cm: algunas son mortales.",
+    "sombrero": "De 10 a 30 cm. Ovalado de joven (como un palillo de tambor), luego plano con un mamelón central. Escamas pardas sobre fondo blanco sucio.",
+    "himenio": "Láminas libres, blanco cremosas, apretadas.",
+    "pie": "Muy largo (15-40 cm), hueco, fibroso, con bandas en zigzag pardo grisáceas (dibujo de piel de serpiente) y bulbo en la base.",
+    "volva": "No tiene volva verdadera; solo un bulbo en la base del pie.",
+    "anillo": "Doble, grande, blanco por arriba y crema por abajo; se desliza por el pie.",
+    "carne_y_corte": "Blanquecina; vira solo un poco a rosa tostado. No enrojece claramente.",
+    "olor_sabor": "Suaves y agradables, a nuez.",
+    "esporada": "Blanquecina.",
+    "habitat": "Claros herbosos de bosques de coníferas y de Quercus, pastizales y bordes de camino. Muy frecuente y abundante en toda Andalucía.",
+    "temporada": "Otoño.",
+    "rasgos_clave": [
+      "Pie con dibujo de piel de serpiente",
+      "Anillo doble que se desliza",
+      "Sombrero grande, de más de 10 cm",
+      "Carne que no enrojece al corte"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "chlorophyllum_rhacodes",
+        "diferencias": [
+          "Chlorophyllum tiene el pie liso, sin dibujo de serpiente",
+          "Su carne enrojece al corte, sobre todo en el pie",
+          "C. brunneum tiene bulbo brusco y marginado"
+        ]
+      },
+      {
+        "id": "lepiota_brunneoincarnata",
+        "diferencias": [
+          "Lepiota brunneoincarnata es pequeña: sombrero de 2 a 6 cm",
+          "Escamas pardas sobre fondo rosado y carne rosa vinosa en la base del pie",
+          "Anillo reducido a un rodete fugaz"
+        ]
+      },
+      {
+        "id": "amanita_pantherina",
+        "diferencias": [
+          "A. pantherina tiene verrugas blancas sobre sombrero pardo y margen estriado",
+          "Volva con reborde y anillos en la base del pie",
+          "Anillo membranoso simple, no doble"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/macrolepiota_procera_1.jpg",
+        "autor": "Gouwenaar",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:20101005_grote_parasolzwam.jpeg"
+      },
+      {
+        "archivo": "fotos/macrolepiota_procera_2.jpg",
+        "autor": "Rigolithe",
+        "licencia": "Public domain",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Macrolepiota_procera_(young).jpg",
+        "descripcion": "Pie con dibujo de piel de serpiente"
+      },
+      {
+        "archivo": "fotos/macrolepiota_procera_3.jpg",
+        "autor": "Dinesh Valke from Thane, India",
+        "licencia": "CC BY-SA 2.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Agaricaceae_%C2%BB_Macrolepiota_procera_(Scop.)_Singer_(4757475733).jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Macrolepiota procera",
+        "url": "https://www.amanitacesarea.com/macrolepiota-procera.html"
+      },
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Macrolepiota procera",
+        "url": "https://www.first-nature.com/fungi/macrolepiota-procera.php"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Macrolepiota procera",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=287857"
+      }
+    ]
+  },
+  {
+    "id": "suillus_bellinii",
+    "nombre_cientifico": "Suillus bellinii (Inzenga) Kuntze",
+    "nombres_comunes": [],
+    "grupo": "comestible_menor",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia). Se aconseja retirar la cutícula viscosa.",
+    "sombrero": "Hasta 15 cm. Pardo, con zonas blanquecinas hacia el borde, muy viscoso.",
+    "himenio": "Tubos cortos; poros pequeños, blanquecinos a beige y luego amarillentos.",
+    "pie": "Corto y robusto, blanquecino, con granulaciones rojizas.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Blanquecina y firme, amarillenta en la base. No se describe cambio de color al corte.",
+    "olor_sabor": "Sin dato en las fuentes consultadas.",
+    "esporada": "Parda.",
+    "habitat": "Pinares mediterráneos litorales y de interior, con Pinus halepensis, P. pinaster y P. pinea. Frecuente en Andalucía y en Cádiz.",
+    "temporada": "Las fuentes andaluzas citan las especies próximas en otoños y primaveras lluviosas; sin dato específico para S. bellinii.",
+    "rasgos_clave": [
+      "Sombrero muy viscoso, pardo con borde claro",
+      "Pie corto y robusto con granulaciones rojizas",
+      "Siempre bajo pinos",
+      "Sin anillo"
+    ],
+    "no_confundir_con": [],
+    "fotos": [
+      {
+        "archivo": "fotos/suillus_bellinii_1.jpg",
+        "autor": "zaca",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Suillus_bellinii_profile.jpg"
+      },
+      {
+        "archivo": "fotos/suillus_bellinii_2.jpg",
+        "autor": "Davide Puddu",
+        "licencia": "CC BY 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Suillus_bellinii_cropped_regrouped.jpg"
+      },
+      {
+        "archivo": "fotos/suillus_bellinii_3.jpg",
+        "autor": "zaca",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Suillus_bellinii_4.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "Leiva Morales, J. A., Introducción al orden Boletales en la provincia de Cádiz (Rev. Soc. Gaditana Hist. Nat. 3)",
+        "url": "https://sociedadgaditanahistorianatural.com/wp-content/uploads/2012/02/15-Leiva-SGHN-Rev-Vol3.pdf"
+      },
+      {
+        "titulo": "Wikipedia (en), Suillus bellinii (fuente secundaria)",
+        "url": "https://en.wikipedia.org/wiki/Suillus_bellinii"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Suillus bellinii",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=324328"
+      }
+    ]
+  },
+  {
+    "id": "hydnum_repandum",
+    "nombre_cientifico": "Hydnum repandum L.",
+    "nombres_comunes": [
+      "lengua de gato",
+      "lengua de oveja",
+      "lengua de vaca"
+    ],
+    "grupo": "comestible_menor",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia). Sabor algo amargo, más en ejemplares viejos.",
+    "sombrero": "De 3 a 15 cm. Crema, blanquecino o amarillento, irregular y lobulado, aterciopelado y seco.",
+    "himenio": "Aguijones (pinchos) crema, apretados, que se desprenden con facilidad. No tiene láminas ni poros.",
+    "pie": "Corto, macizo, a veces descentrado, del color del sombrero o más claro.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Blanca, luego crema amarillenta; dura pero frágil. Sin cambio de color descrito.",
+    "olor_sabor": "Olor muy suave; sabor algo amargo.",
+    "esporada": "Crema blanquecina.",
+    "habitat": "Sobre todo encinares, más raramente pinares. En Andalucía no es muy frecuente; la guía la cita en las sierras de Jaén y Córdoba en otoños lluviosos.",
+    "temporada": "Otoño avanzado; aguanta el frío y es de las últimas en desaparecer.",
+    "rasgos_clave": [
+      "Aguijones bajo el sombrero en vez de láminas",
+      "Sombrero crema e irregular",
+      "Pie corto y macizo",
+      "Según la guía andaluza no tiene confusión con setas venenosas"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "cantharellus_cibarius",
+        "diferencias": [
+          "El rebozuelo tiene pliegues decurrentes, no aguijones",
+          "Es amarillo yema y huele a albaricoque"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/hydnum_repandum_1.jpg",
+        "autor": "Megalogena",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Hydnum_repandum_10.jpg",
+        "descripcion": "Aguijones bajo el sombrero"
+      },
+      {
+        "archivo": "fotos/hydnum_repandum_2.jpg",
+        "autor": "Alan Rockefeller (Alan Rockefeller), Mushroom Observer",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:2012-08-29_Hydnum_repandum_L_256175.jpg"
+      },
+      {
+        "archivo": "fotos/hydnum_repandum_3.jpg",
+        "autor": "Rosser1954",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Hydnum_repandum_-_Hedgehog_Fungus_spore_bearing_spines.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Hydnum repandum",
+        "url": "https://www.amanitacesarea.com/hydnum-repandum.html"
+      },
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Hydnum repandum",
+        "url": "https://www.first-nature.com/fungi/hydnum-repandum.php"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Hydnum repandum",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=225014"
+      }
+    ]
+  },
+  {
+    "id": "lepista_nuda",
+    "nombre_cientifico": "Lepista nuda (Bull.) Cooke (Index Fungorum: Collybia nuda)",
+    "nombres_comunes": [
+      "pie azul"
+    ],
+    "grupo": "comestible_menor",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia).",
+    "sombrero": "De 5 a 15 cm. Violeta, azul violeta o marrón violáceo; con la edad o la sequedad pasa a crema u ocre. Liso, sin estrías.",
+    "himenio": "Láminas lila violáceas, apretadas, un poco decurrentes en adultos; se separan fácilmente del sombrero.",
+    "pie": "Violáceo, fibroso, con la base algo bulbosa y micelio blanco violáceo pegado a hojas y tierra.",
+    "volva": "No tiene.",
+    "anillo": "No tiene. Sin cortina (tela de araña) en el pie.",
+    "carne_y_corte": "Blanca con reflejos violetas; tierna. Sin cambio de color descrito.",
+    "olor_sabor": "Olor afrutado característico; sabor suave y dulce.",
+    "esporada": "Rosa suave.",
+    "habitat": "Prados y bosques de pinos y encinas, a menudo en corros de brujas. Muy frecuente en toda Andalucía.",
+    "temporada": "Otoño, principios de invierno y primaveras lluviosas.",
+    "rasgos_clave": [
+      "Toda la seta violeta, también láminas y pie",
+      "Esporada rosa, no marrón",
+      "Sin cortina ni anillo",
+      "Olor afrutado"
+    ],
+    "no_confundir_con": [],
+    "fotos": [
+      {
+        "archivo": "fotos/lepista_nuda_1.jpg",
+        "autor": "FNeill",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Clitocybe_Nuda,_AKA_Lepista_Nuda,_AKA_Wood_Blewit.jpg"
+      },
+      {
+        "archivo": "fotos/lepista_nuda_2.jpg",
+        "autor": "Dan Molter (shroomydan)",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Clitocybe_nuda_60302.jpg"
+      },
+      {
+        "archivo": "fotos/lepista_nuda_3.jpg",
+        "autor": "Dr. Hans-Günter Wagner",
+        "licencia": "CC BY-SA 2.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Lepista_nuda_(2)_(37629840094).jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Lepista nuda",
+        "url": "https://www.amanitacesarea.com/lepista-nuda.html"
+      },
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Lepista nuda",
+        "url": "https://www.first-nature.com/fungi/lepista-nuda.php"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Lepista nuda / Collybia nuda",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=356735"
+      }
+    ]
+  },
+  {
+    "id": "russula_cyanoxantha",
+    "nombre_cientifico": "Russula cyanoxantha (Schaeff.) Fr.",
+    "nombres_comunes": [
+      "carbonera",
+      "seta de cerdos"
+    ],
+    "grupo": "comestible_menor",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia).",
+    "sombrero": "De 5 a 16 cm. Color muy variable: violeta, gris violeta, con manchas gris verdosas o verde lila, nunca rojo. Se hunde en el centro con la edad.",
+    "himenio": "Láminas blancas a blanco cremosas, apretadas, flexibles y de tacto graso: no se rompen al rozarlas, a diferencia de otras rúsulas.",
+    "pie": "Blanco, robusto, sin anillo; se vuelve esponjoso.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Blanca y quebradiza; grisácea suave al corte, algo violácea bajo la cutícula.",
+    "olor_sabor": "Sabor suave y dulce; olor casi inapreciable, a avellana.",
+    "esporada": "Blanca.",
+    "habitat": "Alcornocales, encinares y castañares. Muy abundante en Andalucía occidental y más escasa en la oriental.",
+    "temporada": "Desde verano hasta octubre o primeros de noviembre; es sensible al frío.",
+    "rasgos_clave": [
+      "Láminas blancas flexibles, que no se rompen al rozarlas",
+      "Sombrero violeta o verdoso, nunca rojo",
+      "Pie blanco sin anillo ni volva",
+      "Sabor suave"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "amanita_phalloides",
+        "diferencias": [
+          "A. phalloides tiene anillo blanco colgante y volva blanca en saco: hay que desenterrar la base del pie",
+          "Pie con dibujo en zigzag oliváceo",
+          "La bibliografía cita su confusión con rúsulas de sombrero verde"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/russula_cyanoxantha_1.jpg",
+        "autor": "MediAtta; recorte de Ak ccm",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:2010-09-29_Russula_cyanoxantha_cropped.jpg"
+      },
+      {
+        "archivo": "fotos/russula_cyanoxantha_2.jpg",
+        "autor": "Bluenn Sapatsch",
+        "licencia": "CC0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Russula_cyanoxantha_gill_press.jpg"
+      },
+      {
+        "archivo": "fotos/russula_cyanoxantha_3.jpg",
+        "autor": "MediAtta",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Russule_charbonniere.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Russula cyanoxantha",
+        "url": "https://www.amanitacesarea.com/russula-cyanoxantha.html"
+      },
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Amanita phalloides",
+        "url": "https://www.amanitacesarea.com/amanita-phalloides.html"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Russula cyanoxantha",
+        "url": "https://www.first-nature.com/fungi/russula-cyanoxantha.php"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Russula cyanoxantha",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=190250"
+      }
+    ]
+  },
+  {
+    "id": "agaricus_campestris",
+    "nombre_cientifico": "Agaricus campestris L.",
+    "nombres_comunes": [
+      "champiñón de campo",
+      "hongo"
+    ],
+    "grupo": "comestible_menor",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia). Se desaconseja recoger ejemplares viejos con láminas negras.",
+    "sombrero": "De 3 a 12 cm. Blanco, a veces con escamas gris crema; el margen sobresale de las láminas.",
+    "himenio": "Láminas libres, blanco rosadas o rosa vivo de jóvenes, luego marrón oscuro y negras. Nunca blancas en el adulto.",
+    "pie": "Blanco, corto, sin bulbo marcado.",
+    "volva": "No tiene.",
+    "anillo": "Simple, fino y fugaz, en la parte alta del pie.",
+    "carne_y_corte": "Blanca, que al corte toma un tono rosado suave, sobre todo entre pie y sombrero. No amarillea.",
+    "olor_sabor": "AmanitaCesarea.com los describe como agradables; la guía andaluza, como desagradables.",
+    "esporada": "Marrón oscuro, pardo púrpura.",
+    "habitat": "Prados y pastizales, sobre todo los abonados por ganado. Muy frecuente en toda Andalucía.",
+    "temporada": "Primavera y otoño.",
+    "rasgos_clave": [
+      "Láminas rosas que pasan a marrón y negro",
+      "Sin volva en la base",
+      "Carne que rosea, no amarillea",
+      "En prados, no dentro del bosque"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "amanita_phalloides",
+        "diferencias": [
+          "Las amanitas mortales tienen láminas blancas siempre, no rosas ni marrones",
+          "Tienen volva blanca en saco en la base: hay que sacar la seta entera",
+          "La forma blanca de A. phalloides comparte hábitat a veces"
+        ]
+      },
+      {
+        "id": "amanita_verna",
+        "diferencias": [
+          "A. verna es toda blanca, con láminas blancas y volva en saco",
+          "Sale en primavera, como el champiñón"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/agaricus_campestris_1.jpg",
+        "autor": "Dr. Hans-Günter Wagner",
+        "licencia": "CC BY-SA 2.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Agaricus_campestris_(48647010296).jpg",
+        "descripcion": "Láminas rosas, sin volva"
+      },
+      {
+        "archivo": "fotos/agaricus_campestris_2.jpg",
+        "autor": "Andreas Kunze",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Agaricus_campestris_gills_stems_2012-10-04.jpg"
+      },
+      {
+        "archivo": "fotos/agaricus_campestris_3.jpg",
+        "autor": "Dick Culbert from Gibsons, B.C., Canada",
+        "licencia": "CC BY 2.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Agaricus_campestris_-_Flickr_-_Dick_Culbert.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Agaricus campestris",
+        "url": "https://www.amanitacesarea.com/agaricus-campestris.html"
+      },
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Agaricus campestris",
+        "url": "https://www.first-nature.com/fungi/agaricus-campestris.php"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Agaricus campestris",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=356498"
+      }
+    ]
+  },
+  {
+    "id": "amanita_phalloides",
+    "nombre_cientifico": "Amanita phalloides (Vaill. ex Fr.) Link",
+    "nombres_comunes": [
+      "oronja verde",
+      "cicuta verde",
+      "oronja mortal"
+    ],
+    "grupo": "mortal",
+    "toxicidad_nota": "MORTAL. Síndrome faloidiano (hepatotóxico, por amatoxinas). Latencia larga, de 6 a 24 h: los primeros síntomas llegan cuando el hígado ya está dañado. Causa la mayoría de las muertes por setas. Las toxinas no se destruyen al cocinar ni al congelar. Si se sospecha una intoxicación, hay que ir a urgencias aunque no haya síntomas.",
+    "sombrero": "De 6 a 15 cm. Verde amarillento, más oliváceo y oscuro en el centro, con fibrillas radiales; existe una forma blanca. Margen no estriado.",
+    "himenio": "Láminas libres, apretadas, blanco puro.",
+    "pie": "Blanco con un jaspeado oliváceo en zigzag, terminado en bulbo.",
+    "volva": "Blanca, membranosa, amplia, en forma de saco, a veces verdosa por dentro.",
+    "anillo": "Blanco, colgante como una faldita, persistente, estriado por arriba.",
+    "carne_y_corte": "Blanca, sin cambio de color.",
+    "olor_sabor": "Olor dulce o a rosas de joven, desagradable al envejecer. No se debe probar.",
+    "esporada": "Blanca.",
+    "habitat": "Micorrícica de Quercus: encinares, alcornocales y robledales; también castaños. Citada en el P. N. Los Alcornocales (Jimena de la Frontera) bajo alcornoque y quejigo.",
+    "temporada": "Otoño.",
+    "fase_huevo": "El huevo es blanco por fuera, como el de la oronja (A. caesarea). Cortado a lo largo es blanco por dentro y deja ver la silueta del pie y las láminas en blanco. No tiene naranja ni amarillo.",
+    "rasgos_clave": [
+      "Volva blanca en saco: sacar siempre la seta entera",
+      "Láminas blanco puro",
+      "Anillo blanco colgante",
+      "Sombrero verde oliváceo con fibrillas radiales (puede ser blanco)"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "amanita_caesarea",
+        "diferencias": [
+          "A. caesarea tiene láminas, pie y anillo amarillos",
+          "En huevo, al cortarla, la oronja muestra naranja y amarillo; la oronja verde es blanca por dentro"
+        ]
+      },
+      {
+        "id": "russula_cyanoxantha",
+        "diferencias": [
+          "Las rúsulas no tienen anillo ni volva",
+          "Sus láminas son blanco cremosas y la carne, quebradiza"
+        ]
+      },
+      {
+        "id": "agaricus_campestris",
+        "diferencias": [
+          "El champiñón tiene láminas rosas a marrones, nunca blanco puro",
+          "No tiene volva"
+        ]
+      },
+      {
+        "id": "amanita_verna",
+        "diferencias": [
+          "A. verna es igual de mortal; es toda blanca y sale en primavera"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/amanita_phalloides_1.jpg",
+        "autor": "Björn S. (Flickr)",
+        "licencia": "CC BY-SA 2.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_phalloides_(28889712950).jpg",
+        "descripcion": "Sombrero verde oliváceo y volva blanca en saco"
+      },
+      {
+        "archivo": "fotos/amanita_phalloides_2.jpg",
+        "autor": "David Whyte",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://www.inaturalist.org/photos/193447646",
+        "descripcion": "Huevos de oronja verde cortados: interior blanco"
+      },
+      {
+        "archivo": "fotos/amanita_phalloides_3.jpg",
+        "autor": "Justin Pierce (JPierce), Mushroom Observer",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:2011-10-26_Amanita_phalloides_(Fr.)_Link_177883.jpg",
+        "descripcion": "Serie de desarrollo, de huevo a adulto"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Amanita phalloides",
+        "url": "https://www.amanitacesarea.com/amanita-phalloides.html"
+      },
+      {
+        "titulo": "Alvarado et al. (2022), Amanita sect. Phalloideae en el Mediterráneo, Biology 11:770",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9138314"
+      },
+      {
+        "titulo": "Hospital Donostia, protocolo IT-114 Intoxicaciones por setas (alojado en Fungipedia)",
+        "url": "https://www.fungipedia.org/media/kunena/attachments/267/IT-114_Intoxicaciones_por_Setas_v01.pdf"
+      },
+      {
+        "titulo": "Toxicidad de las setas: tabla por especies y síndromes (alojado en Fungipedia)",
+        "url": "https://fungipedia.org/media/kunena/attachments/267/TOXICIDADDELASSETAS_v004.pdf"
+      },
+      {
+        "titulo": "Enciclopedia dei Funghi Italiani, glosario: Caesarea (corte del huevo)",
+        "url": "https://enciclopedia.funghiitaliani.it/termine.php?show=299"
+      },
+      {
+        "titulo": "Beaty Biodiversity Museum (UBC), Amanita phalloides",
+        "url": "https://explore.beatymuseum.ubc.ca/mushroomsup/A_phalloides.html"
+      },
+      {
+        "titulo": "Fungipedia (Asociación Micológica Fungipedia), Amanita phalloides",
+        "url": "https://www.fungipedia.org/hongos/amanita-phalloides.html"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Amanita phalloides",
+        "url": "https://www.first-nature.com/fungi/amanita-phalloides.php"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Amanita phalloides",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=178962"
+      }
+    ]
+  },
+  {
+    "id": "amanita_verna",
+    "nombre_cientifico": "Amanita verna Bull. ex Lam.",
+    "nombres_comunes": [
+      "amanita de primavera",
+      "cicuta blanca"
+    ],
+    "grupo": "mortal",
+    "toxicidad_nota": "MORTAL. Síndrome faloidiano, igual que A. phalloides (amatoxinas), latencia de 8 a 24 h. Taxonomía en revisión: Alvarado et al. (2022) describen como A. vidua la especie primaveral mediterránea que antes se llamaba A. verna o A. decipiens.",
+    "sombrero": "De 5 a 10 cm. Blanco puro.",
+    "himenio": "Láminas libres, blancas.",
+    "pie": "Blanco, con bulbo en la base.",
+    "volva": "Blanca, grande, en forma de saco.",
+    "anillo": "Blanco y membranoso.",
+    "carne_y_corte": "Blanca, sin cambio de color.",
+    "olor_sabor": "Sin dato fiable en las fuentes consultadas. No se debe probar.",
+    "esporada": "Blanca.",
+    "habitat": "Suelos ácidos, probablemente con encina, rebollo y alcornoque. Holotipo de A. vidua en Galaroza (Huelva) bajo encina; los casos andaluces de primavera se concentran en el oeste.",
+    "temporada": "Primavera: abril a principios de junio.",
+    "fase_huevo": "Huevo blanco por fuera y blanco por dentro al cortarlo. Puede confundirse con el huevo de la oronja o con un champiñón joven.",
+    "rasgos_clave": [
+      "Toda blanca",
+      "Volva blanca en saco",
+      "Láminas blancas siempre",
+      "Sale en primavera"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "amanita_caesarea",
+        "diferencias": [
+          "En huevo la oronja cortada muestra naranja y amarillo; A. verna es toda blanca",
+          "La oronja adulta tiene sombrero naranja y láminas amarillas"
+        ]
+      },
+      {
+        "id": "agaricus_campestris",
+        "diferencias": [
+          "El champiñón tiene láminas rosas o marrones y no tiene volva"
+        ]
+      },
+      {
+        "id": "amanita_phalloides",
+        "diferencias": [
+          "A. phalloides suele tener el sombrero verde oliváceo y sale en otoño; igual de mortal"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/amanita_verna_1.jpg",
+        "autor": "Sinisa Radic",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_verna_4.jpg"
+      },
+      {
+        "archivo": "fotos/amanita_verna_2.jpg",
+        "autor": "Sinisa Radic",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_verna_2.jpg"
+      },
+      {
+        "archivo": "fotos/amanita_verna_3.jpg",
+        "autor": "Ki7sun3",
+        "licencia": "CC0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Weisser-Knollenbl%C3%A4tterpilz.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "Alvarado et al. (2022), Amanita sect. Phalloideae en el Mediterráneo, Biology 11:770",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9138314"
+      },
+      {
+        "titulo": "Toxicidad de las setas: tabla por especies y síndromes (alojado en Fungipedia)",
+        "url": "https://fungipedia.org/media/kunena/attachments/267/TOXICIDADDELASSETAS_v004.pdf"
+      },
+      {
+        "titulo": "Hospital Donostia, protocolo IT-114 Intoxicaciones por setas (alojado en Fungipedia)",
+        "url": "https://www.fungipedia.org/media/kunena/attachments/267/IT-114_Intoxicaciones_por_Setas_v01.pdf"
+      },
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Agaricus campestris",
+        "url": "https://www.amanitacesarea.com/agaricus-campestris.html"
+      },
+      {
+        "titulo": "Wikipedia (es), Amanita verna (fuente secundaria)",
+        "url": "https://es.wikipedia.org/wiki/Amanita_verna"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Amanita verna",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=163667"
+      }
+    ]
+  },
+  {
+    "id": "lepiota_brunneoincarnata",
+    "nombre_cientifico": "Lepiota brunneoincarnata Chodat & C. Martín",
+    "nombres_comunes": [],
+    "grupo": "mortal",
+    "toxicidad_nota": "MORTAL. Síndrome faloidiano (amatoxinas), latencia de 6 a 24 h. Hay intoxicaciones atribuidas a esta especie en España.",
+    "sombrero": "De 2 a 6 cm. Escamas concéntricas pardo ocráceas, más oscuras y juntas en el centro, sobre fondo blanquecino rosado.",
+    "himenio": "Láminas libres, densas, blancas a crema.",
+    "pie": "De 2 a 4 cm, blanquecino rosado y pardo vinoso en la base, con escamas bajo el anillo.",
+    "volva": "No tiene.",
+    "anillo": "Reducido a un rodete irregular y fugaz.",
+    "carne_y_corte": "Blanca y rosa vinosa en la base del pie.",
+    "olor_sabor": "Olor algo afrutado. No se debe probar.",
+    "esporada": "Blanca.",
+    "habitat": "Quejigales y alcornocales; citada en el P. N. Los Alcornocales (Cádiz-Málaga). También zonas herbosas bajo frondosas.",
+    "temporada": "Otoño.",
+    "rasgos_clave": [
+      "Parece un parasol en miniatura (menos de 6 cm)",
+      "Escamas pardas sobre fondo rosado",
+      "Base del pie rosa vinosa",
+      "Anillo casi inexistente"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "macrolepiota_procera",
+        "diferencias": [
+          "El parasol mide más de 10 cm, tiene anillo doble deslizante y pie con dibujo de serpiente",
+          "La guía andaluza aconseja no recoger lepiotas de menos de 10 cm"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/lepiota_brunneoincarnata_1.jpg",
+        "autor": "Murselin Guney (Beyrek), Mushroom Observer",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:2015-10-11_Lepiota_brunneoincarnata_Chodat_%26_C._Mart%C3%ADn_564314.jpg"
+      },
+      {
+        "archivo": "fotos/lepiota_brunneoincarnata_2.jpg",
+        "autor": "Strobilomyces",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Lepiota_brunneoincarnata_170929w.JPG"
+      },
+      {
+        "archivo": "fotos/lepiota_brunneoincarnata_3.jpg",
+        "autor": "User:Strobilomyces",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Lepiota_brunneoincarnata_060823w.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "Hongos del Parque Natural Los Alcornocales y Campo de Gibraltar, ampliación (Instituto de Estudios Campogibraltareños)",
+        "url": "https://institutoecg.es/wp-content/uploads/2019/06/HONGOS-DEL-PARQUE-NATURAL-LOS-ALCORNOCALES-Y-CAMPO-DE-GIBRALTAR-AMPLIACI%C3%93N.pdf"
+      },
+      {
+        "titulo": "Toxicidad de las setas: tabla por especies y síndromes (alojado en Fungipedia)",
+        "url": "https://fungipedia.org/media/kunena/attachments/267/TOXICIDADDELASSETAS_v004.pdf"
+      },
+      {
+        "titulo": "Alvarado et al. (2022), Amanita sect. Phalloideae en el Mediterráneo, Biology 11:770",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9138314"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Lepiota brunneoincarnata",
+        "url": "https://www.first-nature.com/fungi/lepiota-brunneoincarnata.php"
+      },
+      {
+        "titulo": "Wikipedia (es), Lepiota brunneoincarnata (fuente secundaria)",
+        "url": "https://es.wikipedia.org/wiki/Lepiota_brunneoincarnata"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Lepiota brunneoincarnata",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=247927"
+      }
+    ]
+  },
+  {
+    "id": "amanita_muscaria",
+    "nombre_cientifico": "Amanita muscaria (L.) Lam.",
+    "nombres_comunes": [
+      "matamoscas",
+      "falsa oronja",
+      "oronja pintada"
+    ],
+    "grupo": "toxica",
+    "toxicidad_nota": "TÓXICA. Síndrome micoatropínico o panterínico (ácido iboténico y muscimol): confusión, agitación, alucinaciones y vómitos entre 0,5 y 3 h después. Rara vez mortal.",
+    "sombrero": "De 10 a 25 cm. Rojo escarlata que pasa a naranja con la edad, cubierto de verrugas blancas algodonosas en círculos; la lluvia puede quitarlas.",
+    "himenio": "Láminas libres, blanco puro.",
+    "pie": "Blanco, con la base engrosada.",
+    "volva": "No forma saco: queda como verrugas blancas en anillos incompletos alrededor del bulbo.",
+    "anillo": "Blanco, amplio, membranoso, con el borde algo amarillo.",
+    "carne_y_corte": "Blanca, anaranjada bajo la cutícula.",
+    "olor_sabor": "Casi sin olor ni sabor. No se debe probar.",
+    "esporada": "Blanca.",
+    "habitat": "Micorrícica de coníferas y caducifolios en suelos ácidos. Sin datos de abundancia en la zona en las fuentes consultadas.",
+    "temporada": "Finales de verano a finales de otoño.",
+    "rasgos_clave": [
+      "Láminas y pie blancos",
+      "Verrugas blancas sobre sombrero rojo o naranja",
+      "Base del pie con anillos de verrugas, sin volva en saco"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "amanita_caesarea",
+        "diferencias": [
+          "La oronja tiene láminas, pie y anillo amarillos",
+          "Volva blanca en saco, no verrugas",
+          "Sombrero naranja liso y estriado. Ojo: un matamoscas descolorido o sin verrugas (var. aureola) se parece más"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/amanita_muscaria_1.jpg",
+        "autor": "Scott Darbey from Canada",
+        "licencia": "CC BY 2.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:%27Fly_Agaric%27,_Amanita_muscaria_var._muscaria.jpg"
+      },
+      {
+        "archivo": "fotos/amanita_muscaria_2.jpg",
+        "autor": "Rob Swystun from Winnipeg, Canada",
+        "licencia": "CC BY 2.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:A_mushroom_growing_along_the_Pinawa_Heritage_Trail_(a_section_of_The_Great_Trail,_formerly_known_as_the_Trans-Canada_Trail)_near_Pinawa,_Manitoba._(48755167837).jpg"
+      },
+      {
+        "archivo": "fotos/amanita_muscaria_3.jpg",
+        "autor": "Spielvogel",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:2_young_amanita_muscaria.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Amanita muscaria",
+        "url": "https://www.amanitacesarea.com/amanita-muscaria.html"
+      },
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Amanita caesarea",
+        "url": "https://www.amanitacesarea.com/amanita-caesarea.html"
+      },
+      {
+        "titulo": "Toxicidad de las setas: tabla por especies y síndromes (alojado en Fungipedia)",
+        "url": "https://fungipedia.org/media/kunena/attachments/267/TOXICIDADDELASSETAS_v004.pdf"
+      },
+      {
+        "titulo": "Hospital Donostia, protocolo IT-114 Intoxicaciones por setas (alojado en Fungipedia)",
+        "url": "https://www.fungipedia.org/media/kunena/attachments/267/IT-114_Intoxicaciones_por_Setas_v01.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Amanita muscaria",
+        "url": "https://www.first-nature.com/fungi/amanita-muscaria.php"
+      },
+      {
+        "titulo": "Wikipedia (es), Amanita muscaria (fuente secundaria)",
+        "url": "https://es.wikipedia.org/wiki/Amanita_muscaria"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Amanita muscaria",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=161267"
+      }
+    ]
+  },
+  {
+    "id": "amanita_pantherina",
+    "nombre_cientifico": "Amanita pantherina (DC.) Krombh.",
+    "nombres_comunes": [
+      "pantera",
+      "amanita pantera",
+      "falso galipierno"
+    ],
+    "grupo": "toxica",
+    "toxicidad_nota": "MUY TÓXICA. Síndrome micoatropínico o panterínico, más grave que el de A. muscaria y excepcionalmente mortal. Síntomas entre 0,5 y 4 h: excitación, delirio, convulsiones, vómitos; pueden durar hasta 3 días.",
+    "sombrero": "De 4 a 12 cm. Pardo grisáceo a marrón claro, con verrugas blanco puro dispuestas con regularidad. Margen muy estriado.",
+    "himenio": "Láminas libres, blancas.",
+    "pie": "Blanco sucio, harinoso, terminado en bulbo redondeado.",
+    "volva": "Circuncisa: termina en un reborde neto sobre el bulbo, con dos o tres anillos (burletes) por encima.",
+    "anillo": "Blanco, tipo faldita, membranoso y persistente, algo estriado por arriba; a media altura del pie.",
+    "carne_y_corte": "Blanca, tierna, sin cambio de color.",
+    "olor_sabor": "Olor débil. No se debe probar.",
+    "esporada": "Blanca.",
+    "habitat": "Bajo coníferas y caducifolios; First Nature la fotografía en alcornocales y pinares mixtos del Algarve y la señala más común en el sur de Europa.",
+    "temporada": "Verano y otoño; en el extremo sur puede salir hasta tres meses más tarde.",
+    "rasgos_clave": [
+      "Verrugas blanco puro sobre sombrero pardo",
+      "Margen del sombrero estriado",
+      "Bulbo con reborde neto y anillos encima",
+      "Láminas blancas"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "macrolepiota_procera",
+        "diferencias": [
+          "El parasol tiene escamas pardas sobre fondo blanco, no verrugas blancas sobre fondo pardo",
+          "Anillo doble que se desliza y pie con dibujo de serpiente",
+          "Sin volva ni reborde en el bulbo"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/amanita_pantherina_1.jpg",
+        "autor": "Bff",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_pantherina20100914_268.jpg"
+      },
+      {
+        "archivo": "fotos/amanita_pantherina_2.jpg",
+        "autor": "Lukas from London, England",
+        "licencia": "CC BY-SA 2.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_pantherina_(30629736747).jpg"
+      },
+      {
+        "archivo": "fotos/amanita_pantherina_3.jpg",
+        "autor": "EmillimeS",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_pantherina;_DSC_0385.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Amanita pantherina",
+        "url": "https://www.amanitacesarea.com/amanita-pantherina.html"
+      },
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Macrolepiota procera",
+        "url": "https://www.amanitacesarea.com/macrolepiota-procera.html"
+      },
+      {
+        "titulo": "Toxicidad de las setas: tabla por especies y síndromes (alojado en Fungipedia)",
+        "url": "https://fungipedia.org/media/kunena/attachments/267/TOXICIDADDELASSETAS_v004.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Amanita pantherina",
+        "url": "https://www.first-nature.com/fungi/amanita-pantherina.php"
+      },
+      {
+        "titulo": "Wikipedia (es), Amanita pantherina (fuente secundaria)",
+        "url": "https://es.wikipedia.org/wiki/Amanita_pantherina"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Amanita pantherina",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=156565"
+      }
+    ]
+  },
+  {
+    "id": "rubroboletus_satanas",
+    "nombre_cientifico": "Rubroboletus satanas (Lenz) Kuan Zhao & Zhu L. Yang",
+    "nombres_comunes": [],
+    "grupo": "toxica",
+    "toxicidad_nota": "TÓXICA. Síndrome gastrointestinal (resinoide): gastroenteritis violenta entre 0,5 y 4 h después; peor en crudo.",
+    "sombrero": "De 6 a 30 cm. Blanco tiza a gris muy claro, a veces con tonos oliva o rojizos; aterciopelado.",
+    "himenio": "Poros amarillos de muy jóvenes, luego naranjas y rojos.",
+    "pie": "Grueso y bulboso, rojo intenso con retículo rojo sobre fondo amarillo anaranjado.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Blanca a amarillenta; azulea al corte (azul verdoso) y luego se desvanece.",
+    "olor_sabor": "Olor desagradable en ejemplares viejos. No se debe probar.",
+    "esporada": "Pardo olivácea.",
+    "habitat": "Suelos calizos, con encinas y otros Quercus; en Cádiz a veces en alcornocales.",
+    "temporada": "Finales de verano y otoño.",
+    "rasgos_clave": [
+      "Poros rojos o anaranjados",
+      "Pie rojo, bulboso, con retículo",
+      "Sombrero blanquecino",
+      "Carne que azulea al corte"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "boletus_edulis",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen poros blancos a amarillo verdosos, nunca rojos",
+          "Su carne es blanca y no azulea",
+          "Su pie es pardo o avellana, no rojo"
+        ]
+      },
+      {
+        "id": "boletus_aereus",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen poros blancos a amarillo verdosos, nunca rojos",
+          "Su carne es blanca y no azulea",
+          "Su pie es pardo o avellana, no rojo"
+        ]
+      },
+      {
+        "id": "boletus_reticulatus",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen poros blancos a amarillo verdosos, nunca rojos",
+          "Su carne es blanca y no azulea",
+          "Su pie es pardo o avellana, no rojo"
+        ]
+      },
+      {
+        "id": "boletus_pinophilus",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen poros blancos a amarillo verdosos, nunca rojos",
+          "Su carne es blanca y no azulea",
+          "Su pie es pardo o avellana, no rojo"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/rubroboletus_satanas_1.jpg",
+        "autor": "Holger Krisp",
+        "licencia": "CC BY 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Satans-R%C3%B6hrling_Boletus_satanas_cropped.jpg"
+      },
+      {
+        "archivo": "fotos/rubroboletus_satanas_2.jpg",
+        "autor": "bjoerns",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Rubroboletus_satanas_cut.jpg",
+        "descripcion": "Corte: carne que azulea"
+      },
+      {
+        "archivo": "fotos/rubroboletus_satanas_3.jpg",
+        "autor": "ionafraser",
+        "licencia": "CC BY 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Rubroboletus_satanas_young_collection.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Rubroboletus satanas",
+        "url": "https://www.first-nature.com/fungi/rubroboletus-satanas.php"
+      },
+      {
+        "titulo": "Leiva Morales, J. A., Introducción al orden Boletales en la provincia de Cádiz (Rev. Soc. Gaditana Hist. Nat. 3)",
+        "url": "https://sociedadgaditanahistorianatural.com/wp-content/uploads/2012/02/15-Leiva-SGHN-Rev-Vol3.pdf"
+      },
+      {
+        "titulo": "Toxicidad de las setas: tabla por especies y síndromes (alojado en Fungipedia)",
+        "url": "https://fungipedia.org/media/kunena/attachments/267/TOXICIDADDELASSETAS_v004.pdf"
+      },
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Caloboletus calopus",
+        "url": "https://www.amanitacesarea.com/caloboletus-calopus.html"
+      },
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Caloboletus radicans",
+        "url": "https://www.amanitacesarea.com/caloboletus-radicans.html"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Rubroboletus satanas",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=809241"
+      }
+    ]
+  },
+  {
+    "id": "caloboletus_calopus",
+    "nombre_cientifico": "Caloboletus calopus (Pers.) Vizzini",
+    "nombres_comunes": [
+      "boleto amargo"
+    ],
+    "grupo": "toxica",
+    "toxicidad_nota": "NO COMESTIBLE. Muy amargo; el amargor no desaparece al cocinar. Puede que no sea tóxico; se incluye por su parecido con los boletus.",
+    "sombrero": "Hasta 20 cm. Ocre claro, gamuza o café con leche casi blanco, afieltrado de joven.",
+    "himenio": "Tubos y poros amarillos que azulean al dañarlos; nunca rojizos.",
+    "pie": "Amarillento en el ápice y rojo púrpura hacia la base, con retículo blanco arriba y rojo pardo y marcado en el medio.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Amarilla pálida, dura; azulea al corte, sobre todo en ejemplares jóvenes.",
+    "olor_sabor": "Olor desagradable, entre afrutado y harinoso; sabor muy amargo.",
+    "esporada": "Amarillenta olivácea.",
+    "habitat": "Bosques caducifolios, micorrícico de castaños y robles. En Cádiz, poco frecuente en bosques de Quercus.",
+    "temporada": "Principios de verano a otoño.",
+    "rasgos_clave": [
+      "Poros amarillos que azulean",
+      "Pie amarillo arriba y rojo abajo",
+      "Carne que azulea al corte",
+      "Sabor muy amargo"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "boletus_edulis",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen poros blancos a amarillo verdosos que no azulean",
+          "Su carne es blanca y no cambia de color",
+          "Su pie no tiene tonos rojos"
+        ]
+      },
+      {
+        "id": "boletus_aereus",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen poros blancos a amarillo verdosos que no azulean",
+          "Su carne es blanca y no cambia de color",
+          "Su pie no tiene tonos rojos"
+        ]
+      },
+      {
+        "id": "boletus_reticulatus",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen poros blancos a amarillo verdosos que no azulean",
+          "Su carne es blanca y no cambia de color",
+          "Su pie no tiene tonos rojos"
+        ]
+      },
+      {
+        "id": "boletus_pinophilus",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen poros blancos a amarillo verdosos que no azulean",
+          "Su carne es blanca y no cambia de color",
+          "Su pie no tiene tonos rojos"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/caloboletus_calopus_1.jpg",
+        "autor": "Jan Sørensen",
+        "licencia": "CC BY 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Caloboletus_calopus_cut.jpg",
+        "descripcion": "Corte: la carne azulea"
+      },
+      {
+        "archivo": "fotos/caloboletus_calopus_2.jpg",
+        "autor": "Holger Krisp",
+        "licencia": "CC BY 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Sch%C3%B6nfu%C3%9F-R%C3%B6hrling_Boletus_calopus.JPG"
+      },
+      {
+        "archivo": "fotos/caloboletus_calopus_3.jpg",
+        "autor": "Björn S. (Flickr)",
+        "licencia": "CC BY-SA 2.5",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Botanical_Garden_Gothenburg_and_Angg%C3%A5rdsbergen_13.08.2017_Bitter_Beech_Bolete_-_Caloboletus_calopus_(37321279256)_cropped.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Caloboletus calopus",
+        "url": "https://www.amanitacesarea.com/caloboletus-calopus.html"
+      },
+      {
+        "titulo": "Leiva Morales, J. A., Introducción al orden Boletales en la provincia de Cádiz (Rev. Soc. Gaditana Hist. Nat. 3)",
+        "url": "https://sociedadgaditanahistorianatural.com/wp-content/uploads/2012/02/15-Leiva-SGHN-Rev-Vol3.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Caloboletus calopus",
+        "url": "https://www.first-nature.com/fungi/caloboletus-calopus.php"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Caloboletus calopus",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=550547"
+      }
+    ]
+  },
+  {
+    "id": "caloboletus_radicans",
+    "nombre_cientifico": "Caloboletus radicans (Pers.) Vizzini",
+    "nombres_comunes": [
+      "hongo blanco",
+      "boleto blanco"
+    ],
+    "grupo": "toxica",
+    "toxicidad_nota": "NO COMESTIBLE. Muy amargo; en crudo puede ser purgante y se cita que causa vómitos y diarrea intensos.",
+    "sombrero": "Hasta 20 cm. Blanco, beige o crema muy claro, pardusco en el centro; seco y cuarteado con la edad. Margen muy enrollado de joven.",
+    "himenio": "Tubos y poros amarillos que pasan a verde; azulean al dañarlos.",
+    "pie": "Robusto, amarillo claro, con retículo fino casi invisible; la base se hunde en el suelo como una raíz y tiene manchas rojizas.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Blanco amarillenta; azulea al corte en toda la seta y la base del pie se vuelve pardo rojiza. El azul desaparece en minutos.",
+    "olor_sabor": "Olor suave pero desagradable; sabor dulce al principio y luego muy amargo.",
+    "esporada": "Pardo olivácea.",
+    "habitat": "Planifolios, sobre todo robles, encinas y quejigos. En Cádiz, poco frecuente y termófilo en bosques de Quercus.",
+    "temporada": "Veranos lluviosos y principios de otoño.",
+    "rasgos_clave": [
+      "Sombrero blanquecino",
+      "Poros y pie amarillos",
+      "Carne que azulea al corte",
+      "Pie radicante; sabor muy amargo"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "boletus_edulis",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen la carne blanca que no azulea",
+          "Sus poros son blancos de jóvenes, no amarillo limón",
+          "Su pie es pardo o avellana con retículo visible"
+        ]
+      },
+      {
+        "id": "boletus_aereus",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen la carne blanca que no azulea",
+          "Sus poros son blancos de jóvenes, no amarillo limón",
+          "Su pie es pardo o avellana con retículo visible"
+        ]
+      },
+      {
+        "id": "boletus_reticulatus",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen la carne blanca que no azulea",
+          "Sus poros son blancos de jóvenes, no amarillo limón",
+          "Su pie es pardo o avellana con retículo visible"
+        ]
+      },
+      {
+        "id": "boletus_pinophilus",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen la carne blanca que no azulea",
+          "Sus poros son blancos de jóvenes, no amarillo limón",
+          "Su pie es pardo o avellana con retículo visible"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/caloboletus_radicans_1.jpg",
+        "autor": "Holger Krisp",
+        "licencia": "CC BY 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Wurzelnde_Bitter-R%C3%B6hrling_Caloboletus_radicans_1_cropped.jpg"
+      },
+      {
+        "archivo": "fotos/caloboletus_radicans_2.jpg",
+        "autor": "paulanimigean",
+        "licencia": "CC BY 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Caloboletus_radicans_cut.jpg",
+        "descripcion": "Corte: la carne azulea"
+      },
+      {
+        "archivo": "fotos/caloboletus_radicans_3.jpg",
+        "autor": "DidierFy",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_radicans_09.2026_(4).jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Caloboletus radicans",
+        "url": "https://www.amanitacesarea.com/caloboletus-radicans.html"
+      },
+      {
+        "titulo": "Leiva Morales, J. A., Introducción al orden Boletales en la provincia de Cádiz (Rev. Soc. Gaditana Hist. Nat. 3)",
+        "url": "https://sociedadgaditanahistorianatural.com/wp-content/uploads/2012/02/15-Leiva-SGHN-Rev-Vol3.pdf"
+      },
+      {
+        "titulo": "Wikipedia (en), Caloboletus radicans (fuente secundaria)",
+        "url": "https://en.wikipedia.org/wiki/Caloboletus_radicans"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Caloboletus radicans",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=550548"
+      }
+    ]
+  },
+  {
+    "id": "tylopilus_felleus",
+    "nombre_cientifico": "Tylopilus felleus (Bull.) P. Karst.",
+    "nombres_comunes": [
+      "boleto amargo"
+    ],
+    "grupo": "toxica",
+    "toxicidad_nota": "NO COMESTIBLE. Probablemente no es tóxico, pero su sabor es extremadamente amargo. Se incluye por su parecido con los boletus.",
+    "sombrero": "De 6 a 12 cm. Pardo aterciopelado con tonos oliva.",
+    "himenio": "Poros blanco crema de jóvenes y luego rosados o color coral; se manchan de pardo al tocarlos.",
+    "pie": "Con un retículo pardo oscuro, más oscuro que el fondo.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Blanca, sin cambio de color al corte.",
+    "olor_sabor": "Olor poco marcado; sabor muy amargo.",
+    "esporada": "Rosa arcilla.",
+    "habitat": "Bajo robles, hayas y otras frondosas, raramente coníferas. Las fuentes andaluzas consultadas no lo citan en la zona; su presencia está por confirmar.",
+    "temporada": "Agosto a noviembre (dato de Gran Bretaña).",
+    "rasgos_clave": [
+      "Poros rosados",
+      "Retículo pardo oscuro en el pie",
+      "Sabor muy amargo",
+      "Carne blanca que no cambia"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "boletus_edulis",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen poros blancos a amarillo verdosos, nunca rosados",
+          "Su retículo es claro o del color del pie, no pardo oscuro",
+          "Su sabor es suave, no amargo"
+        ]
+      },
+      {
+        "id": "boletus_aereus",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen poros blancos a amarillo verdosos, nunca rosados",
+          "Su retículo es claro o del color del pie, no pardo oscuro",
+          "Su sabor es suave, no amargo"
+        ]
+      },
+      {
+        "id": "boletus_reticulatus",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen poros blancos a amarillo verdosos, nunca rosados",
+          "Su retículo es claro o del color del pie, no pardo oscuro",
+          "Su sabor es suave, no amargo"
+        ]
+      },
+      {
+        "id": "boletus_pinophilus",
+        "diferencias": [
+          "Los boletus de la sección edulis tienen poros blancos a amarillo verdosos, nunca rosados",
+          "Su retículo es claro o del color del pie, no pardo oscuro",
+          "Su sabor es suave, no amargo"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/tylopilus_felleus_1.jpg",
+        "autor": "EmillimeS",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Tylopilus_felleus;_101_1065.jpg",
+        "descripcion": "Poros rosados"
+      },
+      {
+        "archivo": "fotos/tylopilus_felleus_2.jpg",
+        "autor": "Eric Steinert",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Tylopilus_felleus01.jpg"
+      },
+      {
+        "archivo": "fotos/tylopilus_felleus_3.jpg",
+        "autor": "Thomas Pruß",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Gallenr%C3%B6hrling_(1).jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Boletus edulis",
+        "url": "https://www.amanitacesarea.com/boletus-edulis.html"
+      },
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Boletus pinophilus",
+        "url": "https://www.amanitacesarea.com/boletus-pinophilus.html"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Tylopilus felleus",
+        "url": "https://www.first-nature.com/fungi/tylopilus-felleus.php"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Tylopilus felleus",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=122480"
+      }
+    ]
+  },
+  {
+    "id": "omphalotus_olearius",
+    "nombre_cientifico": "Omphalotus olearius (DC.) Singer",
+    "nombres_comunes": [
+      "seta de olivo"
+    ],
+    "grupo": "toxica",
+    "toxicidad_nota": "TÓXICA. Síndrome gastrointestinal con síntomas nerviosos (vértigo, mareo, hormigueos), entre 0,5 y 4 h después de comerla. La guía andaluza la cita como causa de graves trastornos digestivos.",
+    "sombrero": "De 7 a 20 cm. Naranja vivo a pardo anaranjado, convexo y luego hundido, con el margen ondulado.",
+    "himenio": "Láminas verdaderas, finas, apretadas, muy decurrentes, del color del sombrero.",
+    "pie": "Naranja, oscureciendo hacia la base; los pies salen unidos en matas.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Naranja por dentro y por fuera; no cambia de color.",
+    "olor_sabor": "Desagradables según AmanitaCesarea.com (First Nature describe un olor fuerte agradable). No se debe probar.",
+    "esporada": "Blanco crema.",
+    "habitat": "Al pie de olivos o sobre tocones y raíces de otros árboles (encinas, castaños). Crece en matas densas.",
+    "temporada": "Verano a otoño; First Nature indica septiembre a enero en el sur de Europa.",
+    "rasgos_clave": [
+      "Láminas verdaderas, no pliegues",
+      "Crece en matas sobre raíces o tocones",
+      "Naranja intenso por fuera y por dentro",
+      "Sale sobre todo al pie de olivos"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "cantharellus_cibarius",
+        "diferencias": [
+          "El rebozuelo tiene pliegues gruesos y bifurcados, no láminas finas",
+          "Es amarillo yema, crece en el suelo y no en matas sobre madera",
+          "Huele a albaricoque"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/omphalotus_olearius_1.jpg",
+        "autor": "Adriano De Astis",
+        "licencia": "CC BY 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Fungo_dell%27ulivo,_Omphalotus_olearius.jpg",
+        "descripcion": "Mata al pie de un olivo"
+      },
+      {
+        "archivo": "fotos/omphalotus_olearius_2.jpg",
+        "autor": "Adriano De Astis",
+        "licencia": "CC BY 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Fungo_dell%27ulivo.jpg"
+      },
+      {
+        "archivo": "fotos/omphalotus_olearius_3.jpg",
+        "autor": "Aleksandar Đukić",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Zavodnica_32.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Cantharellus cibarius",
+        "url": "https://www.amanitacesarea.com/cantharellus-cibarius.html"
+      },
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "Toxicidad de las setas: tabla por especies y síndromes (alojado en Fungipedia)",
+        "url": "https://fungipedia.org/media/kunena/attachments/267/TOXICIDADDELASSETAS_v004.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Omphalotus olearius",
+        "url": "https://www.first-nature.com/fungi/omphalotus-olearius.php"
+      },
+      {
+        "titulo": "Wikipedia (es), Omphalotus olearius (fuente secundaria)",
+        "url": "https://es.wikipedia.org/wiki/Omphalotus_olearius"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Omphalotus olearius",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=288943"
+      }
+    ]
+  },
+  {
+    "id": "lactarius_torminosus",
+    "nombre_cientifico": "Lactarius torminosus (Schaeff.) Pers.",
+    "nombres_comunes": [
+      "falso níscalo",
+      "níscalo de cabra"
+    ],
+    "grupo": "toxica",
+    "toxicidad_nota": "TÓXICA. Síndrome gastrointestinal (resinoide), entre 0,5 y 4 h después. Sabor muy acre.",
+    "sombrero": "De 4 a 12 cm. Naranja claro con círculos rojos, rosas y blancos; el borde, enrollado, está cubierto de pelos blanquecinos largos (aspecto lanoso).",
+    "himenio": "Láminas blanco rosado cremoso, apretadas.",
+    "pie": "Crema blanquecino, hueco con la edad.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Blanco cremosa; látex blanco que no cambia (algo amarillento sobre papel blanco).",
+    "olor_sabor": "Olor suave a fruta; sabor muy acre.",
+    "esporada": "Crema.",
+    "habitat": "Asociado casi siempre al abedul. Las fuentes andaluzas consultadas no lo citan en la zona.",
+    "temporada": "Otoño y finales de verano tormentosos.",
+    "rasgos_clave": [
+      "Borde del sombrero lanoso, con pelos",
+      "Látex blanco",
+      "Láminas crema rosadas, no naranjas",
+      "Con abedules"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "lactarius_deliciosus",
+        "diferencias": [
+          "El níscalo no tiene pelos en el borde",
+          "Su látex y sus láminas son naranjas, con manchas verdes",
+          "Crece bajo pinos"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/lactarius_torminosus_1.jpg",
+        "autor": "B59210",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Lactarius_torminosus_stade_jeune.jpg",
+        "descripcion": "Ejemplares jóvenes de borde lanoso"
+      },
+      {
+        "archivo": "fotos/lactarius_torminosus_2.jpg",
+        "autor": "Aleksandar Đukić",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Lactarius_torminosus_7.jpg"
+      },
+      {
+        "archivo": "fotos/lactarius_torminosus_3.jpg",
+        "autor": "Jomo",
+        "licencia": "Public domain",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Young_Lactarius_torminosus.JPG"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Lactarius torminosus",
+        "url": "https://www.amanitacesarea.com/lactarius-torminosus.html"
+      },
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Lactarius deliciosus",
+        "url": "https://www.amanitacesarea.com/lactarius-deliciosus.html"
+      },
+      {
+        "titulo": "Toxicidad de las setas: tabla por especies y síndromes (alojado en Fungipedia)",
+        "url": "https://fungipedia.org/media/kunena/attachments/267/TOXICIDADDELASSETAS_v004.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Lactarius torminosus",
+        "url": "https://www.first-nature.com/fungi/lactarius-torminosus.php"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Lactarius torminosus",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=228133"
+      }
+    ]
+  },
+  {
+    "id": "lactarius_chrysorrheus",
+    "nombre_cientifico": "Lactarius chrysorrheus Fr.",
+    "nombres_comunes": [
+      "falso níscalo"
+    ],
+    "grupo": "toxica",
+    "toxicidad_nota": "TÓXICA. Síndrome gastrointestinal (resinoide); tóxica también cocinada. Látex muy acre.",
+    "sombrero": "De 3 a 8 cm. Rosa salmón con zonas más oscuras, algo grasiento.",
+    "himenio": "Láminas crema anaranjado.",
+    "pie": "Claro.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Látex blanco que se vuelve amarillo azufre en pocos segundos al aire.",
+    "olor_sabor": "Sabor suave y luego amargo y picante. No se debe probar.",
+    "esporada": "Blanco crema con tinte salmón.",
+    "habitat": "Casi siempre con robles y otros Quercus. Sin cita concreta en la zona en las fuentes consultadas, aunque la guía andaluza la menciona como posible confusión del níscalo.",
+    "temporada": "Otoño; First Nature indica que en países mediterráneos llega hasta febrero.",
+    "rasgos_clave": [
+      "Látex blanco que amarillea en segundos",
+      "Bajo Quercus, no bajo pinos",
+      "Más pequeño que el níscalo",
+      "Sin manchas verdes"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "lactarius_deliciosus",
+        "diferencias": [
+          "El níscalo tiene látex naranja que no amarillea",
+          "Tiene manchas verdes y sale bajo pinos"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/lactarius_chrysorrheus_1.jpg",
+        "autor": "A.Aguilera",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Chrysorrheus.jpg",
+        "descripcion": "Látex amarillo sobre las láminas"
+      },
+      {
+        "archivo": "fotos/lactarius_chrysorrheus_2.jpg",
+        "autor": "Zonda Grattus, aka Luridiformis at en.wikipedia",
+        "licencia": "CC BY 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Lact.chry.jpg"
+      },
+      {
+        "archivo": "fotos/lactarius_chrysorrheus_3.jpg",
+        "autor": "Fabien Piednoir",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Lactarius_chrysorrheus_3316224.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Lactarius chrysorrheus",
+        "url": "https://www.first-nature.com/fungi/lactarius-chrysorrheus.php"
+      },
+      {
+        "titulo": "Toxicidad de las setas: tabla por especies y síndromes (alojado en Fungipedia)",
+        "url": "https://fungipedia.org/media/kunena/attachments/267/TOXICIDADDELASSETAS_v004.pdf"
+      },
+      {
+        "titulo": "Wikipedia (en), Lactarius chrysorrheus (fuente secundaria)",
+        "url": "https://en.wikipedia.org/wiki/Lactarius_chrysorrheus"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Lactarius chrysorrheus",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=233874"
+      }
+    ]
+  },
+  {
+    "id": "chlorophyllum_rhacodes",
+    "nombre_cientifico": "Chlorophyllum rhacodes (Vittad.) Vellinga y C. brunneum (Farl. & Burt) Vellinga",
+    "nombres_comunes": [
+      "apagador menor"
+    ],
+    "grupo": "toxica",
+    "toxicidad_nota": "TÓXICA O DUDOSA. C. brunneum se considera tóxica (gastroenteritis). C. rhacodes se tuvo por comestible, pero hoy hay dudas porque resulta indigesta para algunas personas y su clasificación es confusa. C. molybdites, de láminas verdosas, también es tóxica.",
+    "sombrero": "Hasta 20 cm. Globoso y luego extendido, sin mamelón o con uno muy leve. Escamas grandes pardo grisáceas sobre fondo blanco rosado.",
+    "himenio": "Láminas libres, blancas, luego ocres; color herrumbre donde se dañan.",
+    "pie": "Liso, sin dibujo de piel de serpiente, blanquecino arriba y ocre óxido abajo. Base engrosada poco a poco (C. rhacodes) o bruscamente bulbosa y marginada (C. brunneum).",
+    "volva": "No tiene.",
+    "anillo": "Doble y deslizante en C. rhacodes; simple, pardo por debajo, en C. brunneum.",
+    "carne_y_corte": "Blanquecina, enrojece poco a poco al corte, sobre todo en el pie.",
+    "olor_sabor": "Olor agradable. No se debe probar.",
+    "esporada": "Blanquecina (verde en C. molybdites).",
+    "habitat": "Claros de bosque, pastizales, bordes de caminos y zonas ricas en materia orgánica.",
+    "temporada": "Otoño.",
+    "rasgos_clave": [
+      "Carne que enrojece al corte",
+      "Pie liso, sin dibujo de serpiente",
+      "Bulbo brusco y marginado en C. brunneum",
+      "Escamas gruesas sobre el sombrero"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "macrolepiota_procera",
+        "diferencias": [
+          "El parasol tiene el pie con bandas en zigzag (piel de serpiente)",
+          "Su carne no enrojece al corte",
+          "Sombrero con mamelón marcado, de 10 a 30 cm"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/chlorophyllum_rhacodes_1.jpg",
+        "autor": "Bernard Spragg. NZ from Christchurch, New Zealand",
+        "licencia": "CC0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Shaggy_Parasol._(Chlorophyllum_rhacodes)_(34439570751).jpg"
+      },
+      {
+        "archivo": "fotos/chlorophyllum_rhacodes_2.jpg",
+        "autor": "Tomasz Sobczak",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Chlorophyllum_brunneum_ts1_cropped.jpg"
+      },
+      {
+        "archivo": "fotos/chlorophyllum_rhacodes_3.jpg",
+        "autor": "Hagen Graebner",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Chlorophyllumbrunneum3.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Chlorophyllum rhacodes",
+        "url": "https://www.amanitacesarea.com/chlorophyllum-rhacodes.html"
+      },
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Macrolepiota procera",
+        "url": "https://www.amanitacesarea.com/macrolepiota-procera.html"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Chlorophyllum rhacodes",
+        "url": "https://www.first-nature.com/fungi/chlorophyllum-rhacodes.php"
+      },
+      {
+        "titulo": "Wikipedia (en), Chlorophyllum rhacodes (fuente secundaria)",
+        "url": "https://en.wikipedia.org/wiki/Shaggy_parasol"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Chlorophyllum rhacodes",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=374433"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Chlorophyllum brunneum",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=374393"
+      }
+    ]
+  }
+]

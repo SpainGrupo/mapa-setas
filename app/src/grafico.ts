@@ -73,7 +73,9 @@ export function pintarGrafico(contenedor: HTMLElement, serie: Dia[], hoy: string
         el('rect', { x: x0, y: y0, width: x1 - x0, height: y1 - y0, fill: COLORES_GRAFICO.ventana, 'fill-opacity': 0.14 }, svg);
       }
       el('rect', { x: x0, y: L1 + 2, width: x1 - x0, height: 4, rx: 2, fill: COLORES_GRAFICO.ventana }, svg);
-      el('text', { x: Math.min(x0 + 2, W - DER - 60), y: T0 - 4, 'font-size': 12, fill: TINTA, 'font-weight': 700 }, svg, ventana.etiqueta);
+      // Etiqueta dentro de la banda, bajo el título (la de «previsión» va encima): halo blanco para leerse sobre las líneas.
+      el('text', { x: Math.min(x0 + 3, W - DER - 70), y: T0 + 13, 'font-size': 12, fill: TINTA, 'font-weight': 700,
+        stroke: '#fff', 'stroke-width': 3, 'paint-order': 'stroke' }, svg, ventana.etiqueta);
     }
   }
 

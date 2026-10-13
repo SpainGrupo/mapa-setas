@@ -1,0 +1,13 @@
+{
+ "_nota": "Fixture del e2e: días relativos a hoy (Europe/Madrid). 30 mm hace 17 días; tmin 13 y tmax 23 en todos los días. La elevación del modelo se iguala a alt_media de cada punto (sin corrección por altitud).",
+ "lluvia": { "-17": 30, "-5": 2, "1": 1 },
+ "tmin": 13,
+ "tmax": 23,
+ "esperado": {
+  "boletus_aereus": "verde",
+  "boletus_aestivalis": "verde",
+  "boletus_edulis": "verde",
+  "boletus_pinophilus": "amarillo",
+  "amanita_caesarea": "rojo"
+ }
+}

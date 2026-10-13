@@ -1,6 +1,8 @@
 // e2e (Playwright, viewport móvil): carga → descarga de mapas → sin conexión → recarga →
 // mapa base y capa de Amanita caesarea desde OPFS → crear un sitio → exportar GPX.
 // Entre medias: «Volver a descargar» abortada a mitad (un .pmtiles cortado) → los mapas antiguos siguen.
+// Fase 3: Open-Meteo interceptado con un fixture fijo (e2e/fixtures/open-meteo.json) → tocar el mapa → tarjeta →
+// pestaña Zona con los estados esperados; y sin conexión, tras recargar, la Zona muestra la caché («actualizado hace»).
 // La app solo expone window.__setas con ?e2e=1.
 // Requiere `npm run build` y el servidor: php -S 127.0.0.1:8765 -t dist servidor.php
 import { createRequire } from 'node:module';
@@ -13,6 +15,7 @@ const URL_APP = (process.env.URL_APP ?? 'http://127.0.0.1:8765/') + '?e2e=1';
 const CAPTURAS = join(dirname(fileURLToPath(import.meta.url)), 'capturas');
 mkdirSync(CAPTURAS, { recursive: true });
 const PUNTO = { latitude: 36.589, longitude: -5.244 };   // máximo local de idoneidad de caesarea
+const FIXTURE = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'fixtures/open-meteo.json'), 'utf8'));
 const NOTA = 'Ñandú & <castaños> "junto" al \'arroyo\' ✓';
 
 let paso = 0;
@@ -21,7 +24,28 @@ const comprobar = (c, m) => { if (!c) throw new Error(`Falla: ${m}`); ok(m); };
 
 const nav = await chromium.launch();
 const ctx = await nav.newContext({ ...devices['Pixel 7'], geolocation: PUNTO, permissions: ['geolocation'],
-  acceptDownloads: true, locale: 'es-ES' });
+  acceptDownloads: true, locale: 'es-ES', timezoneId: 'Europe/Madrid' });
+
+// Open-Meteo falso: 30 días pasados + 7 de previsión alrededor de hoy (Madrid), elevación = alt_media del punto.
+const fechaMadrid = (d) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid' }).format(d);
+const sumar = (iso, n) => new Date(Date.parse(iso + 'T00:00:00Z') + n * 864e5).toISOString().slice(0, 10);
+let puntosMeteo = null, consultasMeteo = 0;
+await ctx.route('**/api.open-meteo.com/**', async (r) => {
+  consultasMeteo++;
+  puntosMeteo ??= await (await fetch(new URL('data/meteo_puntos.json', URL_APP))).json();
+  const u = new URL(r.request().url());
+  const lat = u.searchParams.get('latitude').split(',').map(Number), lon = u.searchParams.get('longitude').split(',').map(Number);
+  const hoy = fechaMadrid(new Date());
+  const rel = Array.from({ length: 37 }, (_, i) => i - 30);
+  const una = (la, i) => ({ latitude: la, longitude: lon[i],
+    elevation: puntosMeteo.find((p) => p.lat === la && p.lon === lon[i])?.alt_media ?? 0,
+    daily: { time: rel.map((k) => sumar(hoy, k)), precipitation_sum: rel.map((k) => FIXTURE.lluvia[k] ?? 0),
+      temperature_2m_max: rel.map(() => FIXTURE.tmax), temperature_2m_min: rel.map(() => FIXTURE.tmin) } });
+  const cuerpo = lat.length === 1 ? una(lat[0], 0) : lat.map(una);
+  await r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(cuerpo) });
+});
+const estadosZona = () => p.$$eval('#lista-semaforo .semaforo-fila', (bs) => Object.fromEntries(bs.map((b) => [b.dataset.especie, b.dataset.estado])));
+const igual = (a, b) => JSON.stringify(Object.entries(a).sort()) === JSON.stringify(Object.entries(b).sort());
 const p = await ctx.newPage();
 const errores = [];
 p.on('pageerror', (e) => errores.push(e.message));
@@ -94,10 +118,51 @@ try {
   comprobar(/Mapas actualizados/.test(tras2.aviso) && tras2.estado && tras2.estado !== estadoAntes
     && JSON.parse(tras2.estado).archivos[victima] > 0, 're-descarga completa: archivos sustituidos y estado nuevo');
 
+  // Zona con el fixture de Open-Meteo: tocar el mapa → tarjeta → pestaña Zona.
+  await p.waitForSelector('body[data-meteo]', { state: 'attached', timeout: 30000 });
+  comprobar(consultasMeteo >= 1 && await p.evaluate(() => Object.keys(window.__setas.meteo().datos?.puntos ?? {}).length) > 40,
+    `Open-Meteo (fixture) consultado: ${consultasMeteo} petición(es)`);
+  await p.getByRole('button', { name: /Mapa/ }).click();
+  await p.evaluate(({ latitude, longitude }) => window.__setas.mapa.jumpTo({ center: [longitude, latitude], zoom: 10 }), PUNTO);
+  await reposo();
+  const caja = await p.locator('#mapa canvas').boundingBox();
+  await p.mouse.click(caja.x + caja.width / 2, caja.y + caja.height / 2);
+  await p.locator('#tarjeta-zona').waitFor();
+  const tarjeta = await p.locator('#tarjeta-zona').textContent();
+  comprobar(/Boletus aereus: Buen momento/.test(tarjeta) && /ventana abierta/.test(tarjeta), `tarjeta al tocar el mapa: «${tarjeta.trim().replace(/\s+/g, ' ')}»`);
+  await p.locator('[data-capa=semaforo]').evaluate((c) => { c.checked = true; c.dispatchEvent(new Event('change')); });
+  await reposo();
+  await captura('07-mapa-semaforo.png');
+  await p.locator('#tz-ver').click();
+  await p.locator('#lista-semaforo .semaforo-fila').first().waitFor();
+  const est1 = await estadosZona();
+  comprobar(igual(est1, FIXTURE.esperado), `Zona con el fixture: ${JSON.stringify(est1)}`);
+  comprobar(/temperatura justa: máximas altas/.test(await p.locator('[data-especie=boletus_pinophilus] .mot').textContent())
+    && /ventana pasada/.test(await p.locator('[data-especie=amanita_caesarea] .mot').textContent()), 'los motivos explican el amarillo y el rojo');
+  comprobar(await p.locator('#grafico svg path[fill="#2a78d6"]').count() === Object.keys(FIXTURE.lluvia).length
+    && /hoy/.test(await p.locator('#grafico-dato').textContent()), 'gráfico con la lluvia del fixture y el dato de hoy');
+  comprobar(/Orientativo: reglas de aficionado, no ciencia exacta\./.test(await p.locator('#p-zona').textContent()), 'texto fijo «Orientativo…»');
+  await captura('08-zona-fixture.png');
+  await p.locator('#zona-grafico').scrollIntoViewIfNeeded();
+  await captura('09-zona-grafico.png');
+
   await ctx.setOffline(true);
   await p.reload();
   await mapaListo();
   ok('recarga sin conexión: el app shell sale del service worker');
+  const consultasAntes = consultasMeteo;
+  await p.getByRole('button', { name: /Zona/ }).click();
+  await p.locator('#lista-semaforo .semaforo-fila').first().waitFor();
+  const txtMeteo = await p.locator('#estado-meteo').textContent();
+  comprobar(/Sin conexión: último dato guardado, actualizado hace/.test(txtMeteo), `Zona sin conexión: «${txtMeteo}»`);
+  comprobar(igual(await estadosZona(), FIXTURE.esperado) && consultasMeteo === consultasAntes
+    && await p.evaluate(() => window.__setas.meteo().origen) === 'cache', 'sin conexión la Zona sale de la caché de IndexedDB');
+  await captura('10-zona-offline.png');
+  await p.getByRole('button', { name: /Mapa/ }).click();
+  await p.locator('[data-capa=semaforo]').evaluate((c) => { c.checked = true; c.dispatchEvent(new Event('change')); });
+  await reposo();
+  const mz = await p.evaluate(() => window.__setas.origenes()['meteo_zonas.pmtiles']);
+  comprobar(mz?.origen === 'opfs' && mz.http === 0, `capa Semáforo (Voronoi) desde OPFS sin red (${mz?.opfs} lecturas)`);
   await p.getByRole('button', { name: /Mapa/ }).click();
   await p.selectOption('#sel-especie', 'amanita_caesarea');
   await p.evaluate(({ latitude, longitude }) => window.__setas.mapa.jumpTo({ center: [longitude, latitude], zoom: 12 }), PUNTO);

@@ -14,10 +14,13 @@
     <section id="p-mapa" class="pantalla activa" aria-label="Mapa">
       <div id="mapa"></div>
       <div class="panel-sup">
-        <label class="campo">
-          <span class="etq">Especie</span>
-          <select id="sel-especie"></select>
-        </label>
+        <div class="fila-especie">
+          <label class="campo">
+            <span class="etq">Especie</span>
+            <select id="sel-especie"></select>
+          </label>
+          <button id="btn-ver-ficha" class="btn btn-ficha" hidden>📖 Ver ficha</button>
+        </div>
         <label class="campo">
           <span class="etq">Lejos del acceso: <b id="txt-umbral">≥ 0 m</b></span>
           <input id="rng-umbral" type="range" min="0" max="1000" step="200" value="0" />
@@ -82,6 +85,27 @@
       </div>
     </section>
 
+    <section id="p-guia" class="pantalla" aria-label="Guía de especies">
+      <div id="guia-vista-lista">
+        <header class="cab"><h1>Guía de especies</h1></header>
+        <div class="cuerpo">
+          <div class="aviso-seguridad" role="note">No consumas ninguna seta sin confirmación de un experto</div>
+          <label class="campo"><span class="etq">Buscar por nombre común o científico</span>
+            <input id="guia-buscar" type="search" placeholder="Ej.: oronja, níscalo, phalloides" autocomplete="off" enterkeyhint="search" /></label>
+          <div class="chips" role="group" aria-label="Filtrar por grupo">
+            <button class="chip activa" data-grupo="" aria-pressed="true">Todas</button>
+            <button class="chip g-apreciada" data-grupo="apreciada" aria-pressed="false">Apreciadas</button>
+            <button class="chip g-comestible_menor" data-grupo="comestible_menor" aria-pressed="false">Poco valor</button>
+            <button class="chip g-toxica" data-grupo="toxica" aria-pressed="false">Tóxicas</button>
+            <button class="chip g-mortal" data-grupo="mortal" aria-pressed="false">☠ Mortales</button>
+          </div>
+          <p id="guia-error" class="sin-guia" hidden>No se pudo cargar la guía. Conéctate a internet una vez para guardarla.</p>
+          <div id="guia-lista"></div>
+        </div>
+      </div>
+      <div id="guia-ficha" class="ficha" hidden></div>
+    </section>
+
     <section id="p-ajustes" class="pantalla" aria-label="Ajustes">
       <header class="cab"><h1>Ajustes y descargas</h1></header>
       <div class="cuerpo">
@@ -92,10 +116,18 @@
         <button id="btn-descargar" class="btn btn-grande">Descargar mapas para uso sin cobertura</button>
         <button id="btn-borrar-mapas" class="btn btn-peligro" hidden>Borrar mapas descargados</button>
         <p id="estado-almacen" class="nota"></p>
+        <h2>Guía de especies sin cobertura</h2>
+        <p id="estado-guia" class="estado">Comprobando…</p>
+        <button id="btn-guia-fotos" class="btn" hidden>Guardar las fotos que faltan</button>
         <h2>Datos</h2>
         <p class="nota" id="info-datos"></p>
         <p class="atribucion">Datos: IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, © OpenStreetMap ODbL, Protomaps</p>
         <p class="atribucion">Datos meteorológicos: Open-Meteo.com (CC BY 4.0)</p>
+        <details id="creditos-fotos" class="creditos">
+          <summary>Créditos de fotos</summary>
+          <p class="nota">Fotos de la guía de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-SA o dominio público), redimensionadas.</p>
+          <div id="lista-creditos"></div>
+        </details>
       </div>
     </section>
   </main>
@@ -104,7 +136,7 @@
     <button data-p="p-mapa" class="activa">🗺️<span>Mapa</span></button>
     <button data-p="p-sitios">📍<span>Mis sitios</span></button>
     <button data-p="p-zona">🚦<span>Zona</span></button>
-    <button class="prox" aria-disabled="true" data-prox="Guía">📖<span>Guía</span><small>próximamente</small></button>
+    <button data-p="p-guia">📖<span>Guía</span></button>
     <button class="prox" aria-disabled="true" data-prox="Reconocer">📷<span>Reconocer</span><small>próximamente</small></button>
     <button data-p="p-ajustes">⚙️<span>Ajustes</span></button>
   </nav>

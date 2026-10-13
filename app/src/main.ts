@@ -13,6 +13,7 @@ import { edadHoras, fechaMadrid, obtener, CADUCIDAD_H, type DatosMeteo, type Pun
 import { ddmm, semaforo, sumarDias, type ResultadoSemaforo } from './semaforo';
 import { expresionColores, haceTexto, ICONO_ESTADO, NOMBRE_ESTADO, puntoMasCercano } from './zona';
 import { pintarGrafico } from './grafico';
+import { abrirFicha, cargarGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, mostrarGuia, pintarCreditos, type EstadoFotos } from './guia-ui';
 
 registerSW({ immediate: true });
 
@@ -51,6 +52,7 @@ function irA(id: string) {
   if (id === 'p-sitios') pintarLista();
   if (id === 'p-ajustes') pintarAjustes();
   if (id === 'p-zona') pintarZona();
+  if (id === 'p-guia') mostrarGuia();
 }
 
 document.querySelectorAll<HTMLButtonElement>('.pestanas button').forEach((b) =>
@@ -82,7 +84,18 @@ function aplicarIdoneidad() {
   verCapa(mapa, ['idoneidad'], $<HTMLInputElement>('[data-capa=idoneidad]').checked);
   pintarSemaforoMapa();
   pintarTarjeta();
+  pintarBotonFicha();
 }
+
+/** «Ver ficha» junto al selector de especie, solo si la especie del mapa tiene ficha en la guía. */
+async function pintarBotonFicha() {
+  const id = $<HTMLSelectElement>('#sel-especie').value;
+  $('#btn-ver-ficha').hidden = !(await cargarGuia() && hayFicha(id));
+}
+$('#btn-ver-ficha').addEventListener('click', () => {
+  irA('p-guia');
+  abrirFicha($<HTMLSelectElement>('#sel-especie').value);
+});
 
 const CAPAS: Record<string, string[]> = {
   sombreado: ['sombreado'], curvas: ['curvas', 'curvas-cota'],
@@ -490,7 +503,21 @@ window.addEventListener('offline', () => { if ($('#p-zona').classList.contains('
 
 // ---------------------------------------------------------------- Ajustes / descargas
 
+function pintarEstadoGuia(e: EstadoFotos = fotosSinConexion()) {
+  const el = $('#estado-guia');
+  const completas = e.total > 0 && e.guardadas === e.total;
+  el.textContent = !e.total ? (navigator.onLine ? 'Preparando la guía…' : 'Sin conexión: la guía no está guardada todavía.')
+    : completas ? `Guía lista sin cobertura: textos y ${e.total} fotos guardados.`
+    : e.trabajando ? `Guardando fotos de la guía… ${e.guardadas} de ${e.total}`
+    : `Fotos de la guía guardadas: ${e.guardadas} de ${e.total}.${navigator.onLine ? '' : ' Faltan; conéctate para completarlas.'}`;
+  $<HTMLButtonElement>('#btn-guia-fotos').hidden = completas || e.trabajando || !e.total;
+  $<HTMLButtonElement>('#btn-guia-fotos').disabled = !navigator.onLine;
+}
+$('#btn-guia-fotos').addEventListener('click', () => guardarFotosSinConexion(pintarEstadoGuia));
+$('#creditos-fotos').addEventListener('toggle', () => pintarCreditos());
+
 async function pintarAjustes() {
+  pintarEstadoGuia();
   const est = estadoDescarga();
   const btn = $<HTMLButtonElement>('#btn-descargar');
   const total = manifest?.total_bytes ?? 0;
@@ -536,7 +563,7 @@ $('#btn-borrar-mapas').addEventListener('click', async () => {
   await borrarMapas();
   recargarTrasCambioDeMapas('Mapas borrados');
 });
-window.addEventListener('online', () => pintarAjustes());
+window.addEventListener('online', () => { pintarAjustes(); guardarFotosSinConexion(pintarEstadoGuia); });
 window.addEventListener('offline', () => pintarAjustes());
 
-iniciarMapa().then(pintarAjustes);
+iniciarMapa().then(pintarAjustes).finally(() => guardarFotosSinConexion(pintarEstadoGuia));

@@ -28,10 +28,17 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,pbf,json,webmanifest}'],
-        globIgnores: ['data/**'],
+        // La guía: especies.json e indice.json van en el precache; las fotos (~18 MB), en su propia caché
+        // «guia-fotos», que rellena la página (ver src/guia-ui.ts) y aquí se sirve con CacheFirst.
+        globIgnores: ['data/**', 'guia/fotos/**'],
+        runtimeCaching: [{
+          urlPattern: /\/guia\/fotos\/[^/]+\.jpg(\?.*)?$/,
+          handler: 'CacheFirst',
+          options: { cacheName: 'guia-fotos', cacheableResponse: { statuses: [200] } },
+        }],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         navigateFallback: 'index.html',
-        navigateFallbackDenylist: [/\/data\//],
+        navigateFallbackDenylist: [/\/data\//, /\/guia\/fotos\//],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,

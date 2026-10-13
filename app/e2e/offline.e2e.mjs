@@ -3,6 +3,8 @@
 // Entre medias: «Volver a descargar» abortada a mitad (un .pmtiles cortado) → los mapas antiguos siguen.
 // Fase 3: Open-Meteo interceptado con un fixture fijo (e2e/fixtures/open-meteo.json) → tocar el mapa → tarjeta →
 // pestaña Zona con los estados esperados; y sin conexión, tras recargar, la Zona muestra la caché («actualizado hace»).
+// Fase 4: Guía → buscar «cesar» → ficha de A. caesarea (aviso de comestible y caja de huevo) → comparativa con
+// A. phalloides → su ficha dice MORTAL; sin conexión y tras recargar, la guía y sus fotos siguen cargando.
 // La app solo expone window.__setas con ?e2e=1.
 // Requiere `npm run build` y el servidor: php -S 127.0.0.1:8765 -t dist servidor.php
 import { createRequire } from 'node:module';
@@ -146,10 +148,63 @@ try {
   await p.locator('#zona-grafico').scrollIntoViewIfNeeded();
   await captura('09-zona-grafico.png');
 
+  // Fase 4: Guía de especies.
+  await p.waitForSelector('body[data-guia-fotos=completas]', { state: 'attached', timeout: 180000 });
+  const enCache = await p.evaluate(async () => (await (await caches.open('guia-fotos')).keys()).length);
+  comprobar(enCache === 78, `fotos de la guía guardadas en la caché «guia-fotos» (${enCache})`);
+  const tabGuia = p.locator('.pestanas button[data-p=p-guia]');
+  await tabGuia.click();
+  await p.locator('.tarjeta-guia').first().waitFor();
+  const grupos = await p.$$eval('.grupo-guia h2', (hs) => hs.map((h) => h.textContent));
+  comprobar(await p.locator('.tarjeta-guia').count() === 26 && grupos.length === 4, `Guía: 26 especies en 4 grupos (${grupos.join(', ')})`);
+  const textosInsignias = await p.$$eval('.insignia', (xs) => [...new Set(xs.map((x) => x.textContent))]);
+  comprobar(!textosInsignias.some((t) => /comestible/i.test(t)) && textosInsignias.includes('☠ MORTAL'),
+    `ninguna insignia dice «comestible» (${textosInsignias.join(', ')})`);
+  await captura('guia-lista.png');
+  await p.locator('#guia-buscar').fill('cesar');
+  const encontradas = await p.$$eval('.tarjeta-guia', (bs) => bs.map((b) => b.dataset.id));
+  comprobar(encontradas.includes('amanita_caesarea'), `buscar «cesar» (sin tilde) encuentra la oronja: ${encontradas.join(', ')}`);
+  await captura('guia-busqueda.png');
+  await p.locator('.tarjeta-guia[data-id=amanita_caesarea]').click();
+  await p.locator('#guia-ficha[data-id=amanita_caesarea]').waitFor();
+  const banner = p.locator('#guia-ficha .banner-comestible');
+  comprobar(await banner.isVisible() && (await banner.textContent()) === 'Considerada comestible por la bibliografía. No la consumas sin la confirmación de un experto.',
+    'ficha de A. caesarea con el aviso fijo de comestible');
+  comprobar(await p.locator('#guia-ficha .caja-huevo').isVisible() && /huevo/i.test(await p.locator('#guia-ficha .caja-huevo').textContent()),
+    'caja «En fase de huevo» visible');
+  comprobar(await p.locator('#guia-ficha .checklist li').count() >= 3, 'rasgos clave como lista de comprobación');
+  await captura('guia-ficha-caesarea.png');
+  const comp = p.locator('#guia-ficha .comparar[data-id=amanita_phalloides]');
+  await comp.scrollIntoViewIfNeeded();
+  comprobar(await banner.isVisible(), 'el aviso de comestible sigue visible al bajar por la ficha');
+  comprobar(/MORTAL/.test(await comp.locator('.insignia').last().textContent()), 'la comparativa marca A. phalloides como MORTAL');
+  await captura('guia-no-confundir.png');
+  await comp.click();
+  await p.locator('#guia-ficha[data-id=amanita_phalloides]').waitFor();
+  const peligro = p.locator('#guia-ficha .caja-peligro.mortal');
+  comprobar(await peligro.isVisible() && /MORTAL/.test(await peligro.textContent()) && await p.locator('#guia-ficha .banner-comestible').count() === 0,
+    'ficha de A. phalloides: caja MORTAL arriba y sin aviso de comestible');
+  await captura('guia-ficha-phalloides.png');
+  await p.goBack();
+  await p.locator('#guia-ficha[data-id=amanita_caesarea]').waitFor();
+  ok('«atrás» vuelve a la ficha de A. caesarea');
+
   await ctx.setOffline(true);
   await p.reload();
   await mapaListo();
   ok('recarga sin conexión: el app shell sale del service worker');
+  await tabGuia.click();
+  await p.locator('.pestanas button[data-p=p-guia].activa').waitFor();
+  if (await p.locator('#guia-ficha').isVisible()) await p.locator('.btn-volver').click();
+  await p.locator('.tarjeta-guia').first().waitFor();
+  comprobar(await p.locator('.tarjeta-guia').count() === 26, 'sin conexión la guía carga (precache)');
+  await p.locator('.tarjeta-guia[data-id=amanita_phalloides]').click();
+  await p.locator('#guia-ficha[data-id=amanita_phalloides]').waitFor();
+  const foto = p.locator('#guia-ficha .carrusel-guia img').first();
+  await foto.evaluate((i) => i.decode().catch(() => {}));
+  const dims = await foto.evaluate((i) => ({ ok: i.complete, w: i.naturalWidth, src: i.getAttribute('src') }));
+  comprobar(dims.ok && dims.w > 0, `sin conexión la foto sale de la caché (${dims.src}, ${dims.w} px de ancho)`);
+  await captura('guia-offline.png');
   const consultasAntes = consultasMeteo;
   await p.getByRole('button', { name: /Zona/ }).click();
   await p.locator('#lista-semaforo .semaforo-fila').first().waitFor();
@@ -178,6 +233,13 @@ try {
   comprobar(cae?.origen === 'opfs' && cae.opfs >= 3 && est.idon,
     `capa de Amanita caesarea desde OPFS (${cae?.opfs} lecturas)`);
   await captura('03-offline-caesarea.png');
+  const verFicha = p.locator('#btn-ver-ficha');
+  await verFicha.waitFor();
+  await captura('guia-mapa-boton.png');
+  await verFicha.click();
+  await p.locator('#guia-ficha[data-id=amanita_caesarea]').waitFor();
+  comprobar(await p.locator('#p-guia').isVisible(), '«Ver ficha» en el panel del mapa abre la ficha de la especie elegida');
+  await p.getByRole('button', { name: /Mapa/ }).click();
 
   await p.getByRole('button', { name: 'Guardar sitio aquí' }).click();
   await p.locator('#dlg-sitio[open]').waitFor();
@@ -201,6 +263,12 @@ try {
 
   await p.getByRole('button', { name: /Ajustes/ }).click();
   await captura('06-ajustes-offline.png');
+  comprobar(/Guía lista sin cobertura: textos y 78 fotos/.test(await p.locator('#estado-guia').textContent()), `Ajustes: «${await p.locator('#estado-guia').textContent()}»`);
+  await p.locator('#creditos-fotos summary').click();
+  await p.locator('#lista-creditos .credito-especie').first().waitFor();
+  comprobar(await p.locator('#lista-creditos li').count() === 78, 'Créditos de fotos: 78 entradas con autor y licencia');
+  await p.locator('#creditos-fotos').scrollIntoViewIfNeeded();
+  await captura('guia-creditos.png');
   comprobar(errores.length === 0, `sin errores de página${errores.length ? ': ' + errores.join(' | ') : ''}`);
   console.log('e2e OK');
 } catch (e) {

@@ -28,7 +28,8 @@ describe('lotes y URL', () => {
     expect(u.origin + u.pathname).toBe('https://api.open-meteo.com/v1/forecast');
     expect(u.searchParams.get('latitude')).toBe('36.01,36.02');
     expect(u.searchParams.get('longitude')).toBe('-5.01,-5.02');
-    expect(u.searchParams.get('daily')).toBe('precipitation_sum,temperature_2m_max,temperature_2m_min');
+    expect(u.searchParams.get('daily')).toBe('precipitation_sum,temperature_2m_max,temperature_2m_min,et0_fao_evapotranspiration,relative_humidity_2m_min');
+    expect(u.searchParams.get('hourly')).toBe('soil_moisture_9_to_27cm');
     expect(u.searchParams.get('past_days')).toBe('30');
     expect(u.searchParams.get('forecast_days')).toBe('7');
     expect(u.searchParams.get('timezone')).toBe('Europe/Madrid');
@@ -65,6 +66,23 @@ describe('corrección por altitud', () => {
     ]);
     expect(d.hoy).toBe('2026-10-13');
     expect(d.fecha_consulta).toBe('2026-10-13T10:00:00.000Z');
+  });
+});
+
+describe('variables de humedad', () => {
+  it('ET0 y HR mínima diarias; suelo = media diaria de los valores horarios (≥12 h con dato)', async () => {
+    const horas = (f: string) => Array.from({ length: 24 }, (_, h) => `${f}T${String(h).padStart(2, '0')}:00`);
+    const cuerpo = { elevation: 500, daily: { time: ['2026-10-12', '2026-10-13'], precipitation_sum: [1, 0],
+      temperature_2m_max: [20, 22], temperature_2m_min: [10, 12], et0_fao_evapotranspiration: [2.5, null], relative_humidity_2m_min: [40, 28] },
+      hourly: { time: [...horas('2026-10-12'), ...horas('2026-10-13')],
+        soil_moisture_9_to_27cm: [...Array(12).fill(0.1), ...Array(12).fill(0.2), ...Array(13).fill(null), ...Array(11).fill(0.3)] } };
+    const f = vi.fn(async () => new Response(JSON.stringify(cuerpo)));
+    const d = await consultar([punto(0, 500)], f, new Date('2026-10-13T10:00:00Z'));
+    expect(d.puntos['0']).toEqual([
+      { fecha: '2026-10-12', lluvia: 1, tmin: 10, tmax: 20, et0: 2.5, hr_min: 40, suelo: 0.15 },
+      { fecha: '2026-10-13', lluvia: 0, tmin: 12, tmax: 22, hr_min: 28 },
+    ]);
+    expect('suelo' in d.puntos['0'][1]).toBe(false);
   });
 });
 

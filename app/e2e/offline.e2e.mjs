@@ -49,7 +49,10 @@ await ctx.route('**/api.open-meteo.com/**', async (r) => {
   const una = (la, i) => ({ latitude: la, longitude: lon[i],
     elevation: puntosMeteo.find((p) => p.lat === la && p.lon === lon[i])?.alt_media ?? 0,
     daily: { time: rel.map((k) => sumar(hoy, k)), precipitation_sum: rel.map((k) => FIXTURE.lluvia[k] ?? 0),
-      temperature_2m_max: rel.map(() => FIXTURE.tmax), temperature_2m_min: rel.map(() => FIXTURE.tmin) } });
+      temperature_2m_max: rel.map(() => FIXTURE.tmax), temperature_2m_min: rel.map(() => FIXTURE.tmin),
+      et0_fao_evapotranspiration: rel.map(() => FIXTURE.et0), relative_humidity_2m_min: rel.map(() => FIXTURE.hr_min) },
+    hourly: { time: rel.flatMap((k) => Array.from({ length: 24 }, (_, h) => `${sumar(hoy, k)}T${String(h).padStart(2, '0')}:00`)),
+      soil_moisture_9_to_27cm: rel.flatMap(() => Array(24).fill(FIXTURE.suelo)) } });
   const cuerpo = lat.length === 1 ? una(lat[0], 0) : lat.map(una);
   await r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(cuerpo) });
 });
@@ -242,6 +245,11 @@ try {
   comprobar(await p.locator('#grafico svg path[fill="#2a78d6"]').count() === Object.keys(FIXTURE.lluvia).length
     && /hoy/.test(await p.locator('#grafico-dato').textContent()), 'gráfico con la lluvia del fixture y el dato de hoy');
   comprobar(/Orientativo: reglas de aficionado, no ciencia exacta\./.test(await p.locator('#p-zona').textContent()), 'texto fijo «Orientativo…»');
+  const ind = await p.evaluate(() => ({ balance: document.querySelector('#ind-balance b').textContent,
+    dias: document.querySelector('#ind-dias b').textContent, suelo: document.querySelector('#ind-suelo b').textContent }));
+  comprobar(igual(ind, FIXTURE.indicadores) && await p.locator('#grafico .linea-suelo').count() === 1
+    && /mejor ahora entre|ninguna altitud/i.test(await p.locator('#zona-banda').textContent()),
+    `indicadores de humedad ${JSON.stringify(ind)}, línea de suelo en el gráfico y pista de altitud`);
   await captura('08-zona-fixture.png');
   await p.locator('#zona-grafico').scrollIntoViewIfNeeded();
   await captura('09-zona-grafico.png');

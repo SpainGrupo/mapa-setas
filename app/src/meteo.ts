@@ -3,7 +3,12 @@
 import { createStore, get, set } from 'idb-keyval';
 
 export interface PuntoMeteo { id: number; lat: number; lon: number; alt_media: number }
-export interface Dia { fecha: string; lluvia: number; tmin: number; tmax: number }
+export interface Dia {
+  fecha: string; lluvia: number; tmin: number; tmax: number;
+  et0?: number;                        // evapotranspiración de referencia FAO (mm/día)
+  hr_min?: number;                     // humedad relativa mínima a 2 m (%)
+  suelo?: number;                      // humedad del suelo 9–27 cm, media diaria de los valores horarios (m³/m³)
+}
 export interface DatosMeteo {
   fecha_consulta: string;              // ISO 8601 (UTC) del momento de la consulta
   hoy: string;                         // YYYY-MM-DD en Europe/Madrid al consultar
@@ -23,11 +28,17 @@ export function lotes<T>(xs: T[], n = LOTE): T[][] {
   return r;
 }
 
+// Nombres comprobados contra la API el 2026-10-14 (https://open-meteo.com/en/docs): `soil_moisture_9_to_27cm_mean`
+// no existe como variable diaria de la Forecast API (error «invalid String value»), por eso va en horaria.
+export const DIARIAS = ['precipitation_sum', 'temperature_2m_max', 'temperature_2m_min', 'et0_fao_evapotranspiration',
+  'relative_humidity_2m_min'] as const;
+
 export function urlOpenMeteo(ps: PuntoMeteo[]): string {
   const q = new URLSearchParams({
     latitude: ps.map((p) => p.lat).join(','),
     longitude: ps.map((p) => p.lon).join(','),
-    daily: 'precipitation_sum,temperature_2m_max,temperature_2m_min',
+    daily: DIARIAS.join(','),
+    hourly: 'soil_moisture_9_to_27cm',   // la Forecast API no la da agregada por día: se promedia aquí
     past_days: '30',
     forecast_days: '7',
     timezone: 'Europe/Madrid',
@@ -44,7 +55,23 @@ export function fechaMadrid(d: Date): string {
 
 interface RespuestaOM {
   elevation: number;
-  daily: { time: string[]; precipitation_sum: (number | null)[]; temperature_2m_max: (number | null)[]; temperature_2m_min: (number | null)[] };
+  daily: { time: string[]; precipitation_sum: (number | null)[]; temperature_2m_max: (number | null)[]; temperature_2m_min: (number | null)[];
+    et0_fao_evapotranspiration?: (number | null)[]; relative_humidity_2m_min?: (number | null)[] };
+  hourly?: { time: string[]; soil_moisture_9_to_27cm?: (number | null)[] };
+}
+
+/** Media diaria de una variable horaria (clave YYYY-MM-DD); solo días con al menos 12 horas con dato. */
+export function mediaDiaria(time: string[], v: (number | null)[]): Map<string, number> {
+  const acc = new Map<string, [number, number]>();
+  time.forEach((t, i) => {
+    const x = v[i];
+    if (x == null || !Number.isFinite(x)) return;
+    const k = t.slice(0, 10), a = acc.get(k) ?? [0, 0];
+    acc.set(k, [a[0] + x, a[1] + 1]);
+  });
+  const r = new Map<string, number>();
+  for (const [k, [s, n]] of acc) if (n >= 12) r.set(k, Math.round((s / n) * 1000) / 1000);
+  return r;
 }
 
 const num = (v: number | null | undefined) => (v == null ? NaN : v);
@@ -52,9 +79,15 @@ const num = (v: number | null | undefined) => (v == null ? NaN : v);
 function serie(r: RespuestaOM, p: PuntoMeteo): Dia[] {
   const d = r.daily;
   const corr = (v: number | null) => Math.round(corregirAltitud(num(v), r.elevation, p.alt_media) * 10) / 10;
-  return d.time.map((fecha, i) => ({
-    fecha, lluvia: d.precipitation_sum[i] ?? 0, tmin: corr(d.temperature_2m_min[i]), tmax: corr(d.temperature_2m_max[i]),
-  }));
+  const suelo = r.hourly?.soil_moisture_9_to_27cm ? mediaDiaria(r.hourly.time, r.hourly.soil_moisture_9_to_27cm) : null;
+  return d.time.map((fecha, i) => {
+    const dia: Dia = { fecha, lluvia: d.precipitation_sum[i] ?? 0, tmin: corr(d.temperature_2m_min[i]), tmax: corr(d.temperature_2m_max[i]) };
+    const et0 = d.et0_fao_evapotranspiration?.[i], hr = d.relative_humidity_2m_min?.[i], s = suelo?.get(fecha);
+    if (et0 != null) dia.et0 = et0;
+    if (hr != null) dia.hr_min = hr;
+    if (s != null) dia.suelo = s;
+    return dia;
+  });
 }
 
 type Fetch = (url: string) => Promise<Response>;

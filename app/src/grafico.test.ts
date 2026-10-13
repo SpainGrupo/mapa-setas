@@ -23,4 +23,16 @@ describe('gráfico', () => {
     expect(dato).toBe(textoDia(serie[30], HOY));
     expect(dato).toMatch(/^mar 13\/10 \(hoy\) · lluvia 12 mm · máx 22 °C · mín 10 °C$/);
   });
+  it('sin humedad del suelo no hay tercer panel; con ella, línea propia y su dato al tocar', () => {
+    const div = document.createElement('div');
+    pintarGrafico(div, serie, HOY, null, () => {});
+    expect(div.querySelector('.linea-suelo')).toBeNull();
+    const conSuelo = serie.map((d, i) => ({ ...d, suelo: 0.1 + i / 400 }));
+    let dato = '';
+    pintarGrafico(div, conSuelo, HOY, null, (t) => (dato = t));
+    expect(div.querySelectorAll('.linea-suelo').length).toBe(1);
+    expect([...div.querySelectorAll('text')].map((t) => t.textContent)).toContain('Humedad del suelo (m³/m³)');
+    expect(dato).toMatch(/· suelo 0,18$/);
+    expect(div.querySelector('svg')!.getAttribute('viewBox')).toBe('0 0 360 412');
+  });
 });

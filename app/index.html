@@ -96,11 +96,24 @@
         </div>
         <p id="zona-punto" class="nota">Toca el mapa para elegir una zona.</p>
         <button id="zona-ir-mapa" class="btn" hidden><svg class="ico" aria-hidden="true"><use href="#i-mapa"/></svg>Ir al mapa</button>
+        <div id="zona-humedad" class="humedad" hidden>
+          <ul class="indicadores">
+            <li id="ind-balance" title="Lo que ha llovido en 30 días menos lo que se evapora del suelo y las plantas. Si sale negativo, el suelo ha perdido más agua de la que le ha entrado."><span>Balance 30 días</span><b></b></li>
+            <li id="ind-dias" title="Días con 1 mm o más en el último mes. Varios días de lluvia empapan más que una tormenta suelta."><span>Días de lluvia</span><b></b></li>
+            <li id="ind-suelo" title="Agua en la tierra entre 9 y 27 cm, según el modelo de Open-Meteo. Cuanto más alto, más húmeda. Por debajo de 0,15 suele estar seca."><span>Humedad del suelo</span><b></b></li>
+          </ul>
+          <details class="ayuda-humedad"><summary>Qué significan</summary>
+            <p><b>Balance 30 días:</b> lo que ha llovido en 30 días menos lo que se evapora del suelo y las plantas. Si sale negativo, el suelo ha perdido más agua de la que le ha entrado.</p>
+            <p><b>Días de lluvia:</b> días con 1 mm o más en el último mes. Varios días de lluvia empapan más que una tormenta suelta.</p>
+            <p><b>Humedad del suelo:</b> agua en la tierra entre 9 y 27 cm, según el modelo de Open-Meteo, en m³ de agua por m³ de tierra. Cuanto más alto, más húmeda. Por debajo de 0,15 suele estar seca.</p>
+          </details>
+          <p id="zona-banda" class="pista-altitud" hidden></p>
+        </div>
         <ul id="lista-semaforo" class="lista-semaforo"></ul>
         <div id="zona-grafico" class="grafico" hidden>
           <div class="leyenda-grafico" aria-hidden="true">
             <span><i class="k-barra"></i>Lluvia</span><span><i class="k-linea k-tmax"></i>Máx.</span>
-            <span><i class="k-linea k-tmin"></i>Mín.</span><span><i class="k-banda"></i>Ventana</span><span><i class="k-prev"></i>Previsión</span>
+            <span><i class="k-linea k-tmin"></i>Mín.</span><span id="ley-suelo" hidden><i class="k-linea k-suelo"></i>Suelo</span><span><i class="k-banda"></i>Ventana</span><span><i class="k-prev"></i>Previsión</span>
           </div>
           <div id="grafico"></div>
           <p id="grafico-dato" class="grafico-dato" aria-live="polite"></p>

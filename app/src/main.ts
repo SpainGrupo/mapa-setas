@@ -11,7 +11,7 @@ import { borrarSitio, guardarSitio, guardarVarios, leerSitio, listarSitios } fro
 import { aGPX, aJSON, deGPX, deJSON, nuevoId } from './intercambio';
 import type { Manifest, Sitio } from './tipos';
 import { edadHoras, fechaMadrid, obtener, CADUCIDAD_H, type DatosMeteo, type PuntoMeteo } from './meteo';
-import { ddmm, semaforo, sumarDias, type ResultadoSemaforo } from './semaforo';
+import { bandaAltitud, ddmm, humedadAcumulada, semaforo, sumarDias, textoBanda, type ResultadoSemaforo } from './semaforo';
 import { expresionColores, haceTexto, ICONO_ESTADO, NOMBRE_ESTADO, puntoMasCercano } from './zona';
 import { pintarGrafico } from './grafico';
 import { abrirFicha, cargarGuia, fichasGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, mostrarGuia, pintarCreditos, type EstadoFotos } from './guia-ui';
@@ -460,6 +460,25 @@ function pintarEstadoMeteo() {
   el.classList.toggle('antiguo', h > CADUCIDAD_H);
 }
 
+/** Indicadores de humedad acumulada del punto y pista de altitud para la especie elegida. */
+function pintarHumedad(serie: DatosMeteo['puntos'][string] | undefined, p: PuntoMeteo, especie: string) {
+  const caja = $('#zona-humedad');
+  caja.hidden = !serie;
+  if (!serie) return;
+  const hoy = fechaMadrid(new Date());
+  const h = humedadAcumulada(serie, hoy);
+  const n = (v: number, d = 0) => v.toLocaleString('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d }).replace('-', '−');
+  $('#ind-balance b').textContent = Number.isFinite(h.balance_mm) ? `${h.balance_mm > 0 ? '+' : ''}${n(h.balance_mm)} mm` : 'sin dato';
+  $('#ind-dias b').textContent = `${h.dias_lluvia} de 30`;
+  $('#ind-suelo b').textContent = Number.isFinite(h.suelo) ? n(h.suelo, 2) : 'sin dato';
+  const reg = reglasDe(especie);
+  const txt = reg ? textoBanda(bandaAltitud(serie, hoy, reg, p.alt_media), p.alt_media) : '';
+  const banda = $('#zona-banda');
+  banda.hidden = !txt;
+  banda.textContent = txt ? `Para ${nombres[especie] ?? especie}: ${txt[0].toLowerCase()}${txt.slice(1)}` : '';
+  $('#ley-suelo').hidden = !serie.some((d) => Number.isFinite(d.suelo));
+}
+
 function pintarZona() {
   pintarEstadoMeteo();
   $<HTMLButtonElement>('#btn-meteo').disabled = !navigator.onLine;
@@ -496,6 +515,7 @@ function pintarZona() {
   }
   const serie = meteo?.puntos[String(puntoSel.id)];
   graf.hidden = !serie;
+  pintarHumedad(serie, puntoSel, elegida);
   if (!serie) return;
   const hoyF = fechaMadrid(new Date());
   const r = estadoEn(puntoSel, elegida);
@@ -506,12 +526,14 @@ function pintarZona() {
   const tabla = $<HTMLTableElement>('#tabla-dias');
   tabla.replaceChildren();
   const cab = tabla.insertRow();
-  for (const t of ['Día', 'Lluvia (mm)', 'Máx (°C)', 'Mín (°C)']) { const th = document.createElement('th'); th.textContent = t; cab.append(th); }
+  const conSuelo = serie.some((d) => Number.isFinite(d.suelo));
+  for (const t of ['Día', 'Lluvia (mm)', 'Máx (°C)', 'Mín (°C)', ...(conSuelo ? ['Suelo (m³/m³)'] : [])]) { const th = document.createElement('th'); th.textContent = t; cab.append(th); }
   const n1 = (v: number) => (Number.isFinite(v) ? v.toLocaleString('es-ES', { maximumFractionDigits: 1 }) : '—');
+  const n2 = (v: number | undefined) => (Number.isFinite(v) ? (v as number).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—');
   for (const d of serie) {
     const tr = tabla.insertRow();
     tr.className = d.fecha === hoyF ? 'hoy' : d.fecha > hoyF ? 'prev' : '';
-    for (const v of [ddmm(d.fecha) + (d.fecha === hoyF ? ' hoy' : ''), n1(d.lluvia), n1(d.tmax), n1(d.tmin)]) tr.insertCell().textContent = v;
+    for (const v of [ddmm(d.fecha) + (d.fecha === hoyF ? ' hoy' : ''), n1(d.lluvia), n1(d.tmax), n1(d.tmin), ...(conSuelo ? [n2(d.suelo)] : [])]) tr.insertCell().textContent = v;
   }
 }
 

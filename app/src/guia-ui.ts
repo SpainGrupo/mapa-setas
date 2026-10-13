@@ -11,6 +11,7 @@ import {
   agrupar, AVISO_COMESTIBLE, binomio, COMESTIBLES, ETIQUETA_GRUPO, filtrar, nombreComun, TITULO_GRUPO, urlFoto,
   type Ficha, type Foto, type Grupo, type IndiceGuia,
 } from './guia';
+import { AVISO_EXPERTO } from './seguridad';
 
 export const CACHE_FOTOS = 'guia-fotos';
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
@@ -201,6 +202,10 @@ function pintarFicha(id: string) {
   if (COMESTIBLES.has(f.grupo)) {
     const b = el('div', 'banner-comestible', AVISO_COMESTIBLE);
     b.setAttribute('role', 'alert');
+    fija.append(b);
+  } else {
+    const b = el('div', 'banner-experto', AVISO_EXPERTO);
+    b.setAttribute('role', 'note');
     fija.append(b);
   }
   v.append(fija);

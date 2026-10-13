@@ -48,8 +48,10 @@ if (avisoPendiente) { sessionStorage.removeItem(CLAVE_AVISO_RECARGA); avisar(avi
 
 function irA(id: string) {
   document.querySelectorAll('.pantalla').forEach((p) => p.classList.toggle('activa', p.id === id));
-  document.querySelectorAll<HTMLButtonElement>('.pestanas button[data-p]').forEach((b) =>
-    b.classList.toggle('activa', b.dataset.p === id));
+  document.querySelectorAll<HTMLButtonElement>('.pestanas button[data-p]').forEach((b) => {
+    b.classList.toggle('activa', b.dataset.p === id);
+    if (b.dataset.p === id) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
   if (id === 'p-mapa') mapa?.resize();
   if (id === 'p-sitios') pintarLista();
   if (id === 'p-ajustes') pintarAjustes();
@@ -415,6 +417,7 @@ function pintarTarjeta() {
 }
 $('#tz-cerrar').addEventListener('click', () => ($('#tarjeta-zona').hidden = true));
 $('#tz-ver').addEventListener('click', () => irA('p-zona'));
+$('#zona-ir-mapa').addEventListener('click', () => irA('p-mapa'));
 
 function pintarEstadoMeteo() {
   const el = $('#estado-meteo');
@@ -432,6 +435,7 @@ function pintarZona() {
   const ul = $('#lista-semaforo');
   ul.replaceChildren();
   const graf = $('#zona-grafico');
+  $('#zona-ir-mapa').hidden = !!puntoSel;
   if (!puntoSel) { $('#zona-punto').textContent = 'Toca el mapa para elegir una zona.'; graf.hidden = true; return; }
   $('#zona-punto').textContent = `Zona del punto ${puntoSel.id} · ${puntoSel.lat.toFixed(3)}, ${puntoSel.lon.toFixed(3)} · bosque a ~${puntoSel.alt_media} m de altitud media`;
   const elegida = especieSel();

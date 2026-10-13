@@ -10,6 +10,17 @@
   <title>Mapa de setas</title>
 </head>
 <body>
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-mapa" viewBox="0 0 24 24"><path d="M9 4 3 6.2v13.6L9 18l6 2 6-2.2V4.2L15 6 9 4z"/><path d="M9 4v14M15 6v14"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.5s-7-6.3-7-12a7 7 0 0 1 14 0c0 5.7-7 12-7 12z"/><circle cx="12" cy="9.5" r="2.6"/></symbol>
+    <symbol id="i-semaforo" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="3.5"/><circle cx="12" cy="7" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="17" r="1.7"/></symbol>
+    <symbol id="i-libro" viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v15H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h14v-4"/><path d="M8 7h8"/></symbol>
+    <symbol id="i-camara" viewBox="0 0 24 24"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.6-2.2h5.8L16.5 6h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.6"/></symbol>
+    <symbol id="i-ajustes" viewBox="0 0 24 24"><path d="M4 6h9M19 6h1M4 12h3M13 12h7M4 18h11M21 18h-1"/><circle cx="16" cy="6" r="2.4"/><circle cx="10" cy="12" r="2.4"/><circle cx="18" cy="18" r="2.4"/></symbol>
+    <symbol id="i-centrar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/><path d="M12 1.8v3.4M12 18.8v3.4M1.8 12h3.4M18.8 12h3.4"/></symbol>
+    <symbol id="i-mas" viewBox="0 0 24 24"><path d="M12 4.5v15M4.5 12h15"/></symbol>
+    <symbol id="i-fotos" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="m21 15.5-4.5-4.5L7 20"/></symbol>
+  </svg>
   <main id="pantallas">
     <section id="p-mapa" class="pantalla activa" aria-label="Mapa">
       <div id="mapa"></div>
@@ -19,7 +30,7 @@
             <span class="etq">Especie</span>
             <select id="sel-especie"></select>
           </label>
-          <button id="btn-ver-ficha" class="btn btn-ficha" hidden>📖 Ver ficha</button>
+          <button id="btn-ver-ficha" class="btn btn-ficha" hidden><svg class="ico" aria-hidden="true"><use href="#i-libro"/></svg>Ver ficha</button>
         </div>
         <label class="campo">
           <span class="etq">Lejos del acceso: <b id="txt-umbral">≥ 0 m</b></span>
@@ -27,7 +38,7 @@
         </label>
         <div class="leyenda">
           <span>Idoneidad</span><span class="rampa" id="rampa"></span><span>baja → alta</span>
-          <button id="btn-capas" class="btn-chico" aria-expanded="false">Capas</button>
+          <button id="btn-capas" class="btn-chico" aria-controls="capas" aria-expanded="false">Capas</button>
         </div>
         <div id="capas" class="capas" hidden>
           <label><input type="checkbox" data-capa="sombreado" checked /> Sombreado del relieve</label>
@@ -39,15 +50,15 @@
         </div>
       </div>
       <div class="fabs">
-        <button id="btn-centrar" class="fab" aria-label="Centrar en mí">◎<span>Centrar</span></button>
-        <button id="btn-aqui" class="fab fab-acento" aria-label="Guardar sitio aquí">＋<span>Sitio aquí</span></button>
+        <button id="btn-centrar" class="fab" aria-label="Centrar en mí"><svg class="ico" aria-hidden="true"><use href="#i-centrar"/></svg><span>Centrar</span></button>
+        <button id="btn-aqui" class="fab fab-acento" aria-label="Guardar sitio aquí"><svg class="ico" aria-hidden="true"><use href="#i-mas"/></svg><span>Sitio aquí</span></button>
       </div>
       <div id="tarjeta-zona" class="tarjeta-zona" role="region" aria-label="Semáforo de la zona tocada" hidden>
         <div class="tz-texto"><b id="tz-estado"></b><span id="tz-motivo"></span></div>
         <button id="tz-ver" class="btn btn-primario">Ver zona</button>
         <button id="tz-cerrar" class="btn-x" aria-label="Cerrar">×</button>
       </div>
-      <p id="sin-datos" class="sin-datos" hidden>No hay mapas. Conéctate a internet o descárgalos en Ajustes.</p>
+      <p id="sin-datos" class="sin-datos" role="status" hidden>No hay mapas. Conéctate a internet o descárgalos en Ajustes.</p>
     </section>
 
     <section id="p-sitios" class="pantalla" aria-label="Mis sitios">
@@ -71,6 +82,7 @@
           <button id="btn-meteo" class="btn">Actualizar tiempo</button>
         </div>
         <p id="zona-punto" class="nota">Toca el mapa para elegir una zona.</p>
+        <button id="zona-ir-mapa" class="btn" hidden><svg class="ico" aria-hidden="true"><use href="#i-mapa"/></svg>Ir al mapa</button>
         <ul id="lista-semaforo" class="lista-semaforo"></ul>
         <div id="zona-grafico" class="grafico" hidden>
           <div class="leyenda-grafico" aria-hidden="true">
@@ -114,8 +126,8 @@
         <p id="rec-estado" class="estado">Comprobando…</p>
         <button id="rec-ir-ajustes" class="btn" hidden>Ir a Ajustes para descargarlo</button>
         <div class="fila-botones">
-          <label class="btn btn-primario">📷 Hacer foto<input id="rec-camara" type="file" accept="image/*" capture="environment" hidden /></label>
-          <label class="btn">🖼️ Elegir fotos<input id="rec-galeria" type="file" accept="image/*" multiple hidden /></label>
+          <label class="btn btn-primario"><svg class="ico" aria-hidden="true"><use href="#i-camara"/></svg>Hacer foto<input id="rec-camara" type="file" accept="image/*" capture="environment" hidden /></label>
+          <label class="btn"><svg class="ico" aria-hidden="true"><use href="#i-fotos"/></svg>Elegir fotos<input id="rec-galeria" type="file" accept="image/*" multiple hidden /></label>
         </div>
         <p id="rec-num-fotos" class="nota"></p>
         <div id="rec-miniaturas" class="miniaturas"></div>
@@ -137,7 +149,7 @@
           <div id="rec-aviso-final" class="aviso-seguridad fijo" role="note">No consumas ninguna seta sin la confirmación de un experto.</div>
           <div class="fila-botones">
             <button id="rec-gemini" class="btn" hidden>Segunda opinión (Gemini)</button>
-            <button id="rec-guardar" class="btn">📍 Guardar sitio</button>
+            <button id="rec-guardar" class="btn"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>Guardar sitio</button>
           </div>
           <p id="rec-gemini-nota" class="nota"></p>
           <div id="rec-gemini-resultado" class="rec-gemini" hidden></div>
@@ -180,12 +192,12 @@
   </main>
 
   <nav class="pestanas" aria-label="Secciones">
-    <button data-p="p-mapa" class="activa">🗺️<span>Mapa</span></button>
-    <button data-p="p-sitios">📍<span>Mis sitios</span></button>
-    <button data-p="p-zona">🚦<span>Zona</span></button>
-    <button data-p="p-guia">📖<span>Guía</span></button>
-    <button data-p="p-reconocer">📷<span>Reconocer</span></button>
-    <button data-p="p-ajustes">⚙️<span>Ajustes</span></button>
+    <button data-p="p-mapa" class="activa" aria-current="page"><svg class="ico" aria-hidden="true"><use href="#i-mapa"/></svg><span>Mapa</span></button>
+    <button data-p="p-sitios"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg><span>Mis sitios</span></button>
+    <button data-p="p-zona"><svg class="ico" aria-hidden="true"><use href="#i-semaforo"/></svg><span>Zona</span></button>
+    <button data-p="p-guia"><svg class="ico" aria-hidden="true"><use href="#i-libro"/></svg><span>Guía</span></button>
+    <button data-p="p-reconocer"><svg class="ico" aria-hidden="true"><use href="#i-camara"/></svg><span>Reconocer</span></button>
+    <button data-p="p-ajustes"><svg class="ico" aria-hidden="true"><use href="#i-ajustes"/></svg><span>Ajustes</span></button>
   </nav>
 
   <dialog id="dlg-inicio" class="dlg">

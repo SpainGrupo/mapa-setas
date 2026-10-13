@@ -76,6 +76,13 @@ mfe:
   # Plantilla verificada (GeoJSON en EPSG:25830, bbox en 25830):
   url_patron: "https://geoserver.iepnb.es/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=foto_fija_mfe:ff_tipo_bosque&outputFormat=application/json&srsName=EPSG:25830&bbox={xmin},{ymin},{xmax},{ymax},EPSG:25830"
   formato: "GeoJSON (application/json). También SHAPE-ZIP y GeoPackage. Geometría MultiPolygon."
+  # Consulta realmente usada en el pipeline (url_patron queda como referencia del spike): la URL la
+  # construye vegetacion.plantilla_mfe() con un filtro CQL en lugar de bbox:
+  #   cql_filter = id_sp1<>0 AND BBOX(geom,xmin,ymin,xmax,ymax,'EPSG:25830')
+  #   count=100 (PAGINA_MFE), startIndex paginado, sortBy=id_ff21 (paginación estable), teselas de 25 km.
+  # Motivo: los recintos desarbolados (id_sp1=0) son el fondo y algunos (urbano/'Artificial') son tan
+  # grandes que GeoServer corta la respuesta a los 30 s. En GeoServer cql_filter y bbox son excluyentes,
+  # por eso el BBOX va dentro del filtro. Se deduplica por id_ff21 (recintos en el borde de teselas).
   volumen: >-
     57 625 recintos en la caja x 160000-410000, y 3990000-4170000 (resultType=hits). Una petición de
     60x40 km devolvió 7 632 recintos sin paginar (sin geometría, 1 MB); con geometría son unos 4 KB por

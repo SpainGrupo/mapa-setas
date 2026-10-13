@@ -48,7 +48,8 @@ def puntuar(perfil, arbol, altitud, orientacion, pendiente, suelo) -> np.ndarray
     f_ori = _f_orientacion(orientacion, perfil["orientacion"])
     f_pend = np.where(pendiente > PENDIENTE_MAX, FACTOR_PENDIENTE, 1.0)
     s = f_arbol * f_suelo * f_alt * f_ori * f_pend
-    s = np.where((altitud == NODATA_F) | (arbol == 255), 0, s)
+    # 255 = fuera de la zona (NODATA) en arbol.tif y suelo.tif
+    s = np.where((altitud == NODATA_F) | (arbol == 255) | (suelo == 255), 0, s)
     return np.rint(np.clip(s, 0, 1) * 100).astype("uint8")
 
 

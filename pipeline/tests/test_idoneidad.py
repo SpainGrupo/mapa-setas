@@ -38,3 +38,6 @@ def test_suelo_y_arbol_se_multiplican():
 
 def test_nodata_es_cero():
     assert _p(ARBOL["castano"], NODATA_F, 0) == 0
+
+def test_suelo_nodata_es_cero():
+    assert _p(ARBOL["castano"], 600, 0, suelo=255) == 0

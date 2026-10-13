@@ -33,7 +33,7 @@ function pm(nombre: string): string {
 // leyendo los archivos antiguos, porque la descarga va a un directorio de staging.
 export function origenes() { return Object.fromEntries([...fuentes].map(([k, f]) => [k.split('/').pop(), { origen: f.origen, ...f.lecturas }])); }
 
-function estilo(): StyleSpecification {
+function estilo(conMeteo: boolean): StyleSpecification {
   const raiz = new URL('./', document.baseURI).href;
   const base = layers('protomaps', namedFlavor('light'), { lang: 'es' }) as LayerSpecification[];
   const primerSimbolo = base.findIndex((l) => l.type === 'symbol');
@@ -42,6 +42,8 @@ function estilo(): StyleSpecification {
     { id: 'curvas', type: 'line', source: 'curvas', 'source-layer': 'curvas',
       paint: { 'line-color': '#8a5a2b', 'line-opacity': ['case', ['get', 'principal'], 0.7, 0.4],
         'line-width': ['case', ['get', 'principal'], 1.1, 0.5] } },
+    { id: 'semaforo', type: 'fill', source: 'meteo_zonas', 'source-layer': 'meteo_zonas', layout: { visibility: 'none' },
+      paint: { 'fill-color': '#8a8a86', 'fill-opacity': 0.35, 'fill-outline-color': '#ffffff' } },
     { id: 'protegidos-relleno', type: 'fill', source: 'protegidos', 'source-layer': 'protegidos',
       paint: { 'fill-color': '#6a1b9a', 'fill-opacity': 0.06 } },
     { id: 'protegidos-linea', type: 'line', source: 'protegidos', 'source-layer': 'protegidos',
@@ -63,8 +65,10 @@ function estilo(): StyleSpecification {
       sombreado: { type: 'raster', url: pm('sombreado.pmtiles'), tileSize: 256 },
       curvas: { type: 'vector', url: pm('curvas.pmtiles') },
       protegidos: { type: 'vector', url: pm('protegidos.pmtiles') },
+      ...(conMeteo ? { meteo_zonas: { type: 'vector' as const, url: pm('meteo_zonas.pmtiles') } } : {}),
     },
-    layers: [...base.slice(0, primerSimbolo), ...propias, ...base.slice(primerSimbolo), etiquetasCurvas],
+    layers: [...base.slice(0, primerSimbolo), ...propias.filter((l) => conMeteo || l.id !== 'semaforo'),
+      ...base.slice(primerSimbolo), etiquetasCurvas],
   };
 }
 
@@ -73,7 +77,7 @@ export function crearMapa(contenedor: HTMLElement, m: Manifest): MapaML {
   const mx = (e - o) * 0.25, my = (n - s) * 0.25;
   const mapa = new maplibregl.Map({
     container: contenedor,
-    style: estilo(),
+    style: estilo(!!m.meteo),
     bounds: [[o, s], [e, n]],
     maxBounds: [[o - mx, s - my], [e + mx, n + my]],
     minZoom: 7,
@@ -110,4 +114,9 @@ export function ponerIdoneidad(mapa: MapaML, especie: string, umbral: number) {
 
 export function verCapa(mapa: MapaML, ids: string[], visible: boolean) {
   for (const id of ids) if (mapa.getLayer(id)) mapa.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+}
+
+/** Colorea los polígonos de Voronoi de la capa Semáforo (expresión de zona.ts expresionColores). */
+export function colorearSemaforo(mapa: MapaML, expresion: any) {
+  if (mapa.getLayer('semaforo')) mapa.setPaintProperty('semaforo', 'fill-color', expresion);
 }

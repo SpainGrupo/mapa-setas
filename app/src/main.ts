@@ -2,13 +2,17 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import './estilos.css';
 import { registerSW } from 'virtual:pwa-register';
 import type { Map as MapaML, GeoJSONSource, LngLat } from 'maplibre-gl';
-import { BASE_DATOS, cargarManifest, mb } from './datos';
-import { COLORES_IDONEIDAD, crearMapa, origenes, ponerIdoneidad, verCapa } from './mapa';
+import { BASE_DATOS, cargarJson, cargarManifest, mb } from './datos';
+import { COLORES_IDONEIDAD, colorearSemaforo, crearMapa, origenes, ponerIdoneidad, verCapa } from './mapa';
 import { Gps } from './gps';
 import { borrarMapas, descargarMapas, estadoDescarga } from './opfs';
 import { borrarSitio, guardarSitio, guardarVarios, leerSitio, listarSitios } from './sitios';
 import { aGPX, aJSON, deGPX, deJSON, nuevoId } from './intercambio';
 import type { Manifest, Sitio } from './tipos';
+import { edadHoras, fechaMadrid, obtener, CADUCIDAD_H, type DatosMeteo, type PuntoMeteo } from './meteo';
+import { ddmm, semaforo, sumarDias, type ResultadoSemaforo } from './semaforo';
+import { expresionColores, haceTexto, ICONO_ESTADO, NOMBRE_ESTADO, puntoMasCercano } from './zona';
+import { pintarGrafico } from './grafico';
 
 registerSW({ immediate: true });
 
@@ -46,6 +50,7 @@ function irA(id: string) {
   if (id === 'p-mapa') mapa?.resize();
   if (id === 'p-sitios') pintarLista();
   if (id === 'p-ajustes') pintarAjustes();
+  if (id === 'p-zona') pintarZona();
 }
 
 document.querySelectorAll<HTMLButtonElement>('.pestanas button').forEach((b) =>
@@ -75,11 +80,13 @@ function aplicarIdoneidad() {
   localStorage.setItem('setas:capa', JSON.stringify({ especie, umbral }));
   ponerIdoneidad(mapa, especie, umbral);
   verCapa(mapa, ['idoneidad'], $<HTMLInputElement>('[data-capa=idoneidad]').checked);
+  pintarSemaforoMapa();
+  pintarTarjeta();
 }
 
 const CAPAS: Record<string, string[]> = {
   sombreado: ['sombreado'], curvas: ['curvas', 'curvas-cota'],
-  protegidos: ['protegidos-relleno', 'protegidos-linea'], idoneidad: ['idoneidad'],
+  protegidos: ['protegidos-relleno', 'protegidos-linea'], idoneidad: ['idoneidad'], semaforo: ['semaforo'],
 };
 
 function pintarSitiosMapa(lista: Sitio[]) {
@@ -107,7 +114,12 @@ async function iniciarMapa() {
 
   mapa = crearMapa($('#mapa'), manifest);
   gps = new Gps(mapa, (m) => avisar(m));
-  if (import.meta.env.DEV || new URLSearchParams(location.search).get('e2e') === '1') (window as any).__setas = { mapa, origenes };
+  if (import.meta.env.DEV || new URLSearchParams(location.search).get('e2e') === '1') (window as any).__setas = { mapa, origenes, meteo: () => ({ datos: meteo, origen: meteoOrigen, punto: puntoSel }),
+    resumenSemaforo: () => Object.fromEntries((manifest?.especies ?? []).map((e) => {
+      const n: Record<string, number> = { verde: 0, amarillo: 0, rojo: 0, gris: 0 };
+      for (const p of puntosMeteo) n[estadoEn(p, e.id)?.estado ?? 'gris']++;
+      return [e.id, n];
+    })) };
   mapa.on('load', async () => {
     aplicarIdoneidad();
     mapa!.addSource('sitios', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
@@ -119,6 +131,12 @@ async function iniciarMapa() {
       if (id) leerSitio(String(id)).then((s) => s && abrirSitio(s));
     });
     pintarSitiosMapa(await listarSitios());
+    mapa!.addSource('punto-meteo', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    mapa!.addLayer({ id: 'punto-meteo', type: 'circle', source: 'punto-meteo', paint: {
+      'circle-radius': 7, 'circle-color': '#111', 'circle-stroke-color': '#fff', 'circle-stroke-width': 3 } });
+    mapa!.on('click', (ev) => elegirPunto(ev.lngLat.lat, ev.lngLat.lng, true));
+    pintarSemaforoMapa();
+    pintarPuntoMapa();
     document.body.dataset.mapa = 'listo';
   });
   $('#sel-especie').addEventListener('change', aplicarIdoneidad);
@@ -126,6 +144,7 @@ async function iniciarMapa() {
   document.querySelectorAll<HTMLInputElement>('[data-capa]').forEach((c) =>
     c.addEventListener('change', () => mapa && verCapa(mapa, CAPAS[c.dataset.capa!], c.checked)));
   instalarPulsacionLarga(mapa);
+  iniciarMeteo();
 }
 
 $('#btn-capas').addEventListener('click', () => {
@@ -309,6 +328,165 @@ $<HTMLInputElement>('#inp-importar').addEventListener('change', async (e) => {
     avisar(`No se pudo importar: ${(err as Error).message}`, 5000);
   }
 });
+
+// ---------------------------------------------------------------- Zona: tiempo y semáforo
+
+let puntosMeteo: PuntoMeteo[] = [];
+let meteo: DatosMeteo | null = null;
+let meteoOrigen: 'red' | 'cache' | 'ninguno' = 'ninguno';
+let puntoSel: PuntoMeteo | null = null;
+const CLAVE_PUNTO = 'setas:punto-meteo';
+const DISTANCIA_MAX_KM = 12;
+
+const especieSel = () => $<HTMLSelectElement>('#sel-especie').value;
+const reglasDe = (id: string) => manifest?.especies.find((e) => e.id === id)?.tiempo;
+
+function estadoEn(p: PuntoMeteo, especie: string): ResultadoSemaforo | null {
+  const r = reglasDe(especie);
+  const serie = meteo?.puntos[String(p.id)];
+  if (!r || !serie || !meteo) return null;
+  return semaforo(serie, r, fechaMadrid(new Date()), { edadHoras: edadHoras(meteo) });
+}
+
+function fechasTexto(r: ResultadoSemaforo): string {
+  if (r.estado === 'verde' && r.hasta) return `Hasta el ${ddmm(r.hasta)} aprox.`;
+  if (r.estado === 'amarillo' && r.desde) return `Desde el ${ddmm(r.desde)} aprox.`;
+  if (r.estado === 'amarillo' && r.hasta) return `Ventana hasta el ${ddmm(r.hasta)} aprox.`;
+  return '';
+}
+
+function pintarSemaforoMapa() {
+  if (!mapa?.getLayer('semaforo')) return;
+  const especie = especieSel();
+  const estados: Record<number, ResultadoSemaforo['estado']> = {};
+  for (const p of puntosMeteo) { const r = estadoEn(p, especie); if (r) estados[p.id] = r.estado; }
+  colorearSemaforo(mapa, expresionColores(estados));
+}
+
+function pintarPuntoMapa() {
+  const src = mapa?.getSource('punto-meteo') as GeoJSONSource | undefined;
+  src?.setData({ type: 'FeatureCollection', features: puntoSel ? [{ type: 'Feature', properties: {},
+    geometry: { type: 'Point', coordinates: [puntoSel.lon, puntoSel.lat] } }] : [] });
+}
+
+function elegirPunto(lat: number, lon: number, conTarjeta: boolean) {
+  const p = puntoMasCercano(puntosMeteo, lat, lon);
+  if (!p) return;
+  const km = Math.hypot(p.lat - lat, (p.lon - lon) * Math.cos((lat * Math.PI) / 180)) * 111.2;
+  if (km > DISTANCIA_MAX_KM) return;
+  puntoSel = p;
+  localStorage.setItem(CLAVE_PUNTO, String(p.id));
+  pintarPuntoMapa();
+  if (conTarjeta) $('#tarjeta-zona').hidden = false;
+  pintarTarjeta();
+}
+
+function pintarTarjeta() {
+  if ($('#tarjeta-zona').hidden || !puntoSel) return;
+  const r = estadoEn(puntoSel, especieSel());
+  $('#tz-estado').textContent = r ? `${ICONO_ESTADO[r.estado]} ${nombres[especieSel()]}: ${NOMBRE_ESTADO[r.estado]}`
+    : `${nombres[especieSel()]}: sin datos del tiempo`;
+  $('#tz-motivo').textContent = r ? [r.motivo, fechasTexto(r)].filter(Boolean).join(' · ') : 'Conéctate y pulsa «Actualizar tiempo» en Zona.';
+}
+$('#tz-cerrar').addEventListener('click', () => ($('#tarjeta-zona').hidden = true));
+$('#tz-ver').addEventListener('click', () => irA('p-zona'));
+
+function pintarEstadoMeteo() {
+  const el = $('#estado-meteo');
+  if (!meteo) { el.textContent = navigator.onLine ? 'Sin datos del tiempo todavía.' : 'Sin conexión y sin datos del tiempo guardados.'; return; }
+  const h = edadHoras(meteo);
+  const cuando = `actualizado ${haceTexto(h)} (${new Date(meteo.fecha_consulta).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })})`;
+  el.textContent = (navigator.onLine ? `Tiempo ${cuando}` : `Sin conexión: último dato guardado, ${cuando}`)
+    + (h > CADUCIDAD_H ? ' · datos antiguos' : '');
+  el.classList.toggle('antiguo', h > CADUCIDAD_H);
+}
+
+function pintarZona() {
+  pintarEstadoMeteo();
+  $<HTMLButtonElement>('#btn-meteo').disabled = !navigator.onLine;
+  const ul = $('#lista-semaforo');
+  ul.replaceChildren();
+  const graf = $('#zona-grafico');
+  if (!puntoSel) { $('#zona-punto').textContent = 'Toca el mapa para elegir una zona.'; graf.hidden = true; return; }
+  $('#zona-punto').textContent = `Zona del punto ${puntoSel.id} · ${puntoSel.lat.toFixed(3)}, ${puntoSel.lon.toFixed(3)} · bosque a ~${puntoSel.alt_media} m de altitud media`;
+  const elegida = especieSel();
+  const orden = [...(manifest?.especies ?? [])].sort((a, b) => Number(b.id === elegida) - Number(a.id === elegida));
+  for (const e of orden) {
+    const r = estadoEn(puntoSel, e.id);
+    const li = document.createElement('li');
+    const b = document.createElement('button');
+    b.className = 'semaforo-fila' + (e.id === elegida ? ' elegida' : '');
+    b.dataset.especie = e.id;
+    b.dataset.estado = r?.estado ?? 'gris';
+    const ic = document.createElement('span'); ic.className = 'ic'; ic.textContent = ICONO_ESTADO[r?.estado ?? 'gris'];
+    const esp = document.createElement('span'); esp.className = 'esp'; esp.textContent = e.nombre;
+    const est = document.createElement('span'); est.className = 'est'; est.textContent = r ? NOMBRE_ESTADO[r.estado] : 'Sin datos del tiempo';
+    const mot = document.createElement('span'); mot.className = 'mot'; mot.textContent = r?.motivo ?? '';
+    b.append(ic, esp, est, mot);
+    const f = r ? fechasTexto(r) : '';
+    if (f) { const fe = document.createElement('span'); fe.className = 'fechas'; fe.textContent = f; b.append(fe); }
+    b.addEventListener('click', () => {
+      const sel = $<HTMLSelectElement>('#sel-especie');
+      if (sel.value === e.id) return;
+      sel.value = e.id;
+      sel.dispatchEvent(new Event('change'));
+      pintarZona();
+    });
+    li.append(b); ul.append(li);
+  }
+  const serie = meteo?.puntos[String(puntoSel.id)];
+  graf.hidden = !serie;
+  if (!serie) return;
+  const hoyF = fechaMadrid(new Date());
+  const r = estadoEn(puntoSel, elegida);
+  const reg = reglasDe(elegida);
+  const ventana = r?.episodio && reg ? { desde: sumarDias(r.episodio, reg.ventana_dias[0]), hasta: sumarDias(r.episodio, reg.ventana_dias[1]),
+    etiqueta: `ventana ${nombres[elegida]?.split(' ')[1] ?? ''}`.trim() } : null;
+  pintarGrafico($('#grafico'), serie, hoyF, ventana, (t) => ($('#grafico-dato').textContent = t));
+  const tabla = $<HTMLTableElement>('#tabla-dias');
+  tabla.replaceChildren();
+  const cab = tabla.insertRow();
+  for (const t of ['Día', 'Lluvia (mm)', 'Máx (°C)', 'Mín (°C)']) { const th = document.createElement('th'); th.textContent = t; cab.append(th); }
+  const n1 = (v: number) => (Number.isFinite(v) ? v.toLocaleString('es-ES', { maximumFractionDigits: 1 }) : '—');
+  for (const d of serie) {
+    const tr = tabla.insertRow();
+    tr.className = d.fecha === hoyF ? 'hoy' : d.fecha > hoyF ? 'prev' : '';
+    for (const v of [ddmm(d.fecha) + (d.fecha === hoyF ? ' hoy' : ''), n1(d.lluvia), n1(d.tmax), n1(d.tmin)]) tr.insertCell().textContent = v;
+  }
+}
+
+function repintarMeteo() {
+  pintarSemaforoMapa();
+  pintarTarjeta();
+  if ($('#p-zona').classList.contains('activa')) pintarZona();
+}
+
+async function cargarMeteo(forzar: boolean) {
+  if (!puntosMeteo.length) return;
+  const btn = $<HTMLButtonElement>('#btn-meteo');
+  if (forzar) { btn.disabled = true; $('#estado-meteo').textContent = 'Consultando el tiempo…'; }
+  const r = await obtener(puntosMeteo, { forzar });
+  meteo = r.datos;
+  meteoOrigen = r.origen;
+  document.body.dataset.meteo = r.origen;
+  if (r.error && forzar) avisar(`No se pudo actualizar el tiempo: ${r.error}${meteo ? '. Se muestra el último dato guardado.' : ''}`, 5000);
+  else if (forzar && !navigator.onLine) avisar('Sin conexión: se muestra el último dato guardado.');
+  btn.disabled = !navigator.onLine;
+  repintarMeteo();
+  pintarEstadoMeteo();
+}
+
+async function iniciarMeteo() {
+  if (!manifest?.meteo) return;
+  puntosMeteo = (await cargarJson<PuntoMeteo[]>(manifest.meteo.puntos)) ?? [];
+  const guardado = localStorage.getItem(CLAVE_PUNTO);
+  puntoSel = puntosMeteo.find((p) => String(p.id) === guardado) ?? null;
+  pintarPuntoMapa();
+  await cargarMeteo(false);
+}
+$('#btn-meteo').addEventListener('click', () => cargarMeteo(true));
+window.addEventListener('online', () => { if ($('#p-zona').classList.contains('activa')) pintarZona(); });
+window.addEventListener('offline', () => { if ($('#p-zona').classList.contains('activa')) pintarZona(); });
 
 // ---------------------------------------------------------------- Ajustes / descargas
 

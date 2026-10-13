@@ -136,3 +136,47 @@ progress { width: 100%; height: 18px; }
 .popup-enp .aviso { font-size: 13px; color: var(--texto-2); }
 .maplibregl-ctrl-attrib { font-size: 11px; }
 .maplibregl-ctrl-bottom-left { bottom: 4px; }
+
+/* ---------------------------------------------------------------- Fase 3: Zona y semáforo */
+.muestra-semaforo { display: inline-block; width: 22px; height: 12px; border-radius: 2px;
+  background: linear-gradient(90deg, #0ca30c 0 33%, #fab219 33% 66%, #d03b3b 66%); opacity: .7; }
+.tarjeta-zona {
+  position: absolute; left: 8px; right: 92px; bottom: 28px; z-index: 3; background: #fff; border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(0,0,0,.35); padding: 10px 36px 10px 12px; display: grid; gap: 8px;
+}
+.tz-texto { display: grid; gap: 2px; font-size: 15px; }
+.tz-texto b { font-size: 17px; }
+.btn-x { position: absolute; top: 2px; right: 2px; width: 40px; height: 40px; border: 0; background: none; font-size: 26px; color: var(--texto-2); }
+.fila-estado { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.fila-estado .estado { flex: 1 1 180px; }
+.lista-semaforo { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.semaforo-fila {
+  width: 100%; text-align: left; background: #fff; border: 2px solid var(--borde); border-radius: 12px; padding: 10px 12px;
+  display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: start; cursor: pointer;
+}
+.semaforo-fila.elegida { border-color: var(--verde); box-shadow: inset 0 0 0 2px var(--verde); }
+.semaforo-fila .ic { font-size: 26px; line-height: 1; grid-row: 1 / 4; }
+.semaforo-fila .esp { font-weight: 800; }
+.semaforo-fila .est { font-weight: 700; }
+.semaforo-fila .mot { font-size: 15px; color: var(--texto-2); }
+.semaforo-fila .fechas { font-size: 15px; font-weight: 600; }
+.grafico { background: #fff; border: 2px solid var(--borde); border-radius: 12px; padding: 10px 8px; }
+.grafico-svg { display: block; touch-action: pan-y; }
+.grafico-svg text { font-family: inherit; font-variant-numeric: tabular-nums; }
+.grafico-dato { margin: 6px 4px 0; font-size: 15px; font-weight: 600; min-height: 2.8em; }
+.leyenda-grafico { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 14px; color: var(--texto-2); padding: 0 4px 4px; }
+.leyenda-grafico span { display: inline-flex; align-items: center; gap: 6px; }
+.leyenda-grafico i { display: inline-block; }
+.k-barra { width: 8px; height: 14px; background: #2a78d6; border-radius: 2px 2px 0 0; }
+.k-linea { width: 18px; height: 3px; border-radius: 2px; }
+.k-tmax { background: #d9480f; } .k-tmin { background: #4a3aa7; }
+.k-banda { width: 18px; height: 12px; background: #0ca30c33; border-bottom: 4px solid #0ca30c; }
+.k-prev { width: 18px; height: 12px; background: #0000000f; border: 1px solid #0002; }
+.tabla-dias { font-size: 14px; margin-top: 6px; }
+.tabla-dias summary { min-height: var(--toque); display: flex; align-items: center; font-weight: 700; color: var(--verde); }
+.tabla-dias table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+.tabla-dias th, .tabla-dias td { padding: 3px 4px; border-bottom: 1px solid #eee; text-align: right; }
+.tabla-dias th:first-child, .tabla-dias td:first-child { text-align: left; }
+.tabla-dias tr.hoy td { font-weight: 800; background: #fff7d6; }
+.tabla-dias tr.prev td { color: var(--texto-2); }
+.nota.fija { font-weight: 700; color: var(--texto); }

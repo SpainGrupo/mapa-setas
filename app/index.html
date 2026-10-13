@@ -31,12 +31,18 @@
           <label><input type="checkbox" data-capa="curvas" checked /> Curvas de nivel (20 m)</label>
           <label><input type="checkbox" data-capa="protegidos" checked /> <span class="muestra-enp"></span> Espacios protegidos</label>
           <label><input type="checkbox" data-capa="idoneidad" checked /> Idoneidad</label>
+          <label><input type="checkbox" data-capa="semaforo" /> <span class="muestra-semaforo"></span> Semáforo (especie elegida)</label>
           <p class="nota">Idoneidad estimada por un modelo heurístico. No indica que haya setas ni que sean comestibles.</p>
         </div>
       </div>
       <div class="fabs">
         <button id="btn-centrar" class="fab" aria-label="Centrar en mí">◎<span>Centrar</span></button>
         <button id="btn-aqui" class="fab fab-acento" aria-label="Guardar sitio aquí">＋<span>Sitio aquí</span></button>
+      </div>
+      <div id="tarjeta-zona" class="tarjeta-zona" role="region" aria-label="Semáforo de la zona tocada" hidden>
+        <div class="tz-texto"><b id="tz-estado"></b><span id="tz-motivo"></span></div>
+        <button id="tz-ver" class="btn btn-primario">Ver zona</button>
+        <button id="tz-cerrar" class="btn-x" aria-label="Cerrar">×</button>
       </div>
       <p id="sin-datos" class="sin-datos" hidden>No hay mapas. Conéctate a internet o descárgalos en Ajustes.</p>
     </section>
@@ -54,6 +60,28 @@
       </div>
     </section>
 
+    <section id="p-zona" class="pantalla" aria-label="Zona">
+      <header class="cab"><h1>Zona: cuándo ir</h1></header>
+      <div class="cuerpo">
+        <div class="fila-estado">
+          <p id="estado-meteo" class="estado">Sin datos del tiempo.</p>
+          <button id="btn-meteo" class="btn">Actualizar tiempo</button>
+        </div>
+        <p id="zona-punto" class="nota">Toca el mapa para elegir una zona.</p>
+        <ul id="lista-semaforo" class="lista-semaforo"></ul>
+        <div id="zona-grafico" class="grafico" hidden>
+          <div class="leyenda-grafico" aria-hidden="true">
+            <span><i class="k-barra"></i>Lluvia</span><span><i class="k-linea k-tmax"></i>Máx.</span>
+            <span><i class="k-linea k-tmin"></i>Mín.</span><span><i class="k-banda"></i>Ventana</span><span><i class="k-prev"></i>Previsión</span>
+          </div>
+          <div id="grafico"></div>
+          <p id="grafico-dato" class="grafico-dato" aria-live="polite"></p>
+          <details class="tabla-dias"><summary>Ver tabla de días</summary><table id="tabla-dias"></table></details>
+        </div>
+        <p class="nota fija">Orientativo: reglas de aficionado, no ciencia exacta.</p>
+      </div>
+    </section>
+
     <section id="p-ajustes" class="pantalla" aria-label="Ajustes">
       <header class="cab"><h1>Ajustes y descargas</h1></header>
       <div class="cuerpo">
@@ -67,6 +95,7 @@
         <h2>Datos</h2>
         <p class="nota" id="info-datos"></p>
         <p class="atribucion">Datos: IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, © OpenStreetMap ODbL, Protomaps</p>
+        <p class="atribucion">Datos meteorológicos: Open-Meteo.com (CC BY 4.0)</p>
       </div>
     </section>
   </main>
@@ -74,7 +103,7 @@
   <nav class="pestanas" aria-label="Secciones">
     <button data-p="p-mapa" class="activa">🗺️<span>Mapa</span></button>
     <button data-p="p-sitios">📍<span>Mis sitios</span></button>
-    <button class="prox" aria-disabled="true" data-prox="Zona">🚦<span>Zona</span><small>próximamente</small></button>
+    <button data-p="p-zona">🚦<span>Zona</span></button>
     <button class="prox" aria-disabled="true" data-prox="Guía">📖<span>Guía</span><small>próximamente</small></button>
     <button class="prox" aria-disabled="true" data-prox="Reconocer">📷<span>Reconocer</span><small>próximamente</small></button>
     <button data-p="p-ajustes">⚙️<span>Ajustes</span></button>

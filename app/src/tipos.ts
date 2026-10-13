@@ -9,7 +9,9 @@ export interface Sitio {
   foto?: Blob;
 }
 
-export interface Especie { id: string; nombre: string }
+import type { Reglas } from './semaforo';
+
+export interface Especie { id: string; nombre: string; tiempo?: Reglas }
 
 export interface Manifest {
   generado: string;
@@ -18,6 +20,7 @@ export interface Manifest {
   umbrales: number[];
   zoom: { idoneidad: [number, number]; sombreado: [number, number]; base_max: number };
   base: string | null;
+  meteo?: { puntos: string; zonas: string } | null;
   archivos: { nombre: string; bytes: number }[];
   total_bytes: number;
 }

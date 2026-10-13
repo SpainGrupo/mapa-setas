@@ -103,7 +103,7 @@ interface ReglaAlerta { nivel: Nivel; especies: string[]; si: Condicion; texto: 
 /** Basadas en rasgos_clave, fase_huevo y no_confundir_con de guia/especies.json. Varias reglas = cualquiera basta. */
 export const DESCARTES: Regla[] = [
   // Amanitas: huevo naranja/amarillo por dentro, o láminas y pie amarillos (oronja) → no es phalloides/verna/pantherina.
-  ...['amanita_phalloides', 'amanita_verna', 'amanita_pantherina'].flatMap((especie) => [
+  ...['amanita_phalloides', 'amanita_verna', 'amanita_pantherina'].flatMap((especie): Regla[] => [
     { especie, si: { interior_huevo: ['naranja_amarillo'] }, motivo: 'interior del huevo naranja y amarillo' },
     { especie, si: { laminas_pie_color: ['amarillos'] }, motivo: 'láminas y pie amarillos' },
   ]),
@@ -131,7 +131,7 @@ export const DESCARTES: Regla[] = [
   { especie: 'chlorophyllum_rhacodes', si: { pie_serpiente: ['si'], carne_enrojece: ['no'] }, motivo: 'pie con piel de serpiente y carne que no enrojece' },
 
   // Lactarius tóxicos: látex blanco (L. chrysorrheus amarillea).
-  ...['lactarius_torminosus', 'lactarius_chrysorrheus'].map((especie) => (
+  ...['lactarius_torminosus', 'lactarius_chrysorrheus'].map((especie): Regla => (
     { especie, si: { color_latex: ['naranja_zanahoria', 'rojo_vino'] }, motivo: 'látex naranja o rojo vino' })),
 ];
 

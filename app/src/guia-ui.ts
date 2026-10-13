@@ -41,6 +41,8 @@ export function cargarGuia(): Promise<boolean> {
 }
 
 export const hayFicha = (id: string) => porId.has(id);
+/** Fichas cargadas (vacío hasta que cargarGuia() termina). */
+export const fichasGuia = (): Ficha[] => fichas;
 
 // ---------------------------------------------------------------- utilidades de DOM
 

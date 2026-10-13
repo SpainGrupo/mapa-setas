@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import datos from '../../guia/especies.json';
 import {
   ALERTAS, AVISO_EXPERTO, DESCARTES, evaluar, gruposDe, NO_SE, PELIGROSAS_GRUPO, PREGUNTA, PREGUNTAS,
   respuestasParaWorker, sinComestible, type Evaluacion, type FichaMin, type Respuestas,
 } from './seguridad';
 
-const fichas: FichaMin[] = JSON.parse(readFileSync(join(__dirname, '../../guia/especies.json'), 'utf8'));
+const fichas: FichaMin[] = datos as never;
 const porId = new Map(fichas.map((f) => [f.id, f]));
 const cand = (...ids: string[]) => ids.map((id) => ({ nombre: porId.get(id)!.nombre_cientifico, idGuia: id }));
 const noDescartadas = (e: Evaluacion) => e.peligrosas.filter((p) => !p.descartada).map((p) => p.id);

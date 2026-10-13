@@ -23,4 +23,15 @@ export interface Manifest {
   meteo?: { puntos: string; zonas: string } | null;
   archivos: { nombre: string; bytes: number }[];
   total_bytes: number;
+  /** Reconocedor offline (modelo/construir.py): descarga opcional aparte, no cuenta en total_bytes. */
+  modelo?: PaqueteModelo | null;
+}
+
+export interface PaqueteModelo {
+  version: string;
+  ort_version: string;
+  etiquetas: number;
+  dir: string;                 // relativo a data/, con barra final
+  archivos: { nombre: string; bytes: number }[];
+  total_bytes: number;
 }

@@ -310,3 +310,42 @@ input[type=search]:focus-visible { outline: 3px solid #1565c0; border-color: #15
 .credito-especie { font-size: 14px; margin: 8px 0; }
 .credito-especie b { font-style: italic; }
 .credito-especie ol { margin: 2px 0 0; padding-left: 22px; }
+
+/* ---------------------------------------------------------------- Reconocer */
+.miniaturas { display: flex; flex-wrap: wrap; gap: 8px; }
+.miniatura { position: relative; margin: 0; width: 88px; height: 88px; }
+.miniatura img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; border: 2px solid var(--borde); }
+.miniatura .btn-x { top: -8px; right: -8px; width: 32px; height: 32px; font-size: 20px; background: #fff; border-radius: 16px; box-shadow: 0 1px 4px #0005; }
+.rec-resultado { display: grid; gap: 10px; }
+.rec-candidatos, .rec-peligrosas, .lista-descartadas { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.rec-cand { background: #fff; border: 2px solid var(--borde); border-radius: 12px; padding: 10px 12px; display: grid; gap: 6px; }
+.rec-nombre { font-weight: 700; }
+.rec-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.banda { justify-self: start; font-size: 14px; font-weight: 700; border-radius: 999px; padding: 2px 10px; border: 2px solid; }
+.b-alto { color: #1b4332; border-color: #1b4332; }
+.b-medio { color: #6b4f00; border-color: #b08800; }
+.b-bajo, .b-baja { color: #555; border-color: #999; }
+.b-media { color: #6b4f00; border-color: #b08800; }
+.b-alta { color: #1b4332; border-color: #1b4332; }
+.titulo-peligro { color: var(--peligro); }
+.peligrosa { background: #fdecea; border: 3px solid var(--peligro); border-radius: 12px; padding: 10px 12px; display: grid; gap: 6px; color: #4a0507; }
+.peligrosa.n-mortal { background: #fbdcdc; }
+.peligrosa.alerta { box-shadow: 0 0 0 4px #ffb3b3; }
+.peligrosa-cab { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.peligrosa .btn-chico { justify-self: start; border-color: var(--peligro); color: var(--peligro); }
+.no-descartada { font-size: 13px; font-weight: 800; color: #fff; background: var(--peligro); border-radius: 6px; padding: 1px 8px; letter-spacing: .5px; }
+.lista-descartadas li { font-size: 15px; color: var(--texto-2); padding: 4px 0; }
+.alerta-roja { background: var(--peligro); color: #fff; border-radius: 12px; padding: 14px; border: 3px solid #5c0a0c; }
+.alerta-roja b { display: block; font-size: 22px; letter-spacing: 1px; }
+.alerta-roja p { margin: 6px 0 0; font-size: 17px; }
+.rec-preguntas { display: grid; gap: 10px; }
+.pregunta { background: #fff; border: 2px solid var(--borde); border-radius: 12px; padding: 8px 12px 12px; margin: 0; }
+.pregunta legend { font-weight: 700; padding: 0 4px; }
+.opciones { display: grid; gap: 4px; }
+.opcion { display: flex; align-items: center; gap: 10px; min-height: 44px; }
+.opcion input { width: 22px; height: 22px; accent-color: var(--verde); flex: none; }
+.aviso-seguridad.fijo { font-size: 18px; }
+.rec-gemini { background: #fff; border: 2px solid var(--verde); border-radius: 12px; padding: 10px 12px; display: grid; gap: 6px; }
+.rec-gemini h3 { margin: 0; }
+.rec-gemini-cand { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+.rec-gemini-cand li { display: grid; gap: 4px; }

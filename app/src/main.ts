@@ -13,7 +13,9 @@ import { edadHoras, fechaMadrid, obtener, CADUCIDAD_H, type DatosMeteo, type Pun
 import { ddmm, semaforo, sumarDias, type ResultadoSemaforo } from './semaforo';
 import { expresionColores, haceTexto, ICONO_ESTADO, NOMBRE_ESTADO, puntoMasCercano } from './zona';
 import { pintarGrafico } from './grafico';
-import { abrirFicha, cargarGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, mostrarGuia, pintarCreditos, type EstadoFotos } from './guia-ui';
+import { abrirFicha, cargarGuia, fichasGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, mostrarGuia, pintarCreditos, type EstadoFotos } from './guia-ui';
+import { binomio, especieMapaDeFicha, fichaDeEspecieMapa } from './guia';
+import { iniciarReconocer, mostrarReconocer, pintarAjustesModelo } from './reconocer-ui';
 
 registerSW({ immediate: true });
 
@@ -53,6 +55,7 @@ function irA(id: string) {
   if (id === 'p-ajustes') pintarAjustes();
   if (id === 'p-zona') pintarZona();
   if (id === 'p-guia') mostrarGuia();
+  if (id === 'p-reconocer') mostrarReconocer();
 }
 
 document.querySelectorAll<HTMLButtonElement>('.pestanas button').forEach((b) =>
@@ -89,12 +92,12 @@ function aplicarIdoneidad() {
 
 /** «Ver ficha» junto al selector de especie, solo si la especie del mapa tiene ficha en la guía. */
 async function pintarBotonFicha() {
-  const id = $<HTMLSelectElement>('#sel-especie').value;
+  const id = fichaDeEspecieMapa($<HTMLSelectElement>('#sel-especie').value);
   $('#btn-ver-ficha').hidden = !(await cargarGuia() && hayFicha(id));
 }
 $('#btn-ver-ficha').addEventListener('click', () => {
   irA('p-guia');
-  abrirFicha($<HTMLSelectElement>('#sel-especie').value);
+  abrirFicha(fichaDeEspecieMapa($<HTMLSelectElement>('#sel-especie').value));
 });
 
 const CAPAS: Record<string, string[]> = {
@@ -113,6 +116,7 @@ async function iniciarMapa() {
   manifest = await cargarManifest();
   if (!manifest) { $('#sin-datos').hidden = false; return; }
   for (const e of manifest.especies) nombres[e.id] = e.nombre;
+  cargarGuia().then((ok) => { if (ok) for (const f of fichasGuia()) nombres[f.id] ??= binomio(f); });
   rellenarEspecies($<HTMLSelectElement>('#sel-especie'));
   rellenarEspecies($<HTMLSelectElement>('#filtro-especie'), ['', 'Todas']);
   rellenarEspecies($<HTMLSelectElement>('#sitio-especie'), ['', 'Sin especificar']);
@@ -211,7 +215,7 @@ let editando: Sitio | null = null;
 let fotoNueva: Blob | null | undefined;   // undefined = sin cambios
 let urlFoto = '';
 
-async function reducirFoto(f: File): Promise<Blob> {
+async function reducirFoto(f: Blob): Promise<Blob> {
   try {
     const bmp = await createImageBitmap(f);
     const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
@@ -229,12 +233,19 @@ function mostrarFoto(b?: Blob | null) {
   img.src = urlFoto; img.hidden = !b;
 }
 
-function abrirSitio(s: Sitio | null, punto?: { lat: number; lon: number }) {
+/** Si la especie no está entre las del mapa (p. ej. una ficha de la guía desde Reconocer), añade su opción. */
+function asegurarOpcion(sel: HTMLSelectElement, id: string) {
+  if (!id || [...sel.options].some((o) => o.value === id)) return;
+  sel.add(new Option(nombres[id] ?? id, id));
+}
+
+function abrirSitio(s: Sitio | null, punto?: { lat: number; lon: number }, previo?: { especie?: string; foto?: Blob }) {
   const frm = $<HTMLFormElement>('#frm-sitio');
   frm.reset();
   fotoNueva = undefined;
   editando = s ?? { id: nuevoId(), lat: punto!.lat, lon: punto!.lon, estrellas: 1, nota: '',
-    especie: $<HTMLSelectElement>('#sel-especie').value || '', fecha: new Date().toISOString() };
+    especie: previo?.especie ?? ($<HTMLSelectElement>('#sel-especie').value || ''), fecha: new Date().toISOString() };
+  asegurarOpcion($<HTMLSelectElement>('#sitio-especie'), editando.especie);
   $('#tit-sitio').textContent = s ? 'Editar sitio' : 'Nuevo sitio';
   $('#coord-sitio').textContent = `${editando.lat.toFixed(5)}, ${editando.lon.toFixed(5)} · ${new Date(editando.fecha).toLocaleString('es-ES')}`;
   (frm.elements.namedItem('nota') as HTMLTextAreaElement).value = editando.nota;
@@ -243,6 +254,7 @@ function abrirSitio(s: Sitio | null, punto?: { lat: number; lon: number }) {
   $('#btn-sitio-borrar').hidden = !s;
   mostrarFoto(editando.foto);
   $<HTMLDialogElement>('#dlg-sitio').showModal();
+  if (previo?.foto) reducirFoto(previo.foto).then((b) => { fotoNueva = b; mostrarFoto(b); });
 }
 
 $<HTMLInputElement>('[name=foto]').addEventListener('change', async (e) => {
@@ -518,6 +530,7 @@ $('#creditos-fotos').addEventListener('toggle', () => pintarCreditos());
 
 async function pintarAjustes() {
   pintarEstadoGuia();
+  pintarAjustesModelo();
   const est = estadoDescarga();
   const btn = $<HTMLButtonElement>('#btn-descargar');
   const total = manifest?.total_bytes ?? 0;
@@ -565,5 +578,13 @@ $('#btn-borrar-mapas').addEventListener('click', async () => {
 });
 window.addEventListener('online', () => { pintarAjustes(); guardarFotosSinConexion(pintarEstadoGuia); });
 window.addEventListener('offline', () => pintarAjustes());
+
+iniciarReconocer({
+  manifest: () => manifest,
+  avisar,
+  verFicha: (id) => { irA('p-guia'); abrirFicha(id); },
+  guardarSitio: ({ especieGuia, foto, lat, lon }) => abrirSitio(null, { lat, lon },
+    { especie: especieGuia ? especieMapaDeFicha(especieGuia, (manifest?.especies ?? []).map((e) => e.id)) : '', foto }),
+});
 
 iniciarMapa().then(pintarAjustes).finally(() => guardarFotosSinConexion(pintarEstadoGuia));

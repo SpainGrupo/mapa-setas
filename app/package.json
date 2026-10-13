@@ -4,9 +4,9 @@
   "version": "0.2.0",
   "type": "module",
   "scripts": {
-    "datos": "node scripts/enlazar-datos.mjs public && node scripts/enlazar-guia.mjs",
+    "datos": "node scripts/enlazar-datos.mjs public && node scripts/enlazar-guia.mjs && node scripts/enlazar-ort.mjs",
     "dev": "npm run datos && vite",
-    "build": "node scripts/enlazar-guia.mjs && tsc --noEmit && vite build && node scripts/enlazar-datos.mjs dist",
+    "build": "node scripts/enlazar-guia.mjs && node scripts/enlazar-ort.mjs && tsc --noEmit && vite build && node scripts/enlazar-datos.mjs dist",
     "servir": "php -S 127.0.0.1:8765 -t dist servidor.php",
     "test": "vitest run",
     "e2e": "node e2e/offline.e2e.mjs",

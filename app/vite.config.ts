@@ -4,6 +4,8 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
   base: './',
   build: { chunkSizeWarningLimit: 1500 },
+  // El reconocedor (onnxruntime-web) hace import() dinámico de su arranque .mjs: workers como módulos ES.
+  worker: { format: 'es' },
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',
@@ -27,7 +29,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,png,svg,pbf,json,webmanifest}'],
+        globPatterns: ['**/*.{js,mjs,css,html,png,svg,pbf,json,webmanifest}'],
         // La guía: especies.json e indice.json van en el precache; las fotos (~18 MB), en su propia caché
         // «guia-fotos», que rellena la página (ver src/guia-ui.ts) y aquí se sirve con CacheFirst.
         globIgnores: ['data/**', 'guia/fotos/**'],

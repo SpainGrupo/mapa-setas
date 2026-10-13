@@ -106,6 +106,45 @@
       <div id="guia-ficha" class="ficha" hidden></div>
     </section>
 
+    <section id="p-reconocer" class="pantalla" aria-label="Reconocer">
+      <header class="cab"><h1>Reconocer una seta</h1></header>
+      <div class="cuerpo">
+        <div class="aviso-seguridad" role="note">No consumas ninguna seta sin la confirmación de un experto.</div>
+        <p class="nota">El reconocedor solo propone especies parecidas. No confirma nada y nunca dice si una seta se come.</p>
+        <p id="rec-estado" class="estado">Comprobando…</p>
+        <button id="rec-ir-ajustes" class="btn" hidden>Ir a Ajustes para descargarlo</button>
+        <div class="fila-botones">
+          <label class="btn btn-primario">📷 Hacer foto<input id="rec-camara" type="file" accept="image/*" capture="environment" hidden /></label>
+          <label class="btn">🖼️ Elegir fotos<input id="rec-galeria" type="file" accept="image/*" multiple hidden /></label>
+        </div>
+        <p id="rec-num-fotos" class="nota"></p>
+        <div id="rec-miniaturas" class="miniaturas"></div>
+        <button id="rec-analizar" class="btn btn-grande" disabled>Analizar (sin cobertura)</button>
+        <p id="rec-progreso" class="nota" hidden>Analizando… (la primera vez tarda unos segundos en cargar el reconocedor)</p>
+        <div id="rec-resultado" class="rec-resultado" hidden>
+          <div id="rec-alertas"></div>
+          <h2>Candidatos</h2>
+          <p id="rec-no-reconocido" class="caja-nota" hidden>No se reconoce la seta en las fotos. Prueba con otras fotos más cercanas y nítidas.</p>
+          <ol id="rec-candidatos" class="rec-candidatos"></ol>
+          <h2 class="titulo-peligro">Peligrosas no descartadas</h2>
+          <p class="nota">Siguen en la lista hasta que tus respuestas las descarten con rasgos claros. «No sé» nunca descarta.</p>
+          <ul id="rec-peligrosas" class="rec-peligrosas"></ul>
+          <p id="rec-sin-peligrosas" class="nota" hidden>Ninguna de la guía en estos grupos. Eso no significa que la seta sea segura.</p>
+          <details id="rec-descartadas" class="creditos" hidden><summary>Descartadas por tus respuestas</summary><ul class="lista-descartadas"></ul></details>
+          <h2>Comprobación guiada</h2>
+          <p id="rec-sin-preguntas" class="nota" hidden>No hay preguntas para estos candidatos.</p>
+          <div id="rec-preguntas" class="rec-preguntas"></div>
+          <div id="rec-aviso-final" class="aviso-seguridad fijo" role="note">No consumas ninguna seta sin la confirmación de un experto.</div>
+          <div class="fila-botones">
+            <button id="rec-gemini" class="btn" hidden>Segunda opinión (Gemini)</button>
+            <button id="rec-guardar" class="btn">📍 Guardar sitio</button>
+          </div>
+          <p id="rec-gemini-nota" class="nota"></p>
+          <div id="rec-gemini-resultado" class="rec-gemini" hidden></div>
+        </div>
+      </div>
+    </section>
+
     <section id="p-ajustes" class="pantalla" aria-label="Ajustes">
       <header class="cab"><h1>Ajustes y descargas</h1></header>
       <div class="cuerpo">
@@ -119,6 +158,14 @@
         <h2>Guía de especies sin cobertura</h2>
         <p id="estado-guia" class="estado">Comprobando…</p>
         <button id="btn-guia-fotos" class="btn" hidden>Guardar las fotos que faltan</button>
+        <h2>Reconocedor sin cobertura</h2>
+        <p id="estado-modelo" class="estado">Comprobando…</p>
+        <progress id="prog-modelo" max="1" value="0" hidden></progress>
+        <button id="btn-modelo" class="btn btn-grande">Descargar reconocedor sin cobertura</button>
+        <button id="btn-borrar-modelo" class="btn btn-peligro" hidden>Borrar reconocedor</button>
+        <p class="nota">Descarga aparte y opcional. Reconocedor: BioCLIP (Imageomics, licencia MIT), con ONNX Runtime Web (MIT).</p>
+        <h2>Segunda opinión (Gemini)</h2>
+        <p id="estado-gemini" class="estado">Pendiente de configurar</p>
         <h2>Datos</h2>
         <p class="nota" id="info-datos"></p>
         <p class="atribucion">Datos: IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, © OpenStreetMap ODbL, Protomaps</p>
@@ -137,7 +184,7 @@
     <button data-p="p-sitios">📍<span>Mis sitios</span></button>
     <button data-p="p-zona">🚦<span>Zona</span></button>
     <button data-p="p-guia">📖<span>Guía</span></button>
-    <button class="prox" aria-disabled="true" data-prox="Reconocer">📷<span>Reconocer</span><small>próximamente</small></button>
+    <button data-p="p-reconocer">📷<span>Reconocer</span></button>
     <button data-p="p-ajustes">⚙️<span>Ajustes</span></button>
   </nav>
 

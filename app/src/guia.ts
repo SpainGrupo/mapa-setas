@@ -74,3 +74,15 @@ export function urlFoto(archivo: string, indice: IndiceGuia | null): string {
   const v = indice?.fotos[archivo];
   return `guia/${archivo}${v ? `?v=${v}` : ''}`;
 }
+
+/**
+ * Especies del mapa (manifest) cuya ficha tiene otro id. GBIF trata Boletus aestivalis como sinónimo de
+ * B. reticulatus, y la guía la describe como «Boletus reticulatus (= B. aestivalis)».
+ */
+export const FICHA_DE_ESPECIE_MAPA: Record<string, string> = { boletus_aestivalis: 'boletus_reticulatus' };
+export const fichaDeEspecieMapa = (id: string) => FICHA_DE_ESPECIE_MAPA[id] ?? id;
+/** Al revés: id de especie del mapa para una ficha de la guía (si el mapa la tiene), o la propia ficha. */
+export function especieMapaDeFicha(idFicha: string, idsMapa: string[]): string {
+  const delMapa = idsMapa.find((m) => fichaDeEspecieMapa(m) === idFicha);
+  return delMapa ?? idFicha;
+}

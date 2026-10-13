@@ -60,3 +60,15 @@ describe('guía: agrupación y etiquetas', () => {
     for (const f of fichas) for (const c of f.no_confundir_con) expect(todas.has(c.id)).toBe(true);
   });
 });
+
+describe('especies del mapa ↔ fichas', () => {
+  it('boletus_aestivalis (mapa) abre la ficha de boletus_reticulatus, y al revés', async () => {
+    const { fichaDeEspecieMapa, especieMapaDeFicha } = await import('./guia');
+    expect(fichaDeEspecieMapa('boletus_aestivalis')).toBe('boletus_reticulatus');
+    expect(fichaDeEspecieMapa('amanita_caesarea')).toBe('amanita_caesarea');
+    const mapa = ['amanita_caesarea', 'boletus_aestivalis', 'boletus_edulis'];
+    expect(especieMapaDeFicha('boletus_reticulatus', mapa)).toBe('boletus_aestivalis');
+    expect(especieMapaDeFicha('amanita_caesarea', mapa)).toBe('amanita_caesarea');
+    expect(especieMapaDeFicha('lactarius_deliciosus', mapa)).toBe('lactarius_deliciosus');
+  });
+});

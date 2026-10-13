@@ -84,15 +84,27 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | fotos/chlorophyllum_rhacodes_1.jpg | Chlorophyllum rhacodes | Bernard Spragg. NZ from Christchurch, New Zealand | CC0 | https://commons.wikimedia.org/wiki/File:Shaggy_Parasol._(Chlorophyllum_rhacodes)_(34439570751).jpg |
 | fotos/chlorophyllum_rhacodes_2.jpg | Chlorophyllum rhacodes | Tomasz Sobczak | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Chlorophyllum_brunneum_ts1_cropped.jpg |
 | fotos/chlorophyllum_rhacodes_3.jpg | Chlorophyllum rhacodes | Hagen Graebner | CC BY-SA 3.0 | https://commons.wikimedia.org/wiki/File:Chlorophyllumbrunneum3.jpg |
+| fotos/amanita_ponderosa_1.jpg | Amanita ponderosa Malençon & R. Heim | Cardoazul | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Amanita_ponderosa1.jpg |
+| fotos/amanita_ponderosa_2.jpg | Amanita ponderosa Malençon & R. Heim | Virako | CC BY-SA 3.0 | https://commons.wikimedia.org/wiki/File:Gurumelo.jpg |
+| fotos/amanita_ponderosa_3.jpg | Amanita ponderosa Malençon & R. Heim | Rafatorrescusa | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Gurumelo_en_el_campo.jpg |
+| fotos/pleurotus_eryngii_1.jpg | Pleurotus eryngii | MottaW | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Pleurotus-eryngii-seta-de-cardo-sandoval-de-la-reina-2020.jpg |
+| fotos/pleurotus_eryngii_2.jpg | Pleurotus eryngii | Teknad | CC0 | https://commons.wikimedia.org/wiki/File:Seta_de_cardo_(Pleurotus_eryngii)_silvestre_en_Gran_Canaria,_Islas_Canarias,_Espa%C3%B1a.jpg |
+| fotos/pleurotus_eryngii_3.jpg | Pleurotus eryngii | Jose Angel Urquia Goitia | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Pleurotus_eryngii_3.jpg |
+| fotos/terfezia_arenaria_1.jpg | Terfezia arenaria | Santos-Silva C., Louro R., Natário B. y Nobre T. (MycoKeys 84, 2021) | CC BY 4.0 | https://commons.wikimedia.org/wiki/File:Terfezia_(10.3897-mycokeys.84.71372)_Figure_3.jpg |
+| fotos/terfezia_arenaria_2.jpg | Terfezia arenaria | Gerhard Koller (Gerhard), Mushroom Observer | CC BY-SA 3.0 | https://commons.wikimedia.org/wiki/File:2008-05-02_Terfezia_arenaria_(Moris)_Trappe_220243.jpg |
+| fotos/terfezia_arenaria_3.jpg | Terfezia arenaria | Claude Lemmel & Zahora Attioui | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Tirmania_nivea_et_Trefezia_claveryi_(Souk_de_Rissani,_Maroc).jpg |
+| fotos/scleroderma_citrinum_1.jpg | Scleroderma citrinum Pers. y S. verrucosum | Hans-Martin Scheibner | CC BY-SA 3.0 | https://commons.wikimedia.org/wiki/File:Dickschaliger_Kartoffelbovist_(Scleroderma_citrinum)-Reife_Sporenmasse_im_Querschnitt.jpg |
+| fotos/scleroderma_citrinum_2.jpg | Scleroderma citrinum Pers. y S. verrucosum | Holger Krisp | CC BY 3.0 | https://commons.wikimedia.org/wiki/File:Gemeiner_Kartoffelbovist_Scleroderma_citrinum.jpg |
+| fotos/scleroderma_citrinum_3.jpg | Scleroderma citrinum Pers. y S. verrucosum | Holger Krisp | CC BY 3.0 | https://commons.wikimedia.org/wiki/File:Braunwarzige-Hartbovist-Scleroderma-verrucosum.jpg |
 
 ## Fuentes
 
 | Fuente | URL | Especies |
 |---|---|---|
-| Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.) | https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf | boletus_edulis, boletus_aereus, amanita_caesarea, lactarius_deliciosus, cantharellus_cibarius, macrolepiota_procera, suillus_bellinii, hydnum_repandum, lepista_nuda, russula_cyanoxantha, agaricus_campestris, omphalotus_olearius, lactarius_chrysorrheus |
+| Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.) | https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf | boletus_edulis, boletus_aereus, amanita_caesarea, lactarius_deliciosus, cantharellus_cibarius, macrolepiota_procera, suillus_bellinii, hydnum_repandum, lepista_nuda, russula_cyanoxantha, agaricus_campestris, omphalotus_olearius, lactarius_chrysorrheus, amanita_ponderosa, pleurotus_eryngii, terfezia_arenaria |
 | Toxicidad de las setas: tabla por especies y síndromes (alojado en Fungipedia) | https://fungipedia.org/media/kunena/attachments/267/TOXICIDADDELASSETAS_v004.pdf | amanita_phalloides, amanita_verna, lepiota_brunneoincarnata, amanita_muscaria, amanita_pantherina, rubroboletus_satanas, omphalotus_olearius, lactarius_torminosus, lactarius_chrysorrheus |
 | Leiva Morales, J. A., Introducción al orden Boletales en la provincia de Cádiz (Rev. Soc. Gaditana Hist. Nat. 3) | https://sociedadgaditanahistorianatural.com/wp-content/uploads/2012/02/15-Leiva-SGHN-Rev-Vol3.pdf | boletus_edulis, boletus_aereus, boletus_reticulatus, boletus_pinophilus, suillus_bellinii, rubroboletus_satanas, caloboletus_calopus, caloboletus_radicans |
-| Alvarado et al. (2022), Amanita sect. Phalloideae en el Mediterráneo, Biology 11:770 | https://pmc.ncbi.nlm.nih.gov/articles/PMC9138314 | amanita_phalloides, amanita_verna, lepiota_brunneoincarnata |
+| Alvarado et al. (2022), Amanita sect. Phalloideae en el Mediterráneo, Biology 11:770 | https://pmc.ncbi.nlm.nih.gov/articles/PMC9138314 | amanita_phalloides, amanita_verna, lepiota_brunneoincarnata, amanita_ponderosa |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Macrolepiota procera | https://www.amanitacesarea.com/macrolepiota-procera.html | macrolepiota_procera, amanita_pantherina, chlorophyllum_rhacodes |
 | Hospital Donostia, protocolo IT-114 Intoxicaciones por setas (alojado en Fungipedia) | https://www.fungipedia.org/media/kunena/attachments/267/IT-114_Intoxicaciones_por_Setas_v01.pdf | amanita_phalloides, amanita_verna, amanita_muscaria |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Agaricus campestris | https://www.amanitacesarea.com/agaricus-campestris.html | agaricus_campestris, amanita_verna |
@@ -105,16 +117,22 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Cantharellus cibarius | https://www.amanitacesarea.com/cantharellus-cibarius.html | cantharellus_cibarius, omphalotus_olearius |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Lactarius deliciosus | https://www.amanitacesarea.com/lactarius-deliciosus.html | lactarius_deliciosus, lactarius_torminosus |
 | Enciclopedia dei Funghi Italiani, glosario: Caesarea (corte del huevo) | https://enciclopedia.funghiitaliani.it/termine.php?show=299 | amanita_caesarea, amanita_phalloides |
+| Wikipedia (en), Scleroderma citrinum (fuente secundaria) | https://en.wikipedia.org/wiki/Scleroderma_citrinum | terfezia_arenaria, scleroderma_citrinum |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Amanita muscaria | https://www.amanitacesarea.com/amanita-muscaria.html | amanita_muscaria |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Amanita pantherina | https://www.amanitacesarea.com/amanita-pantherina.html | amanita_pantherina |
+| AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Amanita ponderosa | https://www.amanitacesarea.com/amanita-ponderosa.html | amanita_ponderosa |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Boletus aereus | https://www.amanitacesarea.com/boletus-aereus.html | boletus_aereus |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Boletus reticulatus | https://www.amanitacesarea.com/boletus-reticulatus.html | boletus_reticulatus |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Chlorophyllum rhacodes | https://www.amanitacesarea.com/chlorophyllum-rhacodes.html | chlorophyllum_rhacodes |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Hydnum repandum | https://www.amanitacesarea.com/hydnum-repandum.html | hydnum_repandum |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Lactarius torminosus | https://www.amanitacesarea.com/lactarius-torminosus.html | lactarius_torminosus |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Lepista nuda | https://www.amanitacesarea.com/lepista-nuda.html | lepista_nuda |
+| AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Pleurotus eryngii | https://www.amanitacesarea.com/pleurotus-eryngii.html | pleurotus_eryngii |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Russula cyanoxantha | https://www.amanitacesarea.com/russula-cyanoxantha.html | russula_cyanoxantha |
+| AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Scleroderma verrucosum | https://www.amanitacesarea.com/scleroderma-verrucosum.html | scleroderma_citrinum |
+| Andrino et al. (2019), The crop of desert truffle depends on agroclimatic parameters during two key annual periods (Agron. Sustain. Dev.) | https://hal.science/hal-02995102/document | terfezia_arenaria |
 | Beaty Biodiversity Museum (UBC), Amanita phalloides | https://explore.beatymuseum.ubc.ca/mushroomsup/A_phalloides.html | amanita_phalloides |
+| Cesta y Setas, Las criadillas de tierra (confusiones con falsas trufas blancas; fuente secundaria) | https://www.cestaysetas.com/las-criadillas-de-tierra-unas-de-las-setas-mas-buscadas-de-la-primavera/ | terfezia_arenaria |
 | First Nature (P. O'Reilly), ficha de Agaricus campestris | https://www.first-nature.com/fungi/agaricus-campestris.php | agaricus_campestris |
 | First Nature (P. O'Reilly), ficha de Amanita caesarea | https://www.first-nature.com/fungi/amanita-caesarea.php | amanita_caesarea |
 | First Nature (P. O'Reilly), ficha de Amanita muscaria | https://www.first-nature.com/fungi/amanita-muscaria.php | amanita_muscaria |
@@ -137,8 +155,11 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | First Nature (P. O'Reilly), ficha de Omphalotus olearius | https://www.first-nature.com/fungi/omphalotus-olearius.php | omphalotus_olearius |
 | First Nature (P. O'Reilly), ficha de Rubroboletus satanas | https://www.first-nature.com/fungi/rubroboletus-satanas.php | rubroboletus_satanas |
 | First Nature (P. O'Reilly), ficha de Russula cyanoxantha | https://www.first-nature.com/fungi/russula-cyanoxantha.php | russula_cyanoxantha |
+| First Nature (P. O'Reilly), ficha de Scleroderma citrinum | https://www.first-nature.com/fungi/scleroderma-citrinum.php | scleroderma_citrinum |
+| First Nature (P. O'Reilly), ficha de Scleroderma verrucosum | https://www.first-nature.com/fungi/scleroderma-verrucosum.php | scleroderma_citrinum |
 | First Nature (P. O'Reilly), ficha de Tylopilus felleus | https://www.first-nature.com/fungi/tylopilus-felleus.php | tylopilus_felleus |
 | Fungipedia (Asociación Micológica Fungipedia), Amanita phalloides | https://www.fungipedia.org/hongos/amanita-phalloides.html | amanita_phalloides |
+| Global Fungal Red List Initiative, Terfezia claveryi | https://redlist.info/iucn/species_view/144803 | terfezia_arenaria |
 | Hongos del Parque Natural Los Alcornocales y Campo de Gibraltar, ampliación (Instituto de Estudios Campogibraltareños) | https://institutoecg.es/wp-content/uploads/2019/06/HONGOS-DEL-PARQUE-NATURAL-LOS-ALCORNOCALES-Y-CAMPO-DE-GIBRALTAR-AMPLIACI%C3%93N.pdf | lepiota_brunneoincarnata |
 | Naturnext, Ovolo buono (Amanita caesarea): guía micológica (fuente secundaria) | https://www.naturnext.eu/it/ovolo-buono-amanita-caesarea-guida-micologica-completa | amanita_caesarea |
 | Species Fungorum / Index Fungorum, registro de Agaricus campestris | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=356498 | agaricus_campestris |
@@ -146,6 +167,7 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | Species Fungorum / Index Fungorum, registro de Amanita muscaria | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=161267 | amanita_muscaria |
 | Species Fungorum / Index Fungorum, registro de Amanita pantherina | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=156565 | amanita_pantherina |
 | Species Fungorum / Index Fungorum, registro de Amanita phalloides | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=178962 | amanita_phalloides |
+| Species Fungorum / Index Fungorum, registro de Amanita ponderosa | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=284068 | amanita_ponderosa |
 | Species Fungorum / Index Fungorum, registro de Amanita verna | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=163667 | amanita_verna |
 | Species Fungorum / Index Fungorum, registro de Boletus aereus | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=159051 | boletus_aereus |
 | Species Fungorum / Index Fungorum, registro de Boletus edulis | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=356530 | boletus_edulis |
@@ -166,10 +188,16 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | Species Fungorum / Index Fungorum, registro de Lepista nuda / Collybia nuda | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=356735 | lepista_nuda |
 | Species Fungorum / Index Fungorum, registro de Macrolepiota procera | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=287857 | macrolepiota_procera |
 | Species Fungorum / Index Fungorum, registro de Omphalotus olearius | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=288943 | omphalotus_olearius |
+| Species Fungorum / Index Fungorum, registro de Pleurotus eryngii | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=170772 | pleurotus_eryngii |
 | Species Fungorum / Index Fungorum, registro de Rubroboletus satanas | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=809241 | rubroboletus_satanas |
 | Species Fungorum / Index Fungorum, registro de Russula cyanoxantha | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=190250 | russula_cyanoxantha |
+| Species Fungorum / Index Fungorum, registro de Scleroderma citrinum | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=181865 | scleroderma_citrinum |
+| Species Fungorum / Index Fungorum, registro de Scleroderma verrucosum | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=211519 | scleroderma_citrinum |
 | Species Fungorum / Index Fungorum, registro de Suillus bellinii | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=324328 | suillus_bellinii |
+| Species Fungorum / Index Fungorum, registro de Terfezia arenaria | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=324472 | terfezia_arenaria |
+| Species Fungorum / Index Fungorum, registro de Terfezia claveryi | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=144803 | terfezia_arenaria |
 | Species Fungorum / Index Fungorum, registro de Tylopilus felleus | https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=122480 | tylopilus_felleus |
+| Tardío, J., Terfezia arenaria, en Inventario Español de los Conocimientos Tradicionales relativos a la Biodiversidad (MITECO) | https://www.miteco.gob.es/content/dam/miteco/es/biodiversidad/temas/inventarios-nacionales/iect_terfezia_arenaria_tcm30-164132.pdf | terfezia_arenaria |
 | Wikipedia (en), Caloboletus radicans (fuente secundaria) | https://en.wikipedia.org/wiki/Caloboletus_radicans | caloboletus_radicans |
 | Wikipedia (en), Chlorophyllum rhacodes (fuente secundaria) | https://en.wikipedia.org/wiki/Shaggy_parasol | chlorophyllum_rhacodes |
 | Wikipedia (en), Lactarius chrysorrheus (fuente secundaria) | https://en.wikipedia.org/wiki/Lactarius_chrysorrheus | lactarius_chrysorrheus |
@@ -177,9 +205,11 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | Wikipedia (es), Amanita caesarea (fuente secundaria) | https://es.wikipedia.org/wiki/Amanita_caesarea | amanita_caesarea |
 | Wikipedia (es), Amanita muscaria (fuente secundaria) | https://es.wikipedia.org/wiki/Amanita_muscaria | amanita_muscaria |
 | Wikipedia (es), Amanita pantherina (fuente secundaria) | https://es.wikipedia.org/wiki/Amanita_pantherina | amanita_pantherina |
+| Wikipedia (es), Amanita ponderosa (fuente secundaria) | https://es.wikipedia.org/wiki/Amanita_ponderosa | amanita_ponderosa |
 | Wikipedia (es), Amanita verna (fuente secundaria) | https://es.wikipedia.org/wiki/Amanita_verna | amanita_verna |
 | Wikipedia (es), Boletus pinophilus (fuente secundaria) | https://es.wikipedia.org/wiki/Boletus_pinophilus | boletus_pinophilus |
 | Wikipedia (es), Boletus reticulatus (fuente secundaria) | https://es.wikipedia.org/wiki/Boletus_reticulatus | boletus_reticulatus |
 | Wikipedia (es), Lactarius sanguifluus (fuente secundaria) | https://es.wikipedia.org/wiki/Lactarius_sanguifluus | lactarius_deliciosus |
 | Wikipedia (es), Lepiota brunneoincarnata (fuente secundaria) | https://es.wikipedia.org/wiki/Lepiota_brunneoincarnata | lepiota_brunneoincarnata |
 | Wikipedia (es), Omphalotus olearius (fuente secundaria) | https://es.wikipedia.org/wiki/Omphalotus_olearius | omphalotus_olearius |
+| Wikipedia (es), Pleurotus eryngii (fuente secundaria) | https://es.wikipedia.org/wiki/Pleurotus_eryngii | pleurotus_eryngii |

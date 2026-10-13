@@ -1269,6 +1269,15 @@
         "diferencias": [
           "A. verna es igual de mortal; es toda blanca y sale en primavera"
         ]
+      },
+      {
+        "id": "amanita_ponderosa",
+        "diferencias": [
+          "La guía andaluza cita la confusión del gurumelo con la forma blanca de A. phalloides",
+          "La oronja verde sale en otoño; el gurumelo, a finales de invierno y en primavera",
+          "A. phalloides tiene la carne blanca que no cambia y un anillo blanco colgante y persistente; el gurumelo tiene un anillo frágil que se pierde pronto y su carne toma tonos rosados al corte",
+          "El gurumelo sale medio enterrado, con la volva gruesa y manchada de tierra, y huele a tierra mojada"
+        ]
       }
     ],
     "fotos": [
@@ -1352,7 +1361,7 @@
     "esporada": "Blanca.",
     "habitat": "Suelos ácidos, probablemente con encina, rebollo y alcornoque. Holotipo de A. vidua en Galaroza (Huelva) bajo encina; los casos andaluces de primavera se concentran en el oeste.",
     "temporada": "Primavera: abril a principios de junio.",
-    "fase_huevo": "Huevo blanco por fuera y blanco por dentro al cortarlo. Puede confundirse con el huevo de la oronja o con un champiñón joven.",
+    "fase_huevo": "Huevo blanco por fuera y blanco por dentro al cortarlo. Puede confundirse con el huevo de la oronja, con un champiñón joven o con un gurumelo (A. ponderosa) que aún no ha abierto. A. verna y A. vidua salen en los mismos sitios y en la misma época que el gurumelo.",
     "rasgos_clave": [
       "Toda blanca",
       "Volva blanca en saco",
@@ -1377,6 +1386,16 @@
         "id": "amanita_phalloides",
         "diferencias": [
           "A. phalloides suele tener el sombrero verde oliváceo y sale en otoño; igual de mortal"
+        ]
+      },
+      {
+        "id": "amanita_ponderosa",
+        "diferencias": [
+          "El gurumelo sale en los mismos sitios y en la misma época: es la confusión primaveral más peligrosa",
+          "A. verna sigue blanca toda su vida y su carne no cambia de color; en el gurumelo el sombrero se vuelve ocre rojizo y la carne toma tonos rosados al corte",
+          "A. verna tiene el pie liso y un anillo colgante, estriado y persistente; el del gurumelo es frágil y se pierde pronto",
+          "El gurumelo huele a tierra mojada y sale medio enterrado, con la volva gruesa manchada de tierra",
+          "Un ejemplar joven y cerrado de A. verna puede parecer un gurumelo: en ese estado ningún rasgo basta sin un experto"
         ]
       }
     ],
@@ -2389,6 +2408,344 @@
       {
         "titulo": "Species Fungorum / Index Fungorum, registro de Chlorophyllum brunneum",
         "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=374393"
+      }
+    ]
+  },
+  {
+    "id": "amanita_ponderosa",
+    "nombre_cientifico": "Amanita ponderosa Malençon & R. Heim",
+    "nombres_comunes": [
+      "gurumelo",
+      "grumelo",
+      "falsa patata"
+    ],
+    "grupo": "apreciada",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia). ATENCIÓN: las amanitas mortales A. verna y A. vidua salen en los mismos sitios y en la misma época que el gurumelo, y de jóvenes, aún cerradas, se le parecen mucho. Alvarado et al. (2022) relacionan esta confusión con el número anormalmente alto de intoxicaciones por amanitas mortales en primavera en Andalucía y Extremadura. También se ha confundido con A. boudieri, que causa insuficiencia renal y no tiene volva membranosa ni anillo. La guía andaluza aconseja que los principiantes no lo recojan fuera de las provincias donde se conoce bien. Amanita curtipes, parecida pero más pequeña (hasta 8 cm) y de otoño, tiene poco valor culinario.",
+    "sombrero": "De 4 a 20 cm. Hemisférico de joven, luego convexo y casi plano. Cutícula gruesa, blanca de joven, que pasa a ocre rosado y con la edad a tonos casi rojizos. Margen no estriado, a veces con placas del velo. Suele estar manchado de tierra.",
+    "himenio": "Láminas libres, apretadas, blanquecinas a crema rosado, con la arista algo dentada o flocosa.",
+    "pie": "Robusto y macizo, blanco a crema rosado, de 6 a 13 cm. Enrojece un poco al dañarlo.",
+    "volva": "Grande, gruesa, membranosa y en forma de saco, muy persistente. Por fuera ocre rosada y manchada de tierra; por dentro blanca.",
+    "anillo": "Frágil y fugaz: desaparece pronto o queda en jirones pegados al pie.",
+    "carne_y_corte": "Blanca y compacta. Al corte o al aire toma tonos rosados; según AmanitaCesarea.com, en los adultos enrojece un poco.",
+    "olor_sabor": "Olor suave a tierra mojada, muy característico. Sabor dulce y suave.",
+    "esporada": "Blanca.",
+    "habitat": "Micorrícico de encinas y alcornoques, en bosques mediterráneos con jaras y tomillos. Nace medio enterrado. Abundante en Huelva, Sevilla y Cádiz; hay algunos ejemplares en Córdoba y Málaga.",
+    "temporada": "Primavera, a veces desde enero si el tiempo es suave. La Wikipedia en español da de finales de enero a finales de abril, según la zona.",
+    "fase_huevo": "El gurumelo joven sale medio enterrado, blanco, con el sombrero cerrado dentro de una volva gruesa manchada de tierra. Así se parece mucho a un ejemplar joven de A. verna o A. vidua, mortales, que salen en los mismos sitios y en la misma época. Un gurumelo cerrado o a medio salir no debe consumirse nunca sin la confirmación de un experto.",
+    "rasgos_clave": [
+      "Sale medio enterrado, en primavera, bajo encinas y alcornoques",
+      "Volva gruesa en saco, manchada de tierra",
+      "Carne que toma tonos rosados al corte",
+      "Olor a tierra mojada",
+      "Anillo frágil que se pierde pronto"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "amanita_verna",
+        "diferencias": [
+          "A. verna, mortal, sale en los mismos sitios y en la misma época que el gurumelo",
+          "A. verna sigue blanca toda su vida y su carne no cambia de color; el gurumelo se vuelve ocre rojizo y su carne toma tonos rosados al corte",
+          "A. verna tiene el pie liso y un anillo colgante, estriado y persistente",
+          "De jóvenes y cerradas son muy difíciles de separar: ningún rasgo basta sin un experto"
+        ]
+      },
+      {
+        "id": "amanita_phalloides",
+        "diferencias": [
+          "La forma blanca de A. phalloides, mortal, se ha citado como posible confusión",
+          "A. phalloides sale en otoño y tiene la carne blanca que no cambia",
+          "Su anillo es blanco, colgante y persistente; el del gurumelo se pierde pronto"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/amanita_ponderosa_1.jpg",
+        "autor": "Cardoazul",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_ponderosa1.jpg",
+        "descripcion": "Volva gruesa manchada de tierra y láminas blanquecinas"
+      },
+      {
+        "archivo": "fotos/amanita_ponderosa_2.jpg",
+        "autor": "Virako",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Gurumelo.jpg",
+        "descripcion": "Saliendo medio enterrado de la tierra"
+      },
+      {
+        "archivo": "fotos/amanita_ponderosa_3.jpg",
+        "autor": "Rafatorrescusa",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Gurumelo_en_el_campo.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Amanita ponderosa",
+        "url": "https://www.amanitacesarea.com/amanita-ponderosa.html"
+      },
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "Alvarado et al. (2022), Amanita sect. Phalloideae en el Mediterráneo, Biology 11:770",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9138314"
+      },
+      {
+        "titulo": "Wikipedia (es), Amanita ponderosa (fuente secundaria)",
+        "url": "https://es.wikipedia.org/wiki/Amanita_ponderosa"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Amanita ponderosa",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=284068"
+      }
+    ]
+  },
+  {
+    "id": "pleurotus_eryngii",
+    "nombre_cientifico": "Pleurotus eryngii (DC.) Quél.",
+    "nombres_comunes": [
+      "seta de cardo",
+      "seta de cardo corredor"
+    ],
+    "grupo": "apreciada",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia). La guía andaluza la considera difícil de confundir con setas tóxicas; AmanitaCesarea.com cita como posible confusión algunas Clitocybe tóxicas, de cutícula más clara, pie más central, láminas menos decurrentes y otro olor. La seta de cañaheja (P. eryngii var. ferulae) es muy parecida y crece sobre otra umbelífera.",
+    "sombrero": "De 4 a 12 cm. Convexo, luego plano y algo hundido en el centro, con el borde enrollado de joven. Color variable: de crema a beige, pardo rojizo, pardo grisáceo o marrón oscuro. Cutícula algo afieltrada o escamosa de joven, lisa después.",
+    "himenio": "Láminas muy decurrentes, que bajan por el pie. Blancas de joven, luego crema u ocráceas.",
+    "pie": "Excéntrico, a veces central, blanquecino, macizo y sin anillo. Si se desentierra se ve que nace de la raíz podrida del cardo corredor.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Blanca, compacta y algo elástica. Las fuentes no describen cambio de color al corte.",
+    "olor_sabor": "Olor suave y agradable; sabor dulce y suave.",
+    "esporada": "Blanca a blanco crema.",
+    "habitat": "Pastizales, praderas y claros de bosque con cardo corredor (Eryngium campestre), sobre sus raíces en descomposición. Muy frecuente en Andalucía.",
+    "temporada": "Sobre todo en otoño; también en primavera si ha llovido y hace templado.",
+    "rasgos_clave": [
+      "Láminas muy decurrentes, que bajan por el pie",
+      "Pie excéntrico, sin anillo ni volva",
+      "Nace de las raíces del cardo corredor, en pastizales",
+      "Sombrero pardo de tono variable, con el borde enrollado de joven"
+    ],
+    "no_confundir_con": [],
+    "fotos": [
+      {
+        "archivo": "fotos/pleurotus_eryngii_1.jpg",
+        "autor": "MottaW",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Pleurotus-eryngii-seta-de-cardo-sandoval-de-la-reina-2020.jpg"
+      },
+      {
+        "archivo": "fotos/pleurotus_eryngii_2.jpg",
+        "autor": "Teknad",
+        "licencia": "CC0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Seta_de_cardo_(Pleurotus_eryngii)_silvestre_en_Gran_Canaria,_Islas_Canarias,_Espa%C3%B1a.jpg"
+      },
+      {
+        "archivo": "fotos/pleurotus_eryngii_3.jpg",
+        "autor": "Jose Angel Urquia Goitia",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Pleurotus_eryngii_3.jpg"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Pleurotus eryngii",
+        "url": "https://www.amanitacesarea.com/pleurotus-eryngii.html"
+      },
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "Wikipedia (es), Pleurotus eryngii (fuente secundaria)",
+        "url": "https://es.wikipedia.org/wiki/Pleurotus_eryngii"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Pleurotus eryngii",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=170772"
+      }
+    ]
+  },
+  {
+    "id": "terfezia_arenaria",
+    "nombre_cientifico": "Terfezia arenaria (Moris) Trappe y T. claveryi Chatin",
+    "nombres_comunes": [
+      "criadilla de tierra",
+      "turma",
+      "turma de tierra",
+      "patata de tierra"
+    ],
+    "grupo": "apreciada",
+    "toxicidad_nota": "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia). Crece bajo tierra y se reconoce peor que una seta con sombrero. Según Cesta y Setas, la confusión más peligrosa es con las falsas trufas blancas del género Choiromyces (C. meandriformis es tóxica y tiene la carne con venas blancas en forma de meandro). La criadilla jarera (Choiromyces magnusii), asociada a las jaras, es otra especie citada como comestible. Las Scleroderma, tóxicas, también se han confundido con trufas.",
+    "sombrero": "No tiene sombrero ni pie. Cuerpo redondeado como una patata, de 3 a 10 cm (hasta 14 según el MITECO). Piel (peridio) blanco amarillenta de joven, luego rojiza y al final parda; lisa al principio y agrietada con la edad, a veces con manchas negras.",
+    "himenio": "No tiene láminas ni poros: las esporas se forman dentro de la carne (gleba).",
+    "pie": "No tiene.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Gleba crema rosada, con vetas o tabiques más claros. Al corte, T. arenaria forma un anillo blanquecino junto a la piel; T. leptoderma, de piel más fina, no suele formarlo.",
+    "olor_sabor": "Olor suave, fúngico, que el MITECO describe como afrutado. Sabor dulce.",
+    "esporada": "Ocrácea.",
+    "habitat": "T. arenaria: suelos sueltos y arenosos, ácidos, en dehesas y bosques claros de encina y alcornoque. Vive asociada a la hierba Tuberaria guttata, la madre de la criadilla o hierba turmera. En Andalucía se conoce sobre todo en Sierra Morena (Córdoba y Jaén). T. claveryi prefiere suelos calizos de la mitad oriental y se asocia a especies de Helianthemum.",
+    "temporada": "Primavera, de marzo a junio según el tiempo. En T. claveryi la cosecha depende sobre todo de la lluvia del otoño anterior (finales de septiembre y octubre) y, en menor medida, de la de primavera.",
+    "rasgos_clave": [
+      "Forma de patata, bajo tierra; se delata porque agrieta y abulta el suelo",
+      "Interior crema rosado con vetas más claras, nunca negro violáceo",
+      "Junto a Tuberaria guttata (T. arenaria) o Helianthemum (T. claveryi)",
+      "Sale en primavera"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "scleroderma_citrinum",
+        "diferencias": [
+          "Scleroderma tiene la piel dura y gruesa, con escamas o verrugas, amarillenta o parda",
+          "Su interior pasa pronto de blanco a negro violáceo y acaba en polvo pardo; el de la criadilla es crema rosado",
+          "Crece sobre el suelo, unido por cordones blancos o un falso pie, sobre todo en verano y otoño",
+          "S. citrinum huele mal, a gas"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/terfezia_arenaria_1.jpg",
+        "autor": "Santos-Silva C., Louro R., Natário B. y Nobre T. (MycoKeys 84, 2021)",
+        "licencia": "CC BY 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Terfezia_(10.3897-mycokeys.84.71372)_Figure_3.jpg",
+        "descripcion": "Varias especies de Terfezia de Portugal (lámina de MycoKeys)"
+      },
+      {
+        "archivo": "fotos/terfezia_arenaria_2.jpg",
+        "autor": "Gerhard Koller (Gerhard), Mushroom Observer",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:2008-05-02_Terfezia_arenaria_(Moris)_Trappe_220243.jpg",
+        "descripcion": "Abierta: carne clara, crema rosada"
+      },
+      {
+        "archivo": "fotos/terfezia_arenaria_3.jpg",
+        "autor": "Claude Lemmel & Zahora Attioui",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Tirmania_nivea_et_Trefezia_claveryi_(Souk_de_Rissani,_Maroc).jpg",
+        "descripcion": "T. claveryi y Tirmania nivea en un mercado de Marruecos"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "Moreno Arroyo, Gómez Fernández y Pulido Calmaestra, Setas comestibles de Andalucía (2.ª ed.)",
+        "url": "https://www.forestales.net/contenidos/adjuntos/1968/guia_setas_comestibles_de_andalucia_pdf.pdf"
+      },
+      {
+        "titulo": "Tardío, J., Terfezia arenaria, en Inventario Español de los Conocimientos Tradicionales relativos a la Biodiversidad (MITECO)",
+        "url": "https://www.miteco.gob.es/content/dam/miteco/es/biodiversidad/temas/inventarios-nacionales/iect_terfezia_arenaria_tcm30-164132.pdf"
+      },
+      {
+        "titulo": "Andrino et al. (2019), The crop of desert truffle depends on agroclimatic parameters during two key annual periods (Agron. Sustain. Dev.)",
+        "url": "https://hal.science/hal-02995102/document"
+      },
+      {
+        "titulo": "Global Fungal Red List Initiative, Terfezia claveryi",
+        "url": "https://redlist.info/iucn/species_view/144803"
+      },
+      {
+        "titulo": "Cesta y Setas, Las criadillas de tierra (confusiones con falsas trufas blancas; fuente secundaria)",
+        "url": "https://www.cestaysetas.com/las-criadillas-de-tierra-unas-de-las-setas-mas-buscadas-de-la-primavera/"
+      },
+      {
+        "titulo": "Wikipedia (en), Scleroderma citrinum (fuente secundaria)",
+        "url": "https://en.wikipedia.org/wiki/Scleroderma_citrinum"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Terfezia arenaria",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=324472"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Terfezia claveryi",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=144803"
+      }
+    ]
+  },
+  {
+    "id": "scleroderma_citrinum",
+    "nombre_cientifico": "Scleroderma citrinum Pers. y S. verrucosum (Bull.) Pers.",
+    "nombres_comunes": [
+      "escleroderma",
+      "escleroderma verrugoso"
+    ],
+    "grupo": "toxica",
+    "toxicidad_nota": "TÓXICA. Hay informes contradictorios sobre su gravedad, pero se considera como mínimo no comestible y sospechosa; puede causar trastornos gastrointestinales. First Nature recomienda no comer ninguna especie del género. Se ha confundido con trufas.",
+    "sombrero": "No tiene sombrero: cuerpo redondeado o en forma de pera, de 3 a 10 cm. Piel (peridio) dura y gruesa. En S. citrinum es amarillo ocre, con escamas gruesas e irregulares; en S. verrucosum, pardo rojiza a ocre, con escamitas pequeñas. Al madurar se rompe por arriba de forma irregular.",
+    "himenio": "No tiene láminas ni poros: las esporas se forman dentro (gleba).",
+    "pie": "S. citrinum no tiene pie y se une al suelo con cordones blancos. S. verrucosum tiene un falso pie surcado, con cordones blancos en la base.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Interior blanco y firme al principio. Pronto se vuelve pardo púrpura o negro violáceo, con vetas blancas, y al final es un polvo pardo oscuro.",
+    "olor_sabor": "Olor desagradable; a gas en S. citrinum. No se debe probar.",
+    "esporada": "Pardo oscura.",
+    "habitat": "Micorrícico. S. citrinum en suelos arenosos bien drenados, bordes de pistas y taludes de bosque. S. verrucosum en bosques variados, sobre todo con castaños, encinas y robles; también en pinares y jardines. Las fuentes consultadas no dan citas concretas en Andalucía.",
+    "temporada": "Verano y otoño. First Nature da de julio a diciembre en Gran Bretaña; AmanitaCesarea.com sitúa S. verrucosum en otoño.",
+    "rasgos_clave": [
+      "Piel dura, gruesa y escamosa",
+      "Interior que se vuelve pronto negro violáceo",
+      "Unido al suelo por cordones blancos o un falso pie",
+      "Olor desagradable"
+    ],
+    "no_confundir_con": [
+      {
+        "id": "terfezia_arenaria",
+        "diferencias": [
+          "La criadilla crece enterrada y sale en primavera",
+          "Su interior es crema rosado con vetas claras, nunca negro violáceo ni pulverulento",
+          "Su piel es fina o lisa al principio, blanquecina a rojiza, sin escamas duras"
+        ]
+      }
+    ],
+    "fotos": [
+      {
+        "archivo": "fotos/scleroderma_citrinum_1.jpg",
+        "autor": "Hans-Martin Scheibner",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Dickschaliger_Kartoffelbovist_(Scleroderma_citrinum)-Reife_Sporenmasse_im_Querschnitt.jpg",
+        "descripcion": "Ejemplar maduro abierto: interior pardo y pulverulento"
+      },
+      {
+        "archivo": "fotos/scleroderma_citrinum_2.jpg",
+        "autor": "Holger Krisp",
+        "licencia": "CC BY 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Gemeiner_Kartoffelbovist_Scleroderma_citrinum.jpg",
+        "descripcion": "Corte: interior negro violáceo"
+      },
+      {
+        "archivo": "fotos/scleroderma_citrinum_3.jpg",
+        "autor": "Holger Krisp",
+        "licencia": "CC BY 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Braunwarzige-Hartbovist-Scleroderma-verrucosum.jpg",
+        "descripcion": "S. verrucosum: interior oscuro al corte"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Scleroderma citrinum",
+        "url": "https://www.first-nature.com/fungi/scleroderma-citrinum.php"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Scleroderma verrucosum",
+        "url": "https://www.first-nature.com/fungi/scleroderma-verrucosum.php"
+      },
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Scleroderma verrucosum",
+        "url": "https://www.amanitacesarea.com/scleroderma-verrucosum.html"
+      },
+      {
+        "titulo": "Wikipedia (en), Scleroderma citrinum (fuente secundaria)",
+        "url": "https://en.wikipedia.org/wiki/Scleroderma_citrinum"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Scleroderma citrinum",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=181865"
+      },
+      {
+        "titulo": "Species Fungorum / Index Fungorum, registro de Scleroderma verrucosum",
+        "url": "https://www.speciesfungorum.org/Names/NamesRecord.asp?RecordID=211519"
       }
     ]
   }

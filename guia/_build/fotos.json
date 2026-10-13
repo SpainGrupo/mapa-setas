@@ -1,0 +1,602 @@
+{
+ "boletus_edulis": [
+  {
+   "archivo": "fotos/boletus_edulis_1.jpg",
+   "autor": "Ernie",
+   "licencia": "Public domain",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:AD2009Sep13_Boletus_edulis_04.jpg"
+  },
+  {
+   "archivo": "fotos/boletus_edulis_2.jpg",
+   "autor": "Holger Krisp",
+   "licencia": "CC BY 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:(Gemeine_Steinpilz)_Boletus_edulis.jpg"
+  },
+  {
+   "archivo": "fotos/boletus_edulis_3.jpg",
+   "autor": "Kornowski",
+   "licencia": "CC BY 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_edulis_Bull._Section.jpg"
+  }
+ ],
+ "boletus_aereus": [
+  {
+   "archivo": "fotos/boletus_aereus_1.jpg",
+   "autor": "Nacionalni park Una",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Vrganj_crni_Boletus_aereus.JPG"
+  },
+  {
+   "archivo": "fotos/boletus_aereus_2.jpg",
+   "autor": "Davide Puddu (Davide Puddu), Mushroom Observer",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_aereus_Bull_512322_crop.jpg"
+  },
+  {
+   "archivo": "fotos/boletus_aereus_3.jpg",
+   "autor": "Matthieu Morin",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Young_Boletus_aereus.jpg"
+  }
+ ],
+ "boletus_reticulatus": [
+  {
+   "archivo": "fotos/boletus_reticulatus_1.jpg",
+   "autor": "Björn S. (Flickr)",
+   "licencia": "CC BY-SA 2.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_reticulatus_(27473289563).jpg"
+  },
+  {
+   "archivo": "fotos/boletus_reticulatus_2.jpg",
+   "autor": "Björn S. (Flickr)",
+   "licencia": "CC BY-SA 2.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_reticulatus_(28539035004).jpg"
+  },
+  {
+   "archivo": "fotos/boletus_reticulatus_3.jpg",
+   "autor": "Paffka",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_reticulatus2.JPG"
+  }
+ ],
+ "boletus_pinophilus": [
+  {
+   "archivo": "fotos/boletus_pinophilus_1.jpg",
+   "autor": "Mariia Goncharskaia",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_pinophilus_15.jpg"
+  },
+  {
+   "archivo": "fotos/boletus_pinophilus_2.jpg",
+   "autor": "Jose Angel Urquia Goitia",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Onddo_pinua_azpitik.jpg"
+  },
+  {
+   "archivo": "fotos/boletus_pinophilus_3.jpg",
+   "autor": "Finnish Biodiversity Information Facility",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_pinophilus_12.jpg"
+  }
+ ],
+ "amanita_caesarea": [
+  {
+   "archivo": "fotos/amanita_caesarea_1.jpg",
+   "autor": "Gobrona",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_caesarea._Ekadia_Forest_Park_(2).jpg"
+  },
+  {
+   "archivo": "fotos/amanita_caesarea_2.jpg",
+   "autor": "Louis Aureglia",
+   "licencia": "CC BY 4.0",
+   "url_fuente": "https://www.inaturalist.org/photos/236769065"
+  },
+  {
+   "archivo": "fotos/amanita_caesarea_3.jpg",
+   "autor": "Nikolay Kashpor",
+   "licencia": "CC BY 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_caesarea.Mushrooms_of_Russia.jpg"
+  }
+ ],
+ "lactarius_deliciosus": [
+  {
+   "archivo": "fotos/lactarius_deliciosus_1.jpg",
+   "autor": "Roberto Zanon",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Lactarius_deliciosus_cut.jpg"
+  },
+  {
+   "archivo": "fotos/lactarius_deliciosus_2.jpg",
+   "autor": "Holger Krisp",
+   "licencia": "CC BY 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Echte_Reizker_Lactarius_deliciosus.JPG"
+  },
+  {
+   "archivo": "fotos/lactarius_deliciosus_3.jpg",
+   "autor": "Retama",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Lactarius_deliciosus,_Spain.jpg"
+  }
+ ],
+ "cantharellus_cibarius": [
+  {
+   "archivo": "fotos/cantharellus_cibarius_1.jpg",
+   "autor": "Jose Angel Urquia Goitia",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Cantharellus_cibarius_5.jpg"
+  },
+  {
+   "archivo": "fotos/cantharellus_cibarius_2.jpg",
+   "autor": "Laura Tarvainen",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Cantharellus_cibarius_20180928_224540.jpg"
+  },
+  {
+   "archivo": "fotos/cantharellus_cibarius_3.jpg",
+   "autor": "Dr. Hans-Günter Wagner",
+   "licencia": "CC BY-SA 2.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Cantharellus_cibarius_(50199063302).jpg"
+  }
+ ],
+ "macrolepiota_procera": [
+  {
+   "archivo": "fotos/macrolepiota_procera_1.jpg",
+   "autor": "Gouwenaar",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:20101005_grote_parasolzwam.jpeg"
+  },
+  {
+   "archivo": "fotos/macrolepiota_procera_2.jpg",
+   "autor": "Rigolithe",
+   "licencia": "Public domain",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Macrolepiota_procera_(young).jpg"
+  },
+  {
+   "archivo": "fotos/macrolepiota_procera_3.jpg",
+   "autor": "Dinesh Valke from Thane, India",
+   "licencia": "CC BY-SA 2.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Agaricaceae_%C2%BB_Macrolepiota_procera_(Scop.)_Singer_(4757475733).jpg"
+  }
+ ],
+ "suillus_bellinii": [
+  {
+   "archivo": "fotos/suillus_bellinii_1.jpg",
+   "autor": "zaca",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Suillus_bellinii_profile.jpg"
+  },
+  {
+   "archivo": "fotos/suillus_bellinii_2.jpg",
+   "autor": "Davide Puddu",
+   "licencia": "CC BY 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Suillus_bellinii_cropped_regrouped.jpg"
+  },
+  {
+   "archivo": "fotos/suillus_bellinii_3.jpg",
+   "autor": "zaca",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Suillus_bellinii_4.jpg"
+  }
+ ],
+ "hydnum_repandum": [
+  {
+   "archivo": "fotos/hydnum_repandum_1.jpg",
+   "autor": "Megalogena",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Hydnum_repandum_10.jpg"
+  },
+  {
+   "archivo": "fotos/hydnum_repandum_2.jpg",
+   "autor": "Alan Rockefeller (Alan Rockefeller), Mushroom Observer",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:2012-08-29_Hydnum_repandum_L_256175.jpg"
+  },
+  {
+   "archivo": "fotos/hydnum_repandum_3.jpg",
+   "autor": "Rosser1954",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Hydnum_repandum_-_Hedgehog_Fungus_spore_bearing_spines.jpg"
+  }
+ ],
+ "lepista_nuda": [
+  {
+   "archivo": "fotos/lepista_nuda_1.jpg",
+   "autor": "FNeill",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Clitocybe_Nuda,_AKA_Lepista_Nuda,_AKA_Wood_Blewit.jpg"
+  },
+  {
+   "archivo": "fotos/lepista_nuda_2.jpg",
+   "autor": "Dan Molter (shroomydan)",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Clitocybe_nuda_60302.jpg"
+  },
+  {
+   "archivo": "fotos/lepista_nuda_3.jpg",
+   "autor": "Dr. Hans-Günter Wagner",
+   "licencia": "CC BY-SA 2.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Lepista_nuda_(2)_(37629840094).jpg"
+  }
+ ],
+ "russula_cyanoxantha": [
+  {
+   "archivo": "fotos/russula_cyanoxantha_1.jpg",
+   "autor": "MediAtta; recorte de Ak ccm",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:2010-09-29_Russula_cyanoxantha_cropped.jpg"
+  },
+  {
+   "archivo": "fotos/russula_cyanoxantha_2.jpg",
+   "autor": "Bluenn Sapatsch",
+   "licencia": "CC0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Russula_cyanoxantha_gill_press.jpg"
+  },
+  {
+   "archivo": "fotos/russula_cyanoxantha_3.jpg",
+   "autor": "MediAtta",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Russule_charbonniere.jpg"
+  }
+ ],
+ "agaricus_campestris": [
+  {
+   "archivo": "fotos/agaricus_campestris_1.jpg",
+   "autor": "Dr. Hans-Günter Wagner",
+   "licencia": "CC BY-SA 2.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Agaricus_campestris_(48647010296).jpg"
+  },
+  {
+   "archivo": "fotos/agaricus_campestris_2.jpg",
+   "autor": "Andreas Kunze",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Agaricus_campestris_gills_stems_2012-10-04.jpg"
+  },
+  {
+   "archivo": "fotos/agaricus_campestris_3.jpg",
+   "autor": "Dick Culbert from Gibsons, B.C., Canada",
+   "licencia": "CC BY 2.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Agaricus_campestris_-_Flickr_-_Dick_Culbert.jpg"
+  }
+ ],
+ "amanita_phalloides": [
+  {
+   "archivo": "fotos/amanita_phalloides_1.jpg",
+   "autor": "Björn S. (Flickr)",
+   "licencia": "CC BY-SA 2.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_phalloides_(28889712950).jpg"
+  },
+  {
+   "archivo": "fotos/amanita_phalloides_2.jpg",
+   "autor": "David Whyte",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://www.inaturalist.org/photos/193447646"
+  },
+  {
+   "archivo": "fotos/amanita_phalloides_3.jpg",
+   "autor": "Justin Pierce (JPierce), Mushroom Observer",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:2011-10-26_Amanita_phalloides_(Fr.)_Link_177883.jpg"
+  }
+ ],
+ "amanita_verna": [
+  {
+   "archivo": "fotos/amanita_verna_1.jpg",
+   "autor": "Sinisa Radic",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_verna_4.jpg"
+  },
+  {
+   "archivo": "fotos/amanita_verna_2.jpg",
+   "autor": "Sinisa Radic",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_verna_2.jpg"
+  },
+  {
+   "archivo": "fotos/amanita_verna_3.jpg",
+   "autor": "Ki7sun3",
+   "licencia": "CC0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Weisser-Knollenbl%C3%A4tterpilz.jpg"
+  }
+ ],
+ "lepiota_brunneoincarnata": [
+  {
+   "archivo": "fotos/lepiota_brunneoincarnata_1.jpg",
+   "autor": "Murselin Guney (Beyrek), Mushroom Observer",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:2015-10-11_Lepiota_brunneoincarnata_Chodat_%26_C._Mart%C3%ADn_564314.jpg"
+  },
+  {
+   "archivo": "fotos/lepiota_brunneoincarnata_2.jpg",
+   "autor": "Strobilomyces",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Lepiota_brunneoincarnata_170929w.JPG"
+  },
+  {
+   "archivo": "fotos/lepiota_brunneoincarnata_3.jpg",
+   "autor": "User:Strobilomyces",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Lepiota_brunneoincarnata_060823w.jpg"
+  }
+ ],
+ "amanita_muscaria": [
+  {
+   "archivo": "fotos/amanita_muscaria_1.jpg",
+   "autor": "Scott Darbey from Canada",
+   "licencia": "CC BY 2.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:%27Fly_Agaric%27,_Amanita_muscaria_var._muscaria.jpg"
+  },
+  {
+   "archivo": "fotos/amanita_muscaria_2.jpg",
+   "autor": "Rob Swystun from Winnipeg, Canada",
+   "licencia": "CC BY 2.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:A_mushroom_growing_along_the_Pinawa_Heritage_Trail_(a_section_of_The_Great_Trail,_formerly_known_as_the_Trans-Canada_Trail)_near_Pinawa,_Manitoba._(48755167837).jpg"
+  },
+  {
+   "archivo": "fotos/amanita_muscaria_3.jpg",
+   "autor": "Spielvogel",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:2_young_amanita_muscaria.jpg"
+  }
+ ],
+ "amanita_pantherina": [
+  {
+   "archivo": "fotos/amanita_pantherina_1.jpg",
+   "autor": "Bff",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_pantherina20100914_268.jpg"
+  },
+  {
+   "archivo": "fotos/amanita_pantherina_2.jpg",
+   "autor": "Lukas from London, England",
+   "licencia": "CC BY-SA 2.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_pantherina_(30629736747).jpg"
+  },
+  {
+   "archivo": "fotos/amanita_pantherina_3.jpg",
+   "autor": "EmillimeS",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_pantherina;_DSC_0385.jpg"
+  }
+ ],
+ "rubroboletus_satanas": [
+  {
+   "archivo": "fotos/rubroboletus_satanas_1.jpg",
+   "autor": "Holger Krisp",
+   "licencia": "CC BY 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Satans-R%C3%B6hrling_Boletus_satanas_cropped.jpg"
+  },
+  {
+   "archivo": "fotos/rubroboletus_satanas_2.jpg",
+   "autor": "bjoerns",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Rubroboletus_satanas_cut.jpg"
+  },
+  {
+   "archivo": "fotos/rubroboletus_satanas_3.jpg",
+   "autor": "ionafraser",
+   "licencia": "CC BY 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Rubroboletus_satanas_young_collection.jpg"
+  }
+ ],
+ "caloboletus_calopus": [
+  {
+   "archivo": "fotos/caloboletus_calopus_1.jpg",
+   "autor": "Jan Sørensen",
+   "licencia": "CC BY 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Caloboletus_calopus_cut.jpg"
+  },
+  {
+   "archivo": "fotos/caloboletus_calopus_2.jpg",
+   "autor": "Holger Krisp",
+   "licencia": "CC BY 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Sch%C3%B6nfu%C3%9F-R%C3%B6hrling_Boletus_calopus.JPG"
+  },
+  {
+   "archivo": "fotos/caloboletus_calopus_3.jpg",
+   "autor": "Björn S. (Flickr)",
+   "licencia": "CC BY-SA 2.5",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Botanical_Garden_Gothenburg_and_Angg%C3%A5rdsbergen_13.08.2017_Bitter_Beech_Bolete_-_Caloboletus_calopus_(37321279256)_cropped.jpg"
+  }
+ ],
+ "caloboletus_radicans": [
+  {
+   "archivo": "fotos/caloboletus_radicans_1.jpg",
+   "autor": "Holger Krisp",
+   "licencia": "CC BY 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Wurzelnde_Bitter-R%C3%B6hrling_Caloboletus_radicans_1_cropped.jpg"
+  },
+  {
+   "archivo": "fotos/caloboletus_radicans_2.jpg",
+   "autor": "paulanimigean",
+   "licencia": "CC BY 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Caloboletus_radicans_cut.jpg"
+  },
+  {
+   "archivo": "fotos/caloboletus_radicans_3.jpg",
+   "autor": "DidierFy",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Boletus_radicans_09.2026_(4).jpg"
+  }
+ ],
+ "tylopilus_felleus": [
+  {
+   "archivo": "fotos/tylopilus_felleus_1.jpg",
+   "autor": "EmillimeS",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Tylopilus_felleus;_101_1065.jpg"
+  },
+  {
+   "archivo": "fotos/tylopilus_felleus_2.jpg",
+   "autor": "Eric Steinert",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Tylopilus_felleus01.jpg"
+  },
+  {
+   "archivo": "fotos/tylopilus_felleus_3.jpg",
+   "autor": "Thomas Pruß",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Gallenr%C3%B6hrling_(1).jpg"
+  }
+ ],
+ "omphalotus_olearius": [
+  {
+   "archivo": "fotos/omphalotus_olearius_1.jpg",
+   "autor": "Adriano De Astis",
+   "licencia": "CC BY 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Fungo_dell%27ulivo,_Omphalotus_olearius.jpg"
+  },
+  {
+   "archivo": "fotos/omphalotus_olearius_2.jpg",
+   "autor": "Adriano De Astis",
+   "licencia": "CC BY 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Fungo_dell%27ulivo.jpg"
+  },
+  {
+   "archivo": "fotos/omphalotus_olearius_3.jpg",
+   "autor": "Aleksandar Đukić",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Zavodnica_32.jpg"
+  }
+ ],
+ "lactarius_torminosus": [
+  {
+   "archivo": "fotos/lactarius_torminosus_1.jpg",
+   "autor": "B59210",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Lactarius_torminosus_stade_jeune.jpg"
+  },
+  {
+   "archivo": "fotos/lactarius_torminosus_2.jpg",
+   "autor": "Aleksandar Đukić",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Lactarius_torminosus_7.jpg"
+  },
+  {
+   "archivo": "fotos/lactarius_torminosus_3.jpg",
+   "autor": "Jomo",
+   "licencia": "Public domain",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Young_Lactarius_torminosus.JPG"
+  }
+ ],
+ "lactarius_chrysorrheus": [
+  {
+   "archivo": "fotos/lactarius_chrysorrheus_1.jpg",
+   "autor": "A.Aguilera",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Chrysorrheus.jpg"
+  },
+  {
+   "archivo": "fotos/lactarius_chrysorrheus_2.jpg",
+   "autor": "Zonda Grattus, aka Luridiformis at en.wikipedia",
+   "licencia": "CC BY 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Lact.chry.jpg"
+  },
+  {
+   "archivo": "fotos/lactarius_chrysorrheus_3.jpg",
+   "autor": "Fabien Piednoir",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Lactarius_chrysorrheus_3316224.jpg"
+  }
+ ],
+ "chlorophyllum_rhacodes": [
+  {
+   "archivo": "fotos/chlorophyllum_rhacodes_1.jpg",
+   "autor": "Bernard Spragg. NZ from Christchurch, New Zealand",
+   "licencia": "CC0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Shaggy_Parasol._(Chlorophyllum_rhacodes)_(34439570751).jpg"
+  },
+  {
+   "archivo": "fotos/chlorophyllum_rhacodes_2.jpg",
+   "autor": "Tomasz Sobczak",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Chlorophyllum_brunneum_ts1_cropped.jpg"
+  },
+  {
+   "archivo": "fotos/chlorophyllum_rhacodes_3.jpg",
+   "autor": "Hagen Graebner",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Chlorophyllumbrunneum3.jpg"
+  }
+ ],
+ "amanita_ponderosa": [
+  {
+   "archivo": "fotos/amanita_ponderosa_1.jpg",
+   "autor": "Cardoazul",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Amanita_ponderosa1.jpg"
+  },
+  {
+   "archivo": "fotos/amanita_ponderosa_2.jpg",
+   "autor": "Virako",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Gurumelo.jpg"
+  },
+  {
+   "archivo": "fotos/amanita_ponderosa_3.jpg",
+   "autor": "Rafatorrescusa",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Gurumelo_en_el_campo.jpg"
+  }
+ ],
+ "pleurotus_eryngii": [
+  {
+   "archivo": "fotos/pleurotus_eryngii_1.jpg",
+   "autor": "MottaW",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Pleurotus-eryngii-seta-de-cardo-sandoval-de-la-reina-2020.jpg"
+  },
+  {
+   "archivo": "fotos/pleurotus_eryngii_2.jpg",
+   "autor": "Teknad",
+   "licencia": "CC0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Seta_de_cardo_(Pleurotus_eryngii)_silvestre_en_Gran_Canaria,_Islas_Canarias,_Espa%C3%B1a.jpg"
+  },
+  {
+   "archivo": "fotos/pleurotus_eryngii_3.jpg",
+   "autor": "Jose Angel Urquia Goitia",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Pleurotus_eryngii_3.jpg"
+  }
+ ],
+ "terfezia_arenaria": [
+  {
+   "archivo": "fotos/terfezia_arenaria_1.jpg",
+   "autor": "Santos-Silva C, Louro R, Natário B, Nobre T (2021) Lack of knowledge on ecological determinants and cryptic lifestyles hinder our understanding of Terfezia diversity. MycoKeys 84: 1-14.",
+   "licencia": "CC BY 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Terfezia_(10.3897-mycokeys.84.71372)_Figure_3.jpg"
+  },
+  {
+   "archivo": "fotos/terfezia_arenaria_2.jpg",
+   "autor": "This image was created by user Gerhard Koller (Gerhard) at Mushroom Observer, a source for mycological images.You can contact this user here.",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:2008-05-02_Terfezia_arenaria_(Moris)_Trappe_220243.jpg"
+  },
+  {
+   "archivo": "fotos/terfezia_arenaria_3.jpg",
+   "autor": "Claude Lemmel & Zahora Attioui",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Tirmania_nivea_et_Trefezia_claveryi_(Souk_de_Rissani,_Maroc).jpg"
+  }
+ ],
+ "scleroderma_citrinum": [
+  {
+   "archivo": "fotos/scleroderma_citrinum_1.jpg",
+   "autor": "Hans-Martin Scheibner",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Dickschaliger_Kartoffelbovist_(Scleroderma_citrinum)-Reife_Sporenmasse_im_Querschnitt.jpg"
+  },
+  {
+   "archivo": "fotos/scleroderma_citrinum_2.jpg",
+   "autor": "Holger Krisp",
+   "licencia": "CC BY 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Gemeiner_Kartoffelbovist_Scleroderma_citrinum.jpg"
+  },
+  {
+   "archivo": "fotos/scleroderma_citrinum_3.jpg",
+   "autor": "Holger Krisp",
+   "licencia": "CC BY 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Braunwarzige-Hartbovist-Scleroderma-verrucosum.jpg"
+  }
+ ]
+}

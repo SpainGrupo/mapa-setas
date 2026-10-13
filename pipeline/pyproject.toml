@@ -1,0 +1,15 @@
+[project]
+name = "setas-pipeline"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "numpy>=2.0", "scipy>=1.13", "rasterio>=1.4", "geopandas>=1.0", "pyogrio>=0.9",
+  "shapely>=2.0", "pyproj>=3.6", "osmium>=4.0", "requests>=2.32", "pyyaml>=6.0",
+  "matplotlib>=3.9",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

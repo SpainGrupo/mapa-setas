@@ -127,6 +127,8 @@ def test_escribir_y_leer_binario(tmp_path):
     assert all(c["offset"] % 4 == 0 for c in cab["capas"].values())
     assert (r["tiempo_pie_min"] == t).all() and (r["origen_id"] == o).all() and (r["direccion"] == d).all()
     assert cab["bytes"] == (tmp_path / "acceso.bin").stat().st_size
+    import gzip
+    assert gzip.decompress((tmp_path / "acceso.bin.gz").read_bytes()) == (tmp_path / "acceso.bin").read_bytes()
     comp = json.loads((tmp_path / "aparcamientos.json").read_text())
     assert len(comp["vias"]) == 2
     assert [A.aparcamiento(comp, i) for i in range(3)] == aps

@@ -392,9 +392,21 @@ def escribir_app(out: Path, malla, t_min, s_m, o_id, d8, aparcamientos):
             f.write(b"\0" * pad)
             off += pad
     cab["bytes"] = off
+    comprimir(out / "acceso.bin")
     (out / "acceso.json").write_text(json.dumps(cab, ensure_ascii=False, indent=1))
     (out / "aparcamientos.json").write_text(json.dumps(compactar_aparcamientos(aparcamientos),
                                                        ensure_ascii=False, separators=(",", ":")))
+
+
+def comprimir(ruta: Path) -> Path:
+    """ruta → ruta.gz (gzip, mtime 0 para que sea reproducible). La app lo descomprime con
+    DecompressionStream; el manifest publica el .gz (acceso.bin se queda solo para consultar())."""
+    import gzip
+    destino = ruta.with_name(ruta.name + ".gz")
+    with open(ruta, "rb") as src, open(destino, "wb") as f:
+        with gzip.GzipFile(fileobj=f, mode="wb", compresslevel=9, mtime=0, filename="") as gz:
+            gz.write(src.read())
+    return destino
 
 
 def compactar_aparcamientos(lista: list[dict]) -> dict:

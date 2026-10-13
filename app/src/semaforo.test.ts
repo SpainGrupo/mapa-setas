@@ -113,3 +113,23 @@ describe('semaforo', () => {
     expect(semaforo(serie(), AEREUS, '2026-12-01').estado).toBe('gris');
   });
 });
+
+describe('semaforo — hallazgos de revisión', () => {
+  it('lluvia pasada esperando + lluvia prevista → manda la pasada y se anota la prevista', () => {
+    const r = semaforo(serie({ [-5]: 40, [2]: 25 }), AEREUS, HOY);
+    expect(r.estado).toBe('amarillo');
+    expect(r.desde).toBe(sumarDias(HOY, -5 + 8));
+    expect(r.motivo).toMatch(new RegExp(`lluvia prevista el ${sumarDias(HOY, 2).slice(8, 10)}/`));
+  });
+
+  it('dos episodios previstos → manda el más cercano', () => {
+    const r = semaforo(serie({ [2]: 30, [5]: 30 }), AEREUS, HOY);
+    expect(r.estado).toBe('amarillo');
+    expect(r.episodio).toBe(sumarDias(HOY, 2));
+  });
+
+  it('llovizna de 0,2 mm tras el episodio no mueve su fecha', () => {
+    const r = semaforo(serie({ [-12]: 30, [-10]: 0.2 }), AEREUS, HOY);
+    expect(r.episodio).toBe(sumarDias(HOY, -12));
+  });
+});

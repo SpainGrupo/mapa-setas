@@ -27,11 +27,13 @@ const grados = (v: number) => v.toLocaleString('es-ES', { minimumFractionDigits:
 
 interface Episodio { i: number; mm: number }
 
+const LLOVIZNA_MM = 1;   // un día con menos no cierra episodio (los modelos dan trazas de 0,1–0,5 mm)
+
 /** Episodios: días con lluvia que cierran una ventana de 1–3 días consecutivos con ≥ episodio_mm. Del más reciente al más antiguo. */
 function episodios(serie: Dia[], mm: number): Episodio[] {
   const r: Episodio[] = [];
   for (let e = serie.length - 1; e >= 0; e--) {
-    if (!(serie[e].lluvia > 0)) continue;
+    if (!(serie[e].lluvia >= LLOVIZNA_MM)) continue;
     let suma = 0, mejor = 0;
     for (let k = 0; k < 3 && e - k >= 0; k++) { suma += serie[e - k].lluvia; mejor = Math.max(mejor, suma); }
     if (mejor >= mm) r.push({ i: e, mm: Math.round(mejor) });
@@ -66,7 +68,7 @@ export function semaforo(serie: Dia[], reglas: Reglas, hoy: string, opciones: { 
   const temp = temperatura(serie, hoyI, reglas);
   const eps = episodios(serie, reglas.episodio_mm);
   const pasado = eps.find((e) => e.i <= hoyI);
-  const previsto = eps.find((e) => e.i > hoyI);       // el más reciente de la previsión
+  const previsto = eps.filter((e) => e.i > hoyI).at(-1); // el más cercano de la previsión (eps va del más reciente al más antiguo)
 
   const evaluar = (ep: Episodio | undefined): ResultadoSemaforo => {
     if (!ep) return { estado: 'rojo', motivo: `seco: sin lluvia de ${reglas.episodio_mm} mm o más en 30 días` };
@@ -87,7 +89,8 @@ export function semaforo(serie: Dia[], reglas: Reglas, hoy: string, opciones: { 
 
   const actual = evaluar(pasado);
   if (!previsto) return actual;
-  // Con la ventana ya abierta, la lluvia prevista solo completa el motivo; si no, manda el episodio previsto.
-  if (actual.estado === 'verde') return { ...actual, motivo: `${actual.motivo}; lluvia prevista el ${ddmm(serie[previsto.i].fecha)}` };
+  // Si la lluvia pasada aún cuenta (ventana abierta o por abrir), la prevista solo completa el motivo;
+  // solo cuando lo pasado no sirve (rojo) manda el episodio previsto.
+  if (actual.estado !== 'rojo') return { ...actual, motivo: `${actual.motivo}; lluvia prevista el ${ddmm(serie[previsto.i].fecha)}` };
   return evaluar(previsto);
 }

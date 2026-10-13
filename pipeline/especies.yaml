@@ -1,32 +1,39 @@
 # HEURÍSTICO v1 — valores de partida de literatura micológica divulgativa;
 # se recalibran con GBIF (Tarea 9) y hallazgos propios. No son ciencia exacta.
+# tiempo: episodio_mm = lluvia en ≤3 días seguidos que dispara la fructificación; ventana_dias = días
+# tras el episodio; tmin_media/tmax_media = rango favorable de la media de mínimas/máximas de 10 días.
 boletus_aereus:
   nombre: Boletus aereus
   arboles: {alcornoque: 1.0, castano: 0.9, encina: 0.8, quejigo: 0.7}
   altitud: {min: 0, opt_min: 300, opt_max: 900, max: 1200}   # calibrado 2026-10-13: alcornocal costero 15-150 m
   orientacion: indiferente
   suelo: {acido: 1.0, otro: 0.5, basico: 0.4, ultrabasico: 0.3, desconocido: 0.6}
+  tiempo: {episodio_mm: 25, ventana_dias: [8, 20], tmin_media: [8, 18], tmax_media: [15, 27]}   # heurístico v1 (Fase 3)
 boletus_aestivalis:
   nombre: Boletus aestivalis / reticulatus
   arboles: {castano: 1.0, quejigo: 0.9, alcornoque: 0.7, encina: 0.7}
   altitud: {min: 300, opt_min: 500, opt_max: 1100, max: 1400}
   orientacion: indiferente
   suelo: {acido: 1.0, otro: 0.6, basico: 0.6, ultrabasico: 0.3, desconocido: 0.6}
+  tiempo: {episodio_mm: 20, ventana_dias: [7, 18], tmin_media: [10, 20], tmax_media: [18, 30]}   # heurístico v1 (Fase 3)
 boletus_edulis:
   nombre: Boletus edulis
   arboles: {castano: 1.0, pino: 0.7, pinsapo: 0.6, quejigo: 0.5}
   altitud: {min: 600, opt_min: 900, opt_max: 1500, max: 1900}
   orientacion: umbria
   suelo: {acido: 1.0, otro: 0.6, basico: 0.5, ultrabasico: 0.4, desconocido: 0.6}
+  tiempo: {episodio_mm: 25, ventana_dias: [8, 21], tmin_media: [5, 15], tmax_media: [12, 24]}   # heurístico v1 (Fase 3)
 boletus_pinophilus:
   nombre: Boletus pinophilus
   arboles: {pino: 1.0, castano: 0.5}
   altitud: {min: 700, opt_min: 1000, opt_max: 1600, max: 2000}
   orientacion: umbria
   suelo: {acido: 1.0, otro: 0.6, basico: 0.4, ultrabasico: 0.4, desconocido: 0.6}
+  tiempo: {episodio_mm: 25, ventana_dias: [8, 21], tmin_media: [4, 14], tmax_media: [10, 22]}   # heurístico v1 (Fase 3)
 amanita_caesarea:
   nombre: Amanita caesarea
   arboles: {alcornoque: 1.0, castano: 1.0, encina: 0.8, quejigo: 0.7, pino: 0.4}   # pino: pinares con alcornoque/encina de sotobosque
   altitud: {min: 0, opt_min: 200, opt_max: 900, max: 1200}
   orientacion: solana
   suelo: {acido: 1.0, otro: 0.5, basico: 0.3, ultrabasico: 0.3, desconocido: 0.6}
+  tiempo: {episodio_mm: 20, ventana_dias: [7, 16], tmin_media: [12, 20], tmax_media: [20, 30]}   # heurístico v1 (Fase 3)

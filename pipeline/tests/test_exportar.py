@@ -1,3 +1,4 @@
+import pytest
 import io
 import numpy as np
 from PIL import Image
@@ -63,3 +64,69 @@ def test_teselas_bbox_cubre_malaga():
     assert (10, 499, 399) in ts and len(ts) <= 4
     for z, x, y in ts:
         assert z == 10
+
+
+# ---------------------------------------------------------------- Fase 3: puntos meteo
+
+from shapely.geometry import box as _box, Point as _Point
+from setas_pipeline.malla import Malla as _Malla
+from setas_pipeline.exportar import rejilla_meteo, con_bosque_cerca, voronoi_zonas, alt_media
+
+
+def test_rejilla_meteo_paso_y_solo_dentro_de_la_zona():
+    zona = _box(0, 0, 48000, 24000)
+    pts = rejilla_meteo(zona, 12000)
+    assert len(pts) == 4 * 2
+    assert (6000.0, 6000.0) in pts and (42000.0, 18000.0) in pts
+    # zona en L: los centros fuera del polígono se descartan
+    ele = zona.difference(_box(24000, 12000, 48000, 24000))
+    assert len(rejilla_meteo(ele, 12000)) == 6
+    assert all(ele.contains(_Point(p)) for p in rejilla_meteo(ele, 12000))
+
+
+def test_filtro_descarta_puntos_sin_bosque_en_el_radio():
+    malla = _Malla(0.0, 30000.0, 300, 300, 100.0)       # 30 × 30 km
+    mascara = np.zeros((300, 300), bool)
+    mascara[50, 50] = True                              # celda con bosque en x=5050, y=24950
+    pts = [(5000.0, 25000.0), (9000.0, 25000.0), (25000.0, 5000.0)]
+    assert con_bosque_cerca(pts, mascara, malla, 6000) == [True, True, False]
+    assert con_bosque_cerca(pts, mascara, malla, 3000) == [True, False, False]
+
+
+def test_voronoi_cubre_toda_la_zona_y_cada_punto_esta_en_su_celda():
+    zona = _box(0, 0, 48000, 24000).difference(_box(30000, 15000, 48000, 24000))
+    pts = [(6000.0, 6000.0), (18000.0, 18000.0), (42000.0, 6000.0), (20000.0, 5000.0)]
+    celdas = voronoi_zonas(pts, zona)
+    assert len(celdas) == len(pts)
+    from shapely import union_all
+    u = union_all(celdas)
+    assert abs(u.area - zona.area) < 1e-3 * zona.area
+    assert u.symmetric_difference(zona).area < 1e-3 * zona.area
+    assert sum(c.area for c in celdas) == pytest.approx(zona.area, rel=1e-6)    # sin solapes
+    for p, c in zip(pts, celdas):
+        assert c.contains(_Point(p))
+
+
+def test_alt_media_usa_las_celdas_con_bosque_del_radio():
+    malla = _Malla(0.0, 10000.0, 100, 100, 100.0)
+    alt = np.full((100, 100), 200.0, dtype=np.float32)
+    alt[:, 50:] = 1000.0
+    mascara = np.zeros((100, 100), bool)
+    mascara[40:60, 60:70] = True                        # todo el bosque a 1000 m
+    assert alt_media((5000.0, 5000.0), alt, mascara, malla, 3000) == pytest.approx(1000.0)
+    # sin bosque en el radio: media del terreno del radio (ignorando nodata)
+    alt[0, 0] = -9999.0
+    v = alt_media((1000.0, 9000.0), alt, np.zeros_like(mascara), malla, 500)
+    assert v == pytest.approx(200.0)
+
+
+def test_especies_exporta_reglas_de_tiempo():
+    from setas_pipeline.exportar import especies
+    es = {e["id"]: e for e in especies()}
+    assert es["boletus_aereus"]["tiempo"] == {"episodio_mm": 25, "ventana_dias": [8, 20],
+                                              "tmin_media": [8, 18], "tmax_media": [15, 27]}
+    assert es["amanita_caesarea"]["tiempo"]["ventana_dias"] == [7, 16]
+    for e in es.values():
+        t = e["tiempo"]
+        assert set(t) == {"episodio_mm", "ventana_dias", "tmin_media", "tmax_media"}
+        assert t["ventana_dias"][0] < t["ventana_dias"][1]

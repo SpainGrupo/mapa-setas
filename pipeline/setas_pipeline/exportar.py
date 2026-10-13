@@ -2,6 +2,7 @@
 
     uv run python -m setas_pipeline.exportar capas      # idoneidad×umbral, sombreado, curvas, protegidos
     uv run python -m setas_pipeline.exportar base       # extracto de Protomaps (red)
+    uv run python -m setas_pipeline.exportar meteo      # Fase 3: puntos meteo + teselas de Voronoi
     uv run python -m setas_pipeline.exportar manifest
     uv run python -m setas_pipeline.exportar todo
 
@@ -29,6 +30,9 @@ ZOOM_BASE_MAX = 15
 EQUIDISTANCIA = 20          # m entre curvas
 PRINCIPAL = 100             # curvas maestras
 MARGEN_M = 2000             # margen alrededor de la zona para base, curvas y sombreado
+PASO_METEO = 12000          # m entre puntos de la rejilla meteo
+RADIO_BOSQUE = 6000         # m: un punto meteo se conserva si hay bosque hospedador a esta distancia
+IDON_BOSQUE = 30            # idoneidad mínima (cualquier especie) para contar como bosque hospedador
 PROTOMAPS_BUILDS = "https://build-metadata.protomaps.dev/builds.json"
 PROTOMAPS_URL = "https://build.protomaps.com/{key}"
 
@@ -136,6 +140,98 @@ def teselas_bbox(bbox, z):
             yield z, x, y
 
 
+# ---------------------------------------------------------------- puntos meteo (Fase 3)
+
+def rejilla_meteo(zona, paso: float = PASO_METEO) -> list[tuple[float, float]]:
+    """Centros de una rejilla de `paso` m sobre el bbox de `zona` (CRS métrico) que caen dentro de ella."""
+    from shapely import prepared
+    from shapely.geometry import Point
+    zp = prepared.prep(zona)
+    xmin, ymin, xmax, ymax = zona.bounds
+    return [(float(x), float(y))
+            for y in np.arange(ymin + paso / 2, ymax, paso)
+            for x in np.arange(xmin + paso / 2, xmax, paso)
+            if zp.contains(Point(x, y))]
+
+
+def _ventana(p, malla: Malla, radio: float):
+    """Recorte (filas, columnas) de la malla alrededor de p y máscara del disco de `radio` m."""
+    c = (p[0] - malla.x0) / malla.celda
+    f = (malla.y1 - p[1]) / malla.celda
+    r = radio / malla.celda
+    f0, f1 = max(0, int(f - r)), min(malla.alto, int(f + r) + 1)
+    c0, c1 = max(0, int(c - r)), min(malla.ancho, int(c + r) + 1)
+    ff, cc = np.mgrid[f0:f1, c0:c1]
+    disco = (ff + 0.5 - f) ** 2 + (cc + 0.5 - c) ** 2 <= r * r
+    return (slice(f0, f1), slice(c0, c1)), disco
+
+
+def con_bosque_cerca(puntos, mascara: np.ndarray, malla: Malla, radio: float = RADIO_BOSQUE) -> list[bool]:
+    """Para cada punto, si alguna celda de `mascara` (bosque hospedador) está a ≤ `radio` m."""
+    res = []
+    for p in puntos:
+        sl, disco = _ventana(p, malla, radio)
+        res.append(bool((mascara[sl] & disco).any()))
+    return res
+
+
+def alt_media(p, altitud: np.ndarray, mascara: np.ndarray, malla: Malla, radio: float = RADIO_BOSQUE,
+              nodata: float = -9999.0) -> float:
+    """Altitud media del bosque hospedador en el radio; sin bosque, la del terreno del radio."""
+    sl, disco = _ventana(p, malla, radio)
+    a = altitud[sl].astype(np.float64)
+    valida = disco & (a != nodata) & np.isfinite(a)
+    sel = valida & mascara[sl]
+    if not sel.any():
+        sel = valida
+    return float(a[sel].mean()) if sel.any() else float("nan")
+
+
+def voronoi_zonas(puntos, zona) -> list:
+    """Polígonos de Voronoi de los puntos recortados a `zona`, en el mismo orden que `puntos`."""
+    from shapely import voronoi_polygons
+    from shapely.geometry import MultiPoint, Point
+    celdas = list(voronoi_polygons(MultiPoint(puntos), extend_to=zona.envelope.buffer(1000)).geoms)
+    res = []
+    for p in puntos:
+        pt = Point(p)
+        c = next(c for c in celdas if c.contains(pt))
+        res.append(c.intersection(zona))
+    return res
+
+
+def exportar_meteo(out: Path = APP):
+    """meteo_puntos.json ({id, lat, lon, alt_media}) y meteo_zonas.pmtiles (Voronoi, capa 'meteo_zonas')."""
+    import geopandas as gpd
+    malla = Malla.cargar(OUT / "malla.json")
+    zona = gpd.read_file(OUT / "zona.geojson").to_crs("EPSG:25830").union_all()
+    mascara = None
+    for e in especies():
+        m = leer_tif(OUT / f"idoneidad_{e['id']}.tif") >= IDON_BOSQUE
+        mascara = m if mascara is None else (mascara | m)
+    altitud = leer_tif(OUT / "altitud.tif")
+    todos = rejilla_meteo(zona)
+    puntos = [p for p, ok in zip(todos, con_bosque_cerca(todos, mascara, malla)) if ok]
+    celdas = voronoi_zonas(puntos, zona)
+    tr = Transformer.from_crs("EPSG:25830", "EPSG:4326", always_xy=True)
+    lista = []
+    for i, p in enumerate(puntos):
+        lon, lat = tr.transform(*p)
+        lista.append({"id": i, "lat": round(lat, 4), "lon": round(lon, 4),
+                      "alt_media": round(alt_media(p, altitud, mascara, malla))})
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "meteo_puntos.json").write_text(json.dumps(lista, ensure_ascii=False))
+    gdf = gpd.GeoDataFrame({"id": list(range(len(puntos)))}, geometry=celdas, crs="EPSG:25830").to_crs("EPSG:4326")
+    with tempfile.TemporaryDirectory() as tmp:
+        gj = Path(tmp) / "meteo_zonas.geojson"
+        gj.write_text(gdf.to_json(drop_id=True))
+        _tippecanoe(gj, out / "meteo_zonas.pmtiles", "meteo_zonas", 6, 12,
+                    ["--no-tile-size-limit", "--detect-shared-borders", "--no-simplification-of-shared-nodes",
+                     "--attribution=Open-Meteo.com CC BY 4.0"])
+    print(f"  meteo: {len(puntos)} puntos de {len(todos)} en la rejilla", flush=True)
+    return lista
+
+
 # ---------------------------------------------------------------- PMTiles
 
 class _Salida:
@@ -185,7 +281,8 @@ def _bbox_zona(margen=MARGEN_M):
 
 def especies() -> list[dict]:
     d = yaml.safe_load(ESPECIES.read_text())
-    return [{"id": k, "nombre": v["nombre"]} for k, v in d.items()]
+    return [{"id": k, "nombre": v["nombre"], **({"tiempo": v["tiempo"]} if "tiempo" in v else {})}
+            for k, v in d.items()]
 
 
 def exportar_rasters(malla: Malla, out: Path = APP):
@@ -321,7 +418,8 @@ def exportar_base(out: Path = APP, maxzoom: int = ZOOM_BASE_MAX, build: str | No
 
 
 def escribir_manifest(out: Path = APP) -> dict:
-    archivos = [{"nombre": p.name, "bytes": p.stat().st_size} for p in sorted(out.glob("*.pmtiles"))]
+    rutas = sorted(out.glob("*.pmtiles")) + [p for p in [out / "meteo_puntos.json"] if p.exists()]
+    archivos = [{"nombre": p.name, "bytes": p.stat().st_size} for p in rutas]
     bbox, _ = _bbox_zona(0)
     build = (out.parent / "base_build.txt")
     m = {
@@ -332,6 +430,8 @@ def escribir_manifest(out: Path = APP) -> dict:
         "zoom": {"idoneidad": list(ZOOM_IDONEIDAD), "sombreado": list(ZOOM_SOMBREADO),
                  "base_max": ZOOM_BASE_MAX},
         "base": build.read_text().strip() if build.exists() else None,
+        "meteo": ({"puntos": "meteo_puntos.json", "zonas": "meteo_zonas.pmtiles"}
+                  if (out / "meteo_puntos.json").exists() else None),
         "archivos": archivos,
         "total_bytes": sum(a["bytes"] for a in archivos),
     }
@@ -341,7 +441,7 @@ def escribir_manifest(out: Path = APP) -> dict:
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("pasos", nargs="+", choices=["capas", "base", "manifest", "todo"])
+    ap.add_argument("pasos", nargs="+", choices=["capas", "base", "meteo", "manifest", "todo"])
     ap.add_argument("--maxzoom", type=int, default=ZOOM_BASE_MAX)
     a = ap.parse_args(argv)
     pasos = set(a.pasos)
@@ -352,6 +452,8 @@ def main(argv=None):
         print("protegidos…", flush=True); exportar_protegidos()
     if pasos & {"base", "todo"}:
         exportar_base(maxzoom=a.maxzoom)
+    if pasos & {"meteo", "todo"}:
+        print("meteo…", flush=True); exportar_meteo()
     m = escribir_manifest()
     print(f"manifest: {len(m['archivos'])} archivos, {m['total_bytes'] / 1e6:.1f} MB")
 

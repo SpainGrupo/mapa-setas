@@ -41,7 +41,8 @@ describe('JSON', () => {
     const con = [{ ...sitios[0], foto }, sitios[1]];
     const txt = await aJSON(con);
     expect(JSON.parse(txt).sitios[0].foto.base64).toBe('AAEC+v8=');
-    const vuelta = deJSON(txt);
+    const { sitios: vuelta, descartados } = deJSON(txt);
+    expect(descartados).toBe(0);
     expect(vuelta[1]).toEqual(sitios[1]);
     const { foto: f2, ...resto } = vuelta[0];
     expect(resto).toEqual(sitios[0]);
@@ -51,5 +52,33 @@ describe('JSON', () => {
 
   it('rechaza un JSON de otro formato', () => {
     expect(() => deJSON('{"x":1}')).toThrow();
+  });
+
+  it('valida cada entrada: descarta las inválidas y normaliza el resto', () => {
+    const txt = JSON.stringify({ formato: 'mapa-setas', version: 1, sitios: [
+      { id: 'ok', lat: 36.5, lon: -5.2, estrellas: 2, nota: 'n', especie: 'x', fecha: '2026-10-01T10:00:00.000Z' },
+      { lat: '37.1', lon: '-4.2', estrellas: 7, nota: 5, especie: null, fecha: 'ayer' },
+      { id: 'sin-lon', lat: 36 },
+      { id: 'fuera', lat: 95, lon: 0 },
+      { id: 'inf', lat: 1e999, lon: 0 },
+      { id: 'vacio', lat: '', lon: '' },
+      null, 'texto', 42,
+    ] });
+    const antes = Date.now();
+    const { sitios: l, descartados } = deJSON(txt);
+    expect(descartados).toBe(7);
+    expect(l).toHaveLength(2);
+    expect(l[0]).toEqual({ id: 'ok', lat: 36.5, lon: -5.2, estrellas: 2, nota: 'n', especie: 'x', fecha: '2026-10-01T10:00:00.000Z' });
+    const s = l[1];
+    expect(s.id).toBeTruthy();
+    expect([s.lat, s.lon, s.estrellas, s.nota, s.especie]).toEqual([37.1, -4.2, 1, '', '']);
+    expect(Date.parse(s.fecha)).toBeGreaterThanOrEqual(antes - 1000);
+  });
+
+  it('una foto corrupta no descarta el sitio', () => {
+    const txt = JSON.stringify({ formato: 'mapa-setas', sitios: [{ id: 'f', lat: 1, lon: 2, foto: { tipo: 'image/jpeg', base64: '%%%' } }] });
+    const { sitios: [s], descartados } = deJSON(txt);
+    expect(descartados).toBe(0);
+    expect(s.foto).toBeUndefined();
   });
 });

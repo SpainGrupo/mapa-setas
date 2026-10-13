@@ -3,7 +3,7 @@ import './estilos.css';
 import { registerSW } from 'virtual:pwa-register';
 import type { Map as MapaML, GeoJSONSource, LngLat } from 'maplibre-gl';
 import { BASE_DATOS, cargarManifest, mb } from './datos';
-import { COLORES_IDONEIDAD, crearMapa, olvidarFuentes, origenes, ponerIdoneidad, verCapa } from './mapa';
+import { COLORES_IDONEIDAD, crearMapa, origenes, ponerIdoneidad, verCapa } from './mapa';
 import { Gps } from './gps';
 import { borrarMapas, descargarMapas, estadoDescarga } from './opfs';
 import { borrarSitio, guardarSitio, guardarVarios, leerSitio, listarSitios } from './sitios';
@@ -28,6 +28,16 @@ function avisar(texto: string, ms = 3500) {
   clearTimeout(tAviso);
   tAviso = window.setTimeout(() => (el.hidden = true), ms);
 }
+function quitarAviso() { clearTimeout(tAviso); $('#aviso').hidden = true; }
+
+// Tras cambiar los mapas de OPFS se recarga la página una vez (ver mapa.ts) y el aviso sale al volver.
+const CLAVE_AVISO_RECARGA = 'setas:aviso-tras-recarga';
+function recargarTrasCambioDeMapas(aviso: string) {
+  sessionStorage.setItem(CLAVE_AVISO_RECARGA, aviso);
+  location.reload();
+}
+const avisoPendiente = sessionStorage.getItem(CLAVE_AVISO_RECARGA);
+if (avisoPendiente) { sessionStorage.removeItem(CLAVE_AVISO_RECARGA); avisar(avisoPendiente, 5000); }
 
 function irA(id: string) {
   document.querySelectorAll('.pantalla').forEach((p) => p.classList.toggle('activa', p.id === id));
@@ -97,7 +107,7 @@ async function iniciarMapa() {
 
   mapa = crearMapa($('#mapa'), manifest);
   gps = new Gps(mapa, (m) => avisar(m));
-  (window as any).__setas = { mapa, origenes };
+  if (import.meta.env.DEV || new URLSearchParams(location.search).get('e2e') === '1') (window as any).__setas = { mapa, origenes };
   mapa.on('load', async () => {
     aplicarIdoneidad();
     mapa!.addSource('sitios', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
@@ -123,12 +133,23 @@ $('#btn-capas').addEventListener('click', () => {
   c.hidden = !c.hidden;
   $('#btn-capas').setAttribute('aria-expanded', String(!c.hidden));
 });
-$('#btn-centrar').addEventListener('click', () => { avisar('Buscando tu posición…', 2000); gps?.centrar(); });
+/** Muestra «Buscando…» mientras se espera al GPS; si falla, lo sustituye por el motivo. */
+async function conPosicion<T>(f: () => Promise<T>): Promise<T | undefined> {
+  avisar('Buscando tu posición…', 25000);
+  try {
+    const r = await f();
+    quitarAviso();
+    return r;
+  } catch (err) {
+    avisar((err as Error).message, 5000);
+    return undefined;
+  }
+}
+$('#btn-centrar').addEventListener('click', () => { if (gps) conPosicion(() => gps!.centrar()); });
 $('#btn-aqui').addEventListener('click', async () => {
   if (!gps) return;
-  avisar('Buscando tu posición…', 2000);
-  const p = await gps.posicion();
-  abrirSitio(null, { lat: p.lat, lon: p.lon });
+  const p = await conPosicion(() => gps!.posicion());
+  if (p) abrirSitio(null, { lat: p.lat, lon: p.lon });
 });
 
 /** Pulsación larga (600 ms sin moverse) en el mapa → nuevo sitio en ese punto. */
@@ -137,6 +158,7 @@ function instalarPulsacionLarga(m: MapaML) {
   const cancelar = () => { clearTimeout(t); origen = null; };
   const empezar = (e: { point: { x: number; y: number }; lngLat: LngLat; originalEvent: Event }) => {
     if ((e.originalEvent as TouchEvent).touches?.length > 1) return cancelar();
+    if (m.getLayer('sitios') && m.queryRenderedFeatures([e.point.x, e.point.y], { layers: ['sitios'] }).length) return cancelar();
     origen = e.point;
     const ll = e.lngLat;
     clearTimeout(t);
@@ -278,10 +300,11 @@ $<HTMLInputElement>('#inp-importar').addEventListener('change', async (e) => {
   if (!f) return;
   try {
     const txt = await f.text();
-    const l = /\.json$/i.test(f.name) || txt.trimStart().startsWith('{') ? deJSON(txt) : deGPX(txt);
+    const { sitios: l, descartados } = /\.json$/i.test(f.name) || txt.trimStart().startsWith('{')
+      ? deJSON(txt) : { sitios: deGPX(txt), descartados: 0 };
     await guardarVarios(l);
     await refrescarSitios();
-    avisar(`Importados ${l.length} sitios`);
+    avisar(descartados ? `Importados ${l.length}, descartados ${descartados}` : `Importados ${l.length} sitios`, descartados ? 5000 : 3500);
   } catch (err) {
     avisar(`No se pudo importar: ${(err as Error).message}`, 5000);
   }
@@ -323,11 +346,9 @@ $('#btn-descargar').addEventListener('click', async () => {
       prog.value = h / t;
       $('#estado-descarga').textContent = `Descargando… ${mb(h)} de ${mb(t)}`;
     });
-    olvidarFuentes();
-    avisar(persistente ? 'Mapas descargados' : 'Mapas descargados (el navegador podría borrarlos si falta espacio)', 5000);
+    recargarTrasCambioDeMapas(persistente ? 'Mapas actualizados' : 'Mapas actualizados (el navegador podría borrarlos si falta espacio)');
   } catch (err) {
-    avisar(`Error en la descarga: ${(err as Error).message}`, 6000);
-  } finally {
+    avisar(`Error en la descarga: ${(err as Error).message}${estadoDescarga() ? '. Los mapas anteriores siguen disponibles.' : ''}`, 6000);
     prog.hidden = true;
     pintarAjustes();
   }
@@ -335,8 +356,7 @@ $('#btn-descargar').addEventListener('click', async () => {
 $('#btn-borrar-mapas').addEventListener('click', async () => {
   if (!confirm('¿Borrar los mapas descargados? Sin cobertura no se verá el mapa.')) return;
   await borrarMapas();
-  olvidarFuentes();
-  pintarAjustes();
+  recargarTrasCambioDeMapas('Mapas borrados');
 });
 window.addEventListener('online', () => pintarAjustes());
 window.addEventListener('offline', () => pintarAjustes());

@@ -1,5 +1,7 @@
 // e2e (Playwright, viewport móvil): carga → descarga de mapas → sin conexión → recarga →
 // mapa base y capa de Amanita caesarea desde OPFS → crear un sitio → exportar GPX.
+// Entre medias: «Volver a descargar» abortada a mitad (un .pmtiles cortado) → los mapas antiguos siguen.
+// La app solo expone window.__setas con ?e2e=1.
 // Requiere `npm run build` y el servidor: php -S 127.0.0.1:8765 -t dist servidor.php
 import { createRequire } from 'node:module';
 import { mkdirSync, readFileSync } from 'node:fs';
@@ -7,7 +9,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const { chromium, devices } = createRequire(import.meta.url)('playwright');
 
-const URL_APP = process.env.URL_APP ?? 'http://127.0.0.1:8765/';
+const URL_APP = (process.env.URL_APP ?? 'http://127.0.0.1:8765/') + '?e2e=1';
 const CAPTURAS = join(dirname(fileURLToPath(import.meta.url)), 'capturas');
 mkdirSync(CAPTURAS, { recursive: true });
 const PUNTO = { latitude: 36.589, longitude: -5.244 };   // máximo local de idoneidad de caesarea
@@ -42,11 +44,55 @@ try {
   const btn = p.locator('#btn-descargar');
   const texto = await btn.textContent();
   comprobar(/Descargar mapas para uso sin cobertura \(\d+ MB\)/.test(texto), `botón de descarga: «${texto}»`);
+  const recarga = p.waitForEvent('load', { timeout: 600000 });
   await btn.click();
+  await recarga;
+  await mapaListo();
   await p.waitForFunction(() => /Descargado el/.test(document.querySelector('#estado-descarga').textContent),
-    null, { timeout: 600000 });
+    null, { timeout: 30000 });
+  comprobar(/Mapas actualizados/.test(await p.locator('#aviso').textContent()), 'tras la descarga la app recarga y avisa «Mapas actualizados»');
+  comprobar(new URL(p.url()).searchParams.get('e2e') === '1', 'la recarga conserva ?e2e=1');
+  await p.getByRole('button', { name: /Ajustes/ }).click();
   comprobar(true, `descarga a OPFS: ${await p.locator('#estado-descarga').textContent()}`);
   await captura('02-ajustes-descargado.png');
+
+  // Re-descarga cortada: el primer .pmtiles pasa y el segundo se aborta en todos los reintentos.
+  const estadoAntes = await p.evaluate(() => localStorage.getItem('setas:mapas-descargados'));
+  let primero = null, victima = null, abortadas = 0;
+  await ctx.route('**/*.pmtiles', (r) => {
+    const req = r.request();
+    if (req.headers()['range']) return r.continue();
+    const n = req.url().split('/').pop();
+    primero ??= n;
+    if (n !== primero) victima ??= n;
+    if (n === victima) { abortadas++; return r.abort(); }
+    return r.continue();
+  });
+  const btn2 = p.locator('#btn-descargar');
+  comprobar(/Volver a descargar|Actualizar mapas/.test(await btn2.textContent()), `botón de re-descarga: «${await btn2.textContent()}»`);
+  await btn2.click();
+  await p.waitForFunction(() => /Error en la descarga/.test(document.querySelector('#aviso').textContent), null, { timeout: 600000 });
+  await ctx.unroute('**/*.pmtiles');
+  const tras = await p.evaluate(async () => {
+    const raiz = await navigator.storage.getDirectory();
+    const dirs = [];
+    for await (const k of raiz.keys()) dirs.push(k);
+    return { estado: localStorage.getItem('setas:mapas-descargados'), dirs, aviso: document.querySelector('#aviso').textContent };
+  });
+  comprobar(abortadas === 3, `${victima} abortado en sus 3 intentos (${abortadas})`);
+  comprobar(tras.estado === estadoAntes && /Descargado el/.test(await p.locator('#estado-descarga').textContent()),
+    'el estado de la descarga anterior sigue intacto');
+  comprobar(!tras.dirs.includes('mapas-nuevo') && tras.dirs.includes('mapas'), `staging borrado, mapas antiguos en su sitio (${tras.dirs.join(', ')})`);
+  await captura('02b-redescarga-fallida.png');
+
+  // Re-descarga completa: intercambio sobre los archivos existentes y recarga.
+  const recarga2 = p.waitForEvent('load', { timeout: 600000 });
+  await p.locator('#btn-descargar').click();
+  await recarga2;
+  await mapaListo();
+  const tras2 = await p.evaluate(() => ({ estado: localStorage.getItem('setas:mapas-descargados'), aviso: document.querySelector('#aviso').textContent }));
+  comprobar(/Mapas actualizados/.test(tras2.aviso) && tras2.estado && tras2.estado !== estadoAntes
+    && JSON.parse(tras2.estado).archivos[victima] > 0, 're-descarga completa: archivos sustituidos y estado nuevo');
 
   await ctx.setOffline(true);
   await p.reload();

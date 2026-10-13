@@ -27,8 +27,10 @@ function pm(nombre: string): string {
   return 'pmtiles://' + url;
 }
 
-/** Tras descargar o borrar los mapas: las fuentes vuelven a mirar OPFS. */
-export function olvidarFuentes() { fuentes.forEach((f) => f.olvidar()); }
+// Tras cambiar los archivos de OPFS (actualización o borrado) la app recarga la página (ver main.ts,
+// recargarTrasCambioDeMapas): es la forma más simple de no reutilizar ningún File antiguo ni las cachés de
+// cabecera/directorios de PMTiles ni las teselas que MapLibre ya tiene. Mientras se descarga, el mapa sigue
+// leyendo los archivos antiguos, porque la descarga va a un directorio de staging.
 export function origenes() { return Object.fromEntries([...fuentes].map(([k, f]) => [k.split('/').pop(), { origen: f.origen, ...f.lecturas }])); }
 
 function estilo(): StyleSpecification {

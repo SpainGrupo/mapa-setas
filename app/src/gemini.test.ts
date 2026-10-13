@@ -43,22 +43,29 @@ describe('limpiarRespuesta', () => {
 describe('fusionarPeligrosas (unión)', () => {
   const c = [{ nombre: 'Amanita caesarea Pers.', idGuia: 'amanita_caesarea' }];
   it('suma las de Gemini a las locales no descartadas; las desconocidas van por nombre', () => {
-    const loc = evaluar(c, fichas, { laminas_pie_color: 'amarillos' }).peligrosas;   // todas descartadas
+    const loc = evaluar(c, fichas, { laminas_pie_color: 'amarillos' }).peligrosas;   // muscaria/pantherina descartadas; las mortales siguen
+    const noDesc = loc.filter((p) => !p.descartada).map((p) => p.id);
+    expect(noDesc).toContain('lepiota_brunneoincarnata');   // láminas amarillas no descartan a la lepiota
+    expect(loc.find((p) => p.id === 'amanita_phalloides')?.descartada).toBe(true);   // aquí sí; Gemini la reactiva
     const f = fusionarPeligrosas(loc, [
       { nombre_cientifico: 'Amanita phalloides (Vaill. ex Fr.) Link', motivo: 'huevo blanco' },
       { nombre_cientifico: 'Amanita virosa', motivo: 'blanca' },
     ], fichas);
-    expect(f.map((p) => p.id ?? p.nombre)).toEqual(['amanita_phalloides', 'Amanita virosa']);
-    expect(f[0]).toMatchObject({ nivel: 'mortal', motivos: ['segunda opinión: huevo blanco'] });
-    expect(f[1].nivel).toBe('desconocido');
+    const ph = f.find((p) => p.id === 'amanita_phalloides')!;
+    expect(ph).toMatchObject({ nivel: 'mortal', motivos: expect.arrayContaining(['segunda opinión: huevo blanco']) });
+    expect(ph.motivos.at(-1)).toBe('segunda opinión: huevo blanco');
+    expect(f.map((p) => p.id ?? p.nombre)).toEqual(expect.arrayContaining(['amanita_phalloides', 'lepiota_brunneoincarnata', 'Amanita virosa']));
+    expect(f.map((p) => p.id)).not.toContain('amanita_verna');   // descartada en local y Gemini no la propone
+    expect(f.find((p) => p.nombre === 'Amanita virosa')!.nivel).toBe('desconocido');
   });
   it('una peligrosa ya local acumula el motivo de Gemini', () => {
     const loc = evaluar(c, fichas, {}).peligrosas;
     const f = fusionarPeligrosas(loc, [{ nombre_cientifico: 'Amanita verna', motivo: '' }], fichas);
     const verna = f.find((p) => p.id === 'amanita_verna')!;
     expect(verna.motivos.at(-1)).toBe('segunda opinión: posible confusión');
-    expect(f.length).toBe(4);
-    expect(f.slice(0, 2).every((p) => p.nivel === 'mortal')).toBe(true);
+    expect(f.length).toBe(loc.length);   // verna ya estaba: no se duplica
+    expect(f.slice(0, 3).every((p) => p.nivel === 'mortal')).toBe(true);
+    expect(f.slice(0, 3).map((p) => p.id).sort()).toEqual(['amanita_phalloides', 'amanita_verna', 'lepiota_brunneoincarnata']);
     expect(f.at(-1)!.nivel).toBe('toxica');
   });
 });

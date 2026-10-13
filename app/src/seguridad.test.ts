@@ -9,6 +9,16 @@ const fichas: FichaMin[] = datos as never;
 const porId = new Map(fichas.map((f) => [f.id, f]));
 const cand = (...ids: string[]) => ids.map((id) => ({ nombre: porId.get(id)!.nombre_cientifico, idGuia: id }));
 const noDescartadas = (e: Evaluacion) => e.peligrosas.filter((p) => !p.descartada).map((p) => p.id);
+const MORTALES = ['amanita_phalloides', 'amanita_verna', 'lepiota_brunneoincarnata'];
+/** Quita las mortales que salen siempre (irrelevantes para el grupo que se prueba). */
+const sinMortales = (ids: (string | undefined)[]) => ids.filter((id) => !MORTALES.includes(id as string));
+const mortalesPresentes = (e: Evaluacion, descartadasEsperadas: string[] = []) => {
+  for (const m of MORTALES) {
+    const p = e.peligrosas.find((x) => x.id === m);
+    expect(p, m).toBeDefined();
+    expect(p!.descartada, m).toBe(descartadasEsperadas.includes(m));
+  }
+};
 const descartadas = (e: Evaluacion) => e.peligrosas.filter((p) => p.descartada).map((p) => p.id);
 
 describe('datos de seguridad coherentes con la guía', () => {
@@ -77,12 +87,17 @@ describe('A. caesarea en el top-1', () => {
   it('interior naranja y amarillo descarta phalloides, verna y pantherina, pero no muscaria; el aviso sigue', () => {
     const e = evaluar(c, fichas, { interior_huevo: 'naranja_amarillo' });
     expect(descartadas(e).sort()).toEqual(['amanita_pantherina', 'amanita_phalloides', 'amanita_verna']);
-    expect(noDescartadas(e)).toEqual(['amanita_muscaria']);
+    expect(sinMortales(noDescartadas(e))).toEqual(['amanita_muscaria']);
+    mortalesPresentes(e, ['amanita_phalloides', 'amanita_verna']);
+    expect(noDescartadas(e)).toContain('lepiota_brunneoincarnata');
     expect(e.peligrosas.find((p) => p.id === 'amanita_phalloides')?.motivo).toMatch(/naranja/);
     expect(e.aviso).toBe(AVISO_EXPERTO);
   });
   it('láminas y pie amarillos descartan también muscaria', () => {
-    expect(noDescartadas(evaluar(c, fichas, { laminas_pie_color: 'amarillos' }))).toEqual([]);
+    const e = evaluar(c, fichas, { laminas_pie_color: 'amarillos' });
+    expect(sinMortales(noDescartadas(e))).toEqual([]);
+    expect(descartadas(e)).toContain('amanita_muscaria');
+    expect(noDescartadas(e)).toContain('lepiota_brunneoincarnata');   // las respuestas del grupo amanitoide no la descartan
   });
   it('interior blanco → alerta roja MORTAL, y phalloides/verna no se pueden descartar con otra respuesta', () => {
     const e = evaluar(c, fichas, { interior_huevo: 'blanco', laminas_pie_color: 'amarillos' });
@@ -107,8 +122,8 @@ describe('especies mortales fuera del top-5 o del vocabulario siguen saliendo po
   it('Russula cyanoxantha (grupo «otros») trae A. phalloides por «No confundir con…»', () => {
     const e = evaluar(cand('russula_cyanoxantha'), fichas, {});
     expect(e.grupos).toEqual(['otros']);
-    expect(noDescartadas(e)).toEqual(['amanita_phalloides']);
-    expect(e.peligrosas[0].origen).toEqual(['se confunde con Russula cyanoxantha']);
+    expect(noDescartadas(e)).toEqual(expect.arrayContaining(['amanita_phalloides']));
+    expect(e.peligrosas.find((p) => p.id === 'amanita_phalloides')?.origen[0]).toBe('se confunde con Russula cyanoxantha');
     expect(e.preguntas.map((p) => p.id)).toContain('interior_huevo');
   });
   it('«no reconocido» lista todas las mortales de la guía', () => {
@@ -117,8 +132,9 @@ describe('especies mortales fuera del top-5 o del vocabulario siguen saliendo po
   });
   it('una seta sin grupo ni confusiones no inventa peligrosas, pero el aviso fijo sigue', () => {
     const e = evaluar([{ nombre: 'Trametes versicolor' }], fichas, {});
-    expect(e.peligrosas).toEqual([]);
-    expect(e.preguntas).toEqual([]);
+    expect(e.peligrosas.map((p) => p.id).sort()).toEqual(MORTALES);
+    mortalesPresentes(e);
+    expect(e.peligrosas.every((p) => p.origen.includes('mortal: el reconocedor puede fallar'))).toBe(true);
     expect(e.aviso).toBe(AVISO_EXPERTO);
   });
   it('un candidato peligroso aparece como «es uno de los candidatos»', () => {
@@ -136,16 +152,20 @@ describe('especies mortales fuera del top-5 o del vocabulario siguen saliendo po
 describe('boletos', () => {
   const c = cand('boletus_edulis');
   it('lista las cuatro tóxicas del grupo', () => {
-    expect(noDescartadas(evaluar(c, fichas, {})).sort()).toEqual(
+    const e = evaluar(c, fichas, {});
+    mortalesPresentes(e);
+    expect(sinMortales(noDescartadas(e)).sort()).toEqual(
       ['caloboletus_calopus', 'caloboletus_radicans', 'rubroboletus_satanas', 'tylopilus_felleus']);
   });
   it('con poros rojos R. satanas NO se descarta (aunque no azulee)', () => {
     const e = evaluar(c, fichas, { color_poros: 'rojo_naranja', azulea_al_corte: 'no', color_reticulo: 'claro' });
-    expect(noDescartadas(e)).toEqual(['rubroboletus_satanas']);
+    expect(sinMortales(noDescartadas(e))).toEqual(['rubroboletus_satanas']);
+    mortalesPresentes(e);
   });
   it('poros claros + no azulea + red clara descartan las cuatro', () => {
     const e = evaluar(c, fichas, { color_poros: 'blanco_amarillo_verdoso', azulea_al_corte: 'no', color_reticulo: 'claro' });
-    expect(noDescartadas(e)).toEqual([]);
+    expect(sinMortales(noDescartadas(e))).toEqual([]);
+    mortalesPresentes(e);
   });
   it('si azulea, ninguna se descarta salvo T. felleus por poros y red claros', () => {
     const e = evaluar(c, fichas, { color_poros: 'blanco_amarillo_verdoso', azulea_al_corte: 'si', color_reticulo: 'claro' });
@@ -153,16 +173,18 @@ describe('boletos', () => {
   });
   it('red parda oscura mantiene T. felleus', () => {
     const e = evaluar(c, fichas, { color_poros: 'blanco_amarillo_verdoso', azulea_al_corte: 'no', color_reticulo: 'pardo_oscuro' });
-    expect(noDescartadas(e)).toEqual(['tylopilus_felleus']);
+    expect(sinMortales(noDescartadas(e))).toEqual(['tylopilus_felleus']);
+    mortalesPresentes(e);
   });
 });
 
 describe('rebozuelos', () => {
   const c = cand('cantharellus_cibarius');
   it('Omphalotus no descartado hasta pliegues + no en matas', () => {
-    expect(noDescartadas(evaluar(c, fichas, {}))).toEqual(['omphalotus_olearius']);
-    expect(noDescartadas(evaluar(c, fichas, { himenio_cantarelo: 'pliegues' }))).toEqual(['omphalotus_olearius']);
-    expect(noDescartadas(evaluar(c, fichas, { himenio_cantarelo: 'pliegues', en_matas_madera: 'no' }))).toEqual([]);
+    const nd = (r: Respuestas) => { const e = evaluar(c, fichas, r); mortalesPresentes(e); return sinMortales(noDescartadas(e)); };
+    expect(nd({})).toEqual(['omphalotus_olearius']);
+    expect(nd({ himenio_cantarelo: 'pliegues' })).toEqual(['omphalotus_olearius']);
+    expect(nd({ himenio_cantarelo: 'pliegues', en_matas_madera: 'no' })).toEqual([]);
   });
   it('láminas + en matas → alerta de tóxica', () => {
     const e = evaluar(c, fichas, { himenio_cantarelo: 'laminas', en_matas_madera: 'si' });
@@ -174,12 +196,14 @@ describe('parasoles', () => {
   const c = cand('macrolepiota_procera');
   it('lista L. brunneoincarnata (mortal) primero, y C. rhacodes y A. pantherina', () => {
     const e = evaluar(c, fichas, {});
-    expect(noDescartadas(e)[0]).toBe('lepiota_brunneoincarnata');
-    expect(noDescartadas(e).sort()).toEqual(['amanita_pantherina', 'chlorophyllum_rhacodes', 'lepiota_brunneoincarnata']);
+    expect(noDescartadas(e).slice(0, 3).sort()).toEqual(MORTALES);   // las mortales van antes que las tóxicas
+    expect(noDescartadas(e).sort()).toEqual([...MORTALES, 'amanita_pantherina', 'chlorophyllum_rhacodes'].sort());
   });
   it('sombrero >10 cm + anillo doble móvil + piel de serpiente + carne que no enrojece descartan las tres', () => {
     const e = evaluar(c, fichas, { sombrero_mayor_10cm: 'si', anillo_doble_movil: 'si', pie_serpiente: 'si', carne_enrojece: 'no' });
-    expect(noDescartadas(e)).toEqual([]);
+    expect(sinMortales(noDescartadas(e))).toEqual([]);
+    expect(descartadas(e)).toContain('lepiota_brunneoincarnata');
+    expect(noDescartadas(e)).toEqual(expect.arrayContaining(['amanita_phalloides', 'amanita_verna']));
   });
   it('sombrero pequeño → alerta MORTAL de lepiota', () => {
     const e = evaluar(c, fichas, { sombrero_mayor_10cm: 'no', anillo_doble_movil: 'si' });
@@ -191,8 +215,12 @@ describe('parasoles', () => {
 describe('níscalos', () => {
   const c = cand('lactarius_deliciosus');
   it('látex naranja descarta las dos tóxicas; blanco las mantiene', () => {
-    expect(noDescartadas(evaluar(c, fichas, { color_latex: 'naranja_zanahoria' }))).toEqual([]);
-    expect(noDescartadas(evaluar(c, fichas, { color_latex: 'blanco' })).sort()).toEqual(['lactarius_chrysorrheus', 'lactarius_torminosus']);
+    const nar = evaluar(c, fichas, { color_latex: 'naranja_zanahoria' });
+    expect(sinMortales(noDescartadas(nar))).toEqual([]);
+    mortalesPresentes(nar);
+    const bl = evaluar(c, fichas, { color_latex: 'blanco' });
+    expect(sinMortales(noDescartadas(bl)).sort()).toEqual(['lactarius_chrysorrheus', 'lactarius_torminosus']);
+    mortalesPresentes(bl);
   });
   it('una especie afín (L. vinosus → ficha de L. deliciosus) activa también el grupo', () => {
     const e = evaluar([{ nombre: 'Lactarius vinosus', idGuia: 'lactarius_deliciosus' }], fichas, {});
@@ -229,5 +257,14 @@ describe('textos para fuera', () => {
   it('sinComestible borra afirmaciones de comestibilidad', () => {
     expect(sinComestible('Buen comestible, se puede comer. Apta para el consumo.')).not.toMatch(/comestible|se puede comer|consumo/i);
     expect(sinComestible('Láminas amarillas')).toBe('Láminas amarillas');
+  });
+});
+
+describe('hallazgo de revisión: las mortales salen aunque ningún candidato active su grupo', () => {
+  it('top-5 solo de géneros «otros» (Tricholoma, Hygrocybe) → todas las mortales no descartadas, con sus preguntas', () => {
+    const e = evaluar([{ nombre: 'Tricholoma sejunctum' }, { nombre: 'Hygrocybe acutoconica' }], fichas, {});
+    const mortales = fichas.filter((f) => f.grupo === 'mortal').map((f) => f.id);
+    expect(noDescartadas(e)).toEqual(expect.arrayContaining(mortales));
+    expect(e.preguntas.map((p) => p.id)).toEqual(expect.arrayContaining(['interior_huevo', 'sombrero_mayor_10cm']));
   });
 });

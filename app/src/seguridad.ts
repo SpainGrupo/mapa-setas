@@ -9,7 +9,7 @@
 //    rasgos explícitos de la guía. «No sé» (o sin responder) nunca descarta.
 // 4. Si las respuestas hacen probable una mortal (p. ej. huevo blanco por dentro) hay alerta roja, y esa especie
 //    no se puede descartar por otra respuesta contradictoria.
-// 5. «No reconocido»: se listan todas las mortales de la guía.
+// 5. Las mortales de la guía se listan siempre (con o sin reconocimiento) hasta que las respuestas las descarten.
 // 6. Nunca se dice «comestible» ni «se puede comer». El aviso fijo va siempre.
 import { genero } from './reconocer-nucleo';
 
@@ -192,10 +192,11 @@ export function evaluar(candidatos: CandidatoMin[], fichas: FichaMin[], respuest
       for (const nc of f.no_confundir_con) anadir(nc.id, `se confunde con ${binomioCorto(f.nombre_cientifico)}`);
     }
   }
-  if (noReconocido || !candidatos.length) {
-    for (const f of fichas) if (f.grupo === 'mortal') anadir(f.id, 'no se ha reconocido la seta');
-  }
   for (const g of grupos) for (const id of PELIGROSAS_GRUPO[g]) anadir(id, `grupo: ${NOMBRE_GRUPO[g]}`);
+  // Las mortales salen SIEMPRE: el modelo puede no ver una phalloides (pasó en el spike) y proponer solo
+  // géneros «otros». Solo las respuestas guiadas las descartan.
+  const porque = noReconocido || !candidatos.length ? 'no se ha reconocido la seta' : 'mortal: el reconocedor puede fallar';
+  for (const f of fichas) if (f.grupo === 'mortal') anadir(f.id, porque);
 
   const alertas: Alerta[] = ALERTAS.filter((a) => cumple(a.si, respuestas) && a.especies.some((e) => origen.has(e)))
     .map((a) => ({ nivel: a.nivel, texto: a.texto, especies: a.especies.filter((e) => origen.has(e)) }));

@@ -1,0 +1,14 @@
+{
+  "_doc": "Etiqueta del modelo → id de la guía. 'sinonimo' = el mismo taxón (se fusiona con la ficha); 'afin' = especie distinta pero muy parecida (se muestra con su nombre y enlaza a la ficha afín). Las especies de la guía se añaden solas por su binomio.",
+  "sinonimo": {
+    "Boletus aestivalis": "boletus_reticulatus",
+    "Chlorophyllum rachodes": "chlorophyllum_rhacodes",
+    "Chlorophyllum brunneum": "chlorophyllum_rhacodes",
+    "Collybia nuda": "lepista_nuda"
+  },
+  "afin": {
+    "Lactarius vinosus": "lactarius_deliciosus",
+    "Lactarius sanguifluus": "lactarius_deliciosus",
+    "Lactarius deterrimus": "lactarius_deliciosus"
+  }
+}

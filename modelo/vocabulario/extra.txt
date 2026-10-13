@@ -1,0 +1,20 @@
+# Especies que faltan en el label set de DF20 (danés) y que importan en el sur de España.
+# Una por línea; se suman a df20_especies.txt. Las líneas con # se ignoran.
+Amanita caesarea
+Amanita verna
+Amanita ovoidea
+Amanita proxima
+Amanita ponderosa
+Amanita curtipes
+Omphalotus olearius
+Lactarius sanguifluus
+Lactarius vinosus
+Boletus aestivalis
+Suillus bellinii
+Suillus mediterraneensis
+Chlorophyllum rhacodes
+Collybia nuda
+Lepiota josserandii
+Pleurotus eryngii
+Hygrophorus russula
+Tricholoma equestre

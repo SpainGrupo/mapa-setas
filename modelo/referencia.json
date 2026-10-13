@@ -1,0 +1,69 @@
+{
+ "fotos": {
+  "amanita_caesarea_1.jpg": [
+   {
+    "n": "Amanita caesarea",
+    "cos": 0.379,
+    "p": 0.9989
+   },
+   {
+    "n": "Hygrocybe acutoconica",
+    "cos": 0.3081,
+    "p": 0.0008
+   },
+   {
+    "n": "Russula aurea",
+    "cos": 0.2916,
+    "p": 0.0002
+   },
+   {
+    "n": "Amanita crocea",
+    "cos": 0.2793,
+    "p": 0.0
+   },
+   {
+    "n": "Russula roseoaurantia",
+    "cos": 0.2653,
+    "p": 0.0
+   }
+  ],
+  "amanita_phalloides_1.jpg": [
+   {
+    "n": "Amanita phalloides",
+    "cos": 0.3659,
+    "p": 0.9989
+   },
+   {
+    "n": "Tricholoma sejunctum",
+    "cos": 0.2915,
+    "p": 0.0006
+   },
+   {
+    "n": "Volvopluteus gloiocephalus",
+    "cos": 0.2808,
+    "p": 0.0002
+   },
+   {
+    "n": "Amanita vaginata",
+    "cos": 0.278,
+    "p": 0.0002
+   },
+   {
+    "n": "Russula heterophylla",
+    "cos": 0.2633,
+    "p": 0.0
+   }
+  ]
+ },
+ "coseno_max_fotos_guia": {
+  "min": 0.2872,
+  "p05": 0.3034,
+  "mediana": 0.3422,
+  "n": 78
+ },
+ "coseno_max_ajenas": {
+  "ruido": 0.2616,
+  "gris": 0.3099,
+  "azul": 0.2472
+ }
+}

@@ -436,6 +436,10 @@ def escribir_manifest(out: Path = APP) -> dict:
         "archivos": archivos,
         "total_bytes": sum(a["bytes"] for a in archivos),
     }
+    # Reconocedor (modelo/construir.py): descarga opcional aparte; no cuenta en archivos ni en total_bytes.
+    paquete = out / "modelo" / "paquete.json"
+    if paquete.exists():
+        m["modelo"] = json.loads(paquete.read_text())
     (out / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=1))
     return m
 

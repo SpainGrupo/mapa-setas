@@ -3,6 +3,8 @@
     uv run python -m setas_pipeline.exportar capas      # idoneidad×umbral, sombreado, curvas, protegidos
     uv run python -m setas_pipeline.exportar base       # extracto de Protomaps (red)
     uv run python -m setas_pipeline.exportar meteo      # Fase 3: puntos meteo + teselas de Voronoi
+    uv run python -m setas_pipeline.exportar acceso     # Fase 8: acceso.bin/json + aparcamientos.json
+    uv run python -m setas_pipeline.exportar rutas      # Fase 8: rutas.pmtiles (OSM + REDIAM)
     uv run python -m setas_pipeline.exportar manifest
     uv run python -m setas_pipeline.exportar todo
     uv run python -m setas_pipeline.exportar respaldo  # Fase 7: OsmAnd/Locus (data/out/respaldo/)
@@ -34,6 +36,7 @@ MARGEN_M = 2000             # margen alrededor de la zona para base, curvas y so
 PASO_METEO = 12000          # m entre puntos de la rejilla meteo
 RADIO_BOSQUE = 6000         # m: un punto meteo se conserva si hay bosque hospedador a esta distancia
 IDON_BOSQUE = 30            # idoneidad mínima (cualquier especie) para contar como bosque hospedador
+ACCESO_ARCHIVOS = ("acceso.json", "acceso.bin", "aparcamientos.json")
 PROTOMAPS_BUILDS = "https://build-metadata.protomaps.dev/builds.json"
 PROTOMAPS_URL = "https://build.protomaps.com/{key}"
 
@@ -419,7 +422,8 @@ def exportar_base(out: Path = APP, maxzoom: int = ZOOM_BASE_MAX, build: str | No
 
 
 def escribir_manifest(out: Path = APP) -> dict:
-    rutas = sorted(out.glob("*.pmtiles")) + [p for p in [out / "meteo_puntos.json"] if p.exists()]
+    extra = ["meteo_puntos.json", *ACCESO_ARCHIVOS]
+    rutas = sorted(out.glob("*.pmtiles")) + [out / n for n in extra if (out / n).exists()]
     archivos = [{"nombre": p.name, "bytes": p.stat().st_size} for p in rutas]
     bbox, _ = _bbox_zona(0)
     build = (out.parent / "base_build.txt")
@@ -433,6 +437,10 @@ def escribir_manifest(out: Path = APP) -> dict:
         "base": build.read_text().strip() if build.exists() else None,
         "meteo": ({"puntos": "meteo_puntos.json", "zonas": "meteo_zonas.pmtiles"}
                   if (out / "meteo_puntos.json").exists() else None),
+        # Fase 8: acceso a pie (binario + cabecera + aparcamientos) y rutas señalizadas.
+        "acceso": ({"cabecera": "acceso.json", "datos": "acceso.bin", "aparcamientos": "aparcamientos.json"}
+                   if all((out / n).exists() for n in ACCESO_ARCHIVOS) else None),
+        "rutas": "rutas.pmtiles" if (out / "rutas.pmtiles").exists() else None,
         "archivos": archivos,
         "total_bytes": sum(a["bytes"] for a in archivos),
     }
@@ -446,7 +454,7 @@ def escribir_manifest(out: Path = APP) -> dict:
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("pasos", nargs="+", choices=["capas", "base", "meteo", "manifest", "respaldo", "todo"])
+    ap.add_argument("pasos", nargs="+", choices=["capas", "base", "meteo", "acceso", "rutas", "manifest", "respaldo", "todo"])
     ap.add_argument("--maxzoom", type=int, default=ZOOM_BASE_MAX)
     a = ap.parse_args(argv)
     pasos = set(a.pasos)
@@ -459,6 +467,12 @@ def main(argv=None):
         exportar_base(maxzoom=a.maxzoom)
     if pasos & {"meteo", "todo"}:
         print("meteo…", flush=True); exportar_meteo()
+    if pasos & {"acceso", "todo"}:
+        from .acceso import calcular
+        print("acceso…", flush=True); calcular()
+    if pasos & {"rutas", "todo"}:
+        from .rutas import construir
+        print("rutas…", flush=True); construir()
     if pasos == {"respaldo"}:
         from .respaldo import exportar_respaldo
         print("respaldo…", flush=True); exportar_respaldo(malla)

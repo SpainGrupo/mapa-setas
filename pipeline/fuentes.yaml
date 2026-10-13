@@ -160,3 +160,29 @@ gbif:
   api: "https://api.gbif.org/v1"
   # Verificado: species/match 'Boletus edulis' → usageKey 5954958; occurrence/search con geometry WKT responde.
   licencia: "por registro (CC0/CC-BY/CC-BY-NC)"
+
+# ---------------------------------------------------------------- Fase 8 (2026-10-14)
+acceso_pie:
+  nombre: "Tiempo a pie desde el coche (setas_pipeline/acceso.py)"
+  entradas: "MDT25 IGN (dem, arriba) promediado 2×2 a 50 m; OSM (osm, arriba): vías de coche, caminos y agua"
+  vias_coche: "highway trunk/primary/secondary/tertiary/unclassified/residential/service, y track solo con tracktype grade1/grade2; se excluyen access/motor_vehicle/motorcar/vehicle = no|private"
+  caminos_pie: "highway path/track/footway/bridleway/steps/pedestrian/cycleway/living_street/*_link y todas las de coche (× 1,0); campo a través × 1,6"
+  intransitable: "natural=water, landuse=reservoir, waterway=riverbank (salvo por camino) y mar (cota ≤ 0). Edificios no: a 50 m cerrarían las calles de los pueblos."
+  licencia: "Derivado de IGN (CC BY 4.0 scne.es) y OpenStreetMap (ODbL 1.0)"
+  atribucion: "MDT © IGN/CNIG; © colaboradores de OpenStreetMap (ODbL)"
+
+rutas_osm:
+  nombre: "OpenStreetMap — relaciones type=route, route=hiking|foot (ref, name, network, osmc:symbol)"
+  metodo: "pyosmium, dos pasadas sobre el pbf de Geofabrik (relaciones → vías miembro con geometría)"
+  licencia: "ODbL 1.0"
+
+rediam_senderos:
+  nombre: "REDIAM — WFS Mapa de Equipamientos y Senderos de Uso Público de Andalucía, capa ms:senderos (senderos señalizados y carriles cicloturistas)"
+  metodo: wfs
+  wfs_url: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_Equipamientos_Uso_Publico_Andalucia"
+  capa: "ms:senderos"
+  url_patron: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_Equipamientos_Uso_Publico_Andalucia?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:senderos&outputFormat=application/json;%20subtype=geojson&srsName=EPSG:25830&bbox={xmin},{ymin},{xmax},{ymax},urn:ogc:def:crs:EPSG::25830"
+  verificacion: "2026-10-14: caja x 290000-330000, y 4030000-4070000 → 19 senderos (p. ej. YUNQUERA-LOS SAUCES, Media, 8464 m). Campos: fid_1, codigoequi, nombre, t_dificult, modalidad, ofertado, FICHA_VV, longitud. Sin matrícula GR/PR/SL."
+  catalogo: "portalrediam.cica.es/geonetwork, ficha e6f9aac9-eadb-4cdf-888d-a04c68909f34 ('Equipamientos y senderos de Uso Público de Andalucía, información actualizada (septiembre 2026)')"
+  licencia: "CC BY 4.0 (ficha de metadatos REDIAM); el GetCapabilities del WFS: uso libre y gratuito mencionando a autores y propietarios. Fees: Gratuito."
+  atribucion: "REDIAM, Consejería de Sostenibilidad y Medio Ambiente, Junta de Andalucía (CC BY 4.0)"

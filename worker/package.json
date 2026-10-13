@@ -1,0 +1,17 @@
+{
+  "name": "setas-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260928.1",
+    "typescript": "7.0.2",
+    "vitest": "5.0.2",
+    "wrangler": "4.143.0"
+  }
+}

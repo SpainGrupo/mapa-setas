@@ -1,0 +1,25 @@
+name = "setas-identificar"
+main = "src/index.ts"
+compatibility_date = "2026-09-28"
+
+[vars]
+# Modelo por defecto: gemini-3.8-flash (Flash estable más reciente; entrada de imagen y
+# salidas estructuradas admitidas, salida solo texto, 1M tokens de entrada).
+# Fuentes, consultadas el 2026-10-13:
+#   https://ai.google.dev/gemini-api/docs/models
+#   https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash  (página actualizada 2026-09-02)
+# Alternativa más barata si hiciera falta: gemini-3.5-flash-lite (estable).
+GEMINI_MODEL = "gemini-3.8-flash"
+# Orígenes permitidos, separados por comas, sin barra final. Sustituir por el de GitHub Pages
+# (p. ej. "https://USUARIO.github.io") antes de desplegar.
+ALLOWED_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173"
+# Reconocimientos por IP y día.
+DAILY_LIMIT = "50"
+
+# Contador del límite diario. Crear con `npx wrangler kv namespace create RATE_LIMIT`
+# y pegar aquí el id que devuelve. Sin este binding el Worker funciona pero NO limita.
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT"
+# id = "PEGAR_AQUI_EL_ID"
+
+# GEMINI_API_KEY es un secreto: `npx wrangler secret put GEMINI_API_KEY` (nunca en este archivo).

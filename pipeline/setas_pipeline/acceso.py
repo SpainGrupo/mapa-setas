@@ -32,6 +32,8 @@ MULT_SENDERO = 1.0
 MULT_CAMPO = 1.6
 SIN_TIEMPO = 0xFFFF          # uint16
 SIN_ORIGEN = 0xFFFFFFFF      # uint32
+SIN_ALTITUD = 0xFFFF         # uint16 (capa altitud, m)
+VERSION_ACCESO = 2           # v2 (Fase 9): + capa altitud al final; las capas de v1 no cambian de offset
 DIR_FUENTE = 0
 DIR_SIN = 255
 
@@ -365,7 +367,8 @@ def calcular(pbf: Path = RAW / "andalucia.osm.pbf", out: Path = APP, verbose=Tru
     o_id = np.where(ok, nuevo[np.where(og >= 0, og, 0)], SIN_ORIGEN).astype("<u4")
     d8 = np.where(ok, dg, DIR_SIN).astype(np.uint8)
     log(f"export 100 m: {int((t_min != SIN_TIEMPO).sum())} celdas, {len(aparcamientos)} aparcamientos")
-    escribir_app(out, malla, t_min, s_m, o_id, d8, aparcamientos)
+    escribir_app(out, malla, t_min, s_m, o_id, d8, aparcamientos,
+                 alt=altitud_u16(leer_tif_malla(OUT / "altitud.tif")))
     escribir_tif(malla, OUT / "tiempo_pie.tif", np.where(t_min == SIN_TIEMPO, NODATA_F, t_min).astype("float32"), NODATA_F)
     escribir_tif(malla, OUT / "subida_pie.tif", np.where(s_m == SIN_TIEMPO, NODATA_F, s_m).astype("float32"), NODATA_F)
     log("escrito")
@@ -390,13 +393,31 @@ def cerrar_mascara(ok: np.ndarray, direccion: np.ndarray) -> np.ndarray:
     return ok
 
 
-def escribir_app(out: Path, malla, t_min, s_m, o_id, d8, aparcamientos):
-    """acceso.bin (planar, little-endian, cada bloque alineado a 4 bytes) + acceso.json + aparcamientos.json."""
+def leer_tif_malla(ruta: Path) -> np.ndarray:
+    from .malla import leer_tif
+    return leer_tif(ruta)
+
+
+def altitud_u16(a: np.ndarray, nodata: float = -9999.0) -> np.ndarray:
+    """altitud.tif (float, m) → uint16 en m redondeados; bajo 0 → 0; sin dato → SIN_ALTITUD."""
+    a = np.asarray(a, dtype=np.float64)
+    malo = (a == nodata) | ~np.isfinite(a)
+    return np.where(malo, SIN_ALTITUD, np.clip(np.round(np.nan_to_num(a)), 0, SIN_ALTITUD - 1)).astype("<u2")
+
+
+def escribir_app(out: Path, malla, t_min, s_m, o_id, d8, aparcamientos, alt=None):
+    """acceso.bin (planar, little-endian, cada bloque alineado a 4 bytes) + acceso.json + aparcamientos.json.
+
+    v2: tras las 4 capas de v1 (mismo orden y offsets) se añade `altitud` (uint16, m, nodata 0xFFFF),
+    la del MDT de la malla de 100 m, para el perfil de altura de cualquier ruta. Sin `alt`, toda sin dato."""
     from pyproj import Transformer
     out.mkdir(parents=True, exist_ok=True)
+    if alt is None:
+        alt = np.full(np.shape(t_min), SIN_ALTITUD, "<u2")
     capas = [("origen_id", o_id, "uint32", SIN_ORIGEN), ("tiempo_pie_min", t_min, "uint16", SIN_TIEMPO),
-             ("subida_m", s_m, "uint16", SIN_TIEMPO), ("direccion", d8, "uint8", DIR_SIN)]
-    cab = {"version": 1, "crs": "EPSG:25830", "res_m": malla.celda,
+             ("subida_m", s_m, "uint16", SIN_TIEMPO), ("direccion", d8, "uint8", DIR_SIN),
+             ("altitud", alt, "uint16", SIN_ALTITUD)]
+    cab = {"version": VERSION_ACCESO, "crs": "EPSG:25830", "res_m": malla.celda,
            "origen_xy": [malla.x0, malla.y1], "ancho": malla.ancho, "alto": malla.alto,
            "orden": "filas de norte a sur, columnas de oeste a este; indice = fila*ancho + col",
            "endianness": "little", "capas": {}}
@@ -458,6 +479,18 @@ def aparcamiento(compacto: dict, i: int) -> dict:
     return {"id": i, "lat": lat, "lon": lon, "nombre": nombre, "ref": ref, "via": tipo}
 
 
+def anadir_altitud(out: Path = APP) -> dict:
+    """Reescribe acceso.* con la capa altitud a partir de las capas ya calculadas (sin rehacer Dijkstra)."""
+    from .malla import Malla
+    malla = Malla.cargar(OUT / "malla.json")
+    cab, r = leer_app(out)
+    comp = json.loads((out / "aparcamientos.json").read_text())
+    aps = [aparcamiento(comp, i) for i in range(len(comp["datos"]))]
+    escribir_app(out, malla, r["tiempo_pie_min"].copy(), r["subida_m"].copy(), r["origen_id"].copy(),
+                 r["direccion"].copy(), aps, alt=altitud_u16(leer_tif_malla(OUT / "altitud.tif")))
+    return json.loads((out / "acceso.json").read_text())
+
+
 def leer_app(out: Path = APP):
     """Lee acceso.bin con su cabecera → dict de arrays (alto, ancho)."""
     cab = json.loads((out / "acceso.json").read_text())
@@ -486,7 +519,12 @@ def consultar(lat: float, lon: float, out: Path = APP) -> dict:
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--consultar", nargs=2, type=float, metavar=("LAT", "LON"), action="append")
+    ap.add_argument("--solo-altitud", action="store_true",
+                    help="añade/actualiza la capa altitud sobre el acceso ya calculado")
     a = ap.parse_args(argv)
+    if a.solo_altitud:
+        print(anadir_altitud()["capas"]["altitud"])
+        return
     if a.consultar:
         for lat, lon in a.consultar:
             print(lat, lon, consultar(lat, lon))

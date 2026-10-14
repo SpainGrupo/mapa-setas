@@ -193,3 +193,13 @@ def test_especies_lleva_fiabilidad(tmp_path, monkeypatch):
     assert es["pleurotus_eryngii"]["fiabilidad"] == "baja"
     assert es["boletus_aereus"]["fiabilidad"] == "sin_validar"   # no está en el JSON
     assert all(e["fiabilidad"] in {"buena", "media", "baja", "sin_validar"} for e in es.values())
+
+
+def test_sitios_en_manifest_solo_si_existe(tmp_path):
+    import json
+    from setas_pipeline.exportar import sitios_manifest
+    assert sitios_manifest(tmp_path) is None
+    (tmp_path / "sitios.json").write_text(json.dumps(
+        {"version": 1, "generado": "x", "especies": {"a": [{}, {}], "b": []}}))
+    assert sitios_manifest(tmp_path) == {"archivo": "sitios.json", "version": 1,
+                                         "n_por_especie": {"a": 2, "b": 0}}

@@ -5,6 +5,8 @@
     uv run python -m setas_pipeline.exportar meteo      # Fase 3: puntos meteo + teselas de Voronoi
     uv run python -m setas_pipeline.exportar acceso     # Fase 8: acceso.bin/json + aparcamientos.json
     uv run python -m setas_pipeline.exportar rutas      # Fase 8: rutas.pmtiles (OSM + REDIAM)
+    uv run python -m setas_pipeline.exportar sitios     # Fase 9: sitios.json (manchas candidatas por especie)
+    uv run python -m setas_pipeline.exportar altitud    # Fase 9: añade la capa altitud a acceso.bin sin recalcular
     uv run python -m setas_pipeline.exportar manifest
     uv run python -m setas_pipeline.exportar todo
     uv run python -m setas_pipeline.exportar respaldo  # Fase 7: OsmAnd/Locus (data/out/respaldo/)
@@ -506,7 +508,7 @@ def exportar_base(out: Path = APP, maxzoom: int = ZOOM_BASE_MAX, build: str | No
 
 
 def escribir_manifest(out: Path = APP) -> dict:
-    extra = ["meteo_puntos.json", *ACCESO_ARCHIVOS]
+    extra = ["meteo_puntos.json", *ACCESO_ARCHIVOS, "sitios.json"]
     rutas = sorted(out.glob("*.pmtiles")) + [out / n for n in extra if (out / n).exists()]
     archivos = [{"nombre": p.name, "bytes": p.stat().st_size} for p in rutas]
     bbox, _ = _bbox_zona(0)
@@ -528,6 +530,8 @@ def escribir_manifest(out: Path = APP) -> dict:
         # Modelo v2: capa legal (Zonas de Reserva de los PORN, Reservas Naturales, Parque Nacional).
         "restricciones": ({"capa": "restricciones.pmtiles", "tipos": TEXTO_RESTRICCION, "aviso": AVISO_LEGAL}
                           if (out / "restricciones.pmtiles").exists() else None),
+        # Fase 9: sitios candidatos por especie (también en la descarga offline, vía `archivos`).
+        "sitios": sitios_manifest(out),
         "archivos": archivos,
         "total_bytes": sum(a["bytes"] for a in archivos),
     }
@@ -537,6 +541,16 @@ def escribir_manifest(out: Path = APP) -> dict:
         m["modelo"] = modelo
     (out / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=1))
     return m
+
+
+def sitios_manifest(out: Path) -> dict | None:
+    """Clave `sitios` del manifest: {archivo, version, n_por_especie} si existe sitios.json."""
+    ruta = out / "sitios.json"
+    if not ruta.exists():
+        return None
+    d = json.loads(ruta.read_text())
+    return {"archivo": "sitios.json", "version": d["version"],
+            "n_por_especie": {k: len(v) for k, v in d["especies"].items()}}
 
 
 def modelo_disponible(out: Path) -> dict | None:
@@ -561,7 +575,8 @@ def modelo_disponible(out: Path) -> dict | None:
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("pasos", nargs="+", choices=["capas", "restricciones", "base", "meteo", "acceso", "rutas", "manifest", "respaldo", "todo"])
+    ap.add_argument("pasos", nargs="+", choices=["capas", "restricciones", "base", "meteo", "acceso", "altitud", "rutas", "sitios",
+                                         "manifest", "respaldo", "todo"])
     ap.add_argument("--maxzoom", type=int, default=ZOOM_BASE_MAX)
     a = ap.parse_args(argv)
     pasos = set(a.pasos)
@@ -580,6 +595,12 @@ def main(argv=None):
     if pasos & {"acceso", "todo"}:
         from .acceso import calcular
         print("acceso…", flush=True); calcular()
+    if "altitud" in pasos and not pasos & {"acceso", "todo"}:     # acceso ya escribe la altitud
+        from .acceso import anadir_altitud
+        print("altitud en acceso…", flush=True); anadir_altitud()
+    if pasos & {"sitios", "todo"}:
+        from .sitios import calcular as calcular_sitios
+        print("sitios…", flush=True); calcular_sitios()
     if pasos & {"rutas", "todo"}:
         from .rutas import construir
         print("rutas…", flush=True); construir()

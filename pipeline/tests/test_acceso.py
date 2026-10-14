@@ -156,8 +156,17 @@ def test_escribir_y_leer_binario(tmp_path):
     aps = [{"id": 0, "lat": 36.1, "lon": -5.1, "nombre": "A", "ref": None, "via": "track"},
            {"id": 1, "lat": 36.2, "lon": -5.2, "nombre": None, "ref": "MA-1", "via": "tertiary"},
            {"id": 2, "lat": 36.3, "lon": -5.3, "nombre": "A", "ref": None, "via": "track"}]
-    A.escribir_app(tmp_path, m, t, s, o, d, aps)
+    alt = A.altitud_u16(np.array([[12.4, -3.0, -9999.0], [1500.6, np.nan, 0.0]], np.float32))
+    A.escribir_app(tmp_path, m, t, s, o, d, aps, alt=alt)
     cab, r = A.leer_app(tmp_path)
+    assert cab["version"] == 2
+    # Las capas de v1 conservan orden y offsets; altitud va al final.
+    assert list(cab["capas"]) == ["origen_id", "tiempo_pie_min", "subida_m", "direccion", "altitud"]
+    assert cab["capas"]["origen_id"]["offset"] == 0
+    assert cab["capas"]["tiempo_pie_min"]["offset"] == 24 and cab["capas"]["subida_m"]["offset"] == 36
+    assert cab["capas"]["direccion"]["offset"] == 48 and cab["capas"]["altitud"]["offset"] == 56
+    assert cab["capas"]["altitud"] == {"dtype": "uint16", "offset": 56, "bytes": 12, "nodata": 65535}
+    assert r["altitud"].tolist() == [[12, 0, 65535], [1501, 65535, 0]]
     assert all(c["offset"] % 4 == 0 for c in cab["capas"].values())
     assert (r["tiempo_pie_min"] == t).all() and (r["origen_id"] == o).all() and (r["direccion"] == d).all()
     assert cab["bytes"] == (tmp_path / "acceso.bin").stat().st_size
@@ -166,3 +175,12 @@ def test_escribir_y_leer_binario(tmp_path):
     comp = json.loads((tmp_path / "aparcamientos.json").read_text())
     assert len(comp["vias"]) == 2
     assert [A.aparcamiento(comp, i) for i in range(3)] == aps
+
+
+def test_escribir_sin_altitud_la_deja_sin_dato(tmp_path):
+    from setas_pipeline.malla import Malla
+    m = Malla(x0=300000.0, y1=4100000.0, ancho=2, alto=1, celda=100.0)
+    u = np.zeros((1, 2), np.uint16)
+    A.escribir_app(tmp_path, m, u, u, np.zeros((1, 2), np.uint32), np.zeros((1, 2), np.uint8), [])
+    _, r = A.leer_app(tmp_path)
+    assert (r["altitud"] == A.SIN_ALTITUD).all()

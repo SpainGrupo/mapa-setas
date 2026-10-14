@@ -31,7 +31,7 @@ describe('lotes y URL', () => {
     expect(u.searchParams.get('daily')).toBe('precipitation_sum,temperature_2m_max,temperature_2m_min,et0_fao_evapotranspiration,relative_humidity_2m_min');
     expect(u.searchParams.get('hourly')).toBe('soil_moisture_9_to_27cm');
     expect(u.searchParams.get('past_days')).toBe('30');
-    expect(u.searchParams.get('forecast_days')).toBe('7');
+    expect(u.searchParams.get('forecast_days')).toBe('16');
     expect(u.searchParams.get('timezone')).toBe('Europe/Madrid');
   });
   it('pocos puntos: una sola petición; si la URL es larga, lotes de 40', async () => {
@@ -87,7 +87,7 @@ describe('variables de humedad', () => {
 });
 
 describe('caché y caducidad', () => {
-  const datos = (iso: string): DatosMeteo => ({ fecha_consulta: iso, hoy: iso.slice(0, 10), puntos: {} });
+  const datos = (iso: string): DatosMeteo => ({ fecha_consulta: iso, hoy: iso.slice(0, 10), puntos: {}, prevision_dias: 16 });
   const ahora = new Date('2026-10-13T12:00:00Z');
   it('edad en horas', () => {
     expect(edadHoras(datos('2026-10-13T09:00:00Z'), ahora)).toBeCloseTo(3);
@@ -97,6 +97,10 @@ describe('caché y caducidad', () => {
     expect(necesitaRefresco(datos('2026-10-13T10:00:00Z'), ahora, true)).toBe(false);
     expect(necesitaRefresco(datos('2026-10-13T08:59:00Z'), ahora, true)).toBe(true);
     expect(necesitaRefresco(datos('2026-10-13T08:59:00Z'), ahora, false)).toBe(false);
+    // caché de antes de la fase 9 (7 días de previsión): se rehace en cuanto hay red, aunque sea reciente
+    const vieja = { ...datos('2026-10-13T10:00:00Z'), prevision_dias: undefined };
+    expect(necesitaRefresco(vieja, ahora, true)).toBe(true);
+    expect(necesitaRefresco(vieja, ahora, false)).toBe(false);
   });
   it('obtener: caché fresca no llama a la red', async () => {
     const f = fetchFalso();

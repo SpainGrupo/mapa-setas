@@ -12,7 +12,9 @@ export interface Dia {
 export interface DatosMeteo {
   fecha_consulta: string;              // ISO 8601 (UTC) del momento de la consulta
   hoy: string;                         // YYYY-MM-DD en Europe/Madrid al consultar
-  puntos: Record<string, Dia[]>;       // id del punto → 30 días pasados + 7 de previsión (hoy incluido)
+  puntos: Record<string, Dia[]>;       // id del punto → 30 días pasados + 16 de previsión (hoy incluido)
+  /** forecast_days de la consulta; las cachés anteriores a la fase 9 no lo traen (eran 7). */
+  prevision_dias?: number;
 }
 
 export const API = 'https://api.open-meteo.com/v1/forecast';
@@ -20,6 +22,8 @@ export const LOTE = 40;
 export const MAX_URL = 2000;          // por encima se parte en lotes de LOTE puntos
 export const REFRESCO_H = 3;
 export const CADUCIDAD_H = 72;
+/** Máximo de la Forecast API (comprobado el 2026-10-14: con 17 responde «Allowed range 0 to 16»). Hoy cuenta como día 1. */
+export const PREVISION_DIAS = 16;
 const GRADIENTE = -0.65 / 100;         // °C por metro
 
 export function lotes<T>(xs: T[], n = LOTE): T[][] {
@@ -40,7 +44,7 @@ export function urlOpenMeteo(ps: PuntoMeteo[]): string {
     daily: DIARIAS.join(','),
     hourly: 'soil_moisture_9_to_27cm',   // la Forecast API no la da agregada por día: se promedia aquí
     past_days: '30',
-    forecast_days: '7',
+    forecast_days: String(PREVISION_DIAS),
     timezone: 'Europe/Madrid',
   });
   return `${API}?${q.toString().replaceAll('%2C', ',')}`;
@@ -103,13 +107,13 @@ export async function consultar(puntos: PuntoMeteo[], fetchFn: Fetch = (u) => fe
     if (lista.length !== g.length) throw new Error(`Open-Meteo devolvió ${lista.length} puntos de ${g.length}`);
     g.forEach((p, i) => (res[String(p.id)] = serie(lista[i], p)));
   }
-  return { fecha_consulta: ahora.toISOString(), hoy: fechaMadrid(ahora), puntos: res };
+  return { fecha_consulta: ahora.toISOString(), hoy: fechaMadrid(ahora), puntos: res, prevision_dias: PREVISION_DIAS };
 }
 
 export const edadHoras = (d: DatosMeteo, ahora = new Date()) => (ahora.getTime() - Date.parse(d.fecha_consulta)) / 3.6e6;
 
 export function necesitaRefresco(d: DatosMeteo | null, ahora: Date, enLinea: boolean): boolean {
-  return enLinea && (!d || edadHoras(d, ahora) > REFRESCO_H);
+  return enLinea && (!d || edadHoras(d, ahora) > REFRESCO_H || (d.prevision_dias ?? 7) < PREVISION_DIAS);
 }
 
 // ---------------------------------------------------------------- caché (IndexedDB 'setas-meteo')

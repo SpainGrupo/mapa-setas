@@ -49,7 +49,7 @@ export function pintarGrafico(contenedor: HTMLElement, serie: Dia[], hoy: string
   const conSuelo = serie.some((d) => Number.isFinite(d.suelo));
   const FONDO = conSuelo ? S1 : L1, H = FONDO + 38;
   const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', role: 'img', class: 'grafico-svg',
-    'aria-label': `Lluvia diaria y temperaturas máximas y mínimas${conSuelo ? ', y humedad del suelo' : ''}: 30 días pasados y 7 de previsión` }, contenedor);
+    'aria-label': `Lluvia diaria y temperaturas máximas y mínimas${conSuelo ? ', y humedad del suelo' : ''}: ${Math.max(0, diasEntre(serie[0].fecha, hoy))} días pasados y ${Math.max(0, diasEntre(hoy, serie[n - 1].fecha))} de previsión` }, contenedor);
 
   // Escalas
   const temps = serie.flatMap((d) => [d.tmin, d.tmax]).filter(Number.isFinite);

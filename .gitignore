@@ -13,3 +13,4 @@ modelo/.venv/
 modelo/.tmp/
 app/coverage/
 app/public/ort
+.claude/

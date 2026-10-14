@@ -68,6 +68,14 @@ def relaciones_osm(pbf: Path):
     return res
 
 
+def solo_senderos(g):
+    """Quita los equipamientos REDIAM que no son senderos a pie (modalidad «Carril cicloturista»)."""
+    if "modalidad" not in g.columns:
+        return g
+    m = g["modalidad"].fillna("").astype(str).str.lower()
+    return g[~m.str.contains("cicl")]
+
+
 def senderos_rediam(cfg: dict, bbox25830, cache: Path):
     """Descarga por teselas (con caché) y deduplica por fid_1. Devuelve GeoDataFrame en EPSG:25830."""
     import geopandas as gpd
@@ -114,7 +122,7 @@ def construir(out: Path = APP):
     partes = [g_osm]
     rc = cfg.get("rediam_senderos", {})
     if rc.get("url_patron"):
-        g_r = senderos_rediam(rc, zona.bounds, RAW / "rediam_senderos")
+        g_r = solo_senderos(senderos_rediam(rc, zona.bounds, RAW / "rediam_senderos"))
         g_r = g_r[g_r.intersects(zona)].copy()
         g_r["geometry"] = g_r.intersection(zona)
         partes.append(gpd.GeoDataFrame({

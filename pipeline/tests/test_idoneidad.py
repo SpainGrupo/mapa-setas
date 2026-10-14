@@ -16,26 +16,28 @@ def test_sin_arbol_hospedador_es_cero():
     assert _p(ARBOL["pino"], 600, 0) == 0
 
 def test_optimo_completo_es_100():
-    assert _p(ARBOL["castano"], 600, 0) == 100
+    # 100 = mejor caso: umbría a ≥20° (orientación × pendiente normalizado a máximo 1)
+    assert _p(ARBOL["castano"], 600, 0, pend=20) == 100
+    assert _p(ARBOL["castano"], 600, 0, pend=10) == 90
 
 def test_fuera_de_altitud_es_cero():
     assert _p(ARBOL["castano"], 1200, 0) == 0
 
 def test_rampa_de_altitud():
-    assert _p(ARBOL["castano"], 300, -1) == 50
+    assert _p(ARBOL["castano"], 300, 0, pend=20) == 50
 
 def test_umbria_penaliza_solana():
     # v2: orientación × pendiente; a 10° el efecto es la mitad del máximo (±25 % desde 20°)
-    assert _p(ARBOL["castano"], 600, 180) == 88
+    assert _p(ARBOL["castano"], 600, 180) == 70        # 0,875 / 1,25
 
-def test_llano_es_neutro():
-    assert _p(ARBOL["castano"], 600, -1) == 100
+def test_llano_es_el_factor_bruto_1_entre_el_maximo():
+    assert _p(ARBOL["castano"], 600, -1) == 80         # 1 / 1,25
 
 def test_pendiente_extrema_penaliza():
-    assert _p(ARBOL["castano"], 600, -1, pend=40) == 50
+    assert _p(ARBOL["castano"], 600, 0, pend=40) == 50
 
 def test_suelo_y_arbol_se_multiplican():
-    assert _p(ARBOL["encina"], 600, -1, suelo=SUELO["basico"]) == 25
+    assert _p(ARBOL["encina"], 600, 0, pend=20, suelo=SUELO["basico"]) == 25
 
 def test_nodata_es_cero():
     assert _p(ARBOL["castano"], NODATA_F, 0) == 0
@@ -101,7 +103,7 @@ def test_cubierta_y_matorral_cerca():
     assert f_matorral_cerca(d, {"radio_m": 300, "fuera": 0.6}).tolist() == pytest.approx([1, 1, 0.6])
 
 
-def _p2(perfil, arbol=ARBOL["castano"], ori=-1.0, pend=10.0, **capas):
+def _p2(perfil, arbol=ARBOL["castano"], ori=0.0, pend=20.0, **capas):
     a = lambda v, t: np.array([[v]], dtype=t)
     c = {k: a(v, "float32" if k == "dist_matorral" else "uint8") for k, v in capas.items()}
     return int(puntuar(perfil, a(arbol, "uint8"), a(600.0, "float32"), a(ori, "float32"),
@@ -110,9 +112,23 @@ def _p2(perfil, arbol=ARBOL["castano"], ori=-1.0, pend=10.0, **capas):
 
 def test_puntuar_v2_aplica_capas():
     P2 = {**P, "dosel": {"opt": [40, 75]}, "humedad": 0.2}
-    assert _p2(P2, fcc=60, estado=ESTADO["fustal"], fuego=SIN_FUEGO, humedad=0) == 100
-    assert _p2(P2, fcc=60, estado=ESTADO["latizal"], fuego=SIN_FUEGO, humedad=0) == 80
-    assert _p2(P2, fcc=60, estado=ESTADO["fustal"], fuego=1, humedad=0) == 30
+    assert _p2(P2, fcc=60, estado=ESTADO["fustal"], fuego=SIN_FUEGO, humedad=100) == 100
+    assert _p2(P2, fcc=60, estado=ESTADO["latizal"], fuego=SIN_FUEGO, humedad=100) == 80
+    assert _p2(P2, fcc=60, estado=ESTADO["fustal"], fuego=1, humedad=100) == 30
+    assert _p2(P2, fcc=60, estado=ESTADO["fustal"], fuego=SIN_FUEGO, humedad=0) == 83     # 1 / 1,2
+
+
+def test_humedad_sin_dato_es_neutra():
+    assert f_humedad(A(255, t="uint8"), 0.25)[0] == pytest.approx(1.0)
+    P2 = {**P, "humedad": 0.25}
+    assert _p2(P2, humedad=255) == _p2(P2, humedad=0) == 80
+
+
+def test_puntuacion_no_se_satura_en_100():
+    # Antes: umbría ×1,25 y humedad ×1,25 recortados a 1 → muchas celdas distintas valían 100.
+    P2 = {**P, "arboles": {"castano": 1.0, "encina": 0.7}, "humedad": 0.25}
+    vals = {_p2(P2, arbol=ARBOL[a], pend=p, humedad=h) for a in ("castano", "encina") for p in (10, 20) for h in (60, 100)}
+    assert max(vals) == 100 and len(vals) == 8
 
 
 def test_puntuar_v2_fuego_solo_micorricicas():
@@ -130,5 +146,5 @@ def test_puntuar_v2_desactivar_factor():
     P2 = {**P, "dosel": {"opt": [40, 75]}}
     a = lambda v, t: np.array([[v]], dtype=t)
     s = puntuar(P2, a(ARBOL["castano"], "uint8"), a(600.0, "float32"), a(0.0, "float32"),
-                a(10.0, "float32"), a(SUELO["acido"], "uint8"), {"fcc": a(0, "uint8")}, desactivar={"dosel"})
+                a(20.0, "float32"), a(SUELO["acido"], "uint8"), {"fcc": a(0, "uint8")}, desactivar={"dosel"})
     assert int(s[0, 0]) == 100

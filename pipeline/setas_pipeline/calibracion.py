@@ -16,6 +16,10 @@ UMBRAL = 50
 INCERTIDUMBRE_MAX = 1000     # m; los registros con más se descartan (los que no la declaran se quedan)
 VENTANA = 5                  # 5x5 celdas de 100 m ≈ radio de 200-250 m (variante "máx. en 500 m")
 MIN_OBS = 10                 # por debajo no se juzga la especie
+# Validación espacial: bloques de 10 km repartidos en 5 pliegues. Los perfiles no se ajustan con ella.
+BLOQUE_VALIDACION_M = 10_000.0
+PLIEGUES = 5
+SEMILLA_PLIEGUES = 0
 log = logging.getLogger(__name__)
 _a_utm = Transformer.from_crs("EPSG:4326", CRS, always_xy=True)
 _a_wgs = Transformer.from_crs(CRS, "EPSG:4326", always_xy=True)
@@ -113,6 +117,38 @@ def resumen(valores: np.ndarray, raster: np.ndarray) -> dict:
             "lift": round(pct_obs / pct_zona, 2) if pct_zona else None}
 
 
+def pliegues_bloques(malla: Malla, k: int = PLIEGUES, bloque_m: float = BLOQUE_VALIDACION_M,
+                     semilla: int = SEMILLA_PLIEGUES) -> np.ndarray:
+    """Pliegue (0..k-1) de cada celda: bloques de bloque_m × bloque_m repartidos al azar (semilla fija)
+    y equilibrados entre pliegues."""
+    n = max(1, int(round(bloque_m / malla.celda)))
+    bf, bc = -(-malla.alto // n), -(-malla.ancho // n)
+    rng = np.random.default_rng(semilla)
+    asign = rng.permutation(np.arange(bf * bc) % k).reshape(bf, bc)
+    f, c = np.mgrid[0:malla.alto, 0:malla.ancho]
+    return asign[f // n, c // n]
+
+
+def validacion_bloques(malla: Malla, raster: np.ndarray, tierra: np.ndarray, xy_utm, pliegue: np.ndarray,
+                       k: int = PLIEGUES) -> dict:
+    """Lift medido en cada pliegue retenido (obs. y celdas de tierra de sus bloques); media de los pliegues
+    con alguna observación y zona buena > 0."""
+    lifts = []
+    if len(xy_utm):
+        f, c = _indices(malla, xy_utm)
+        v, p_obs = raster[f, c], pliegue[f, c]
+        for i in range(k):
+            obs = v[p_obs == i]
+            zona = raster[tierra & (pliegue == i)]
+            if not len(obs) or not len(zona):
+                continue
+            pz = float(np.mean(zona >= UMBRAL))
+            if pz > 0:
+                lifts.append(round(float(np.mean(obs >= UMBRAL)) / pz, 2))
+    return {"lifts": lifts, "pliegues": len(lifts),
+            "lift_medio": round(float(np.mean(lifts)), 2) if lifts else None}
+
+
 def filtrar_incertidumbre(pts):
     """→ (conservados, n_con_incertidumbre_ok, n_sin_incertidumbre)."""
     ok = [p for p in pts if p[2] is not None and p[2] <= INCERTIDUMBRE_MAX]
@@ -148,6 +184,7 @@ def calibrar(out_dir: Path, raw_dir: Path, perfiles: dict, recalcular: bool = Tr
     if recalcular:
         from .idoneidad import cargar_capas
         capas = cargar_capas(out_dir)
+    pliegue = pliegues_bloques(malla)
     res = {}
     for clave, perfil in perfiles.items():
         r = _idoneidad_calibracion(out_dir, clave, perfil, capas)
@@ -170,6 +207,8 @@ def calibrar(out_dir: Path, raw_dir: Path, perfiles: dict, recalcular: bool = Tr
             "n_conservados": len(kept), "xy": xy_t,
             "celda": resumen(valores_en_puntos(malla, r, xy_t), r[tierra]),
             "ventana": resumen(valores_en_puntos(malla, rmax, xy_t), rmax[tierra]),
+            "val_celda": validacion_bloques(malla, r, tierra, xy_t, pliegue),
+            "val_ventana": validacion_bloques(malla, rmax, tierra, xy_t, pliegue),
         }
     return res
 
@@ -187,18 +226,30 @@ def informe(out_dir: Path, perfiles: dict, raw_dir: Path | None = None) -> Path:
          "(las coordenadas GBIF son imprecisas); el % de zona se calcula con el mismo filtro para que el lift sea comparable.",
          f"Con menos de {MIN_OBS} observaciones la especie no se juzga.",
          f"Modelo v2: idoneidad recalculada sin {', '.join(sorted(SIN_FACTORES))} (los registros GBIF son "
-         "anteriores a los incendios recientes; el factor sí se aplica en las capas exportadas).", "",
-         "| especie | n bruto | incert. ≤1 km | sin incert. | en tierra | mediana | %obs≥50 | %zona≥50 | lift "
-         "| mediana 500 m | %obs≥50 500 m | %zona≥50 500 m | lift 500 m |",
-         "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+         "anteriores a los incendios recientes; el factor sí se aplica en las capas exportadas).",
+         "",
+         "**Ajuste (dentro de muestra)**: lift con todas las observaciones; los perfiles heurísticos se han "
+         "revisado mirando estas mismas observaciones, así que es optimista.",
+         f"**Validación (bloques)**: la zona se parte en bloques de {BLOQUE_VALIDACION_M / 1000:.0f} km repartidos "
+         f"al azar (semilla {SEMILLA_PLIEGUES}) en {PLIEGUES} pliegues; en cada pliegue el lift se mide solo con "
+         "sus observaciones y sus celdas de tierra, y se da la media de los pliegues con observaciones "
+         "(entre paréntesis, cuántos). Mide si el lift se sostiene en zonas distintas, no un ajuste: "
+         "los perfiles no se tocan con ella.", "",
+         "| especie | n bruto | incert. ≤1 km | sin incert. | en tierra | mediana | %obs≥50 | %zona≥50 "
+         "| lift ajuste (dentro de muestra) | lift validación (bloques) "
+         "| mediana 500 m | %obs≥50 500 m | %zona≥50 500 m | lift 500 m ajuste | lift 500 m validación (bloques) |",
+         "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for clave, d in res.items():
         c, v = d["celda"], d["ventana"]
         juzga = c["n"] >= MIN_OBS
         f = lambda x: "—" if x is None else x
         lift = f(c["lift"]) if juzga else f"{f(c['lift'])} (n<{MIN_OBS}, no se juzga)"
+        val = lambda x: f"{f(x['lift_medio'])} ({x['pliegues']})" if juzga else "—"
         L.append(f"| {d['nombre']} | {d['n_bruto']} | {d['n_incert_ok']} | {d['n_sin_incert']} | {c['n']} | "
                  f"{f(c['mediana_obs'])} | {c['pct_obs_buenas']} | {c['pct_zona_buena']} | {lift} | "
-                 f"{f(v['mediana_obs'])} | {v['pct_obs_buenas']} | {v['pct_zona_buena']} | {f(v['lift'])} |")
+                 f"{val(d['val_celda'])} | "
+                 f"{f(v['mediana_obs'])} | {v['pct_obs_buenas']} | {v['pct_zona_buena']} | {f(v['lift'])} | "
+                 f"{val(d['val_ventana'])} |")
     L += ["", "Fuente: GBIF.org (api.gbif.org/v1/occurrence/search). Perfiles: especies.yaml (heurístico v2)."]
     ruta = out_dir / "calibracion.md"
     ruta.write_text("\n".join(L) + "\n")

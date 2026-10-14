@@ -42,3 +42,13 @@ def test_indice_humedad_cauce_y_percentiles():
     h = indice_humedad(t, d, v)
     assert h[0, 0] == 0 and h[0, 3] == 255
     assert h[0, 1] == 0 and h[0, 2] == 100       # p50 = 1 → 0 ; p95 = 1,9 → 1
+
+
+def test_agregar_usa_solo_subceldas_validas():
+    from setas_pipeline.hidrologia import _agregar
+    t = np.array([[np.nan, 4.0, 1.0, 1.0],
+                  [2.0, 6.0, 1.0, 1.0]])
+    m = _agregar(t, 2, "media")
+    assert m.tolist() == [[4.0, 1.0]]                 # la subcelda de mar no envenena la media
+    todo_mar = _agregar(np.full((2, 2), np.nan), 2, "media")
+    assert np.isnan(todo_mar).all()

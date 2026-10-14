@@ -81,8 +81,42 @@ def test_reducir_direccion_gruesa_termina_en_fuente():
         for c in range(15):
             cam = A.trazar(dg, f, c)
             ts = [tg[p] for p in cam]
-            assert all(b < a for a, b in zip(ts, ts[1:]))
+            assert all(b <= a for a, b in zip(ts, ts[1:]))       # nunca sube hacia el coche
             assert tg[cam[-1]] == 0
+            ss = [sg[p] for p in cam]
+            assert all(b <= a for a, b in zip(ss, ss[1:]))
+            assert og[f, c] == og[cam[-1]]                       # aparcamiento = donde acaba la traza
+
+
+def test_reducir_origen_es_el_del_final_de_la_traza_gruesa():
+    # Varias fuentes con su propio id: el origen de cada celda gruesa debe ser el de la celda
+    # de fuente en la que termina su trazado de 100 m (no el de la subcelda fina elegida).
+    rng = np.random.default_rng(7)
+    for _ in range(5):
+        z = rng.uniform(0, 300, (30, 30)).cumsum(axis=0) / 10
+        fuentes = rng.random(z.shape) < 0.02
+        fuentes[0, 0] = True
+        mult = np.where(rng.random(z.shape) < 0.4, 1.0, 1.6)
+        t, pred, origen = A.resolver(z, 50.0, mult, np.ones_like(fuentes), fuentes)
+        s = A.subida_acumulada(z, pred)
+        tg, sg, og, dg = A.reducir(t, s, origen, pred, fuentes, 2)
+        for f in range(15):
+            for c in range(15):
+                assert og[f, c] == og[A.trazar(dg, f, c)[-1]]
+
+
+def test_reducir_tiempo_representativo_es_la_mediana_de_las_subceldas():
+    # Llano, fuente en la columna 0: en un bloque 2×2 lejos de la vía las subceldas valen
+    # t0, t0, t0+d, t0+d (d = un paso) → la mediana es t0 + d/2, no el mínimo t0.
+    z = np.full((4, 12), 100.0)
+    fuentes = np.zeros(z.shape, bool); fuentes[:, 0] = True
+    t, pred, origen = A.resolver(z, 50.0, np.ones(z.shape), np.ones_like(fuentes), fuentes)
+    s = A.subida_acumulada(z, pred)
+    tg, sg, og, dg = A.reducir(t, s, origen, pred, fuentes, 2)
+    bloque = t[0:2, 8:10]
+    assert tg[0, 4] == pytest.approx(np.median(bloque))
+    assert tg[0, 4] > bloque.min()
+    assert tg[0, 0] == 0 and dg[0, 0] == A.DIR_FUENTE         # bloque con vía: 0 min
 
 
 def test_cerrar_mascara_incluye_el_trazado():

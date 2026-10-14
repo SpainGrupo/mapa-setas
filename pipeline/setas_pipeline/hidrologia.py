@@ -121,9 +121,14 @@ def indice_humedad(t: np.ndarray, d: np.ndarray, valido: np.ndarray) -> np.ndarr
 
 
 def _agregar(a: np.ndarray, f: int, modo: str) -> np.ndarray:
+    """Bloques f×f → media o mínimo de las subceldas válidas (no NaN); NaN si no hay ninguna.
+    Así una subcelda de mar (z ≤ 0) en la costa no anula la celda de 100 m."""
+    import warnings
     H, W = a.shape[0] // f, a.shape[1] // f
-    b = a[:H * f, :W * f].reshape(H, f, W, f)
-    return b.mean(axis=(1, 3)) if modo == "media" else b.min(axis=(1, 3))
+    b = a[:H * f, :W * f].reshape(H, f, W, f).astype("float64")
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)       # bloques enteros sin dato
+        return np.nanmean(b, axis=(1, 3)) if modo == "media" else np.nanmin(b, axis=(1, 3))
 
 
 def construir_humedad(malla: Malla, raw_dir: Path, out_dir: Path, verbose=True):
@@ -137,10 +142,10 @@ def construir_humedad(malla: Malla, raw_dir: Path, out_dir: Path, verbose=True):
     cauce = valido & (acc * CELDA * CELDA >= UMBRAL_CAUCE_M2)
     d50 = (distance_transform_edt(~cauce) * CELDA).astype("float32")
     f = int(malla.celda / CELDA)
-    t = _agregar(np.nan_to_num(t50, nan=-1e9), f, "media")
+    t = _agregar(t50, f, "media")
     d = _agregar(d50, f, "min")
     tierra = leer_tif(out_dir / "altitud.tif") != NODATA_F
-    tierra &= t > -1e6
+    tierra &= np.isfinite(t)
     t = np.where(tierra, t, NODATA_F).astype("float32")
     escribir_tif(malla, out_dir / "twi.tif", t, NODATA_F)
     escribir_tif(malla, out_dir / "dist_cauce.tif", np.where(tierra, d, NODATA_F).astype("float32"), NODATA_F)

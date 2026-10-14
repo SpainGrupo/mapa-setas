@@ -49,12 +49,24 @@ def _rediam(cfg: dict, malla: Malla, raw: Path, anios) -> list[gpd.GeoDataFrame]
     return out
 
 
-def _effis(cfg: dict, malla: Malla, raw: Path, desde: int) -> list[gpd.GeoDataFrame]:
+def caja_wgs84(bounds, n: int = 32) -> tuple[float, float, float, float]:
+    """(lon0, lat0, lon1, lat1) que contiene el rectángulo UTM `bounds`: se transforma el contorno
+    densificado (n puntos por lado), no solo dos esquinas (los lados UTM son curvos en lon/lat)."""
     tr = Transformer.from_crs(CRS, "EPSG:4326", always_xy=True)
-    xmin, ymin, xmax, ymax = malla.bounds
-    lon0, lat0 = tr.transform(xmin, ymin)
-    lon1, lat1 = tr.transform(xmax, ymax)
-    caja = [round(v, 3) for v in (lat0, lon0, lat1, lon1)]
+    xmin, ymin, xmax, ymax = bounds
+    u = np.linspace(0.0, 1.0, n + 1)
+    xs = np.concatenate([xmin + (xmax - xmin) * u, np.full_like(u, xmax), xmax - (xmax - xmin) * u, np.full_like(u, xmin)])
+    ys = np.concatenate([np.full_like(u, ymin), ymin + (ymax - ymin) * u, np.full_like(u, ymax), ymax - (ymax - ymin) * u])
+    lon, lat = tr.transform(xs, ys)
+    return float(np.min(lon)), float(np.min(lat)), float(np.max(lon)), float(np.max(lat))
+
+
+def _effis(cfg: dict, malla: Malla, raw: Path, desde: int) -> list[gpd.GeoDataFrame]:
+    lon0, lat0, lon1, lat1 = caja_wgs84(malla.bounds)
+    # Redondeo hacia fuera para no recortar la caja.
+    caja = [np.floor(lat0 * 1000) / 1000, np.floor(lon0 * 1000) / 1000,
+            np.ceil(lat1 * 1000) / 1000, np.ceil(lon1 * 1000) / 1000]
+    caja = [round(float(v), 3) for v in caja]
     url = cfg["effis_url"].format(lat0=caja[0], lon0=caja[1], lat1=caja[2], lon1=caja[3])
     datos = obtener(url, raw / f"effis_{'_'.join(map(str, caja))}.json", timeout=600)
     g = gpd.GeoDataFrame.from_features(datos.get("features", []), crs="EPSG:4326")
@@ -78,7 +90,11 @@ def construir_fuego(malla: Malla, raw_dir: Path, out_dir: Path, fuentes: Path, r
         from .vegetacion import anio_incendio_mfe
         m = mfe.assign(anio=anio_incendio_mfe(mfe).astype(int), fuente="MFE")
         trozos.append(m[m["anio"] >= desde][["anio", "fuente", "geometry"]])
-    gdf = gpd.GeoDataFrame(pd.concat(trozos, ignore_index=True), crs=CRS)
+    if trozos:
+        gdf = gpd.GeoDataFrame(pd.concat(trozos, ignore_index=True), crs=CRS)
+    else:
+        print("  WARNING: ningún perímetro de incendio en la ventana; fuego.tif queda sin incendios")
+        gdf = gpd.GeoDataFrame({"anio": [], "fuente": []}, geometry=[], crs=CRS)
     a = anios_desde(rasterizar_anios(gdf, malla), ref)
     escribir_tif(malla, Path(out_dir) / "fuego.tif", a, None)
     resumen = gdf.groupby(["fuente", "anio"]).size().to_dict()

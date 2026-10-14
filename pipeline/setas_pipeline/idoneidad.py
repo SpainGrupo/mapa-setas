@@ -6,6 +6,8 @@
 
 Fuentes de cada factor: docs/investigacion/2026-10-14-factores-y-trucos.md (recs. 2, 3, 4, 7, 8).
 Las capas v2 son opcionales: si falta una, su factor es neutro (1).
+Los factores que pueden pasar de 1 (orientación × pendiente, humedad) se dividen por su máximo, de modo
+que 100 = el mejor caso posible y la puntuación no se amontona en 100 al recortar.
 """
 from __future__ import annotations
 from pathlib import Path
@@ -89,8 +91,21 @@ def f_fuego(anios) -> np.ndarray:
 
 
 def f_humedad(h, peso: float) -> np.ndarray:
-    """Índice de humedad 0–100 (TWI alto / cerca de cauce) → 1 + peso·h. Peso negativo = prefiere seco."""
-    return (1.0 + peso * np.asarray(h, "float32") / 100.0).astype("float32")
+    """Índice de humedad 0–100 (TWI alto / cerca de cauce) → 1 + peso·h. Peso negativo = prefiere seco.
+    255 (sin dato, p. ej. fuera de tierra) es neutro: 1."""
+    a = np.asarray(h)
+    f = 1.0 + peso * a.astype("float32") / 100.0
+    return np.where(a == 255, 1.0, f).astype("float32")
+
+
+def max_orientacion_pendiente(modo: str) -> float:
+    """Máximo de f_orientacion_pendiente (ladera ≥ PENDIENTE_PLENA en la orientación preferida)."""
+    return 1.0 + AMPLITUD_ORIENTACION * (FACTOR_INDIFERENTE if modo == "indiferente" else 1.0)
+
+
+def max_humedad(peso: float) -> float:
+    """Máximo de f_humedad (h = 100 si el peso es positivo; h = 0 si es negativo)."""
+    return max(1.0, 1.0 + peso)
 
 
 def f_cubierta(cubierta, pesos: dict) -> np.ndarray:
@@ -116,7 +131,9 @@ def puntuar(perfil, arbol, altitud, orientacion, pendiente, suelo, capas: dict |
     f_suelo = _tabla(perfil["suelo"], SUELO, defecto=0.6)[np.minimum(suelo, max(SUELO.values()))]
     f_alt = _f_altitud(altitud, perfil["altitud"])
     if on("orientacion_pendiente"):
-        f_ori = f_orientacion_pendiente(orientacion, pendiente, perfil["orientacion"])
+        # Normalizado a máximo 1: así 100 = el mejor caso posible y no se satura (antes ×1,25 recortado).
+        f_ori = f_orientacion_pendiente(orientacion, pendiente, perfil["orientacion"]) \
+            / max_orientacion_pendiente(perfil["orientacion"])
     else:
         f_ori = 1.0
     f_pend = np.where(pendiente > PENDIENTE_MAX, FACTOR_PENDIENTE, 1.0)
@@ -124,7 +141,7 @@ def puntuar(perfil, arbol, altitud, orientacion, pendiente, suelo, capas: dict |
     if perfil.get("penaliza_fuego", perfil.get("micorrizica", True)) and on("fuego", "fuego"):
         s = s * f_fuego(capas["fuego"])
     if perfil.get("humedad") and on("humedad", "humedad"):
-        s = s * f_humedad(capas["humedad"], perfil["humedad"])
+        s = s * f_humedad(capas["humedad"], perfil["humedad"]) / max_humedad(perfil["humedad"])
     if "matorral_cerca" in perfil and on("matorral_cerca", "dist_matorral"):
         s = s * f_matorral_cerca(capas["dist_matorral"], perfil["matorral_cerca"])
     # 255 = fuera de la zona (NODATA) en arbol.tif y suelo.tif

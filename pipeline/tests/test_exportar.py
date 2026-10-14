@@ -148,3 +148,22 @@ def test_clasificar_restriccion_porn():
     assert clasificar_restriccion("ZPP", "Zona de protección de la Reserva Natural") is None
     assert clasificar_restriccion("A", "A. Área de Regulación") is None
     assert set(TEXTO_RESTRICCION) == {"zona_reserva", "reserva_natural", "parque_nacional"}
+
+
+def test_modelo_solo_si_existen_sus_archivos(tmp_path, capsys):
+    import json
+    from setas_pipeline.exportar import modelo_disponible
+    assert modelo_disponible(tmp_path) is None
+    (tmp_path / "modelo").mkdir()
+    paq = {"version": "x", "dir": "modelo/", "archivos": [{"nombre": "a.onnx", "bytes": 3}]}
+    (tmp_path / "modelo" / "paquete.json").write_text(json.dumps(paq))
+    assert modelo_disponible(tmp_path) is None
+    assert "a.onnx" in capsys.readouterr().out
+    (tmp_path / "modelo" / "a.onnx").write_bytes(b"abc")
+    assert modelo_disponible(tmp_path) == paq
+    # sin paquete.json: se hereda del manifest anterior, con la misma comprobación
+    (tmp_path / "modelo" / "paquete.json").unlink()
+    (tmp_path / "manifest.json").write_text(json.dumps({"modelo": paq}))
+    assert modelo_disponible(tmp_path) == paq
+    (tmp_path / "modelo" / "a.onnx").unlink()
+    assert modelo_disponible(tmp_path) is None

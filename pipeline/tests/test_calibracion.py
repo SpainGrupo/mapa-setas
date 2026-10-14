@@ -50,3 +50,29 @@ def test_ocurrencias_cache_depende_de_la_zona(tmp_path, monkeypatch):
     calibracion.ocurrencias(p, box(300000, 4040000, 310000, 4050000), tmp_path)
     calibracion.ocurrencias(p, box(300000, 4040000, 320000, 4060000), tmp_path)
     assert len(list((tmp_path / "gbif").glob("boletus_edulis_*.json"))) == 2
+
+
+def test_pliegues_por_bloques_de_10_km():
+    from setas_pipeline.calibracion import pliegues_bloques
+    m = Malla(x0=0.0, y1=50000.0, ancho=500, alto=500, celda=100.0)      # 50×50 km → 25 bloques
+    p = pliegues_bloques(m, k=5, bloque_m=10000.0)
+    assert p.shape == (500, 500)
+    assert (p[:100, :100] == p[0, 0]).all()                           # un bloque, un pliegue
+    assert sorted(np.unique(p).tolist()) == [0, 1, 2, 3, 4]
+    assert all((np.unique(p[::100, ::100]) == np.arange(5)))
+    assert np.bincount(p[::100, ::100].ravel()).tolist() == [5] * 5   # equilibrados
+    assert (pliegues_bloques(m, k=5, bloque_m=10000.0) == p).all()    # determinista
+
+
+def test_validacion_bloques_lift_en_bloques_retenidos():
+    from setas_pipeline.calibracion import validacion_bloques
+    m = Malla(x0=0.0, y1=200.0, ancho=4, alto=2, celda=100.0)
+    r = np.array([[80, 0, 80, 80], [0, 0, 0, 0]], np.uint8)
+    tierra = np.ones_like(r, bool)
+    pl = np.array([[0, 0, 1, 1], [0, 0, 1, 1]])
+    xy = [(50, 150), (150, 150), (250, 150), (350, 50)]                # pliegue 0: 1/2 buenas; 1: 1/2
+    v = validacion_bloques(m, r, tierra, xy, pl, k=2)
+    # pliegue 0: obs 50 % / zona 25 % = 2; pliegue 1: 50 % / 50 % = 1
+    assert v["lifts"] == [2.0, 1.0] and v["lift_medio"] == 1.5 and v["pliegues"] == 2
+    vacio = validacion_bloques(m, r, tierra, [], pl, k=2)
+    assert vacio["lift_medio"] is None and vacio["pliegues"] == 0

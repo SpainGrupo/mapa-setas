@@ -16,7 +16,7 @@ Modelo
 - Dijkstra multifuente de scipy (csgraph) sobre el grafo de 8 vecinos.
 """
 from __future__ import annotations
-import argparse, json, math
+import argparse, json, math, warnings
 from pathlib import Path
 import numpy as np
 
@@ -165,9 +165,16 @@ def trazar(direccion: np.ndarray, fila: int, col: int, max_pasos: int = 100000) 
 def reducir(tiempo, subida, origen, pred, fuentes, factor: int = FACTOR_EXPORT):
     """Lleva los campos de la malla fina a la gruesa (bloques factor×factor).
 
-    En cada bloque manda la subcelda de menor tiempo. Su predecesor está fuera del bloque (el tiempo
-    decrece estrictamente por el camino), así que la dirección gruesa es la del bloque vecino donde
-    cae; ese bloque tiene un tiempo mínimo menor y el trazado grueso siempre termina en una fuente.
+    Dirección: en cada bloque manda la subcelda de menor tiempo. Su predecesor está fuera del bloque
+    (el tiempo decrece estrictamente por el camino), así que la dirección gruesa es la del bloque
+    vecino donde cae; ese bloque tiene un tiempo mínimo menor y el trazado grueso siempre termina en
+    una fuente.
+    Tiempo y subida: los del punto pulsado, que puede estar en cualquier parte de los 100 m → mediana
+    de las subceldas alcanzables (el mínimo daba el rincón más cercano a la vía). En bloques con vía
+    (dirección 0) valen 0. Para que no suban hacia el coche se toma el máximo con el valor del bloque
+    siguiente por la traza (máximo acumulado aguas abajo).
+    Origen: el aparcamiento del bloque de vía donde termina el trazado grueso (el que dibuja la app),
+    no el de la subcelda fina elegida, que puede acabar en otro.
     Devuelve (tiempo, subida, origen, direccion) gruesos; tiempo inf / origen -1 donde no hay acceso.
     """
     H, W = tiempo.shape
@@ -178,17 +185,41 @@ def reducir(tiempo, subida, origen, pred, fuentes, factor: int = FACTOR_EXPORT):
     t = bloques(tiempo)
     sel = np.argmin(t, axis=2)
     tomar = lambda a: np.take_along_axis(bloques(a), sel[..., None], axis=2)[..., 0]
-    tg, sg, og, pg, fg = tomar(tiempo), tomar(subida), tomar(origen), tomar(pred), tomar(fuentes)
+    tmin, og, pg, fg = tomar(tiempo), tomar(origen), tomar(pred), tomar(fuentes)
     bf, bc = np.mgrid[0:h, 0:w]
     pf, pc = np.divmod(np.where(pg >= 0, pg, 0), W)
     df, dc = pf // factor - bf, pc // factor - bc
     d = np.full((h, w), DIR_SIN, np.uint8)
     for i, (a, b) in enumerate(VECINOS, start=1):
         d[(pg >= 0) & (df == a) & (dc == b)] = i
-    alc = np.isfinite(tg)
+    alc = np.isfinite(tmin)
     d[fg & alc] = DIR_FUENTE
     d[~alc] = DIR_SIN
-    return tg, sg, og, d
+    # Valor representativo del bloque: mediana de las subceldas alcanzables.
+    fin = np.isfinite(t)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)       # bloques sin ninguna subcelda alcanzable
+        tr = np.nanmedian(np.where(fin, t, np.nan), axis=2)
+        sr = np.nanmedian(np.where(fin, bloques(subida).astype(np.float64), np.nan), axis=2)
+    fuente = d == DIR_FUENTE
+    tr = np.where(fuente, 0.0, np.where(alc, tr, np.inf))
+    sr = np.where(fuente, 0.0, np.where(alc, sr, 0.0))
+    # Siguiente bloque por la traza (fuentes y sin acceso apuntan a sí mismos) y salto de punteros:
+    # P acaba en el bloque de vía final; T/S, máximo acumulado de la mediana aguas abajo.
+    idx = np.arange(h * w, dtype=np.int64).reshape(h, w)
+    P = idx.copy()
+    for i, (a, b) in enumerate(VECINOS, start=1):
+        m = d == i
+        P[m] = idx[m] + a * w + b
+    P = P.ravel(); T = tr.ravel().copy(); S = sr.ravel().copy()
+    while True:
+        T = np.maximum(T, T[P]); S = np.maximum(S, S[P])
+        PP = P[P]
+        if np.array_equal(PP, P):
+            break
+        P = PP
+    og = og.ravel()[P].reshape(h, w)
+    return T.reshape(h, w), S.reshape(h, w), og, d
 
 
 def agrupar_aparcamientos(fuentes: np.ndarray, via: np.ndarray, celda: float, bloque: float = BLOQUE_APARC):

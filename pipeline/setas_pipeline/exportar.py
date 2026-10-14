@@ -514,14 +514,31 @@ def escribir_manifest(out: Path = APP) -> dict:
         "total_bytes": sum(a["bytes"] for a in archivos),
     }
     # Reconocedor (modelo/construir.py): descarga opcional aparte; no cuenta en archivos ni en total_bytes.
+    modelo = modelo_disponible(out)
+    if modelo:
+        m["modelo"] = modelo
+    (out / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=1))
+    return m
+
+
+def modelo_disponible(out: Path) -> dict | None:
+    """Clave `modelo` del manifest (reconocedor): de modelo/paquete.json o, si no está, del manifest anterior
+    (escrito por modelo/construir.py). Solo si existen todos los archivos que cita; si no, aviso y None."""
     paquete = out / "modelo" / "paquete.json"
     previo = out / "manifest.json"
     if paquete.exists():
-        m["modelo"] = json.loads(paquete.read_text())
+        modelo = json.loads(paquete.read_text())
     elif previo.exists() and "modelo" in (anterior := json.loads(previo.read_text())):
-        m["modelo"] = anterior["modelo"]          # escrito por modelo/construir.py: se conserva tal cual
-    (out / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=1))
-    return m
+        modelo = anterior["modelo"]
+    else:
+        return None
+    faltan = [a["nombre"] for a in modelo.get("archivos", [])
+              if not (out / modelo.get("dir", "modelo/") / a["nombre"]).exists()]
+    if faltan:
+        print(f"  WARNING: el reconocedor no se publica en el manifest; faltan en {out / modelo.get('dir', 'modelo/')}: "
+              f"{', '.join(faltan)}", flush=True)
+        return None
+    return modelo
 
 
 def main(argv=None):

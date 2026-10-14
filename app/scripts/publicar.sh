@@ -22,6 +22,8 @@ LIMITE=$((95 * 1024 * 1024))   # GitHub rechaza archivos de más de 100 MB
 
 [[ -f "$DATOS/manifest.json" ]] || { echo "Falta $DATOS/manifest.json: ejecuta el pipeline (exportar)." >&2; exit 1; }
 
+# Worker de Gemini (segunda opinión); sobrescribible con VITE_WORKER_URL en el entorno
+export VITE_WORKER_URL="${VITE_WORKER_URL:-https://setas-identificar.setas-worker.workers.dev}"
 (cd "$APP" && npm run build)
 
 rm -rf "$SALIDA"; mkdir -p "$SALIDA/data"

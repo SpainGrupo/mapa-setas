@@ -10,9 +10,10 @@ compatibility_date = "2026-09-28"
 #   https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash  (página actualizada 2026-09-02)
 # Alternativa más barata si hiciera falta: gemini-3.5-flash-lite (estable).
 GEMINI_MODEL = "gemini-3.8-flash"
-# Orígenes permitidos, separados por comas, sin barra final. Sustituir por el de GitHub Pages
-# (p. ej. "https://USUARIO.github.io") antes de desplegar.
-ALLOWED_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173"
+# Orígenes permitidos, separados por comas, sin barra final. Producción: GitHub Pages
+# (https://spaingrupo.github.io/mapa-setas/; la ruta no forma parte del origen).
+# Para `wrangler dev` en local, añade los localhost en .dev.vars (ALLOWED_ORIGINS=...).
+ALLOWED_ORIGINS = "https://spaingrupo.github.io"
 # Reconocimientos por IP y día.
 DAILY_LIMIT = "50"
 # Tope global de reconocimientos por día (todas las IPs). Cubre la rotación de IP: la cabecera

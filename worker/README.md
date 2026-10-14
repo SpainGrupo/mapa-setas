@@ -93,9 +93,10 @@ Para `wrangler dev` en local crea `worker/.dev.vars` (está en `.gitignore`) con
    npx wrangler kv namespace create RATE_LIMIT
    ```
    Dejar `REQUIRE_KV = "true"` y ajustar `GLOBAL_DAILY_LIMIT` (por defecto 300/día) al gasto asumible.
-4. Poner en `wrangler.toml` el origen de GitHub Pages, por ejemplo
-   `ALLOWED_ORIGINS = "https://USUARIO.github.io"` (solo esquema y host; la ruta del repo no
-   forma parte del origen). Quitar los `localhost` si no se van a usar.
+4. Comprobar en `wrangler.toml` el origen de GitHub Pages: ya está
+   `ALLOWED_ORIGINS = "https://spaingrupo.github.io"` (la app vive en
+   https://spaingrupo.github.io/mapa-setas/; solo cuentan esquema y host, la ruta no forma parte del
+   origen). Para `wrangler dev` en local, los `localhost` van en `.dev.vars`.
 5. Guardar la clave como secreto (la pide por teclado; no queda en el historial):
    ```bash
    npx wrangler secret put GEMINI_API_KEY
@@ -104,7 +105,7 @@ Para `wrangler dev` en local crea `worker/.dev.vars` (está en `.gitignore`) con
    ```bash
    npx wrangler deploy
    curl -i -X OPTIONS https://setas-identificar.<subdominio>.workers.dev/identificar \
-        -H "Origin: https://USUARIO.github.io"      # debe dar 204
+        -H "Origin: https://spaingrupo.github.io"   # debe dar 204
    ```
 7. Poner la URL `https://setas-identificar.<subdominio>.workers.dev/identificar` en la
    configuración de la app.

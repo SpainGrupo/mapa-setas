@@ -194,6 +194,23 @@ try {
     && /Boletus edulis/.test(await p.locator('#btn-especie').textContent()), 'tocar una fila cambia la capa de idoneidad');
   await captura('selector-boton.png');
 
+  // Fiabilidad por especie (manifest → hoja de especies y leyenda): P. eryngii no se sostiene en la validación por bloques.
+  await p.locator('#btn-especie').click();
+  await p.locator('#dlg-especie[open]').waitFor();
+  const fiabFila = await p.locator('#lista-especies [data-especie=pleurotus_eryngii] .insignia-fiabilidad')
+    .evaluate((s) => ({ t: s.textContent, title: s.title }));
+  await p.locator('#dlg-especie').evaluate((d) => d.close());
+  await elegirEspecie('pleurotus_eryngii');
+  await p.locator('details.fiabilidad summary').click();
+  const fiabLeyenda = await p.evaluate(() => ({ t: document.querySelector('#txt-fiabilidad').textContent,
+    expl: document.querySelector('#txt-fiabilidad-expl').textContent,
+    vis: document.querySelector('#txt-fiabilidad-expl').checkVisibility() }));
+  comprobar(fiabFila.t === 'Fiabilidad: baja' && /GBIF/.test(fiabFila.title) && fiabLeyenda.t === 'Fiabilidad: baja'
+    && fiabLeyenda.vis && /no se usaron para ajustarlo/.test(fiabLeyenda.expl),
+    `fiabilidad de P. eryngii «baja» en la hoja de especies y en la leyenda, con la explicación al desplegar`);
+  await p.locator('details.fiabilidad summary').click();
+  await elegirEspecie('boletus_edulis');
+
   // Idoneidad: los 12 × 6 PMTiles responden a Range con la cabecera PMTiles v3, y cada especie se pinta en el mapa.
   const man = await p.evaluate(async () => (await fetch('data/manifest.json')).json());
   const malos = [];

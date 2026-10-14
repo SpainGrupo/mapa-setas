@@ -36,6 +36,7 @@ MARGEN_M = 2000             # margen alrededor de la zona para base, curvas y so
 PASO_METEO = 12000          # m entre puntos de la rejilla meteo
 RADIO_BOSQUE = 6000         # m: un punto meteo se conserva si hay bosque hospedador a esta distancia
 IDON_BOSQUE = 30            # idoneidad mínima (cualquier especie) para contar como bosque hospedador
+MIN_OBS_FIABILIDAD = 10    # observaciones GBIF mínimas para juzgar una especie (= calibracion.MIN_OBS)
 ACCESO_ARCHIVOS = ("acceso.json", "acceso.bin.gz", "aparcamientos.json")   # acceso.bin sin comprimir no se publica
 PROTOMAPS_BUILDS = "https://build-metadata.protomaps.dev/builds.json"
 PROTOMAPS_URL = "https://build.protomaps.com/{key}"
@@ -283,9 +284,26 @@ def _bbox_zona(margen=MARGEN_M):
     return tuple(float(v) for v in z.total_bounds), z.union_all()
 
 
+def fiabilidad(n: int | None, lift_validacion: float | None) -> str:
+    """Fiabilidad del mapa de una especie según la validación por bloques de calibracion.py:
+    con n ≥ MIN_OBS, «buena» si el lift retenido ≥ 2, «media» si ≥ 1,3, «baja» si menos; si no, «sin_validar»."""
+    if n is None or n < MIN_OBS_FIABILIDAD or lift_validacion is None:
+        return "sin_validar"
+    if lift_validacion >= 2:
+        return "buena"
+    return "media" if lift_validacion >= 1.3 else "baja"
+
+
+def _calibracion() -> dict:
+    ruta = OUT / "calibracion.json"
+    return json.loads(ruta.read_text()) if ruta.exists() else {}
+
+
 def especies() -> list[dict]:
     d = yaml.safe_load(ESPECIES.read_text())
-    return [{"id": k, "nombre": v["nombre"], **({"tiempo": v["tiempo"]} if "tiempo" in v else {})}
+    cal = _calibracion()
+    return [{"id": k, "nombre": v["nombre"], **({"tiempo": v["tiempo"]} if "tiempo" in v else {}),
+             "fiabilidad": fiabilidad(cal.get(k, {}).get("n"), cal.get(k, {}).get("lift_validacion"))}
             for k, v in d.items()]
 
 

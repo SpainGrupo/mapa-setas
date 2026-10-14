@@ -253,4 +253,9 @@ def informe(out_dir: Path, perfiles: dict, raw_dir: Path | None = None) -> Path:
     L += ["", "Fuente: GBIF.org (api.gbif.org/v1/occurrence/search). Perfiles: especies.yaml (heurístico v2)."]
     ruta = out_dir / "calibracion.md"
     ruta.write_text("\n".join(L) + "\n")
+    # Versión legible por máquina (la usa exportar.py para la fiabilidad por especie).
+    (out_dir / "calibracion.json").write_text(json.dumps(
+        {clave: {"n": d["celda"]["n"], "lift_ajuste": d["celda"]["lift"],
+                 "lift_validacion": d["val_celda"]["lift_medio"], "pliegues": d["val_celda"]["pliegues"]}
+         for clave, d in res.items()}, ensure_ascii=False, indent=1))
     return ruta

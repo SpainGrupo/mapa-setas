@@ -103,11 +103,12 @@ amanita_ponderosa:
   tiempo: {episodio_mm: 15, ventana_dias: [7, 21], tmin_media: [3, 12], tmax_media: [12, 22], balance_30d_min_mm: -40, dias_lluvia_30d_min: 3, humedad_suelo_min: 0.12, meses: [2, 3, 4]}   # ~15 mm cada 15–21 d, feb–abr, huevo 3–7 d; <12 °C de media alarga [G9]
 macrolepiota_procera:
   nombre: Macrolepiota procera
-  arboles: {alcornoque: 0.6, encina: 0.6, quejigo: 0.6, castano: 0.6, pino: 0.6, pinsapo: 0.3}   # bordes de bosque
+  # Reescalado 2026-10-14 (×1/0,6, pesos relativos iguales): el máximo de hábitat era 0,6 y la puntuación no pasaba de 60.
+  arboles: {alcornoque: 1.0, encina: 1.0, quejigo: 1.0, castano: 1.0, pino: 1.0, pinsapo: 0.5}   # bordes de bosque
   # Calibrado 2026-10-14 (GBIF n=47, todas en recintos arbolados, FCC mediana 65 %): el óptimo de claros (FCC 10–40 %)
   # y el estado de masa bajaban el lift de 3,51 a 1,14 → fuera (sin dosel, peso_estado 0); la cubierta abierta a 0,5.
   peso_estado: 0
-  cubierta: {pastizal: 0.5, pastizal_matorral: 0.5, matorral: 0.2}   # claros y pastizal [§1] con peso reducido
+  cubierta: {pastizal: 0.833, pastizal_matorral: 0.833, matorral: 0.333}   # claros y pastizal [§1] con peso reducido (0,5/0,6 y 0,2/0,6)
   micorrizica: false       # saprófita: sin penalización por incendio
   altitud: {min: 0, opt_min: 100, opt_max: 1300, max: 1700}
   orientacion: indiferente

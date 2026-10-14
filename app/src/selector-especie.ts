@@ -5,6 +5,7 @@
 import { binomio, DESCRITA_EN_OTRA_FICHA, fichaDeEspecieMapa, miniaturaEspecie, nombreComun } from './guia';
 import { fichaGuia, indiceGuia } from './guia-ui';
 import type { Especie } from './tipos';
+import { EXPLICACION_FIABILIDAD, insigniaFiabilidad, nivelFiabilidad, textoFiabilidad } from './fiabilidad';
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 let especies: () => Especie[] = () => [];
@@ -50,6 +51,13 @@ export function pintarSelectorEspecie() {
     $('#btn-especie-cientifico').textContent = d.cientifico;
     miniatura(btn.querySelector('.miniatura-especie')!, d.miniatura);
     btn.dataset.especie = actual.id;
+    const leyenda = $('#txt-fiabilidad');
+    if (leyenda) {
+      leyenda.textContent = textoFiabilidad(actual.fiabilidad);
+      leyenda.className = `insignia-fiabilidad fiab-${nivelFiabilidad(actual.fiabilidad)}`;
+      leyenda.dataset.fiabilidad = nivelFiabilidad(actual.fiabilidad);
+      $('#txt-fiabilidad-expl').textContent = EXPLICACION_FIABILIDAD;
+    }
   }
   const ul = $('#lista-especies');
   ul.replaceChildren();
@@ -67,7 +75,7 @@ export function pintarSelectorEspecie() {
     const txt = document.createElement('span'); txt.className = 'se-texto';
     const b = document.createElement('b'); b.textContent = d.comun;
     const i = document.createElement('i'); i.textContent = d.cientifico;
-    txt.append(b, i);
+    txt.append(b, i, insigniaFiabilidad(e.fiabilidad));
     const marca = document.createElement('span'); marca.className = 'se-marca'; marca.setAttribute('aria-hidden', 'true'); marca.textContent = elegida ? '✓' : '';
     li.append(caja, txt, marca);
     ul.append(li);

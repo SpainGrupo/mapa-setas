@@ -167,3 +167,29 @@ def test_modelo_solo_si_existen_sus_archivos(tmp_path, capsys):
     assert modelo_disponible(tmp_path) == paq
     (tmp_path / "modelo" / "a.onnx").unlink()
     assert modelo_disponible(tmp_path) is None
+
+
+def test_fiabilidad_segun_n_y_lift_de_validacion():
+    from setas_pipeline.exportar import fiabilidad
+    assert fiabilidad(47, 2.57) == "buena"
+    assert fiabilidad(10, 2.0) == "buena"
+    assert fiabilidad(25, 1.99) == "media"
+    assert fiabilidad(25, 1.3) == "media"
+    assert fiabilidad(13, 0.93) == "baja"
+    assert fiabilidad(13, 1.29) == "baja"
+    assert fiabilidad(9, 12.3) == "sin_validar"     # n < 10: no se juzga aunque el lift sea alto
+    assert fiabilidad(0, None) == "sin_validar"
+    assert fiabilidad(None, None) == "sin_validar"  # especie sin calibrar
+    assert fiabilidad(15, None) == "sin_validar"    # ningún pliegue con observaciones
+
+
+def test_especies_lleva_fiabilidad(tmp_path, monkeypatch):
+    import json
+    import setas_pipeline.exportar as ex
+    (tmp_path / "calibracion.json").write_text(json.dumps(
+        {"pleurotus_eryngii": {"n": 13, "lift_ajuste": 1.53, "lift_validacion": 0.93, "pliegues": 4}}))
+    monkeypatch.setattr(ex, "OUT", tmp_path)
+    es = {e["id"]: e for e in ex.especies()}
+    assert es["pleurotus_eryngii"]["fiabilidad"] == "baja"
+    assert es["boletus_aereus"]["fiabilidad"] == "sin_validar"   # no está en el JSON
+    assert all(e["fiabilidad"] in {"buena", "media", "baja", "sin_validar"} for e in es.values())

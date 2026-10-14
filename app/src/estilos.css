@@ -443,6 +443,14 @@ input[type=search]:focus-visible { outline: 3px solid var(--foco); border-color:
 .se-texto i { font-size: 14px; color: var(--texto-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .se-texto i:empty { display: none; }
 .se-flecha { color: var(--verde); }
+.insignia-fiabilidad { justify-self: start; display: inline-block; margin-top: 3px; padding: 1px 7px; border-radius: 999px;
+  font-size: 13px; font-weight: 600; font-style: normal; line-height: 1.4; border: 1px solid currentColor; color: var(--texto-2); }
+.insignia-fiabilidad.fiab-buena { color: var(--verde); }
+.insignia-fiabilidad.fiab-baja { color: #a33a00; }
+.fiabilidad { font-size: 14px; color: var(--texto-2); }
+.fiabilidad summary { cursor: pointer; min-height: 32px; display: flex; align-items: center; gap: 6px; }
+.fiabilidad summary::after { content: '?'; font-weight: 700; color: var(--verde); }
+.fiabilidad .insignia-fiabilidad { margin-top: 0; }
 
 .hoja-especies { padding: 0; width: min(100vw, 520px); max-width: 100vw; margin: auto auto 0; border-radius: 18px 18px 0 0;
   max-height: min(80dvh, 640px); display: none; }

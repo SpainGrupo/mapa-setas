@@ -14,8 +14,9 @@ export interface Sitio {
 export interface AccesoSitio { lat: number; lon: number; via: string; tiempo_min: number; subida_m: number }
 
 import type { Reglas } from './semaforo';
+import type { Fiabilidad } from './fiabilidad';
 
-export interface Especie { id: string; nombre: string; tiempo?: Reglas }
+export interface Especie { id: string; nombre: string; tiempo?: Reglas; fiabilidad?: Fiabilidad }
 
 export interface Manifest {
   generado: string;

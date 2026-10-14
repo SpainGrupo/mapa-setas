@@ -3,7 +3,9 @@ import './estilos.css';
 import { registerSW } from 'virtual:pwa-register';
 import type { Map as MapaML, GeoJSONSource, LngLat } from 'maplibre-gl';
 import { BASE_DATOS, cargarJson, cargarManifest, mb } from './datos';
-import { CAPAS_RESTRICCIONES, CAPAS_RUTAS, COLORES_IDONEIDAD, colorearSemaforo, crearMapa, origenes, ponerBase, ponerIdoneidad, restriccionEn, verCapa, type Base } from './mapa';
+import type { Base } from './mapa';
+// MapLibre (≈1 MB) va en su propio trozo y se carga al arrancar el mapa: el resto de la app se pinta antes.
+let M: typeof import('./mapa') | null = null;
 import { ORIENTATIVO, textoChip, type Restriccion } from './restricciones';
 import { altitudes, aparcamiento, centroCelda, consultar, nombreVia, simplificar, textoSubida, textoTiempo, trazar, urlGoogleCoche, type Celda } from './acceso';
 import { dificultad, NOMBRE_DIFICULTAD, perfil, seguir, textoDistancia, type Dificultad, type Perfil, type Seguimiento } from './ruta';
@@ -106,8 +108,8 @@ function aplicarIdoneidad() {
   const umbral = Number($<HTMLInputElement>('#rng-umbral').value);
   $('#txt-umbral').textContent = `≥ ${umbral} m`;
   localStorage.setItem('setas:capa', JSON.stringify({ especie, umbral }));
-  ponerIdoneidad(mapa, especie, umbral);
-  verCapa(mapa, ['idoneidad'], $<HTMLInputElement>('[data-capa=idoneidad]').checked);
+  M!.ponerIdoneidad(mapa, especie, umbral);
+  M!.verCapa(mapa, ['idoneidad'], $<HTMLInputElement>('[data-capa=idoneidad]').checked);
   pintarSemaforoMapa();
   pintarTarjeta();
   pintarBotonFicha();
@@ -124,11 +126,11 @@ $('#btn-ver-ficha').addEventListener('click', () => {
   abrirFicha(fichaDeEspecieMapa($<HTMLSelectElement>('#sel-especie').value));
 });
 
-const CAPAS: Record<string, string[]> = {
+const CAPAS = (): Record<string, string[]> => ({
   sombreado: ['sombreado'], curvas: ['curvas', 'curvas-cota'],
   protegidos: ['protegidos-relleno', 'protegidos-linea'], idoneidad: ['idoneidad'], semaforo: ['semaforo'],
-  rutas: CAPAS_RUTAS, restricciones: CAPAS_RESTRICCIONES,
-};
+  rutas: M!.CAPAS_RUTAS, restricciones: M!.CAPAS_RESTRICCIONES,
+});
 
 function pintarSitiosMapa(lista: Sitio[]) {
   const src = mapa?.getSource('sitios') as GeoJSONSource | undefined;
@@ -148,7 +150,8 @@ async function iniciarMapa() {
   rellenarEspecies($<HTMLSelectElement>('#sitio-especie'), ['', 'Sin especificar']);
   $('#capa-rutas').hidden = !manifest.rutas;
   $('#capa-restricciones').hidden = !manifest.restricciones;
-  $('#rampa').style.background = `linear-gradient(90deg, ${COLORES_IDONEIDAD.join(',')})`;
+  M = await import('./mapa');
+  $('#rampa').style.background = `linear-gradient(90deg, ${M.COLORES_IDONEIDAD.join(',')})`;
   try {
     const g = JSON.parse(localStorage.getItem('setas:capa') ?? 'null');
     if (g && manifest.especies.some((e) => e.id === g.especie)) {
@@ -158,12 +161,12 @@ async function iniciarMapa() {
   } catch { /* preferencia corrupta: se ignora */ }
   pintarSelectorEspecie();
 
-  mapa = crearMapa($('#mapa'), manifest);
+  mapa = M.crearMapa($('#mapa'), manifest);
   gps = new Gps(mapa, (m) => avisar(m));
-  if (import.meta.env.DEV || E2E) (window as any).__setas = { mapa, origenes, meteo: () => ({ datos: meteo, origen: meteoOrigen, punto: puntoSel }),
+  if (import.meta.env.DEV || E2E) (window as any).__setas = { mapa, origenes: M.origenes, meteo: () => ({ datos: meteo, origen: meteoOrigen, punto: puntoSel }),
     acceso: () => ultimoAcceso, trazaAcceso: () => trazaAcceso, hoy: hoyZona, tops: resumenHoy,
     ruta: () => rutaActual && { ...rutaActual, perfil: { ...rutaActual.perfil } }, seguimiento: () => seguimiento,
-    restriccionEn: (lat: number, lon: number) => manifest && restriccionEn(manifest, lat, lon),
+    restriccionEn: (lat: number, lon: number) => manifest && M!.restriccionEn(manifest, lat, lon),
     sitioEditando: () => editando && { ...editando, foto: undefined }, accesoSitio: () => accesoSitio,
     resumenSemaforo: () => Object.fromEntries((manifest?.especies ?? []).map((e) => {
       const n: Record<string, number> = { verde: 0, amarillo: 0, rojo: 0, gris: 0 };
@@ -197,7 +200,7 @@ async function iniciarMapa() {
   $('#sel-especie').addEventListener('change', aplicarIdoneidad);
   $('#rng-umbral').addEventListener('input', aplicarIdoneidad);
   document.querySelectorAll<HTMLInputElement>('[data-capa]').forEach((c) =>
-    c.addEventListener('change', () => mapa && verCapa(mapa, CAPAS[c.dataset.capa!], c.checked)));
+    c.addEventListener('change', () => mapa && M!.verCapa(mapa, CAPAS()[c.dataset.capa!], c.checked)));
   document.querySelectorAll<HTMLInputElement>('input[name=base]').forEach((r) => r.addEventListener('change', () => {
     try { localStorage.setItem(CLAVE_BASE, r.value); } catch { /* sin almacenamiento: solo esta sesión */ }
     aplicarBase(true);
@@ -224,7 +227,7 @@ function aplicarBase(avisarSiCae: boolean) {
   somb.disabled = base === 'satelite';
   somb.closest('label')?.classList.toggle('desactivada', somb.disabled);
   document.querySelectorAll<HTMLInputElement>('input[name=base]').forEach((r) => (r.checked = r.value === base));
-  ponerBase(mapa, base, somb.checked);
+  M!.ponerBase(mapa, base, somb.checked);
   document.body.dataset.base = base;
 }
 
@@ -413,7 +416,7 @@ async function calcularAcceso(lat: number, lon: number): Promise<CalculoAcceso> 
 async function pintarRestriccion(el: HTMLElement, lat: number, lon: number, vigente: () => boolean): Promise<Restriccion[] | null> {
   el.hidden = true;
   el.replaceChildren();
-  const rs = manifest ? await restriccionEn(manifest, lat, lon) : null;
+  const rs = manifest && M ? await M.restriccionEn(manifest, lat, lon) : null;
   if (!vigente() || !rs?.length) return rs;
   for (const r of rs) {
     const b = document.createElement('b'); b.textContent = textoChip(r);
@@ -844,7 +847,7 @@ function pintarSemaforoMapa() {
   const especie = especieSel();
   const estados: Record<number, ResultadoSemaforo['estado']> = {};
   for (const p of puntosMeteo) { const r = estadoEn(p, especie); if (r) estados[p.id] = r.estado; }
-  colorearSemaforo(mapa, expresionColores(estados));
+  M!.colorearSemaforo(mapa, expresionColores(estados));
 }
 
 function pintarPuntoMapa() {
@@ -1111,7 +1114,16 @@ iniciarHoy({
 iniciarReconocer({
   manifest: () => manifest,
   avisar,
-  verFicha: (id, mortales) => { irA('p-guia'); abrirFicha(id, 'reconocer', mortales); },
+  verFicha: (id, mortales) => {
+    irA('p-guia');
+    // Sigue siendo parte de Reconocer: la pestaña marcada es Reconocer y «Tu resultado» vuelve allí.
+    document.querySelectorAll<HTMLButtonElement>('.pestanas button[data-p]').forEach((b) => {
+      const r = b.dataset.p === 'p-reconocer';
+      b.classList.toggle('activa', r);
+      if (r) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+    abrirFicha(id, 'reconocer', mortales);
+  },
   guardarSitio: ({ especieGuia, foto, lat, lon }) => abrirSitio(null, { lat, lon },
     { especie: especieGuia ? especieMapaDeFicha(especieGuia, (manifest?.especies ?? []).map((e) => e.id)) : '', foto }),
 });

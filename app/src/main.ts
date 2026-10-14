@@ -10,9 +10,12 @@ import { ORIENTATIVO, textoChip, type Restriccion } from './restricciones';
 import { altitudes, aparcamiento, centroCelda, consultar, nombreVia, simplificar, textoSubida, textoTiempo, trazar, urlGoogleCoche, type Celda } from './acceso';
 import { dificultad, NOMBRE_DIFICULTAD, perfil, seguir, textoDistancia, type Dificultad, type Perfil, type Seguimiento } from './ruta';
 import { pintarPerfil } from './perfil-grafico';
-import { iniciarHoy, pintarHoy, resumenHoy } from './hoy-ui';
+import { iniciarHoy, pintarHoy, resumenHoy, sitiosCandidatos } from './hoy-ui';
+import { diasEspecie, puntoReferencia, ventanaEspecie } from './ventana-especie';
+import { bloqueCuando } from './ventana-ui';
+import type { SitiosJson } from './ranking';
 import { datosAcceso } from './acceso-datos';
-import { iniciarSelectorEspecie, pintarSelectorEspecie } from './selector-especie';
+import { iniciarSelectorEspecie, ordenSelector, pintarSelectorEspecie } from './selector-especie';
 import { Gps } from './gps';
 import { borrarMapas, descargarMapas, estadoDescarga } from './opfs';
 import { borrarSitio, guardarSitio, guardarVarios, leerSitio, listarSitios } from './sitios';
@@ -23,7 +26,7 @@ import { edadHoras, fechaMadrid, obtener, CADUCIDAD_H, type DatosMeteo, type Pun
 import { bandaAltitud, ddmm, humedadAcumulada, semaforo, sumarDias, textoBanda, type ResultadoSemaforo } from './semaforo';
 import { expresionColores, haceTexto, NOMBRE_ESTADO, puntoMasCercano } from './zona';
 import { pintarGrafico } from './grafico';
-import { abrirFicha, cargarGuia, fichasGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, mostrarGuia, pintarCreditos, type EstadoFotos } from './guia-ui';
+import { abrirFicha, cargarGuia, fichasGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, mostrarGuia, pintarCreditos, ponerBloqueTiempo, type EstadoFotos } from './guia-ui';
 import { binomio, especieMapaDeFicha, fichaDeEspecieMapa } from './guia';
 import { iniciarReconocer, mostrarReconocer, pintarAjustesModelo } from './reconocer-ui';
 import { Hoja } from './hoja';
@@ -143,7 +146,7 @@ async function iniciarMapa() {
   manifest = await cargarManifest();
   if (!manifest) { $('#sin-datos').hidden = false; return; }
   for (const e of manifest.especies) nombres[e.id] = e.nombre;
-  iniciarSelectorEspecie(() => manifest?.especies ?? []);
+  iniciarSelectorEspecie(() => manifest?.especies ?? [], { estadoHoy: estadoHoyRef, hoy: hoyZona });
   cargarGuia().then((ok) => { if (ok) for (const f of fichasGuia()) nombres[f.id] ??= binomio(f); pintarSelectorEspecie(); });
   rellenarEspecies($<HTMLSelectElement>('#sel-especie'));
   rellenarEspecies($<HTMLSelectElement>('#filtro-especie'), ['', 'Todas']);
@@ -164,7 +167,7 @@ async function iniciarMapa() {
   mapa = M.crearMapa($('#mapa'), manifest);
   gps = new Gps(mapa, (m) => avisar(m));
   if (import.meta.env.DEV || E2E) (window as any).__setas = { mapa, origenes: M.origenes, meteo: () => ({ datos: meteo, origen: meteoOrigen, punto: puntoSel }),
-    acceso: () => ultimoAcceso, trazaAcceso: () => trazaAcceso, hoy: hoyZona, tops: resumenHoy,
+    acceso: () => ultimoAcceso, trazaAcceso: () => trazaAcceso, hoy: hoyZona, tops: resumenHoy, selector: ordenSelector, puntoRef: refPunto,
     ruta: () => rutaActual && { ...rutaActual, perfil: { ...rutaActual.perfil } }, seguimiento: () => seguimiento,
     restriccionEn: (lat: number, lon: number) => manifest && M!.restriccionEn(manifest, lat, lon),
     sitioEditando: () => editando && { ...editando, foto: undefined }, accesoSitio: () => accesoSitio,
@@ -829,6 +832,34 @@ function estadoPunto(id: number, especie: string, fecha: string): ResultadoSemaf
   return semaforo(serie, r, fecha, { edadHoras: edadHoras(meteo) });
 }
 
+// Punto de referencia del tiempo de cada seta (ficha y selector del mapa): GPS cercano → mejor sitio → centro de la zona
+// (ventana-especie.ts, puntoReferencia).
+let sitiosRef: SitiosJson | null = null;
+function refPunto(especie: string) {
+  return puntoReferencia(puntosMeteo, { gps: gps?.ultima ?? null, sitios: sitiosRef?.especies[especie] ?? null, maxKm: DISTANCIA_MAX_KM });
+}
+/** Semáforo de hoy de una especie en su punto de referencia (selector del mapa: siempre hoy, no el día elegido en Hoy). */
+function estadoHoyRef(especie: string): ResultadoSemaforo | null {
+  const r = refPunto(especie);
+  return r ? estadoPunto(r.id, especie, hoyZona()) : null;
+}
+
+/** Bloque «Cuándo está activa» de una ficha: la especie del mapa que describe, sus meses y los próximos 16 días. */
+ponerBloqueTiempo((idFicha) => {
+  const ids = (manifest?.especies ?? []).map((e) => e.id);
+  const id = especieMapaDeFicha(idFicha, ids);
+  const e = manifest?.especies.find((x) => x.id === id);
+  if (!e?.tiempo) return null;     // solo guía, o sin reglas del tiempo: sin meses estructurados que enseñar
+  const hoy = hoyZona();
+  const ref = refPunto(id);
+  const serie = ref && meteo ? meteo.puntos[String(ref.id)] : null;
+  const dias = diasEspecie(serie, e.tiempo, hoy, meteo ? edadHoras(meteo) : 0);
+  const meses = e.tiempo.meses ?? [];
+  const bloque = bloqueCuando({ hoy, meses, conTiempo: true, dias, ventana: ventanaEspecie(dias, meses, hoy), origen: ref?.origen ?? null });
+  if (bloque) bloque.dataset.especie = id;
+  return bloque;
+});
+
 function textoMeteoCorto(): string {
   if (!meteo) return navigator.onLine ? 'Sin datos del tiempo todavía: los sitios salen sin semáforo.' : 'Sin conexión y sin datos del tiempo guardados: los sitios salen sin semáforo.';
   const h = edadHoras(meteo);
@@ -967,8 +998,12 @@ function pintarZona() {
   }
 }
 
+/** Repinta el selector salvo con la hoja abierta (se perdería el foco del teclado); al abrirla se repinta igual. */
+const repintarSelector = () => { if (!$<HTMLDialogElement>('#dlg-especie').open) pintarSelectorEspecie(); };
+
 function repintarMeteo() {
   pintarSemaforoMapa();
+  repintarSelector();
   pintarTarjeta();
   if ($('#p-zona').classList.contains('activa')) pintarZona();
   if ($('#p-hoy').classList.contains('activa')) pintarHoy();
@@ -995,6 +1030,7 @@ async function iniciarMeteo() {
   const guardado = localStorage.getItem(CLAVE_PUNTO);
   puntoSel = puntosMeteo.find((p) => String(p.id) === guardado) ?? null;
   pintarPuntoMapa();
+  sitiosCandidatos().then((d) => { sitiosRef = d; repintarSelector(); });
   await cargarMeteo(false);
 }
 $('#btn-meteo').addEventListener('click', () => cargarMeteo(true));

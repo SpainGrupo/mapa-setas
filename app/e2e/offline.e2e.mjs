@@ -177,7 +177,9 @@ try {
   await captura('selector-lista-nuevas.png');
   await p.locator('#lista-especies [aria-selected=true]').focus();
   await p.keyboard.press('End');
-  const ultima = idsMapa.at(-1);
+  // El orden de la hoja depende del semáforo de hoy (activas primero): se lee del DOM.
+  const ordenDom = await p.$$eval('#lista-especies [role=option]', (os) => os.map((o) => o.dataset.especie));
+  const ultima = ordenDom.at(-1);
   comprobar(await p.locator(`#lista-especies [data-especie=${ultima}]`).evaluate((o) => o === document.activeElement), 'teclado: Fin lleva a la última especie');
   await p.keyboard.press('Home');
   await p.keyboard.press('ArrowDown');
@@ -186,7 +188,7 @@ try {
   await p.locator('#dlg-especie').waitFor({ state: 'hidden' });
   await reposo();
   const capa = await p.evaluate(() => window.__setas.mapa.getSource('idoneidad').url);
-  comprobar(segunda === idsMapa[1] && capa.includes(`idoneidad_${segunda}_`) && await p.locator('#sel-especie').inputValue() === segunda
+  comprobar(segunda === ordenDom[1] && capa.includes(`idoneidad_${segunda}_`) && await p.locator('#sel-especie').inputValue() === segunda
     && await p.locator('#btn-especie').evaluate((b) => b === document.activeElement && b.dataset.especie) === segunda,
     `teclado: ↓ + Intro elige ${segunda}, cambia la capa (${capa.split('/').pop()}) y devuelve el foco al botón`);
   await elegirEspecie('boletus_edulis');
@@ -450,6 +452,31 @@ try {
   await p.locator('#zona-grafico').scrollIntoViewIfNeeded();
   await captura('09-zona-grafico.png');
 
+  // Selector de especie del mapa con el tiempo de hoy (fixture): activas arriba, «No activas ahora» y debajo atenuadas.
+  await p.getByRole('button', { name: /Mapa/ }).click();
+  await p.locator('#btn-especie').click();
+  await p.locator('#dlg-especie[open]').waitFor();
+  const selHoy = await p.evaluate(() => ({ orden: window.__setas.selector(),
+    dom: [...document.querySelectorAll('#lista-especies > li')].map((li) => li.classList.contains('se-divisor') ? '|' : li.dataset.especie),
+    divisor: document.querySelector('#lista-especies .se-divisor')?.textContent,
+    inact: [...document.querySelectorAll('#lista-especies .inactiva')].map((li) => ({ id: li.dataset.especie,
+      et: li.querySelector('.se-inactiva')?.textContent, op: +getComputedStyle(li).opacity, gris: getComputedStyle(li.querySelector('.miniatura-especie')).filter })) }));
+  const esperadoAct = Object.keys(FIXTURE.esperado).filter((k) => /verde|amarillo/.test(FIXTURE.esperado[k]));
+  const rangoEst = (id) => (FIXTURE.esperado[id] === 'verde' ? 0 : 1);
+  comprobar(selHoy.divisor === 'No activas ahora' && selHoy.orden.activas.length === esperadoAct.length
+    && selHoy.orden.activas.every((id) => esperadoAct.includes(id))
+    && selHoy.orden.activas.every((id, i, a) => !i || rangoEst(a[i - 1]) <= rangoEst(id))
+    && selHoy.dom.join(',') === [...selHoy.orden.activas, '|', ...selHoy.orden.inactivas.map((x) => x.id)].join(',')
+    && selHoy.inact.length === 1 && selHoy.inact[0].id === 'amanita_caesarea' && selHoy.inact[0].et === 'seco'
+    && selHoy.inact[0].op < 1 && /grayscale/.test(selHoy.inact[0].gris),
+    `selector: ${selHoy.orden.activas.length} activas hoy (verde → amarillo), «No activas ahora» y A. caesarea atenuada «seco»: ${selHoy.dom.join(' ')}`);
+  await p.locator('#lista-especies .se-divisor').scrollIntoViewIfNeeded();
+  await captura('selector-activas.png');
+  await p.locator('#lista-especies [data-especie=amanita_caesarea]').click();
+  await p.locator('#dlg-especie').waitFor({ state: 'hidden' });
+  comprobar(await p.locator('#sel-especie').inputValue() === 'amanita_caesarea', 'una especie «no activa» se puede elegir igual');
+  await elegirEspecie('boletus_edulis');
+
   // Fase 9: pestaña Hoy con el día fijo (?hoy=) y el fixture de 16 días.
   await p.locator('.pestanas [data-p=p-hoy]').click();
   await p.waitForSelector('#top-general .top-fila');
@@ -491,11 +518,40 @@ try {
     `calendario 12×12 con marca en octubre: ${cal.filas.map((f) => `${f.id.split('_')[1]} «${f.t}»`).join(', ')}`);
   await p.locator('#tit-calendario').scrollIntoViewIfNeeded();
   await captura('calendario-hoy.png');
-  await p.locator('#calendario .cal-fila[data-especie=lactarius_deliciosus]').click();
+  await p.locator('#calendario .cal-sitios[data-especie=lactarius_deliciosus]').click();
   await p.waitForFunction(() => window.__setas.tops().especie === 'lactarius_deliciosus');
   await p.locator('#hoy-ver-ficha:not([hidden])').waitFor({ timeout: 5000 });
-  comprobar((await tops()).top.length === 10, 'tocar una seta del calendario muestra su top 10 y «Ver ficha»');
+  comprobar((await tops()).top.length === 10, '«Sitios» en una fila del calendario muestra su top 10 y «Ver ficha»');
   await captura('calendario-tocar.png');
+  // Tocar la seta en el calendario abre su ficha con «Cuándo está activa».
+  const cuando = async (fila, ficha) => {
+    await p.locator('.pestanas [data-p=p-hoy]').click();
+    await p.locator(`#calendario .cal-fila[data-especie=${fila}]`).click();
+    await p.locator(`#guia-ficha[data-id=${ficha}] .cuando`).waitFor({ timeout: 10000 });
+    return p.locator('#guia-ficha .cuando').evaluate((s) => ({ especie: s.dataset.especie, linea: s.querySelector('.cuando-linea b')?.textContent,
+      conf: s.querySelector('.cuando-confianza')?.textContent ?? '', meses: s.querySelectorAll('.cuando-meses i').length,
+      oct: s.querySelectorAll('.cuando-meses i')[9].classList.contains('actual'),
+      dias: [...s.querySelectorAll('.cuando-dias li')].map((li) => ({ e: li.dataset.estado, ico: !!li.querySelector('svg use'), sr: li.querySelector('.sr')?.textContent ?? '' })),
+      leyenda: s.querySelector('.cuando-leyenda')?.textContent ?? '', nota: s.querySelector('.nota')?.textContent ?? '',
+      arriba: s.compareDocumentPosition(document.querySelector('#guia-ficha .carrusel-guia')) & Node.DOCUMENT_POSITION_FOLLOWING }));
+  };
+  const c1 = await cuando('boletus_aereus', 'boletus_aereus');
+  comprobar(c1.especie === 'boletus_aereus' && /^Activa desde (hoy|~\d\d\/\d\d) hasta ~\d\d\/\d\d$/.test(c1.linea) && /^Confianza (alta|media|baja)$/.test(c1.conf)
+    && c1.meses === 12 && c1.oct && c1.dias.length === 16 && c1.dias[0].e === 'verde'
+    && c1.dias.every((d) => d.ico && /: (Buen momento|Esperar|Mal momento|Sin datos fiables)$/.test(d.sr))
+    && /Buen momento/.test(c1.leyenda) && /^Con el tiempo de /.test(c1.nota) && c1.arriba && !PROHIBIDO.test(c1.linea + c1.leyenda + c1.nota),
+    `calendario → ficha de B. aereus con «Cuándo está activa»: «${c1.linea}» (${c1.conf}), 12 meses con octubre, 16 días ${c1.dias.map((d) => d.e[0]).join('')}`);
+  await p.locator('#guia-ficha .cuando').scrollIntoViewIfNeeded();
+  await captura('ficha-calendario.png');
+  const c2 = await cuando('lactarius_deliciosus', 'lactarius_deliciosus');
+  comprobar(/^Se espera a partir de ~\d\d\/\d\d$/.test(c2.linea) && c2.conf && c2.dias[0].e === 'amarillo',
+    `L. deliciosus (esperar): «${c2.linea}» (${c2.conf})`);
+  for (const id of ['lactarius_deliciosus', 'boletus_aereus']) {   // «atrás» dos veces: la Guía vuelve a su lista
+    await p.locator(`#guia-ficha[data-id=${id}] .btn-volver`).click();
+  }
+  await p.locator('#guia-vista-lista').waitFor();
+  await p.locator('.pestanas [data-p=p-hoy]').click();
+  await p.waitForSelector('#top-general .top-fila');
   // +4 días: confianza media y el orden cambia (los níscalos entran en ventana).
   await p.locator('#hoy-dias .chip[data-fecha="' + sumar(HOY_E2E, 4) + '"]').click();
   await p.waitForFunction((f) => window.__setas.tops()?.fecha === f && document.body.dataset.hoy === f, sumar(HOY_E2E, 4));

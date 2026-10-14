@@ -24,14 +24,14 @@ const CAPTURAS = join(dirname(fileURLToPath(import.meta.url)), 'capturas');
 mkdirSync(CAPTURAS, { recursive: true });
 const PUNTO = { latitude: 36.589, longitude: -5.244 };   // máximo local de idoneidad de caesarea
 // Fase 8: celda de acceso con `uv run python -m setas_pipeline.acceso --consultar 36.61083 -5.24579` →
-// 35 min, +128 m, 9 pasos de 100 m, aparcamiento 88960 (36.60911, −5.25328, vía «service» sin nombre).
+// 36 min, +138 m, 9 pasos de 100 m, aparcamiento 85182 (36.60908, −5.25496, vía «service» sin nombre).
 // Restricciones: punto dentro del Parque Nacional Sierra de las Nieves (representative_point del recinto en
 // exportar.restricciones_gdf()); ACCESO y PUNTO quedan fuera de todo recinto.
 const RESTRINGIDO = { lat: 36.67638, lon: -4.97927, tipo: 'parque_nacional', chip: 'Parque Nacional · Sierra de las Nieves' };
 const ESPECIES_NUEVAS = ['lactarius_deliciosus', 'lactarius_sanguifluus', 'cantharellus_cibarius', 'amanita_ponderosa',
   'macrolepiota_procera', 'pleurotus_eryngii', 'terfezia_arenaria'];
 const FICHA_DE = { boletus_aestivalis: 'boletus_reticulatus', lactarius_sanguifluus: 'lactarius_deliciosus' };
-const ACCESO = { lat: 36.61083, lon: -5.24579, tiempo: '35 min', subida: '+128 m', via: 'camino de servicio sin nombre', aparc: [36.60911, -5.25328] };
+const ACCESO = { lat: 36.61083, lon: -5.24579, tiempo: '36 min', subida: '+138 m', via: 'camino de servicio sin nombre', aparc: [36.60908, -5.25496] };
 const FIXTURE = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'fixtures/open-meteo.json'), 'utf8'));
 const NOTA = 'Ñandú & <castaños> "junto" al \'arroyo\' ✓';
 const FOTOS_GUIA = join(dirname(fileURLToPath(import.meta.url)), '../../guia/fotos');
@@ -696,7 +696,7 @@ try {
   await p.locator('#ta-guardar').click();
   await p.locator('#dlg-sitio[open]').waitFor();
   const txtAcceso = await p.locator('#acceso-sitio').textContent();
-  comprobar(/^Aparcar en camino de servicio sin nombre · 35 min a pie, \+128 m de subida$/.test(txtAcceso)
+  comprobar(/^Aparcar en camino de servicio sin nombre · 36 min a pie, \+138 m de subida$/.test(txtAcceso)
     && km((await p.locator('#coord-sitio').textContent()).split(' · ')[0].split(', ').map(Number), [ACCESO.lat, ACCESO.lon]) < 0.01,
     `«Guardar sitio» abre el formulario en el punto pulsado: «${txtAcceso}»`);
   await captura('acceso-guardar.png');

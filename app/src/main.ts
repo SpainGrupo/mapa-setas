@@ -328,10 +328,10 @@ async function calcularAcceso(lat: number, lon: number): Promise<CalculoAcceso> 
   let d;
   try { d = manifest ? await datosAcceso(manifest) : null; } catch (e) {
     console.warn('acceso', e);
-    return { estado: 'error', texto: 'No se pudieron leer los datos de acceso. Si no tienes cobertura, descarga los mapas en Ajustes cuando la tengas.' };
+    return { estado: 'error', texto: 'No se pudieron leer los datos de acceso. Vuelve a descargar los mapas en Ajustes cuando tengas cobertura.' };
   }
   if (!d) return { estado: 'sin_datos', texto: navigator.onLine ? 'Esta versión de los mapas no trae datos de acceso.'
-    : 'Sin conexión y sin los datos de acceso descargados: descárgalos en Ajustes cuando tengas cobertura.' };
+    : 'Sin conexión y sin datos de acceso descargados. Descárgalos en Ajustes cuando tengas cobertura.' };
   try {
     const c = await consultar(d.cab, d.lector, lat, lon);
     const t1 = performance.now();

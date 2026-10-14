@@ -1,0 +1,600 @@
+<!doctype html>
+<!--
+  Direction A — "Memphis de campo" (seconds roulette → web style #3 Memphis Maximalism, library fidelity 72%).
+
+  How Memphis was translated (and where it was downgraded on purpose):
+  - Colour-block collage → flat, saturated blocks (sol, cielo, lila) stacked with hard 4px offset shadows.
+    DOWNGRADE: no paper grain, halftone or "archival" texture (cannot be faked honestly in CSS, and it
+    costs legibility in sunlight). Texture is reduced to flat blocks plus one dot field in the Hoy header.
+  - Memphis red is REMOVED from the palette. Red (#a4161a) appears only for danger. Its collage slot is
+    taken by "lila" (#c9b6f2) and "sol" (#ffcf33).
+  - Rotations and overlapping modules live only on Mapa, Hoy, Calendario and Ruta a pie.
+    The recognizer screens (04–06) are deliberately sober: no rotation, no squiggles, no display face,
+    no decorative colour — only ink, paper, forest and danger red.
+  - Retro display face (Bungee) is used for screen titles and big numbers only; all reading text is
+    Archivo ≥16px (labels ≥13px), weight 600–800 for sunlight.
+  - Signature element: "el garabato de cota" — the walk's real elevation profile drawn as a fat Memphis
+    squiggle with a hard offset shadow (Acceso card, Ruta a pie profile, and the Temporadas header).
+  - Navigation: 5 tabs (Mapa · Hoy · Reconocer · Guía · Más). "Mis sitios" and "Ajustes" live under "Más";
+    saved spots are also reachable as pins on the map, so they don't need a permanent tab.
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=430">
+<title>Memphis de campo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Bungee&display=swap" rel="stylesheet">
+<script src="../shared/datos.js"></script>
+<script src="../shared/anatomia.js"></script>
+<style>
+:root{
+  --tinta:#111111;      /* text, borders, hard shadows */
+  --papel:#f4f1ea;      /* base ground (16.7:1 with tinta) */
+  --blanco:#ffffff;     /* raised modules */
+  --bosque:#1b4332;     /* identity: headers, selected, primary in recognizer */
+  --oxido:#983208;      /* rust, darkened to 7.3:1 with white: primary MAP action only */
+  --sol:#ffcf33;        /* collage block: selection, FAB, current month */
+  --cielo:#5bb8e6;      /* collage block: layers, stats */
+  --lila:#c9b6f2;       /* collage block: confidence, info (replaces Memphis red) */
+  --gris:#5a5650;       /* secondary text on papel (7.0:1) */
+  --peligro:#a4161a;    /* DANGER ONLY */
+  --peligro-suave:#f8dedd;
+  --anat-ink:#111; --anat-paper:#fbfaf6;
+  --sombra:4px 4px 0 var(--tinta);
+  --borde:3px solid var(--tinta);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#888;font-family:Archivo,system-ui,sans-serif;color:var(--tinta);font-size:16px;line-height:1.3;font-synthesis:none}
+.screen{background:var(--papel);font-family:Archivo,system-ui,sans-serif}
+.disp{font-family:Bungee,Archivo,sans-serif;font-weight:400;letter-spacing:.01em}
+.num{font-variant-numeric:tabular-nums}
+img{display:block}
+button{font:inherit;color:inherit;background:none;border:0}
+
+/* ---- three button styles ---- */
+.b1{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 18px;border:var(--borde);
+  background:var(--bosque);color:#fff;font-weight:800;font-size:18px;box-shadow:var(--sombra);border-radius:6px}
+.b1.mapa{background:var(--oxido)}
+.b2{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;min-width:48px;padding:0 14px;border:var(--borde);
+  background:var(--blanco);font-weight:700;font-size:16px;border-radius:6px}
+.b3{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 14px;border:2px solid var(--tinta);border-radius:999px;
+  background:var(--blanco);font-weight:700;font-size:15px;white-space:nowrap}
+.b3.on{background:var(--sol);box-shadow:3px 3px 0 var(--tinta)}
+svg.ic{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ---- tab bar ---- */
+.tabs{position:absolute;left:0;right:0;bottom:0;height:98px;padding:0 6px 34px;background:var(--blanco);border-top:var(--borde);
+  display:grid;grid-template-columns:repeat(5,1fr);z-index:40}
+.tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-weight:800;font-size:13px;color:var(--tinta);
+  text-decoration:none;margin:6px 3px 4px;border-radius:6px}
+.tabs a.on{background:var(--sol);border:2px solid var(--tinta);box-shadow:3px 3px 0 var(--tinta)}
+
+.scroll{position:absolute;left:0;right:0;top:59px;bottom:98px;overflow-y:auto;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+.pad{padding:0 16px}
+.lbl{font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.muted{color:var(--gris)}
+
+/* ================= MAPA ================= */
+.mapbg{position:absolute;inset:0;width:430px;height:932px;object-fit:cover}
+.mapsvg{position:absolute;inset:0;z-index:5}
+.topbar{position:absolute;top:63px;left:16px;right:16px;display:flex;gap:10px;z-index:20}
+.pill{flex:1;display:flex;align-items:center;gap:10px;height:60px;padding:0 12px 0 6px;background:var(--blanco);border:var(--borde);box-shadow:var(--sombra);border-radius:6px}
+.pill img{width:46px;height:46px;object-fit:cover;border:2px solid var(--tinta);border-radius:4px}
+.pill b{display:block;font-size:18px;font-weight:800}
+.pill small{display:block;font-size:13px;font-weight:600;color:var(--gris)}
+.capas{width:60px;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:var(--cielo);
+  border:var(--borde);box-shadow:var(--sombra);border-radius:6px;font-size:13px;font-weight:800}
+.chips{position:absolute;top:137px;left:16px;right:16px;display:flex;gap:8px;z-index:20}
+.tag{display:inline-flex;align-items:center;height:32px;padding:0 10px;border:2px solid var(--tinta);font-size:13px;font-weight:800;background:var(--lila);border-radius:4px}
+.fab{position:absolute;right:16px;width:64px;height:64px;border-radius:50%;background:var(--sol);border:var(--borde);box-shadow:var(--sombra);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;font-weight:800;z-index:20}
+.hint{position:absolute;right:90px;height:40px;display:flex;align-items:center;padding:0 12px;background:var(--tinta);color:#fff;font-size:14px;font-weight:700;border-radius:4px;z-index:20}
+
+
+.sheet{position:absolute;left:0;right:0;bottom:98px;background:var(--blanco);border-top:var(--borde);z-index:30;padding:12px 16px 14px}
+.sheet:before{content:"";position:absolute;left:16px;top:-14px;width:110px;height:14px;background:var(--sol);border:var(--borde);border-bottom:0}
+.sh-h{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sh-h h2{font-size:21px}
+.sh-h small{display:block;font-size:13px;font-weight:600;color:var(--gris)}
+.stats{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:8px;margin:10px 0 8px}
+.stat{border:2px solid var(--tinta);padding:6px 8px 7px;border-radius:4px}
+.stat .lbl{font-size:13px;letter-spacing:.02em}
+.stat b{display:block;font-size:22px;font-weight:900;line-height:1.05}
+.s-sol{background:var(--sol)}.s-cielo{background:var(--cielo)}.s-lila{background:var(--lila)}
+.aparcar{font-size:16px;font-weight:600}
+.aparcar b{font-weight:800}
+.aviso{font-size:14px;font-weight:600;color:var(--gris);margin:6px 0 12px}
+.row{display:flex;gap:10px}
+.row .b1{flex:1}
+
+/* ================= HOY ================= */
+.hoy-head{position:relative;height:96px;margin:6px 16px 0}
+.dots{position:absolute;right:0;top:4px;width:120px;height:70px;background-image:radial-gradient(var(--tinta) 2.2px,transparent 2.6px);background-size:12px 12px;opacity:.9}
+.hoy-tit{position:absolute;left:0;top:12px;display:flex;align-items:center;gap:12px}
+.hoy-tit .disp{font-size:46px;line-height:1;background:var(--sol);border:var(--borde);box-shadow:var(--sombra);padding:8px 12px 4px;transform:rotate(-2deg)}
+.hoy-tit div b{display:block;font-size:20px;font-weight:900}
+.hoy-tit div span{font-size:15px;font-weight:600;color:var(--gris)}
+.tri{position:absolute;right:28px;top:52px;width:0;height:0;border-left:22px solid transparent;border-right:22px solid transparent;border-bottom:36px solid var(--cielo);filter:drop-shadow(3px 3px 0 var(--tinta))}
+.dias{display:flex;gap:8px;padding:6px 16px 10px;overflow:hidden}
+.dia{flex:none;width:86px;height:72px;border:2px solid var(--tinta);background:var(--blanco);border-radius:6px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.dia b{font-size:16px;font-weight:900}.dia span{font-size:13px;font-weight:700;color:var(--gris)}
+.dia.on{background:var(--bosque);color:#fff;box-shadow:4px 4px 0 var(--sol),4px 4px 0 2px var(--tinta)}
+.dia.on span{color:#fff}
+.conf{margin:4px 16px 10px;display:flex;gap:10px;align-items:center;background:var(--lila);border:2px solid var(--tinta);padding:8px 12px;border-radius:6px}
+.conf b{font-size:16px;font-weight:900;white-space:nowrap}
+.conf span{font-size:14px;font-weight:600}
+.filtros{display:flex;gap:8px;padding:0 16px 14px}
+.top1{position:relative;margin:0 16px 18px;background:var(--blanco);border:var(--borde);box-shadow:6px 6px 0 var(--tinta);border-radius:6px;padding:14px}
+.top1 .ph{position:relative;width:118px;height:118px;flex:none}
+.top1 .ph:before{content:"";position:absolute;left:-6px;top:-6px;width:118px;height:118px;background:var(--cielo);border:2px solid var(--tinta);transform:rotate(-4deg)}
+.top1 .ph img{position:relative;width:118px;height:118px;object-fit:cover;border:var(--borde)}
+.rank{position:absolute;right:-10px;top:-14px;width:46px;height:46px;border-radius:50%;background:var(--sol);border:var(--borde);display:flex;align-items:center;justify-content:center;font-size:22px;z-index:2}
+.top1 h3{font-size:23px;font-weight:900;line-height:1.1}
+.top1 .sitio{font-size:16px;font-weight:600;margin:3px 0 6px}
+.estado{display:inline-block;font-size:14px;font-weight:800;background:var(--bosque);color:#fff;padding:3px 8px;border-radius:4px}
+.cifras{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:2px solid var(--tinta);margin:12px 0;border-radius:4px}
+.cifras div{padding:6px 6px;border-right:2px solid var(--tinta)}
+.cifras div:last-child{border:0}
+.cifras b{display:block;font-size:19px;font-weight:900}
+.cifras span{font-size:13px;font-weight:700;color:var(--gris)}
+.lista{margin:0 16px}
+.it{display:flex;align-items:center;gap:12px;min-height:84px;border-top:2px solid var(--tinta);padding:8px 0}
+.it img,.it .nofoto{width:60px;height:60px;object-fit:cover;border:2px solid var(--tinta);flex:none}
+.nofoto{display:flex;align-items:center;justify-content:center;background:var(--lila);font-size:13px;font-weight:800;text-align:center;line-height:1.1}
+.it .n{font-size:20px;width:30px;flex:none}
+.it .t{flex:1;min-width:0}
+.it .t b{display:block;font-size:17px;font-weight:900}
+.it .t span{display:block;font-size:15px;font-weight:600;color:var(--gris)}
+.nota{font-size:14px;font-weight:600;color:var(--gris);padding:12px 16px 24px}
+
+/* ================= CALENDARIO ================= */
+.cal-head{position:relative;margin:8px 16px 12px;height:74px}
+.cal-head .disp{position:absolute;left:0;top:6px;font-size:30px;background:var(--cielo);border:var(--borde);box-shadow:var(--sombra);padding:8px 12px 3px}
+.cal-head p{position:absolute;left:0;top:62px;font-size:14px;font-weight:700}
+.squig{position:absolute;right:0;top:0}
+.cal{margin:14px 16px 0;border:var(--borde);background:var(--blanco);box-shadow:var(--sombra)}
+.cal-r{display:grid;grid-template-columns:128px repeat(12,1fr);height:48px;border-top:1px solid #8a857d}
+.cal-r:first-child{border-top:0;height:34px;background:var(--tinta);color:#fff}
+.cal-r>div{display:flex;align-items:center;justify-content:center;position:relative}
+.cal-r .sp{justify-content:flex-start;padding:0 6px 0 8px;font-size:15px;font-weight:800;line-height:1.05;font-stretch:88%;border-right:2px solid var(--tinta)}
+.cal-r:first-child>div{font-size:13px;font-weight:800}
+.m.si:before{content:"";position:absolute;inset:9px 0;background:var(--bosque)}
+.m.si.ini:before{left:3px;border-radius:10px 0 0 10px}
+.m.si.fin:before{right:3px;border-radius:0 10px 10px 0}
+.m.si.ini.fin:before{border-radius:10px}
+.m.cur{background:var(--sol)}
+.cal-r:first-child .m.cur{background:var(--sol);color:var(--tinta)}
+
+.cal-ley{display:flex;gap:16px;align-items:center;margin:14px 16px;font-size:14px;font-weight:700;flex-wrap:wrap}
+.cal-ley i{display:inline-block;width:26px;height:14px;background:var(--bosque);border-radius:7px;vertical-align:-2px;margin-right:6px}
+.cal-ley i.c{background:var(--sol);border:2px solid var(--tinta);border-radius:0}
+
+/* ================= RECONOCER (sober) ================= */
+.r .scroll{bottom:174px}
+.rhead{display:flex;align-items:center;gap:10px;padding:6px 16px 10px;border-bottom:2px solid var(--tinta);position:sticky;top:0;background:var(--papel);z-index:5}
+.rhead h1{font-size:22px;font-weight:900}
+.rhead .b2{padding:0 10px}
+.cand{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:14px 16px}
+.duo{position:relative;height:150px}
+.duo figure{position:absolute;margin:0}
+.duo figure img{object-fit:cover;border:2px solid var(--tinta)}
+.cap{font-size:13px;font-weight:700;margin-top:3px}
+.cred{font-size:11px;font-weight:600;color:var(--gris);line-height:1.2}
+.cand h2{font-size:24px;font-weight:900;line-height:1.05}
+.cand i{font-size:16px;font-weight:600}
+.parec{display:inline-block;margin-top:8px;font-size:15px;font-weight:800;border:2px solid var(--tinta);padding:4px 8px;border-radius:4px}
+.sec{padding:12px 16px 6px;font-size:13px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;border-top:2px solid var(--tinta)}
+.peli{margin:6px 16px 10px;border:3px solid var(--peligro);border-radius:6px;overflow:hidden;background:var(--blanco)}
+.peli .ph{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;background:var(--peligro);color:#fff;padding:8px 10px}
+.peli .ph b{font-size:18px;font-weight:900;flex:1 0 auto}
+.peli .ph span{font-size:13px;font-weight:900;letter-spacing:.04em;border:2px solid #fff;padding:3px 6px;border-radius:3px}
+.peli .pb{display:flex;gap:10px;align-items:center;padding:8px 10px}
+.peli .pb img{width:56px;height:56px;object-fit:cover;border:2px solid var(--tinta);flex:none}
+.peli .pb p{font-size:15px;font-weight:600;flex:1}
+.peli.desc{border-color:var(--tinta);border-style:dashed}
+.peli.desc .ph{background:var(--papel);color:var(--tinta);border-bottom:2px dashed var(--tinta)}
+.peli.desc .ph span{border-color:var(--tinta)}
+.otros{margin:0 16px 8px;font-size:16px;font-weight:600}
+.otros div{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #8a857d}
+.otros div span{font-weight:800}
+.resp{margin:0 16px 10px}
+.resp div{padding:6px 0;border-bottom:1px solid #8a857d}
+.resp p{font-size:14px;font-weight:600;color:var(--gris)}
+.resp b{font-size:16px;font-weight:800}
+.experto{position:absolute;left:0;right:0;bottom:98px;height:76px;background:var(--tinta);color:#fff;display:flex;gap:12px;align-items:center;padding:0 16px;z-index:35}
+.experto .x{width:36px;height:36px;flex:none;background:var(--peligro);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;border-radius:4px}
+.experto p{font-size:15px;font-weight:700;line-height:1.25}
+
+.par-h{padding:8px 16px 12px}
+.par-h h1{font-size:21px;font-weight:900;line-height:1.15}
+.par-h h1 em{font-style:normal;color:var(--peligro)}
+.estado-peli{display:inline-flex;align-items:center;margin-top:8px;background:var(--peligro);color:#fff;font-size:14px;font-weight:900;letter-spacing:.03em;padding:6px 10px;border-radius:4px}
+.par-h p{font-size:15px;font-weight:600;margin-top:8px}
+.fotos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 12px}
+.fotos img{width:100%;height:118px;object-fit:cover;border:2px solid var(--tinta)}
+.fotos .pel img{border:3px solid var(--peligro)}
+.fotos .cap.pel{color:var(--peligro)}
+.rasgo{margin:0 16px 12px;border:2px solid var(--tinta);background:var(--blanco);border-radius:6px;overflow:hidden}
+.rasgo .rh{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-bottom:2px solid var(--tinta);background:var(--papel)}
+.rasgo .rh b{font-size:17px;font-weight:900}
+.sep{font-size:13px;font-weight:900;letter-spacing:.03em;padding:3px 7px;border-radius:3px;border:2px solid var(--tinta)}
+.sep.clave{background:var(--bosque);color:#fff;border-color:var(--bosque)}
+.sep.no{border-style:dashed}
+.rg{display:grid;grid-template-columns:1fr 1fr 1fr}
+.rg>div{padding:7px 8px 9px;border-right:1px solid #8a857d}
+.rg>div:last-child{border:0;background:#ebe6da}
+.rg .lbl{display:block;font-size:13px;letter-spacing:0;text-transform:none;color:var(--gris);margin-bottom:2px}
+.rg .lbl.pel{color:var(--peligro)}
+.rg p{font-size:16px;font-weight:700;line-height:1.2}
+.rg .pend{color:var(--peligro)}
+.dib{display:grid;grid-template-columns:132px 1fr;gap:10px;align-items:center;padding:8px 10px;border-top:1px solid #8a857d}
+.dib p{font-size:15px;font-weight:600}
+.dib2{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:8px 10px;border-top:1px solid #8a857d}
+.dib2 p{font-size:13px;font-weight:800;text-align:center}
+
+.fp{margin:4px 16px 12px;border:3px solid var(--tinta);background:var(--blanco);border-radius:6px}
+.fp h2{font-size:20px;font-weight:900;padding:10px 12px;border-bottom:3px solid var(--tinta)}
+.fp .q{padding:10px 12px;border-bottom:1px solid #8a857d}
+.fp .q:last-child{border:0}
+.fp .q .lbl{display:block;margin-bottom:3px}
+.fp .q p{font-size:16px;font-weight:600}
+.nivel{display:inline-block;margin-top:6px;font-size:14px;font-weight:900;padding:4px 8px;border:2px solid var(--peligro);color:var(--peligro);border-radius:4px}
+.huevos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 16px 12px}
+.huevos figure{border:2px solid var(--tinta);background:var(--blanco);padding:4px 14px 8px;margin:0;border-radius:6px}
+.huevos figure.m{border:3px solid var(--peligro)}
+.huevos figcaption{font-size:14px;font-weight:800;text-align:center;margin-top:4px;line-height:1.2}
+.huevos figure.m figcaption{color:var(--peligro)}
+.fixb{position:absolute;left:16px;right:16px;bottom:200px;z-index:30}
+
+/* ================= RUTA ================= */
+.ruta-sheet{position:absolute;left:0;right:0;bottom:98px;background:var(--blanco);border-top:var(--borde);z-index:30;padding:14px 16px}
+.perfil{position:relative;margin:6px 0 10px}
+.gps{position:absolute;top:63px;left:16px;right:16px;display:flex;gap:10px;z-index:20}
+.gps .pill{height:56px}
+</style>
+</head>
+<body>
+
+<!-- ============ 01 MAPA ============ -->
+<section class="screen" data-shot="01-mapa" data-signal="off">
+  <img class="mapbg" src="../shared/mapa/mapa-z14.png" alt="">
+  <svg class="mapsvg" width="430" height="932" viewBox="0 0 430 932">
+    <!-- route: white casing + ink dashes -->
+    <path d="M70 482 L118 433 L166 433 L214 478 L330 474 L330 372" fill="none" stroke="#fff" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M70 482 L118 433 L166 433 L214 478 L330 474 L330 372" fill="none" stroke="#111" stroke-width="5" stroke-dasharray="12 7" stroke-linejoin="round"/>
+    <!-- P marker: square block -->
+    <rect x="53" y="465" width="38" height="38" fill="#111" transform="translate(4 4)"/>
+    <rect x="51" y="463" width="38" height="38" fill="#ffcf33" stroke="#111" stroke-width="3"/>
+    <text x="70" y="490" text-anchor="middle" font-family="Bungee" font-size="22" fill="#111">P</text>
+    <!-- point: crosshair -->
+    <circle cx="330" cy="372" r="22" fill="none" stroke="#fff" stroke-width="7"/>
+    <circle cx="330" cy="372" r="22" fill="none" stroke="#111" stroke-width="3"/>
+    <path d="M330 340v18M330 386v18M298 372h18M344 372h18" stroke="#111" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="330" cy="372" r="7" fill="#1b4332" stroke="#fff" stroke-width="3"/>
+  </svg>
+  <div class="topbar">
+    <div class="pill"><img src="../shared/fotos/boletus_aereus_1.jpg" alt=""><div style="flex:1"><b>Tentullo</b><small>Zonas favorables hoy</small></div>
+      <svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>
+    <button class="capas"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg>Capas</button>
+  </div>
+  <div class="chips">
+    <span class="b3" style="min-height:40px;font-size:14px;border-width:2px">A cualquier distancia del coche
+      <svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M6 9l6 6 6-6"/></svg></span>
+    <span class="tag">Sin conexión</span>
+  </div>
+  <div class="hint" style="top:186px;left:16px;right:auto">Mantén pulsado el mapa para ver cómo llegar</div>
+  <button class="fab" style="top:462px"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/></svg>Aquí</button>
+
+  <div class="sheet">
+    <div class="sh-h">
+      <div><h2 class="disp">Acceso a pie</h2><small class="num">36.61084, -5.24579</small></div>
+      <button class="b2" aria-label="Cerrar"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <p class="aparcar" style="margin-top:6px">Aparcar en <b>camino de servicio sin nombre</b></p>
+    <div class="stats">
+      <div class="stat s-sol"><span class="lbl">A pie</span><b class="num">36 min</b></div>
+      <div class="stat s-cielo"><span class="lbl">Subida</span><b class="num">+138 m</b></div>
+      <div class="stat s-lila" style="position:relative;overflow:hidden"><span class="lbl">Moderada</span><svg id="mini-perfil" width="100" height="30" style="display:block"></svg></div>
+    </div>
+    <p class="aviso">Estimación: puede haber fincas privadas, vallas o barrancos.</p>
+    <div class="row">
+      <button class="b1 mapa"><svg class="ic" viewBox="0 0 24 24"><path d="M13 4a1.5 1.5 0 1 0 0 .1M10 21l2-6 3 3v3M8 12l3-4 3 2 3 1M11 8l-1 5"/></svg>Ruta a pie</button>
+      <button class="b2" style="min-height:56px">En coche</button>
+      <button class="b2" style="min-height:56px;width:56px;padding:0" aria-label="Guardar sitio"><svg class="ic" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg></button>
+    </div>
+  </div>
+  <nav class="tabs" data-on="mapa"></nav>
+</section>
+
+<!-- ============ 02 HOY ============ -->
+<section class="screen" data-shot="02-hoy">
+  <div class="scroll">
+    <div class="hoy-head">
+      <div class="dots"></div><div class="tri"></div>
+      <div class="hoy-tit"><span class="disp">Hoy</span><div><b>mar 14 oct</b><span>Dónde ir hoy</span></div></div>
+    </div>
+    <div class="dias" id="dias"></div>
+    <div class="conf"><b>Previsión fiable</b><span>A 3 días o menos suele acertar.</span></div>
+    <div class="filtros">
+      <span class="b3">Todas las especies <svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M6 9l6 6 6-6"/></svg></span>
+      <span class="b3">Cualquier dificultad <svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M6 9l6 6 6-6"/></svg></span>
+    </div>
+    <div id="top1"></div>
+    <div class="lista" id="lista"></div>
+    <p class="nota">El número dice cómo está el bosque hoy. No indica que haya setas. Lugares y cifras de muestra.</p>
+  </div>
+  <nav class="tabs" data-on="hoy"></nav>
+</section>
+
+<!-- ============ 03 CALENDARIO ============ -->
+<section class="screen" data-shot="03-calendario">
+  <div class="scroll">
+    <div class="cal-head">
+      <span class="disp">Temporadas</span>
+      <svg class="squig" width="120" height="56" viewBox="0 0 120 56"><path d="M6 40 Q20 8 34 30 T62 26 T90 18 T116 12" fill="none" stroke="#111" stroke-width="9" stroke-linecap="round" transform="translate(3 3)"/><path d="M6 40 Q20 8 34 30 T62 26 T90 18 T116 12" fill="none" stroke="#c9b6f2" stroke-width="7" stroke-linecap="round"/></svg>
+    </div>
+    <p class="pad" style="font-size:16px;font-weight:600;margin-top:-2px">12 especies, 12 meses. Octubre es este mes.</p>
+    <div class="cal" id="cal"></div>
+    <div class="cal-ley"><span><i></i>Suele salir</span><span><i class="c"></i>Este mes</span></div>
+    <p class="nota" style="padding-top:0">Toca una especie para ver su ficha y su mapa.</p>
+  </div>
+  <nav class="tabs" data-on="hoy"></nav>
+</section>
+
+<!-- ============ 04 RECONOCER: RESUMEN (sober) ============ -->
+<section class="screen r" data-shot="04-reconocer-resumen">
+  <div class="scroll" id="resumen"></div>
+  <div class="experto"><div class="x">!</div><p class="av"></p></div>
+  <nav class="tabs" data-on="reconocer"></nav>
+</section>
+
+<!-- 04b: same result scrolled: the ruled-out lookalike stays listed -->
+<section class="screen r" data-shot="04b-reconocer-resumen-descartada" data-scroll="560">
+  <div class="scroll" id="resumen2"></div>
+  <div class="experto"><div class="x">!</div><p class="av"></p></div>
+  <nav class="tabs" data-on="reconocer"></nav>
+</section>
+
+<!-- ============ 05 RECONOCER: COMPARAR (sober) ============ -->
+<section class="screen r" data-shot="05-reconocer-comparar">
+  <div class="scroll" id="comparar"></div>
+  <div class="experto"><div class="x">!</div><p class="av"></p></div>
+  <nav class="tabs" data-on="reconocer"></nav>
+</section>
+
+<!-- 05b: same pair scrolled to the deciding drawings -->
+<section class="screen r" data-shot="05b-reconocer-comparar-dibujos" data-scroll="820">
+  <div class="scroll" id="comparar2"></div>
+  <div class="experto"><div class="x">!</div><p class="av"></p></div>
+  <nav class="tabs" data-on="reconocer"></nav>
+</section>
+
+<!-- ============ 06 FALSO POSITIVO (sober) ============ -->
+<section class="screen r" data-shot="06-reconocer-falso-positivo">
+  <div class="scroll" id="fp"></div>
+  <div class="experto"><div class="x">!</div><p class="av"></p></div>
+  <nav class="tabs" data-on="reconocer"></nav>
+</section>
+
+<!-- ============ 07 MUSCARIA: descartada, still reachable ============ -->
+<section class="screen r" data-shot="07-reconocer-muscaria-descartada">
+  <div class="scroll" id="musc"></div>
+  <div class="experto"><div class="x">!</div><p class="av"></p></div>
+  <nav class="tabs" data-on="reconocer"></nav>
+</section>
+
+<!-- ============ 08 RUTA A PIE ============ -->
+<section class="screen" data-shot="08-ruta-a-pie" data-signal="off">
+  <img class="mapbg" src="../shared/mapa/mapa-z15.png" alt="">
+  <svg class="mapsvg" width="430" height="932" viewBox="0 0 430 932">
+    <path d="M60 430 L120 356 L190 356 L250 410 L360 404 L360 240" fill="none" stroke="#fff" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M60 430 L120 356 L190 356 L250 410 L360 404 L360 240" fill="none" stroke="#111" stroke-width="6" stroke-dasharray="14 8" stroke-linejoin="round"/>
+    <path d="M60 430 L120 356 L170 356" fill="none" stroke="#983208" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+    <rect x="45" y="417" width="38" height="38" fill="#111"/><rect x="41" y="413" width="38" height="38" fill="#ffcf33" stroke="#111" stroke-width="3"/>
+    <text x="60" y="440" text-anchor="middle" font-family="Bungee" font-size="22" fill="#111">P</text>
+    <circle cx="360" cy="240" r="20" fill="none" stroke="#fff" stroke-width="7"/><circle cx="360" cy="240" r="20" fill="none" stroke="#111" stroke-width="3"/>
+    <circle cx="360" cy="240" r="7" fill="#1b4332" stroke="#fff" stroke-width="3"/>
+    <!-- GPS: you are here -->
+    <circle cx="170" cy="356" r="26" fill="#5bb8e6" fill-opacity=".35"/>
+    <circle cx="170" cy="356" r="11" fill="#5bb8e6" stroke="#111" stroke-width="3"/>
+  </svg>
+  <div class="gps">
+    <div class="pill" style="background:var(--sol)"><svg class="ic" viewBox="0 0 24 24" style="margin-left:8px"><path d="M12 2l7 19-7-4-7 4z"/></svg><div><b>Siguiendo tu GPS</b><small style="color:#111">Ruta de muestra · 920 m</small></div></div>
+    <button class="capas" style="background:var(--blanco)" aria-label="Salir"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>Salir</button>
+  </div>
+  <div class="ruta-sheet">
+    <div class="sh-h"><h2 class="disp">Ruta a pie</h2><span class="num" style="font-size:16px;font-weight:800">920 m · 36 min</span></div>
+    <div class="perfil"><svg id="perfil" width="398" height="150"></svg></div>
+    <div class="stats" style="grid-template-columns:1fr 1fr 1fr;margin:0 0 6px">
+      <div class="stat s-sol"><span class="lbl">Subida</span><b class="num">+138 m</b></div>
+      <div class="stat s-cielo"><span class="lbl">Bajada</span><b class="num">−61 m</b></div>
+      <div class="stat s-lila"><span class="lbl">Dificultad</span><b>Moderada</b></div>
+    </div>
+    <p class="aviso" style="margin:6px 0 0">Estimación: puede haber fincas privadas, vallas o barrancos.</p>
+  </div>
+  <nav class="tabs" data-on="mapa"></nav>
+</section>
+
+<script>
+(function(){
+  const S = window.SETAS, R = S.reconocer;
+  const $ = (id) => document.getElementById(id);
+  const esp = Object.fromEntries(S.especies.map((e) => [e.id, e]));
+  const foto = (k) => `../shared/fotos/${k}.jpg`;
+  const ic = (d) => `<svg class="ic" viewBox="0 0 24 24">${d}</svg>`;
+  const chev = ic('<path d="M9 6l6 6-6 6"/>');
+
+  /* ---- tab bar ---- */
+  const TABS = [
+    ['mapa','Mapa','<path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/>'],
+    ['hoy','Hoy','<rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 10h18M8 3v4M16 3v4"/>'],
+    ['reconocer','Reconocer','<path d="M4 8h3l2-3h6l2 3h3v12H4z"/><circle cx="12" cy="13.5" r="3.5"/>'],
+    ['guia','Guía','<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/>'],
+    ['mas','Más','<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'],
+  ];
+  document.querySelectorAll('nav.tabs').forEach((n) => {
+    n.innerHTML = TABS.map(([k, t, d]) => `<a class="${n.dataset.on === k ? 'on' : ''}">${ic(d)}${t}</a>`).join('');
+  });
+
+  /* ---- signature: the elevation squiggle ---- */
+  function perfilPath(p, w, h, padT, padB) {
+    const min = Math.min(...p), max = Math.max(...p);
+    const pts = p.map((v, i) => [i * (w / (p.length - 1)), padT + (1 - (v - min) / (max - min)) * (h - padT - padB)]);
+    let d = `M${pts[0][0]} ${pts[0][1]}`;
+    for (let i = 1; i < pts.length; i++) {
+      const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], cx = (x0 + x1) / 2;
+      d += ` C${cx} ${y0} ${cx} ${y1} ${x1} ${y1}`;
+    }
+    return { d, pts, min, max };
+  }
+  const P = S.acceso.perfil;
+  { // mini squiggle in the Acceso card
+    const { d } = perfilPath(P, 92, 30, 5, 5);
+    $('mini-perfil').innerHTML = `<g transform="translate(2 0)"><path d="${d}" transform="translate(2 2)" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round"/>
+      <path d="${d}" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/></g>`;
+  }
+  { // full profile in Ruta a pie
+    const W = 380, H = 150, X = 8;
+    const { d, pts, min, max } = perfilPath(P, W - 16, H, 34, 30);
+    const iMax = P.indexOf(max), last = pts.length - 1;
+    const area = `${d} L${pts[last][0]} ${H - 22} L0 ${H - 22} Z`;
+    const lab = (i, t, anchor) => {
+      const [x, y] = pts[i];
+      return `<circle cx="${x}" cy="${y}" r="7" fill="#fff" stroke="#111" stroke-width="3"/>
+        <text x="${x}" y="${y - 14}" text-anchor="${anchor}" font-family="Archivo" font-weight="800" font-size="14" fill="#111">${t}</text>`;
+    };
+    $('perfil').innerHTML = `<g transform="translate(${X} 0)">
+      <rect x="0" y="${H - 22}" width="${W - 16}" height="2" fill="#111"/>
+      <path d="${area}" fill="#c9b6f2"/>
+      <path d="${d}" transform="translate(4 4)" fill="none" stroke="#111" stroke-width="12" stroke-linecap="round"/>
+      <path d="${d}" fill="none" stroke="#ffcf33" stroke-width="10" stroke-linecap="round"/>
+      <path d="${d}" fill="none" stroke="#111" stroke-width="2"/>
+      <rect x="${pts[3][0] - 1}" y="18" width="3" height="${H - 40}" fill="#983208"/>
+      <text x="${pts[3][0] + 6}" y="${H - 6}" font-family="Archivo" font-weight="800" font-size="13" fill="#983208">Estás aquí</text>
+      ${lab(0, 'P ' + P[0] + ' m', 'start')}${lab(iMax, 'máx ' + max + ' m', 'end')}
+      <text x="${pts[last][0]}" y="${H - 6}" text-anchor="end" font-family="Archivo" font-weight="800" font-size="13" fill="#111">fin ${P[last]} m</text>
+      <text x="0" y="${H - 6}" font-family="Archivo" font-weight="700" font-size="13" fill="#5a5650">0 m</text>
+    </g>`;
+  }
+
+  /* ---- Hoy ---- */
+  const CONF = { alta: 'fiable', media: 'orientativa', baja: 'dudosa' };
+  $('dias').innerHTML = S.dias.map((d, i) => `<div class="dia ${i === 0 ? 'on' : ''}"><b>${d.k}</b>${d.d ? `<span>${d.d}</span>` : ''}<span>${CONF[d.conf]}</span></div>`).join('');
+  const t1 = S.top[0], e1 = esp[t1.especie];
+  $('top1').innerHTML = `<div class="top1">
+    <div style="display:flex;gap:16px">
+      <div class="ph"><img src="${foto(e1.foto)}" alt=""><span class="rank disp">1</span></div>
+      <div style="min-width:0"><h3>${e1.comun}</h3><p class="sitio">${t1.sitio}</p><span class="estado">${t1.estado} · ${t1.punt}</span><p style="font-size:14px;font-weight:600;margin-top:8px">Aparcar en ${t1.aparcar}</p></div>
+    </div>
+    <div class="cifras num"><div><b>${t1.min}′</b><span>a pie</span></div><div><b>+${t1.sube}</b><span>m subida</span></div><div><b>${t1.dif}</b><span>dificultad</span></div><div><b>${t1.km}</b><span>km coche</span></div></div>
+    <div class="row"><button class="b1 mapa">${ic('<path d="M13 4a1.5 1.5 0 1 0 0 .1M10 21l2-6 3 3v3M8 12l3-4 3 2 3 1M11 8l-1 5"/>')}Ruta a pie</button>
+      <button class="b2" style="min-height:56px;width:56px;padding:0" aria-label="Más opciones">${ic('<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>')}</button></div>
+  </div>`;
+  $('lista').innerHTML = S.top.slice(1).map((t) => {
+    const e = esp[t.especie];
+    const im = e.foto ? `<img src="${foto(e.foto)}" alt="">` : `<div class="nofoto">sin<br>foto</div>`;
+    return `<div class="it"><span class="n disp">${t.n}</span>${im}<div class="t"><b>${e.comun} · ${t.punt}</b><span>${t.sitio}</span><span>${t.min} min a pie · ${t.dif}</span></div>
+      <button class="b2" style="width:48px;padding:0" aria-label="Más opciones">${ic('<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>')}</button></div>`;
+  }).join('');
+
+  /* ---- Calendario ---- */
+  const MES = ['E','F','M','A','M','J','J','A','S','O','N','D'];
+  let cal = `<div class="cal-r"><div class="sp" style="border-color:#fff">Especie</div>${MES.map((m, i) => `<div class="m ${i + 1 === S.mesActual ? 'cur' : ''}">${m}</div>`).join('')}</div>`;
+  S.especies.forEach((e) => {
+    cal += `<div class="cal-r"><div class="sp">${e.comun}</div>` + MES.map((_, i) => {
+      const m = i + 1, si = e.meses.includes(m);
+      const prev = e.meses.includes(m === 1 ? 12 : m - 1), next = e.meses.includes(m === 12 ? 1 : m + 1);
+      return `<div class="m ${si ? 'si' : ''} ${si && !prev ? 'ini' : ''} ${si && !next ? 'fin' : ''} ${m === S.mesActual ? 'cur' : ''}"></div>`;
+    }).join('') + `</div>`;
+  });
+  $('cal').innerHTML = cal;
+
+  /* ---- Reconocer ---- */
+  const top = R.top;
+  document.querySelectorAll('.experto p').forEach((p) => (p.textContent = R.avisoExperto));
+  const peliCard = (p) => {
+    const desc = p.estado.startsWith('DESCARTADA');
+    const grav = p.gravedad === 'mortal' ? 'Mortal' : 'Tóxica';
+    return `<div class="peli ${desc ? 'desc' : ''}">
+      <div class="ph"><b>${p.comun} · ${grav}</b><span>${p.estado}</span></div>
+      <div class="pb"><img src="${foto(p.fotos[0])}" alt=""><p><i>${p.cientifico}</i>. ${p.porQue}</p></div>
+      <div style="padding:0 10px 10px"><button class="b2" style="width:100%">Comparar con ${top.comun} ${chev}</button></div></div>`;
+  };
+  $('resumen').innerHTML = `
+    <div class="rhead"><h1 style="flex:1">Resultado</h1><span class="tag" style="background:var(--papel)">Analizado en el móvil</span></div>
+    <div class="fotos" style="grid-template-columns:1fr 1fr;padding-top:12px">
+      <figure><img src="${foto(R.tuFoto)}" style="height:112px" alt=""><figcaption class="cap">Tu foto (ejemplo)</figcaption><p class="cred">${S.creditos[R.tuFoto]}</p></figure>
+      <figure><img src="${foto(top.foto)}" style="height:112px" alt=""><figcaption class="cap">${top.comun} (guía)</figcaption><p class="cred">${S.creditos[top.foto]}</p></figure>
+    </div>
+    <div class="pad" style="padding-bottom:12px"><span class="lbl muted">La más parecida</span>
+      <h2 style="font-size:24px;font-weight:900;line-height:1.1">${top.comun} <i style="font-size:17px;font-weight:600">${top.cientifico}</i></h2>
+      <span class="parec">${top.parecido}</span></div>
+    <div class="sec" style="color:var(--peligro)">Parecidas peligrosas: 3 · 2 sin descartar</div>
+    ${R.pares.map(peliCard).join('')}
+    <div class="sec">Otras parecidas</div>
+    <div class="otros">${R.otros.map((o) => `<div><i>${o.cientifico}</i><span>${o.parecido}</span></div>`).join('')}</div>
+    <div class="sec">Tus respuestas</div>
+    <div class="resp">${R.respuestas.map((r) => `<div><p>${r.p}</p><b>${r.r}</b></div>`).join('')}</div>
+    <div class="pad" style="margin:12px 0"><button class="b2" style="width:100%">Pedir segunda opinión a Gemini</button></div>
+    <p class="nota">${R.nota}</p>`;
+  $('resumen2').innerHTML = $('resumen').innerHTML;
+
+  const SEP = { clave: ['clave', 'Separa'], orienta: ['', 'Orienta'], no: ['no', 'No separa'] };
+  const dibujo = (r, cand, pel) => {
+    if (!r.dib) return '';
+    if (r.dib === 'huevo') return `<div class="dib2"><div><div data-anat="huevo-caesarea"></div><p>${cand}</p></div><div><div data-anat="huevo-mortal"></div><p style="color:var(--peligro)">${pel}</p></div></div>`;
+    const t = window.ANAT && window.ANAT[r.dib] ? window.ANAT[r.dib].titulo : '';
+    return `<div class="dib"><div data-anat="${r.dib}"></div><p><b>${t}.</b> ${cand}: ${r.cand.toLowerCase()}. ${pel}: ${r.pelig.toLowerCase()}.</p></div>`;
+  };
+  const tabla = (p) => p.rasgos.map((r) => {
+    const [c, t] = SEP[r.separa];
+    const pend = /No sé|Sin responder|No lo has/.test(r.tu);
+    return `<div class="rasgo"><div class="rh"><b>${r.rasgo}</b><span class="sep ${c}">${t}</span></div>
+      <div class="rg"><div><span class="lbl">${top.comun}</span><p>${r.cand}</p></div>
+        <div><span class="lbl pel">${p.comun}</span><p>${r.pelig}</p></div>
+        <div><span class="lbl">Tu respuesta / foto</span><p class="${pend ? 'pend' : ''}">${r.tu}</p></div></div>
+      ${dibujo(r, top.comun, p.comun)}</div>`;
+  }).join('');
+  const cabPar = (p, back) => {
+    const desc = p.estado.startsWith('DESCARTADA');
+    const grav = p.gravedad === 'mortal' ? 'MORTAL' : 'TÓXICA';
+    return `<div class="rhead"><button class="b2" aria-label="Volver">${ic('<path d="M15 6l-6 6 6 6"/>')}</button><h1 style="font-size:18px">${back}</h1></div>
+    <div class="par-h"><h1>${top.comun} frente a <em${desc ? ' style="color:var(--tinta)"' : ''}>${p.comun}</em></h1>
+      <span class="estado-peli" ${desc ? 'style="background:var(--papel);color:var(--tinta);border:2px dashed var(--tinta)"' : ''}>${grav} · ${p.estado}</span>
+      <p>${p.porQue}</p></div>
+    <div class="fotos">
+      <figure><img src="${foto(R.tuFoto)}" alt=""><figcaption class="cap">Tu foto (ejemplo)</figcaption><p class="cred">${S.creditos[R.tuFoto]}</p></figure>
+      <figure><img src="${foto(top.foto)}" alt=""><figcaption class="cap">${top.comun} (guía)</figcaption><p class="cred">${S.creditos[top.foto]}</p></figure>
+      <figure class="${desc ? '' : 'pel'}"><img src="${foto(p.fotos[0])}" alt=""><figcaption class="cap ${desc ? '' : 'pel'}">${p.comun} (guía)</figcaption><p class="cred">${S.creditos[p.fotos[0]]}</p></figure>
+    </div>`;
+  };
+  const ph = R.pares[0];
+  const comp = cabPar(ph, 'Comparar 1 de 3') + `<div class="sec">Rasgo por rasgo</div><div style="height:6px"></div>` + tabla(ph) +
+    `<div class="pad" style="margin:4px 0 16px"><button class="b1" style="width:100%">Ver riesgo de falso positivo ${chev}</button></div>`;
+  $('comparar').innerHTML = comp;
+  $('comparar2').innerHTML = comp;
+
+  const fp = ph.falsoPositivo;
+  const NIV = { baja: 'Con tus respuestas: separación poco segura', media: 'Con tus respuestas: separación a medias', alta: 'Con tus respuestas: separación clara' };
+  $('fp').innerHTML = `<div class="rhead"><button class="b2" aria-label="Volver">${ic('<path d="M15 6l-6 6 6 6"/>')}</button><div><h1 style="font-size:18px">${top.comun} frente a ${ph.comun}</h1><span class="estado-peli" style="margin-top:4px;padding:3px 8px">MORTAL · ${ph.estado}</span></div></div>
+    <div class="fp" style="margin-top:12px"><h2>Riesgo de falso positivo</h2>
+      <div class="q"><span class="lbl">Por qué se parecen</span><p>${fp.parecido}</p></div>
+      <div class="q"><span class="lbl">Qué las separa</span><p>${fp.separa}</p>
+        <div class="huevos" style="margin:10px 0 2px">
+          <figure><div data-anat="huevo-caesarea"></div><figcaption>${top.comun}: naranja y amarillo dentro</figcaption></figure>
+          <figure class="m"><div data-anat="huevo-mortal"></div><figcaption>${ph.comun}: todo blanco (a veces verdoso)</figcaption></figure>
+        </div></div>
+      <div class="q"><span class="lbl">Cuánto puedes fiarte</span><p>${fp.fiabilidad}</p><span class="nivel">${NIV[fp.nivel]}</span></div>
+      <div class="q"><span class="lbl">Qué foto hacer ahora</span><p>${fp.foto}</p>
+        <button class="b1" style="width:100%;margin-top:10px">${ic('<path d="M4 8h3l2-3h6l2 3h3v12H4z"/><circle cx="12" cy="13.5" r="3.5"/>')}Hacer esa foto</button></div>
+    </div><div style="height:16px"></div>`;
+
+  const mu = R.pares[2];
+  $('musc').innerHTML = cabPar(mu, 'Comparar 3 de 3') + `<div class="sec">Rasgo por rasgo</div><div style="height:6px"></div>` + tabla(mu);
+})();
+</script>
+<script src="../shared/frame.js"></script>
+</body>
+</html>

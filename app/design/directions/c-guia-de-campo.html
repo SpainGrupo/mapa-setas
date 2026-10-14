@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guía de campo — dirección C</title>
+<!--
+  DIRECCIÓN C · "GUÍA DE CAMPO" (marcas de campo + señalética)
+
+  Mejor diseñador para ESTE usuario y producto: Roger Tory Peterson (sistema de marcas de campo, 1934)
+  trabajando con la disciplina de Otl Aicher (pictogramas y señalética de Múnich 72, sistema de guiado).
+
+  Por qué: Alexander ya conoce las especies; no necesita que le digan qué es, necesita saber DÓNDE mirar.
+  Peterson resolvió exactamente eso: en cada lámina, una flecha señala el único rasgo que separa dos
+  especies parecidas, y el observador decide. Aicher aporta lo que pide el uso en el monte: lectura en
+  un vistazo, a pleno sol, con guantes; una retícula estricta, pictogramas geométricos, color con función
+  (nunca decoración) y señales que se entienden a distancia.
+
+  Sistema:
+  - Marca de campo = cuadrado negro numerado (1, 2, 3...). El MISMO número aparece en la fila de la tabla,
+    en el dibujo anatómico y en la foto: tres pruebas del mismo rasgo, unidas por una línea guía.
+  - Marca discontinua = rasgo que todavía no se ve (falta la prueba).
+  - Esquinas rectas, sin tarjetas redondeadas; bloques de color plano como en una señal.
+  - Color por función: verde bosque = identidad y modo activo; óxido = la acción principal; rojo = solo
+    peligro; azul de señal = aparcamiento (convención de la señalética española P).
+  - Navegación: tres modos grandes en la zona del pulgar (Ir / Reconocer / Guía). Mis sitios y Ajustes
+    son secundarios, en la cabecera.
+  - Tipografía: Barlow Semi Condensed (de la rotulación de carreteras; cabe más en 430 px sin perder
+    peso) para rótulos y tablas; Atkinson Hyperlegible (diseñada para baja visión) para el texto corrido.
+  Se aleja a propósito de "papel crema + serif": fondo blanco frío, grotesca de señal, sin ornamento.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:ital,wght@0,500;0,600;0,700;0,800;1,500&display=block" rel="stylesheet">
+<script src="../shared/datos.js"></script>
+<script src="../shared/anatomia.js"></script>
+<script src="../shared/frame.js"></script>
+<style>
+:root{
+  --ink:#0e1813;        /* texto principal, marcas de campo (16.9:1 sobre blanco) */
+  --ink-2:#3a4740;      /* texto secundario (9.6:1) */
+  --line:#76837b;       /* bordes no textuales (3.9:1) */
+  --hair:#d3d9d4;       /* separadores suaves */
+  --paper:#ffffff;      /* superficie */
+  --ground:#e8ece8;     /* fondo de pantalla, gris verdoso frío */
+  --forest:#1b4332;     /* identidad, modo activo, temporada */
+  --forest-tint:#d6e4dc;/* fondo de selección */
+  --rust:#b23a0b;       /* la acción principal de cada pantalla */
+  --danger:#a4161a;     /* SOLO peligro */
+  --danger-tint:#f8e3e3;/* fondo junto a contenido peligroso */
+  --sign-blue:#1f4e8c;  /* P de aparcamiento (convención de señal) */
+  --f-sign:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",-apple-system,system-ui,sans-serif;
+  --anat-ink:#0e1813; --anat-paper:#ffffff; --anat-shade:rgba(14,24,19,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font:400 17px/1.35 var(--f-body);color:var(--ink);background:#888}
+.screen{background:var(--ground);color:var(--ink);font-family:var(--f-body)}
+p{margin:0}
+h1,h2,h3{margin:0;font-family:var(--f-sign);font-weight:700;letter-spacing:0}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+img{display:block}
+
+/* ---------- capas fijas ---------- */
+.scroll{position:absolute;left:0;right:0;top:0;bottom:110px;overflow-y:auto;overflow-x:hidden;padding:var(--safe-top) 24px 24px}
+.scroll::-webkit-scrollbar{display:none}
+.scroll.w-warn{bottom:174px}
+.topcap{position:absolute;left:0;right:0;top:0;height:59px;background:var(--ground);z-index:40}
+
+/* ---------- barra de modos (zona del pulgar) ---------- */
+.modes{position:absolute;left:0;right:0;bottom:0;height:110px;background:var(--paper);border-top:2px solid var(--ink);
+  display:grid;grid-template-columns:1fr 1fr 1fr;z-index:50}
+.mode{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;padding-top:12px;height:110px;
+  font:700 18px/1 var(--f-sign);color:var(--ink);border-right:2px solid var(--hair)}
+.mode:last-child{border-right:0}
+.mode svg{width:30px;height:30px}
+.mode.on{background:var(--forest);color:#fff;border-right-color:var(--forest)}
+.mode.on + .mode{border-left:0}
+
+/* ---------- aviso del experto, fijo ---------- */
+.experto{position:absolute;left:0;right:0;bottom:110px;min-height:64px;background:var(--ink);color:#fff;z-index:49;
+  display:flex;align-items:center;gap:12px;padding:9px 24px 9px 16px;font:600 16px/1.22 var(--f-sign)}
+.experto .ex{flex:none;width:28px;height:28px;background:var(--danger);color:#fff;display:grid;place-items:center;font:800 19px/1 var(--f-sign)}
+
+/* ---------- botones: tres estilos ---------- */
+.b1,.b2,.b3{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:700 19px/1 var(--f-sign);min-height:56px;padding:0 20px}
+.b1{background:var(--rust);color:#fff}                                  /* principal */
+.b2{background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)} /* secundario */
+.b3{min-height:48px;min-width:48px;padding:0 10px;color:var(--ink)}     /* discreto / icono */
+.b1 svg,.b2 svg,.b3 svg{width:24px;height:24px;flex:none}
+
+/* ---------- cabecera ---------- */
+.head{display:flex;align-items:center;gap:8px;height:56px;margin-bottom:8px}
+.seg{display:flex;height:48px;background:var(--paper);box-shadow:inset 0 0 0 2px var(--ink)}
+.seg span{display:grid;place-items:center;padding:0 18px;font:700 18px/1 var(--f-sign);min-width:72px}
+.seg span.on{background:var(--ink);color:#fff}
+.head .sp{flex:1}
+.ib{width:48px;height:48px;display:grid;place-items:center;background:var(--paper);box-shadow:inset 0 0 0 2px var(--line)}
+.ib svg{width:24px;height:24px}
+
+/* ---------- etiquetas ---------- */
+.lab{font:700 13px/1.1 var(--f-sign);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.cred{font:500 11.5px/1.2 var(--f-sign);color:var(--ink-2);margin-top:3px}
+
+/* ---------- marca de campo ---------- */
+.fm{display:inline-grid;place-items:center;flex:none;width:26px;height:26px;background:var(--ink);color:#fff;
+  font:800 16px/1 var(--f-sign);box-shadow:0 0 0 2px #fff}
+.fm.dash{background:#fff;color:var(--ink);box-shadow:0 0 0 2px #fff, inset 0 0 0 2px var(--ink);outline:2px dashed var(--ink);outline-offset:-2px}
+.fm.o{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.fm.x{background:repeating-linear-gradient(45deg,#fff 0 3px,#b9c2bc 3px 5px);color:var(--ink);box-shadow:inset 0 0 0 2px var(--line)}
+.fig{position:relative}
+.pt{position:absolute;width:0;height:0;z-index:3}
+.pt::before{content:"";position:absolute;left:-6px;top:-6px;width:12px;height:12px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 2.5px #fff}
+.pt.dash::before{background:#fff;box-shadow:0 0 0 2.5px var(--ink)}
+.pt .ld{position:absolute;left:0;top:-1.5px;height:3px;background:var(--ink);transform-origin:0 50%;box-shadow:0 0 0 1.5px rgba(255,255,255,.9)}
+.pt.dash .ld{background:repeating-linear-gradient(90deg,var(--ink) 0 5px,transparent 5px 9px);box-shadow:none}
+.pt .fm{position:absolute;left:0;top:0}
+
+/* ---------- 01 mapa ---------- */
+.map{position:absolute;inset:0;background:url(../shared/mapa/mapa-z14.png) 0 0/430px 932px}
+.map-scrim{position:absolute;left:0;right:0;top:0;height:120px;background:linear-gradient(rgba(14,24,19,.55),rgba(14,24,19,0))}
+.map-top{position:absolute;top:var(--safe-top);left:24px;right:24px;display:flex;gap:8px;z-index:5}
+.pill{display:flex;align-items:center;gap:10px;height:48px;padding:0 14px 0 4px;background:var(--paper);box-shadow:inset 0 0 0 2px var(--ink);font:700 18px/1 var(--f-sign)}
+.pill img{width:40px;height:40px;object-fit:cover}
+.map-side{position:absolute;right:24px;top:119px;display:flex;flex-direction:column;gap:8px;z-index:5}
+.map-side .ib{box-shadow:inset 0 0 0 2px var(--ink)}
+.fab{position:absolute;right:24px;width:64px;height:64px;background:var(--forest);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:700 14px/1 var(--f-sign);z-index:6;box-shadow:0 0 0 2px #fff}
+.fab svg{width:28px;height:28px}
+.sheet{position:absolute;left:0;right:0;bottom:110px;background:var(--paper);border-top:2px solid var(--ink);padding:10px 24px 14px;z-index:7}
+.grip{width:44px;height:5px;background:var(--line);margin:0 auto 8px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);border:2px solid var(--ink)}
+.stats>div{padding:7px 10px 8px;border-right:2px solid var(--ink)}
+.stats>div:last-child{border-right:0}
+.stats b{display:block;font:800 26px/1 var(--f-sign)}
+.stats small{display:block;font:600 14px/1.1 var(--f-sign);color:var(--ink-2);margin-top:3px}
+.caveat{font:400 15px/1.3 var(--f-body);color:var(--ink-2)}
+
+/* ---------- 02 hoy ---------- */
+.days{display:flex;gap:6px;margin:0 -24px;padding:0 24px 2px;overflow:hidden}
+.day{flex:none;width:76px;height:64px;background:var(--paper);box-shadow:inset 0 0 0 2px var(--line);padding:8px 8px;display:flex;flex-direction:column;justify-content:space-between}
+.day b{font:700 18px/1 var(--f-sign)}
+.day small{font:600 13px/1 var(--f-sign);color:var(--ink-2)}
+.day.on{background:var(--ink);color:#fff;box-shadow:none}
+.day.on small{color:#fff}
+.conf{display:flex;gap:10px;align-items:flex-start;margin:12px 0 12px;font:400 16px/1.3 var(--f-body)}
+.bars{display:flex;gap:3px;align-items:flex-end;flex:none;margin-top:3px}
+.bars i{width:6px;background:var(--ink)}
+.bars i.off{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)}
+.filters{display:flex;gap:8px;margin-bottom:14px}
+.filters .b2{min-height:48px;font-size:17px;padding:0 12px;flex:1;justify-content:space-between}
+.r1{background:var(--paper);border:2px solid var(--ink)}
+.r1 .ph{position:relative;height:150px;overflow:hidden}
+.r1 .ph img{width:100%;height:100%;object-fit:cover}
+.rank{position:absolute;left:0;top:0;width:44px;height:44px;background:var(--ink);color:#fff;display:grid;place-items:center;font:800 24px/1 var(--f-sign)}
+.phcred{position:absolute;right:0;bottom:0;background:rgba(255,255,255,.92);padding:2px 6px;font:500 11.5px/1.2 var(--f-sign);color:var(--ink-2)}
+.r1 .bd{padding:12px 14px 14px}
+.r1 h2{font-size:27px;line-height:1.05}
+.sci{font:italic 500 16px/1.2 var(--f-sign);color:var(--ink-2)}
+.state{display:flex;align-items:center;gap:8px;margin:10px 0;font:700 18px/1 var(--f-sign)}
+.meter{flex:1;height:10px;box-shadow:inset 0 0 0 2px var(--ink);position:relative}
+.meter i{position:absolute;left:0;top:0;bottom:0;background:var(--forest)}
+.facts{display:flex;gap:0;font:600 17px/1.2 var(--f-sign);border-top:2px solid var(--hair);border-bottom:2px solid var(--hair);margin-bottom:12px}
+.facts span{flex:1;padding:8px 0;text-align:center;border-right:2px solid var(--hair)}
+.facts span:last-child{border-right:0}
+.facts b{display:block;font-size:20px;font-weight:800}
+.acts{display:flex;gap:8px}
+.acts .b1{flex:1}
+.acts .b2{width:56px;padding:0}
+.rn{display:flex;gap:12px;align-items:center;background:var(--paper);border:2px solid var(--line);border-top:0;padding:10px 6px 10px 10px;min-height:76px}
+.rn:first-of-type{border-top:2px solid var(--line)}
+.rn img,.rn .noimg{width:56px;height:56px;object-fit:cover;flex:none}
+.noimg{background:var(--hair);display:grid;place-items:center;font:600 12px/1.1 var(--f-sign);color:var(--ink-2);text-align:center}
+.rn .n{font:800 22px/1 var(--f-sign);width:20px}
+.rn .t{flex:1;min-width:0}
+.rn .t b{display:block;font:700 18px/1.1 var(--f-sign)}
+.rn .t small{display:block;font:500 15px/1.2 var(--f-sign);color:var(--ink-2);margin-top:3px}
+.note{font:400 15px/1.35 var(--f-body);color:var(--ink-2);margin-top:14px}
+
+/* ---------- 03 calendario ---------- */
+.cal{background:var(--paper);border:2px solid var(--ink)}
+.cal-row{display:grid;grid-template-columns:154px repeat(12,1fr);align-items:stretch;border-bottom:1.5px solid var(--hair);min-height:50px}
+.cal-row:last-child{border-bottom:0}
+.cal-row .nm{padding:6px 6px 6px 10px;display:flex;flex-direction:column;justify-content:center}
+.cal-row .nm b{font:700 16.5px/1.05 var(--f-sign)}
+.cal-row .nm small{font:500 13px/1.1 var(--f-sign);color:var(--ink-2);margin-top:2px}
+.cal-row .c{position:relative;border-left:1px solid var(--hair)}
+.cal-row .c.in::after{content:"";position:absolute;left:2px;right:2px;top:10px;bottom:10px;background:var(--forest)}
+.cal-row .c.now{background:var(--forest-tint);box-shadow:inset 2px 0 0 var(--ink),inset -2px 0 0 var(--ink)}
+.cal-hd{min-height:40px;background:var(--paper);border-bottom:2px solid var(--ink);position:sticky;top:0}
+.cal-hd .c{display:grid;place-items:center;font:700 14px/1 var(--f-sign)}
+.cal-hd .c.now{background:var(--ink);color:#fff;box-shadow:none}
+.tabs2{display:flex;margin:0 0 12px;border-bottom:2px solid var(--ink)}
+.tabs2 span{flex:1;height:48px;display:grid;place-items:center;font:700 18px/1 var(--f-sign);color:var(--ink-2)}
+.tabs2 span.on{color:var(--ink);box-shadow:inset 0 -6px 0 var(--ink)}
+.legend{display:flex;gap:16px;align-items:center;margin:12px 0 0;font:600 15px/1.2 var(--f-sign);color:var(--ink-2)}
+.legend i{display:inline-block;width:14px;height:22px;background:var(--forest);vertical-align:middle;margin-right:6px}
+.legend i.now{background:var(--forest-tint);box-shadow:inset 2px 0 0 var(--ink),inset -2px 0 0 var(--ink);width:18px}
+
+/* ---------- reconocer ---------- */
+.rhead{display:flex;align-items:center;gap:6px;height:56px;margin-bottom:6px}
+.rhead h1{font-size:24px;flex:1;line-height:1.05}
+.cand{display:flex;gap:14px;background:var(--paper);border:2px solid var(--ink);padding:10px}
+.cand .fig img{width:132px;height:99px;object-fit:cover}
+.cand .tx{flex:1;min-width:0}
+.cand h2{font-size:32px;line-height:1}
+.alike{font:700 15px/1.1 var(--f-sign);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2);margin-bottom:6px}
+.sec{display:flex;align-items:baseline;justify-content:space-between;margin:18px 0 8px}
+.sec h3{font-size:20px}
+.look{display:flex;align-items:stretch;background:var(--paper);border:2px solid var(--danger);margin-bottom:8px;min-height:96px}
+.look .st{flex:none;width:96px;background:var(--danger);color:#fff;padding:8px 8px;display:flex;flex-direction:column;justify-content:space-between;font:800 15px/1.05 var(--f-sign);letter-spacing:.03em}
+.look .st small{font:700 13px/1.1 var(--f-sign);letter-spacing:.02em}
+.look .bd{flex:1;padding:8px 6px 8px 12px;min-width:0}
+.look .bd b{display:block;font:700 20px/1.05 var(--f-sign)}
+.look .bd i{display:block;font:italic 500 15px/1.2 var(--f-sign);color:var(--ink-2)}
+.look .bd p{font:400 15px/1.3 var(--f-body);margin-top:4px}
+.look .go{flex:none;width:52px;display:grid;place-items:center;border-left:2px solid var(--hair)}
+.look .go svg{width:26px;height:26px}
+.look.ruled{border-color:var(--line)}
+.look.ruled .st{background:repeating-linear-gradient(45deg,#fff 0 6px,#e5e9e6 6px 12px);color:var(--ink);box-shadow:inset -2px 0 0 var(--line)}
+.ans{background:var(--paper);border:2px solid var(--line)}
+.ans>div{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1.5px solid var(--hair);font:500 16px/1.25 var(--f-body)}
+.ans>div:last-child{border-bottom:0}
+.ans b{font:700 17px/1.2 var(--f-sign);text-align:right;flex:none;max-width:48%}
+.ans b.miss{border:2px dashed var(--ink);padding:1px 6px}
+
+/* pares */
+.pairs{display:flex;gap:6px;margin-bottom:8px}
+.pairs span{flex:1;min-height:52px;padding:6px 8px;background:var(--paper);box-shadow:inset 0 0 0 2px var(--line);font:700 16px/1.05 var(--f-sign);display:flex;flex-direction:column;justify-content:center}
+.pairs span small{font:700 12.5px/1.1 var(--f-sign);letter-spacing:.03em;color:var(--danger);text-transform:uppercase;margin-top:2px}
+.pairs span.ru small{color:var(--ink-2)}
+.pairs span.on{box-shadow:inset 0 0 0 3px var(--ink);background:var(--paper)}
+.pairs span.on::after{content:"";display:block}
+.band{background:var(--danger);color:#fff;padding:9px 12px;font:400 15px/1.3 var(--f-body)}
+.band b{display:block;font:800 17px/1.1 var(--f-sign);letter-spacing:.04em;margin-bottom:2px}
+.band.ruled{background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 2px var(--line)}
+.photos{display:flex;gap:8px;margin:10px 0 2px;align-items:flex-start}
+.photos .fig img{height:118px;width:auto}
+.photos .who{font:700 14px/1.1 var(--f-sign);margin-top:4px}
+.photos .who.dg{color:var(--danger)}
+.plate{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0 4px}
+.plate .cell{background:var(--paper);border:2px solid var(--hair);padding:6px 4px 6px;position:relative;display:flex;flex-direction:column;justify-content:space-between}
+.plate .dr2{height:72px;align-items:center}
+.plate .cell .fm{position:absolute;left:-2px;top:-2px;box-shadow:none}
+.plate .dr{width:72px;margin:0 auto}
+.plate .dr2{display:flex;gap:0;justify-content:center}
+.plate .dr2>div{width:40px}
+.plate p{font:700 13.5px/1.1 var(--f-sign);text-align:center;margin-top:3px}
+.tbl{margin-top:12px;background:var(--paper);border:2px solid var(--ink)}
+.th{position:sticky;top:59px;z-index:5;background:var(--paper);display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:2px solid var(--ink)}
+.th span{padding:7px 8px;font:700 14px/1.1 var(--f-sign);letter-spacing:.02em;border-right:1.5px solid var(--hair)}
+.th span:last-child{border-right:0}
+.th .dg{color:var(--danger)}
+.tr{border-bottom:2px solid var(--hair)}
+.tr:last-child{border-bottom:0}
+.tr .rh{display:flex;align-items:center;gap:8px;padding:8px 8px 4px}
+.tr .rh b{font:700 18px/1 var(--f-sign);flex:1}
+.tr .rh em{font:700 13px/1 var(--f-sign);letter-spacing:.06em;text-transform:uppercase;font-style:normal;color:var(--ink-2)}
+.tr .rh em.k{color:var(--ink)}
+.tr .rc{display:grid;grid-template-columns:1fr 1fr 1fr}
+.tr .rc span{padding:2px 8px 10px;font:500 16px/1.2 var(--f-sign);border-right:1.5px solid var(--hair)}
+.tr .rc span:last-child{border-right:0}
+.tr .rc span.miss{margin:0 6px 8px;padding:4px 6px;border:2px dashed var(--ink);align-self:start;font-weight:600}
+.tr.no{color:var(--ink-2)}
+.tr.no .rc span{color:var(--ink-2)}
+
+/* falso positivo */
+.fp{background:var(--paper);border:2px solid var(--ink)}
+.fp h3{font-size:22px;padding:10px 12px;border-bottom:2px solid var(--ink)}
+.fp .q{display:grid;grid-template-columns:30px 1fr;gap:10px;padding:10px 12px;border-bottom:1.5px solid var(--hair)}
+.fp .q:last-child{border-bottom:0}
+.fp .q .fm{width:28px;height:28px;box-shadow:none}
+.fp .q h4{margin:0 0 3px;font:700 18px/1.1 var(--f-sign)}
+.fp .q p{font:400 16px/1.35 var(--f-body)}
+.lvl{display:flex;align-items:center;gap:10px;margin:8px 0 2px;font:700 17px/1 var(--f-sign)}
+.lvl .steps{display:flex;gap:3px}
+.lvl .steps i{width:30px;height:14px;box-shadow:inset 0 0 0 2px var(--ink)}
+.lvl .steps i.on{background:var(--ink)}
+.eggs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 0}
+.egg{background:var(--paper);border:2px solid var(--hair);padding:8px 6px 8px}
+.egg .fig{width:112px;margin:0 auto}
+.egg p{font:700 16px/1.15 var(--f-sign);text-align:center;margin-top:6px}
+.egg p small{display:block;font:500 14px/1.2 var(--f-sign);color:var(--ink-2)}
+.fp .egg p{font:700 16px/1.15 var(--f-sign)}
+.egg.dg{border-color:var(--danger)}
+.egg.dg p small{color:var(--danger);font-weight:700}
+
+/* ruta a pie */
+.rmap{position:absolute;left:0;right:0;top:0;height:470px;background:url(../shared/mapa/mapa-z15.png) 0 -120px/430px 932px}
+.panel{position:absolute;left:0;right:0;top:470px;bottom:110px;background:var(--paper);border-top:2px solid var(--ink);padding:12px 24px 0}
+.prof{display:block;width:100%;height:auto}
+</style>
+</head>
+<body>
+
+<section class="screen" data-shot="01-mapa" data-chrome="dark" id="s01"></section>
+<section class="screen" data-shot="02-hoy" id="s02"></section>
+<section class="screen" data-shot="03-calendario" id="s03"></section>
+<section class="screen" data-shot="04-reconocer-resumen" id="s04"></section>
+<section class="screen" data-shot="05-reconocer-comparar" id="s05"></section>
+<section class="screen" data-shot="05b-reconocer-comparar-tabla" data-scroll="420" id="s05b"></section>
+<section class="screen" data-shot="06-reconocer-falso-positivo" id="s06"></section>
+<section class="screen" data-shot="06b-reconocer-falso-positivo-foto" data-scroll="560" id="s06b"></section>
+<section class="screen" data-shot="07-ruta-a-pie" data-chrome="dark" data-signal="off" id="s07"></section>
+<section class="screen" data-shot="08-reconocer-matamoscas" id="s08"></section>
+
+<script>
+(function () {
+  const S = window.SETAS, R = S.reconocer;
+  const F = (k) => `../shared/fotos/${k}.jpg`;
+  const sp = (id) => S.especies.find((e) => e.id === id);
+  const $ = (id) => document.getElementById(id);
+
+  /* ---- pictogramas (retícula 24, trazo 2.5, geometría Aicher) ---- */
+  const P = (d, extra = '') => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">${d}${extra}</svg>`;
+  const I = {
+    ir: P('<path d="M5 19 L18 6"/><path d="M8 5 H19 V16"/>'),
+    rec: P('<path d="M3 8V3h5M16 3h5v5M21 16v5h-5M8 21H3v-5"/><path d="M6.5 13.5a5.5 5 0 0 1 11 0z" fill="currentColor" stroke-width="2"/><path d="M11 14v4h2v-4"/>'),
+    guia: P('<path d="M3 5h6.5A2.5 2.5 0 0 1 12 7.5V20a2 2 0 0 0-2-2H3z"/><path d="M21 5h-6.5A2.5 2.5 0 0 0 12 7.5V20a2 2 0 0 1 2-2h7z"/>'),
+    pin: P('<path d="M12 21s-6.5-6.4-6.5-11.5a6.5 6.5 0 0 1 13 0C18.5 14.6 12 21 12 21z"/><rect x="10" y="7.5" width="4" height="4" fill="currentColor" stroke="none"/>'),
+    ajus: P('<path d="M4 7h16M4 17h16"/><rect x="7" y="4.5" width="4" height="5" fill="#fff"/><rect x="13" y="14.5" width="4" height="5" fill="#fff"/>'),
+    capas: P('<path d="M12 3 21 8 12 13 3 8z"/><path d="M3 13l9 5 9-5"/>'),
+    cruz: P('<rect x="6" y="6" width="12" height="12"/><path d="M12 1v6M12 17v6M1 12h6M17 12h6"/>'),
+    coche: P('<path d="M4 16v-4l2-5h12l2 5v4z"/><path d="M6.5 16v3M17.5 16v3"/><path d="M4 12h16"/>'),
+    pie: P('<path d="M3 21H21"/><path d="M3 17 L9 10 L13 13 L21 5"/>'),
+    mas: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="10" width="4" height="4" fill="currentColor"/><rect x="10" y="10" width="4" height="4" fill="currentColor"/><rect x="17" y="10" width="4" height="4" fill="currentColor"/></svg>',
+    dch: P('<path d="M9 5l7 7-7 7"/>'),
+    izq: P('<path d="M15 5l-7 7 7 7"/>'),
+    abajo: P('<path d="M6 9l6 6 6-6"/>'),
+    cam: P('<path d="M3 7h4l2-3h6l2 3h4v13H3z"/><rect x="9" y="10" width="6" height="6"/>'),
+    gps: P('<path d="M12 3 20 21 12 16 4 21z"/>'),
+    x: P('<path d="M6 6l12 12M18 6 6 18"/>'),
+  };
+
+  const modes = (on) => `<nav class="modes" aria-label="Modos">
+    <button class="mode ${on === 'ir' ? 'on' : ''}">${I.ir}Ir</button>
+    <button class="mode ${on === 'rec' ? 'on' : ''}">${I.rec}Reconocer</button>
+    <button class="mode ${on === 'guia' ? 'on' : ''}">${I.guia}Guía</button></nav>`;
+  const experto = () => `<div class="experto" role="note"><span class="ex">!</span><span>${R.avisoExperto}</span></div>`;
+
+  /* marca de campo con línea guía: x,y en % del dibujo/foto; dx,dy = desplazamiento de la etiqueta */
+  const mk = (x, y, n, dx, dy, dash) => {
+    const L = Math.hypot(dx, dy), a = Math.atan2(dy, dx) * 180 / Math.PI;
+    return `<span class="pt ${dash ? 'dash' : ''}" style="left:${x}%;top:${y}%"><i class="ld" style="width:${L}px;transform:rotate(${a}deg)"></i>` +
+      `<b class="fm ${dash ? 'dash' : ''}" style="transform:translate(calc(${dx}px - 50%),calc(${dy}px - 50%))">${n}</b></span>`;
+  };
+  const confWord = { alta: 'Fiable', media: 'Orientativa', baja: 'Poco fiable' };
+  const bars = (c) => { const n = { alta: 3, media: 2, baja: 1 }[c]; return `<span class="bars">${[8, 12, 16].map((h, i) => `<i style="height:${h}px" class="${i < n ? '' : 'off'}"></i>`).join('')}</span>`; };
+
+  /* ================= 01 MAPA + ACCESO ================= */
+  const A = S.acceso;
+  $('s01').innerHTML = `
+    <div class="map"></div><div class="map-scrim"></div>
+    <svg width="430" height="932" viewBox="0 0 430 932" style="position:absolute;inset:0;z-index:2" aria-label="Ruta a pie desde el aparcamiento">
+      <path d="M96 470 C122 452 140 452 158 430 S196 380 222 372 S262 344 276 318 S292 286 300 262" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round"/>
+      <path d="M96 470 C122 452 140 452 158 430 S196 380 222 372 S262 344 276 318 S292 286 300 262" fill="none" stroke="#b23a0b" stroke-width="5" stroke-dasharray="10 7" stroke-linecap="butt"/>
+      <g transform="translate(300 262)">
+        <rect x="-17" y="-17" width="34" height="34" fill="none" stroke="#fff" stroke-width="7"/>
+        <rect x="-17" y="-17" width="34" height="34" fill="none" stroke="#0e1813" stroke-width="3.5"/>
+        <path d="M0 -28v14M0 14v14M-28 0h14M14 0h14" stroke="#fff" stroke-width="7"/>
+        <path d="M0 -28v14M0 14v14M-28 0h14M14 0h14" stroke="#0e1813" stroke-width="3.5"/>
+        <rect x="-4" y="-4" width="8" height="8" fill="#0e1813"/>
+      </g>
+      <g transform="translate(78 452)"><rect width="36" height="36" fill="#1f4e8c" stroke="#fff" stroke-width="3"/><text x="18" y="27" text-anchor="middle" font-family="Barlow Semi Condensed,sans-serif" font-weight="800" font-size="26" fill="#fff">P</text></g>
+      <g transform="translate(176 386)"><rect x="-12" y="0" width="124" height="30" fill="#fff" stroke="#0e1813" stroke-width="2"/><text x="50" y="21" text-anchor="middle" font-family="Barlow Semi Condensed,sans-serif" font-weight="700" font-size="17" fill="#0e1813">${A.dist} · ${A.min} min</text></g>
+      <g transform="translate(232 214)"><rect x="0" y="0" width="94" height="28" fill="#0e1813"/><text x="47" y="20" text-anchor="middle" font-family="Barlow Semi Condensed,sans-serif" font-weight="700" font-size="16" fill="#fff">Este punto</text></g>
+    </svg>
+    <div class="map-top">
+      <div class="seg"><span>Hoy</span><span class="on">Mapa</span></div>
+      <div class="pill"><img src="${F('amanita_caesarea_3')}" alt="">Oronja ${I.abajo.replace('<svg', '<svg style="width:20px;height:20px"')}</div>
+    </div>
+    <div class="map-side"><button class="ib" aria-label="Capas">${I.capas}</button><button class="ib" aria-label="Mis sitios">${I.pin}</button></div>
+    <button class="fab" style="top:426px" aria-label="Modo Aquí: apunta con la cruz">${I.cruz}Aquí</button>
+    <div class="sheet">
+      <div class="grip"></div>
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px">
+        <div style="flex:1"><h2 style="font-size:24px;line-height:1.05">Acceso a pie</h2>
+          <p style="font:500 15px/1.25 var(--f-sign);color:var(--ink-2)">Aparcar en <b style="color:var(--ink)">${A.aparcar}</b><br>Punto ${A.coords}</p></div>
+        <button class="b3" aria-label="Cerrar">${I.x}</button>
+      </div>
+      <div class="stats"><div><b>${A.min} min</b><small>a pie · ${A.dist}</small></div><div><b>↑${A.sube} m</b><small>de subida</small></div><div><b style="font-size:23px">${A.dif}</b><small>dificultad</small></div></div>
+      <p class="caveat" style="margin:8px 0 10px">${A.aviso}</p>
+      <div style="display:flex;gap:8px"><button class="b1" style="flex:1.25">${I.pie}Ruta a pie</button><button class="b2" style="flex:1">${I.coche}En coche</button></div>
+    </div>
+    ${modes('ir')}`;
+
+  /* ================= 02 HOY ================= */
+  const top = S.top;
+  const t1 = top[0], e1 = sp(t1.especie);
+  const crd = (k) => S.creditos[k] || '';
+  $('s02').innerHTML = `
+    <div class="scroll">
+      <div class="head"><div class="seg"><span class="on">Hoy</span><span>Mapa</span></div><span class="sp"></span>
+        <button class="ib" aria-label="Mis sitios">${I.pin}</button><button class="ib" aria-label="Ajustes">${I.ajus}</button></div>
+      <div class="days">${S.dias.map((d, i) => `<div class="day ${i === 0 ? 'on' : ''}"><b>${d.k}</b><small>${confWord[d.conf]}</small></div>`).join('')}</div>
+      <div class="conf">${bars(S.hoy.confianza)}<span><b style="font-family:var(--f-sign);font-size:18px">${S.hoy.fecha}.</b> ${S.hoy.confianzaTexto}</span></div>
+      <div class="filters"><button class="b2">Todas las especies ${I.abajo}</button><button class="b2" style="flex:.8">Dificultad ${I.abajo}</button></div>
+      <article class="r1">
+        <div class="ph"><img src="${F(e1.foto)}" alt="${e1.cientifico}"><span class="rank">${t1.n}</span><span class="phcred">${crd(e1.foto)}</span></div>
+        <div class="bd">
+          <h2>${t1.sitio}</h2>
+          <div class="sci">${e1.comun} · <i>${e1.cientifico}</i></div>
+          <div class="state">${t1.estado}<span class="meter"><i style="width:${t1.punt}%"></i></span><span style="font-weight:600;color:var(--ink-2)">${t1.punt}/100</span></div>
+          <div class="facts"><span><b>${t1.min} min</b>a pie</span><span><b>↑${t1.sube} m</b>subida</span><span><b>${t1.dif}</b>dificultad</span><span><b>${t1.km} km</b>en coche</span></div>
+          <div class="acts"><button class="b1">${I.pie}Ruta a pie</button><button class="b2" aria-label="Más opciones">${I.mas}</button></div>
+        </div>
+      </article>
+      <div class="sec"><h3>Siguientes</h3><span class="lab">Todas las especies</span></div>
+      ${top.slice(1).map((t) => { const e = sp(t.especie); return `<div class="rn"><span class="n">${t.n}</span>${e.foto ? `<img src="${F(e.foto)}" alt="">` : `<span class="noimg">sin foto</span>`}<div class="t"><b>${t.sitio}</b><small>${e.comun} · ${t.estado} · ${t.min} min · ↑${t.sube} m · ${t.dif}</small></div><button class="b3" aria-label="Abrir">${I.dch}</button></div>`; }).join('')}
+      <p class="note">La puntuación dice lo bueno que está el monte hoy, no que haya setas. Lugares y puntuaciones de esta maqueta: muestra.</p>
+    </div>
+    ${modes('ir')}`;
+
+  /* ================= 03 CALENDARIO ================= */
+  const M = ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+  const cm = S.mesActual;
+  $('s03').innerHTML = `
+    <div class="scroll">
+      <div class="head"><div class="seg"><span class="on">Hoy</span><span>Mapa</span></div><span class="sp"></span>
+        <button class="ib" aria-label="Mis sitios">${I.pin}</button><button class="ib" aria-label="Ajustes">${I.ajus}</button></div>
+      <div class="tabs2"><span>Dónde ir</span><span class="on">Calendario</span></div>
+      <div class="cal">
+        <div class="cal-row cal-hd"><div class="nm"><span class="lab">Especie</span></div>${M.map((m, i) => `<div class="c ${i + 1 === cm ? 'now' : ''}">${m}</div>`).join('')}</div>
+        ${S.especies.map((e) => `<div class="cal-row"><div class="nm"><b>${e.comun}</b><small>${e.texto.split(':')[0].split('·')[0].trim()}</small></div>${M.map((m, i) => `<div class="c ${e.meses.includes(i + 1) ? 'in' : ''} ${i + 1 === cm ? 'now' : ''}"></div>`).join('')}</div>`).join('')}
+      </div>
+      <div class="legend"><span><i></i>Meses de temporada</span><span><i class="now"></i>Octubre, ahora</span></div>
+    </div>
+    ${modes('ir')}`;
+
+  /* ================= 04 RECONOCER · RESUMEN ================= */
+  const lookRow = (p) => {
+    const ruled = p.estado !== 'NO DESCARTADA';
+    const grav = p.gravedad === 'mortal' ? 'MORTAL' : 'TÓXICA';
+    return `<div class="look ${ruled ? 'ruled' : ''}"><div class="st"><span>${grav}</span><small>${ruled ? 'DESCARTADA POR TU RESPUESTA' : 'NO DESCARTADA'}</small></div>
+      <div class="bd"><b>${p.comun}</b><i>${p.cientifico}</i><p>${p.porQue}</p></div><div class="go" aria-label="Comparar">${I.dch}</div></div>`;
+  };
+  $('s04').innerHTML = `
+    <div class="scroll w-warn">
+      <div class="rhead"><h1>Resultado</h1><button class="b3">${I.cam}Otra foto</button></div>
+      <div class="cand">
+        <div class="fig"><img src="${F(R.tuFoto)}" alt="Tu foto (ejemplo)"><div class="cred">Tu foto (ejemplo)</div></div>
+        <div class="tx"><div class="alike">${R.top.parecido}</div><h2>${R.top.comun}</h2><div class="sci"><i>${R.top.cientifico}</i></div></div>
+      </div>
+      <div class="sec"><h3>Antes de decidir, compárala con</h3></div>
+      ${R.pares.map(lookRow).join('')}
+      <div style="display:flex;gap:8px;margin-top:4px"><button class="b1" style="flex:1">${I.cam}Hacer la foto que falta</button></div>
+      <div class="sec"><h3>Tus respuestas</h3><span class="lab">«No sé» no descarta</span></div>
+      <div class="ans">${R.respuestas.map((r) => `<div><span>${r.p}</span><b class="${/No sé|^No$/.test(r.r) ? 'miss' : ''}">${r.r}</b></div>`).join('')}</div>
+      <div class="sec"><h3>Otros parecidos</h3></div>
+      <div class="ans">${R.otros.map((o) => `<div><span><i>${o.cientifico}</i>${o.sinFicha ? ' · sin ficha' : ''}</span><b>${o.parecido}</b></div>`).join('')}</div>
+      <button class="b2" style="width:100%;margin-top:14px">Segunda opinión con Gemini</button>
+      <p class="note">${R.nota}</p>
+    </div>
+    ${experto()}${modes('rec')}`;
+
+  /* ================= 05 COMPARAR (oronja vs oronja verde) ================= */
+  const pairTabs = (on) => `<div class="pairs">${R.pares.map((p) => `<span class="${p.id === on ? 'on' : ''} ${p.estado !== 'NO DESCARTADA' ? 'ru' : ''}">${p.comun}<small>${p.estado !== 'NO DESCARTADA' ? 'Descartada' : (p.gravedad === 'mortal' ? 'Mortal' : 'Tóxica')}</small></span>`).join('')}</div>`;
+  const band = (p) => `<div class="band ${p.estado !== 'NO DESCARTADA' ? 'ruled' : ''}"><b>${p.gravedad === 'mortal' ? 'MORTAL' : 'TÓXICA'} · ${p.estado}</b>${p.porQue}</div>`;
+  const ph = R.pares[0];
+  const keyNum = {}; let kn = 0; ph.rasgos.forEach((r) => { if (r.separa === 'clave') keyNum[r.rasgo] = ++kn; });
+  const sepTag = (r, nums) => r.separa === 'clave' ? `<span class="fm">${nums[r.rasgo]}</span>` : r.separa === 'orienta' ? `<span class="fm o">·</span>` : `<span class="fm x"></span>`;
+  const sepWord = { clave: 'Separa', orienta: 'Orienta', no: 'No separa' };
+  const missing = (t) => /No sé|Sin responder|No lo has/.test(t);
+  const table = (p, nums) => `<div class="tbl">
+      <div class="th"><span>${R.top.comun}<br><small style="font-weight:600;color:var(--ink-2)">candidata</small></span><span class="dg">${p.comun}<br><small style="font-weight:700">${p.gravedad === 'mortal' ? 'mortal' : 'tóxica'}</small></span><span>Tú<br><small style="font-weight:600;color:var(--ink-2)">respuesta / foto</small></span></div>
+      ${[...p.rasgos].sort((a, b) => ({clave:0,orienta:1,no:2}[a.separa]) - ({clave:0,orienta:1,no:2}[b.separa])).map((r) => `<div class="tr ${r.separa === 'no' ? 'no' : ''}"><div class="rh">${sepTag(r, nums)}<b>${r.rasgo}</b><em class="${r.separa === 'clave' ? 'k' : ''}">${sepWord[r.separa]}</em></div>
+        <div class="rc"><span>${r.cand}</span><span>${r.pelig}</span><span class="${missing(r.tu) ? 'miss' : ''}">${missing(r.tu) ? 'Falta: ' : ''}${r.tu}</span></div></div>`).join('')}
+    </div>`;
+  const cmpHead = (p) => `<div class="rhead"><button class="b3" aria-label="Volver al resultado">${I.izq}</button><h1>${R.top.comun} frente a ${p.comun}</h1></div>`;
+
+  const comparar = (scrollCls) => `
+    <div class="scroll w-warn">
+      ${cmpHead(ph)}${pairTabs(ph.id)}${band(ph)}
+      <div class="photos">
+        <div><div class="fig"><img src="${F(R.tuFoto)}" alt="Tu foto (ejemplo)">${mk(57, 62, 1, 26, 20, true)}</div><div class="who">Tu foto (ejemplo)</div><div class="cred">Láminas sin ver · ${S.creditos[R.tuFoto]}</div></div>
+        <div><div class="fig"><img src="${F(R.top.foto)}" alt="${R.top.cientifico}">${mk(40, 24, 1, -14, 28)}${mk(55, 44, 2, 22, 26)}</div><div class="who">${R.top.comun}</div><div class="cred">${S.creditos[R.top.foto]}</div></div>
+        <div><div class="fig"><img src="${F(ph.fotos[0])}" alt="${ph.cientifico}">${mk(64, 38, 1, 18, -26)}${mk(50, 58, 2, -24, 18)}</div><div class="who dg">${ph.comun}</div><div class="cred">${S.creditos[ph.fotos[0]]}</div></div>
+      </div>
+      <div class="plate">
+        <div class="cell"><span class="fm">1</span><div class="dr fig"><div data-anat="himenio-laminas"></div></div><p>Láminas</p></div>
+        <div class="cell"><span class="fm">2</span><div class="dr fig"><div data-anat="pie-jaspeado"></div></div><p>Pie</p></div>
+        <div class="cell"><span class="fm">3</span><div class="dr fig"><div data-anat="anillo-falda"></div></div><p>Anillo</p></div>
+        <div class="cell"><span class="fm">4</span><div class="dr2"><div data-anat="huevo-caesarea"></div><div data-anat="huevo-mortal"></div></div><p>Huevo cortado</p></div>
+      </div>
+      ${table(ph, keyNum)}
+      <p class="note">Los números unen cada fila con su dibujo y con el mismo punto en las fotos. Cuadro discontinuo: esa prueba todavía falta.</p>
+    </div>
+    ${experto()}${modes('rec')}`;
+  $('s05').innerHTML = comparar();
+  $('s05b').innerHTML = comparar();
+
+  /* ================= 06 FALSO POSITIVO ================= */
+  const fp = ph.falsoPositivo;
+  const lvlN = { baja: 1, media: 2, alta: 3 }[fp.nivel];
+  $('s06').innerHTML = `
+    <div class="scroll w-warn">
+      ${cmpHead(ph)}${pairTabs(ph.id)}
+      <div class="fp" style="margin-top:4px">
+        <h3>Riesgo de falso positivo<small style="display:block;font:600 15px/1.2 var(--f-sign);color:var(--ink-2);margin-top:2px">${R.top.comun} frente a ${ph.comun} · mortal</small></h3>
+        <div class="q"><span class="fm">1</span><div><h4>Por qué se parecen</h4><p>${fp.parecido}</p></div></div>
+        <div class="q"><span class="fm">2</span><div><h4>Qué las separa</h4><p>${fp.separa}</p>
+          <div class="eggs">
+            <div class="egg"><div class="fig"><div data-anat="huevo-caesarea"></div>${mk(30, 27, 'a', -26, -14)}${mk(70, 46, 'b', 28, 10)}</div><p>${R.top.comun}<small>Naranja y amarillo dentro</small></p></div>
+            <div class="egg dg"><div class="fig"><div data-anat="huevo-mortal"></div>${mk(30, 27, 'a', -26, -14)}${mk(70, 46, 'b', 28, 10)}</div><p>${ph.comun}<small>Todo blanco (a veces verdoso)</small></p></div>
+          </div>
+          <p style="font:500 15px/1.3 var(--f-sign);color:var(--ink-2);margin-top:6px"><b style="color:var(--ink)">a</b> piel del sombrero · <b style="color:var(--ink)">b</b> láminas. Huevo cortado de arriba abajo.</p></div></div>
+        <div class="q"><span class="fm">3</span><div><h4>Cuánto fiarse</h4><p>${fp.fiabilidad}</p>
+          <div class="lvl"><span class="steps">${[1, 2, 3].map((i) => `<i class="${i <= lvlN ? 'on' : ''}"></i>`).join('')}</span>Con tus respuestas: ${fp.nivel}</div></div></div>
+        <div class="q"><span class="fm dash">4</span><div><h4>Foto que falta</h4><p>${fp.foto}</p>
+          <button class="b1" style="width:100%;margin-top:10px">${I.cam}Hacer esta foto</button></div></div>
+      </div>
+      <div class="photos" style="margin-top:14px"><div><div class="fig"><img src="${F(ph.fotos[1])}" alt="Huevos de ${ph.cientifico} cortados" style="height:150px">${mk(40, 50, 'b', -22, -30)}</div><div class="who dg">${ph.comun}, huevos cortados</div><div class="cred">${S.creditos[ph.fotos[1]]}</div></div></div>
+    </div>
+    ${experto()}${modes('rec')}`;
+
+  $('s06b').innerHTML = $('s06').innerHTML;
+
+  /* ================= 07 RUTA A PIE ================= */
+  const pf = A.perfil, W = 382, H = 150, pad = { l: 40, r: 10, t: 22, b: 26 };
+  const lo = 380, hi = 560, dist = 920;
+  const X = (i) => pad.l + i / (pf.length - 1) * (W - pad.l - pad.r);
+  const Y = (v) => pad.t + (1 - (v - lo) / (hi - lo)) * (H - pad.t - pad.b);
+  const im = pf.indexOf(Math.max(...pf));
+  const line = pf.map((v, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)} ${Y(v).toFixed(1)}`).join(' ');
+  const prof = `<svg class="prof" viewBox="0 0 ${W} ${H}" role="img" aria-label="Perfil de la ruta">
+    ${[400, 450, 500, 550].map((v) => `<path d="M${pad.l} ${Y(v)}H${W - pad.r}" stroke="#d3d9d4" stroke-width="1.5"/><text x="${pad.l - 6}" y="${Y(v) + 5}" text-anchor="end" font-family="Barlow Semi Condensed" font-weight="600" font-size="14" fill="#3a4740">${v}</text>`).join('')}
+    <path d="${line} L${X(pf.length - 1)} ${H - pad.b} L${X(0)} ${H - pad.b} Z" fill="#d6e4dc"/>
+    <path d="${line}" fill="none" stroke="#0e1813" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M${pad.l} ${H - pad.b}H${W - pad.r}" stroke="#0e1813" stroke-width="2"/>
+    ${[[0, '0'], [0.5, '0,5 km'], [1, '0,9 km']].map(([f, t]) => `<text x="${pad.l + f * (W - pad.l - pad.r)}" y="${H - 6}" text-anchor="${f === 0 ? 'start' : f === 1 ? 'end' : 'middle'}" font-family="Barlow Semi Condensed" font-weight="600" font-size="14" fill="#3a4740">${t}</text>`).join('')}
+    <g transform="translate(${X(0) + 2} ${Y(pf[0]) - 34})"><rect width="22" height="22" fill="#1f4e8c"/><text x="11" y="17" text-anchor="middle" font-family="Barlow Semi Condensed" font-weight="800" font-size="17" fill="#fff">P</text></g>
+    <text x="${X(0) + 30}" y="${Y(pf[0]) - 17}" font-family="Barlow Semi Condensed" font-weight="700" font-size="15" fill="#0e1813">${pf[0]} m</text>
+    <rect x="${X(im) - 5}" y="${Y(pf[im]) - 5}" width="10" height="10" fill="#0e1813"/>
+    <text x="${X(im)}" y="${Y(pf[im]) - 10}" text-anchor="middle" font-family="Barlow Semi Condensed" font-weight="700" font-size="15" fill="#0e1813">máx ${pf[im]} m</text>
+    <circle cx="${X(pf.length - 1)}" cy="${Y(pf[pf.length - 1])}" r="5" fill="#fff" stroke="#0e1813" stroke-width="3"/>
+    <text x="${X(pf.length - 1) - 2}" y="${Y(pf[pf.length - 1]) + 22}" text-anchor="end" font-family="Barlow Semi Condensed" font-weight="700" font-size="15" fill="#0e1813">fin ${pf[pf.length - 1]} m</text>
+  </svg>`;
+  $('s07').innerHTML = `
+    <div class="rmap"></div><div class="map-scrim"></div>
+    <svg width="430" height="470" viewBox="0 0 430 470" style="position:absolute;left:0;top:0;z-index:2">
+      <path d="M70 420 C110 396 130 400 156 366 S210 300 246 288 S300 240 318 200 S336 150 346 128" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round"/>
+      <path d="M70 420 C110 396 130 400 156 366 S210 300 246 288 S300 240 318 200 S336 150 346 128" fill="none" stroke="#b23a0b" stroke-width="5" stroke-dasharray="10 7"/>
+      <g transform="translate(52 402)"><rect width="36" height="36" fill="#1f4e8c" stroke="#fff" stroke-width="3"/><text x="18" y="27" text-anchor="middle" font-family="Barlow Semi Condensed" font-weight="800" font-size="26" fill="#fff">P</text></g>
+      <g transform="translate(346 128)"><rect x="-14" y="-14" width="28" height="28" fill="none" stroke="#fff" stroke-width="7"/><rect x="-14" y="-14" width="28" height="28" fill="none" stroke="#0e1813" stroke-width="3.5"/><rect x="-4" y="-4" width="8" height="8" fill="#0e1813"/></g>
+      <g transform="translate(156 366)"><path d="M0 -16 12 14 0 7 -12 14z" fill="#0e1813" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></g>
+    </svg>
+    <div class="map-top" style="justify-content:space-between"><button class="pill" style="padding:0 16px 0 6px">${I.izq.replace('<svg', '<svg style="width:24px;height:24px"')}Acceso</button>
+      <span class="pill" style="padding:0 14px;font-size:16px">Sin conexión · mapa guardado</span></div>
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><h2 style="font-size:24px">Ruta a pie</h2><span style="font:700 18px/1 var(--f-sign)">${A.dist} · ${A.min} min · ↑${A.sube} m ↓${A.baja} m</span></div>
+      ${prof}
+      <p class="caveat" style="margin:4px 0 12px">${A.aviso}</p>
+      <div style="display:flex;gap:8px"><button class="b1" style="flex:1">${I.gps}Seguir con GPS</button><button class="b2" aria-label="Guardar en Mis sitios" style="width:56px;padding:0">${I.pin}</button></div>
+    </div>
+    ${modes('ir')}`;
+
+  /* ================= 08 MATAMOSCAS (descartada, sigue visible) ================= */
+  const pm = R.pares[2];
+  const kn2 = {}; let k2 = 0; pm.rasgos.forEach((r) => { if (r.separa === 'clave') kn2[r.rasgo] = ++k2; });
+  $('s08').innerHTML = `
+    <div class="scroll w-warn">
+      ${cmpHead(pm)}${pairTabs(pm.id)}${band(pm)}
+      <div class="photos">
+        <div><div class="fig"><img src="${F(R.tuFoto)}" alt="Tu foto (ejemplo)">${mk(47, 76, 1, 30, 4)}</div><div class="who">Tu foto (ejemplo)</div><div class="cred">${S.creditos[R.tuFoto]}</div></div>
+        <div><div class="fig"><img src="${F(pm.fotos[0])}" alt="${pm.cientifico}">${mk(57, 86, 1, -34, -6)}</div><div class="who">${pm.comun}</div><div class="cred">${S.creditos[pm.fotos[0]]}</div></div>
+      </div>
+      <div class="plate" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="cell"><span class="fm">1</span><div class="dr"><div data-anat="volva-saco"></div></div><p>Saco: ${R.top.comun}</p></div>
+        <div class="cell"><span class="fm">1</span><div class="dr"><div data-anat="volva-verrugas"></div></div><p>Verrugas: ${pm.comun}</p></div>
+        <div class="cell"><span class="fm">2</span><div class="dr"><div data-anat="himenio-laminas"></div></div><p>Láminas y pie</p></div>
+      </div>
+      ${table(pm, kn2)}
+      <div class="fp" style="margin-top:12px"><h3>Riesgo de falso positivo</h3>
+        <div class="q"><span class="fm">1</span><div><h4>Por qué se parecen</h4><p>${pm.falsoPositivo.parecido}</p></div></div>
+        <div class="q"><span class="fm">2</span><div><h4>Qué las separa</h4><p>${pm.falsoPositivo.separa}</p></div></div>
+      </div>
+    </div>
+    ${experto()}${modes('rec')}`;
+
+  document.querySelectorAll('section.screen .scroll').forEach((sc) => sc.insertAdjacentHTML('afterend', '<div class="topcap"></div>'));
+  if (window.ANAT_FILL) window.ANAT_FILL();
+})();
+</script>
+</body>
+</html>

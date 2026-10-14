@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=430">
+<title>Setas · Instrumento</title>
+<!--
+  Direction B — "Instrumento". Benchmark transfer: Flighty (Apple Design Award 2023, Interaction).
+  Transferred principles (not brand): departure-board rows (one line per place, essentials only, tabular numerals),
+  one big countdown numeral per state, status words in capsules instead of raw data, a horizontal "route progress"
+  strip from origin to destination — here the walk from P to the point, drawn as its elevation profile (signature).
+  Navigation: the map is home; a persistent sheet with detents carries the five destinations in its header.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Atkinson+Hyperlegible+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<script src="../shared/frame.js"></script>
+<script src="../shared/datos.js"></script>
+<script src="../shared/anatomia.js"></script>
+<style>
+:root{
+  --paper:#eef1ec;      /* app ground behind sheets */
+  --sheet:#ffffff;      /* sheet surface (sunlight) */
+  --ink:#0d1a13;        /* primary text, 18:1 on white */
+  --ink-2:#36443c;      /* secondary text, 10:1 on white */
+  --rule:#7f8a83;       /* non-text borders, 3.6:1 on white */
+  --wash:#e3e9e4;       /* quiet fills */
+  --forest:#1b4332;     /* identity + primary buttons + in-season */
+  --forest-t:#d6e6db;   /* forest tint (good-forest state) */
+  --rust:#b23a0b;       /* the one primary map action (FAB) */
+  --amber:#6b4700;      /* "puede salir / media" text */
+  --amber-t:#f2e2b8;
+  --danger:#a4161a;     /* danger only */
+  --danger-t:#f9e3e1;
+  --mono:'Atkinson Hyperlegible Mono',ui-monospace,monospace;
+  --anat-ink:#0d1a13; --anat-paper:#fbfaf6;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#888;font-family:'Atkinson Hyperlegible Next',-apple-system,system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;font-synthesis:none}
+.screen{background:var(--paper);font-size:16px;line-height:1.35}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+i.sci,.sci{font-style:italic}
+svg.ic{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- map layer ---------- */
+.map{position:absolute;inset:0;background-size:430px 932px;background-position:0 0}
+svg.ovl{position:absolute;inset:0;width:430px;height:932px}
+.scrim{position:absolute;left:0;right:0;top:0;height:120px;background:linear-gradient(rgba(6,20,12,.55),rgba(6,20,12,0))}
+.dim{position:absolute;inset:0;background:rgba(6,20,12,.42)}
+
+/* floating controls on the map */
+.float{position:absolute;display:flex;align-items:center;gap:10px;background:var(--sheet);border-radius:16px;
+  box-shadow:0 2px 10px rgba(0,0,0,.28);border:1.5px solid rgba(13,26,19,.25)}
+.pill{top:67px;left:16px;height:56px;padding:0 14px 0 6px}
+.pill img{width:44px;height:44px;border-radius:11px;object-fit:cover}
+.pill b{display:block;font-size:17px;line-height:1.1}.pill i{font-size:13px;color:var(--ink-2)}
+.pill svg.ic{width:18px;height:18px;margin-left:2px}
+.btn-ic{width:56px;height:56px;justify-content:center;padding:0;border-radius:16px}
+.layers{top:67px;right:16px}
+.fab{position:absolute;right:16px;width:64px;height:64px;border-radius:50%;background:var(--rust);color:#fff;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 12px rgba(0,0,0,.35);border:3px solid #fff}
+.fab svg.ic{width:30px;height:30px;stroke-width:2.4}
+.hint{position:absolute;left:16px;height:40px;padding:0 14px;border-radius:20px;background:rgba(13,26,19,.86);color:#fff;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.hint svg.ic{width:18px;height:18px}
+
+/* ---------- sheet ---------- */
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--sheet);border-radius:24px 24px 0 0;box-shadow:0 -4px 22px rgba(0,0,0,.28);
+  display:flex;flex-direction:column;padding-bottom:var(--safe-bottom)}
+.sheet.full{top:var(--safe-top)}
+.grab{width:44px;height:5px;border-radius:3px;background:var(--rule);margin:8px auto 6px;flex:none}
+.dock{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:0 10px;flex:none}
+.dk{height:54px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  font-size:13px;font-weight:700;color:var(--ink-2);white-space:nowrap}
+.dk svg.ic{width:21px;height:21px}
+.dk.on{background:var(--forest);color:#fff}
+.hr{height:1.5px;background:var(--wash);margin:8px 0 0;flex:none}
+.body{padding:0 16px;flex:1;min-height:0;position:relative}
+.scroll{overflow:hidden auto;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+
+/* buttons: exactly three styles */
+.b1,.b2{height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;font-weight:800;letter-spacing:.005em}
+.b1{background:var(--forest);color:#fff}
+.b2{background:var(--sheet);color:var(--forest);border:2.5px solid var(--forest)}
+.b3{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--ink);flex:none;border:1.5px solid var(--rule);background:var(--sheet)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* text roles */
+.over{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.h1{font-size:26px;font-weight:800;line-height:1.1;letter-spacing:-.01em}
+.h2{font-size:20px;font-weight:800;line-height:1.15}
+.lbl{font-size:13px;color:var(--ink-2);font-weight:600}
+.cap{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:13px;font-size:13px;font-weight:800;letter-spacing:.04em;white-space:nowrap}
+.cap.good{background:var(--forest-t);color:var(--forest)}
+.cap.mid{background:var(--amber-t);color:var(--amber)}
+.cap.low{background:var(--wash);color:var(--ink-2)}
+.cap.dng{background:var(--danger);color:#fff}
+.cap.out{background:var(--sheet);color:var(--ink-2);border:1.5px solid var(--rule)}
+.muestra{font-size:13px;font-weight:700;color:var(--ink-2);border:1.5px dashed var(--rule);border-radius:8px;padding:2px 8px}
+
+/* ---------- signature: the walk strip ---------- */
+.strip{display:grid;grid-template-columns:auto 1fr auto;align-items:end;gap:10px}
+.big{font-family:var(--mono);font-weight:800;font-size:40px;line-height:.95;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.big small{font-size:17px;font-weight:700;letter-spacing:0;margin-left:3px}
+.strip .lbl{display:block;margin-top:4px}
+.prof{display:block;width:100%}
+
+/* ---------- Hoy ---------- */
+.days{display:flex;gap:8px;overflow:hidden;margin:12px -16px 0;padding:0 16px}
+.day{flex:none;width:76px;height:72px;border-radius:14px;border:1.5px solid var(--rule);padding:8px 9px;display:flex;flex-direction:column;justify-content:space-between}
+.day b{font-size:16px;line-height:1}.day span{font-size:13px;color:var(--ink-2);font-weight:600}
+.day.on{background:var(--ink);border-color:var(--ink);color:#fff}.day.on span{color:#d9e2dc}
+.ticks{display:flex;gap:3px}.ticks i{height:5px;flex:1;border-radius:2px;background:var(--wash)}
+.day .ticks i.f{background:var(--forest)}.day.on .ticks i{background:#4b5a51}.day.on .ticks i.f{background:#fff}
+.conf{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:16px}
+.conf b{white-space:nowrap}
+.filters{display:flex;gap:8px;margin-top:12px}
+.sel{height:48px;border-radius:14px;border:1.5px solid var(--rule);display:flex;align-items:center;gap:8px;padding:0 12px;font-size:16px;font-weight:700}
+.sel svg.ic{width:18px;height:18px;margin-left:auto}
+.boardh{display:flex;justify-content:space-between;align-items:center;margin:16px 0 4px}
+.brow{display:grid;grid-template-columns:56px 1fr 66px 44px;gap:10px;align-items:center;padding:10px 8px;border-radius:16px;border:2px solid transparent;position:relative}
+.brow+.brow{border-top-color:transparent}
+.brow:not(.on)::after{content:"";position:absolute;left:74px;right:8px;bottom:-1px;height:1.5px;background:var(--wash)}
+.brow.on{border-color:var(--forest);background:#f3f8f4}
+.thumb{width:56px;height:56px;border-radius:12px;object-fit:cover;display:block}
+.rk{position:absolute;left:4px;top:6px;min-width:24px;height:24px;border-radius:7px;background:var(--ink);color:#fff;font:800 14px/24px var(--mono);text-align:center}
+.bt b{display:block;font-size:17px;line-height:1.15}
+.bt .s{font-size:14px;color:var(--ink-2);font-weight:600;display:block;margin-top:2px}
+.bt .cap{margin-top:5px;height:24px;font-size:13px}
+.bn{text-align:right}.bn .v{font:800 30px/1 var(--mono);letter-spacing:-.04em}.bn .u{font-size:13px;font-weight:700;color:var(--ink-2);display:block}
+.dots{width:44px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:12px;color:var(--ink-2)}
+.foot{flex:none;padding:10px 16px 8px;background:var(--sheet);box-shadow:0 -10px 14px -6px rgba(0,0,0,.10);position:relative;z-index:2}
+
+/* ---------- calendar ---------- */
+.seg{display:grid;grid-template-columns:1fr 1fr;height:48px;border-radius:14px;background:var(--wash);padding:4px;gap:4px}
+.seg span{display:flex;align-items:center;justify-content:center;border-radius:11px;font-size:16px;font-weight:800;color:var(--ink-2)}
+.seg span.on{background:var(--sheet);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.cal{display:grid;grid-template-columns:138px repeat(12,1fr);column-gap:3px;margin-top:12px;position:relative}
+.cal .mh{font:800 14px/30px var(--mono);text-align:center;color:var(--ink-2)}
+.cal .mh.now{background:var(--ink);color:#fff;border-radius:8px 8px 0 0}
+.cal .nm{height:46px;display:flex;flex-direction:column;justify-content:center;border-top:1.5px solid var(--wash);padding-right:6px}
+.cal .nm b{font-size:15px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal .nm i{font-size:13px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal .c{height:46px;border-top:1.5px solid var(--wash);display:flex;align-items:center;justify-content:center}
+.cal .c i{display:block;width:100%;height:28px;border-radius:5px;background:transparent;border:1.5px solid #c9d1cb}
+.cal .c.in i{background:var(--forest);border-color:var(--forest)}
+.cal .c.now{background:#e9eee9}
+.cal .c.now.in i{background:var(--forest);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink)}
+.cal .c.now:not(.in) i{border-color:var(--rule)}
+.legend{display:flex;gap:16px;align-items:center;margin-top:12px;font-size:14px;font-weight:600;color:var(--ink-2)}
+.legend i{display:inline-block;width:22px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px}
+
+/* ---------- recognizer ---------- */
+.hero{display:grid;grid-template-columns:132px 1fr;gap:14px;margin-top:14px;align-items:start}
+.ph{display:block;width:100%;object-fit:cover;border-radius:14px;background:var(--wash)}
+.credit{font-size:11px;color:var(--ink-2);font-weight:600;line-height:1.25;margin-top:4px;display:block}
+.inst{margin-top:14px;border:2.5px solid var(--danger);border-radius:18px;padding:12px 14px;display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.inst .big{color:var(--danger);font-size:60px}
+.inst b{font-size:19px;color:var(--danger);display:block;line-height:1.15}
+.inst span{font-size:15px;color:var(--ink);display:block;margin-top:3px}
+.lrow{display:grid;grid-template-columns:56px 1fr 28px;gap:12px;align-items:center;padding:10px;border-radius:16px;margin-top:8px}
+.lrow.dng{background:var(--danger-t);border:2px solid var(--danger)}
+.lrow.ok{background:var(--sheet);border:1.5px solid var(--rule)}
+.lrow b{font-size:17px;display:block;line-height:1.15}.lrow i{font-size:14px;color:var(--ink-2)}
+.lrow .g{font-size:14px;font-weight:800;color:var(--danger)}
+.lrow .cap{margin-top:6px}
+.qa{display:grid;grid-template-columns:1fr auto;gap:10px;padding:12px 0;border-top:1.5px solid var(--wash);font-size:16px}
+.qa b{text-align:right}
+.expert{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start;background:var(--ink);color:#fff;border-radius:14px;padding:11px 12px;font-size:16px;font-weight:700;line-height:1.3}
+.expert svg.ic{width:22px;height:22px;margin-top:1px}
+
+.pairs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.pr{height:52px;border-radius:14px;border:1.5px solid var(--rule);display:flex;flex-direction:column;justify-content:center;padding:0 10px;font-size:15px;font-weight:800;line-height:1.1}
+.pr small{font-size:13px;font-weight:700}
+.pr.dg small{color:var(--danger)}.pr.ok small{color:var(--ink-2)}
+.pr.on{background:var(--danger);border-color:var(--danger);color:#fff}.pr.on small{color:#fff}
+.vs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.vs .ph{height:122px}
+.vs .t{font-size:14px;font-weight:800;margin-top:6px;display:block;line-height:1.15}
+.vs .dgph{outline:3px solid var(--danger);outline-offset:-3px}
+table.ft{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;line-height:1.25}
+.ft th{font-size:13px;text-align:left;font-weight:800;padding:6px 4px;border-bottom:2px solid var(--ink);vertical-align:bottom}
+.ft td{padding:8px 4px;border-bottom:1.5px solid var(--wash);vertical-align:top}
+.ft td:first-child{font-weight:800}
+.ft th.dg,.ft td.dg{color:var(--danger)}
+.ft td.dg{font-weight:600}
+.ft .tag{display:block;font-size:13px;font-weight:700;margin-top:3px}
+.ft .tag.k{color:var(--forest)}.ft .tag.n{color:var(--ink-2)}
+.ft td.tu{background:#f1f4f1}
+.ft td.pend{background:var(--amber-t);color:var(--amber);font-weight:700}
+.anats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.an{border:1.5px solid var(--rule);border-radius:16px;padding:10px}
+.an [data-anat]{width:118px;margin:0 auto}
+.an b{display:block;font-size:15px;margin-top:6px}
+.an span{display:block;font-size:14px;color:var(--ink-2);line-height:1.25}
+.an span em{font-style:normal;color:var(--danger);font-weight:700}
+
+.egg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.egg>div{border-radius:18px;padding:10px 10px 12px;border:1.5px solid var(--rule)}
+.egg>div.dg{border:2.5px solid var(--danger);background:var(--danger-t)}
+.egg [data-anat]{width:112px;margin:0 auto}
+.egg b{display:block;font-size:16px;margin-top:6px;line-height:1.2}
+.egg span{display:block;font-size:14px;line-height:1.25;color:var(--ink-2)}
+.egg .dg b{color:var(--danger)}
+.fp{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:14px 0;border-top:1.5px solid var(--wash)}
+.fp .n{width:34px;height:34px;border-radius:10px;background:var(--ink);color:#fff;font:800 17px/34px var(--mono);text-align:center}
+.fp b{display:block;font-size:17px;margin-bottom:3px}
+.fp p{font-size:16px}
+.gauge{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:8px 0 8px}
+.gauge span{height:30px;border-radius:8px;background:var(--wash);font-size:13px;font-weight:800;color:var(--ink-2);display:flex;align-items:center;justify-content:center}
+.gauge span.on{background:var(--ink);color:#fff}
+
+/* ---------- ruta a pie ---------- */
+.legs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.legs div{border-radius:12px;background:#f1f4f1;padding:8px}
+.legs b{font:800 19px/1.1 var(--mono);display:block;letter-spacing:-.03em}
+.legs span{font-size:13px;font-weight:700;color:var(--ink-2)}
+.offline{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:700;color:var(--ink-2)}
+.offline svg.ic{width:18px;height:18px}
+</style>
+</head>
+<body>
+
+<!-- 01 MAPA + ACCESO -->
+<section class="screen" data-shot="01-mapa" data-chrome="dark">
+  <div class="map" style="background-image:url(../shared/mapa/mapa-z14.png)"></div>
+  <div class="scrim"></div>
+  <svg class="ovl" id="route01"></svg>
+  <div class="float pill"><img src="../shared/fotos/boletus_aereus_1.jpg" alt=""><div><b>Tentullo</b><i>Zonas favorables</i></div><svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>
+  <div class="float btn-ic layers" aria-label="Capas"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg></div>
+  <div class="hint" style="top:135px"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><span>Mantén pulsado o pulsa <b>Aquí</b> para ver el acceso</span></div>
+  <div class="fab" style="bottom:378px" aria-label="Aquí: punto de mira"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/></svg></div>
+  <div class="sheet" id="sheet01">
+    <div class="grab"></div>
+    <div class="body">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="flex:1"><div class="h2">Acceso a pie</div><div class="lbl num">36.61084, −5.24579</div></div>
+        <div class="b3" aria-label="Guardar sitio"><svg class="ic" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg></div>
+        <div class="b3" aria-label="Cerrar"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+      </div>
+      <div style="margin-top:8px;font-size:16px"><span class="lbl" style="font-size:14px">Aparcar en</span> <b>camino de servicio sin nombre</b></div>
+      <div class="strip" style="margin-top:10px">
+        <div><div class="big">36<small>min</small></div><span class="lbl">a pie · 920 m</span></div>
+        <svg class="prof" id="mini01" viewBox="0 0 150 56" height="56"></svg>
+        <div style="text-align:right"><div class="big">+138<small>m</small></div><span class="lbl">subida · Moderada</span></div>
+      </div>
+      <div style="font-size:14px;color:var(--amber);font-weight:700;margin-top:8px">Estimación: puede haber fincas privadas, vallas o barrancos.</div>
+      <div class="row2" style="margin-top:10px">
+        <div class="b2"><svg class="ic" viewBox="0 0 24 24"><path d="M5 16l1.5-5h11L19 16"/><rect x="3.5" y="16" width="17" height="4" rx="1"/><path d="M7 20v1.5M17 20v1.5"/></svg>En coche</div>
+        <div class="b1"><svg class="ic" viewBox="0 0 24 24"><circle cx="13" cy="4" r="1.8"/><path d="M9 21l2.5-7 3 3V21M8 11l3-3 3 1 2 3M11.5 14L10 9"/></svg>Ruta a pie</div>
+      </div>
+    </div>
+    <div class="hr" style="margin-top:12px"></div><div class="dock" style="margin-top:4px" id="dock01"></div>
+  </div>
+</section>
+
+<!-- 02 HOY -->
+<section class="screen" data-shot="02-hoy" data-chrome="dark">
+  <div class="map" style="background-image:url(../shared/mapa/mapa-z12.png)"></div><div class="dim"></div>
+  <div class="sheet full">
+    <div class="grab"></div>
+    <div class="dock" data-on="hoy"></div>
+    <div class="hr"></div>
+    <div class="body scroll" style="padding-top:12px;padding-bottom:12px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between">
+        <div class="h1">Dónde ir hoy</div><span class="muestra">Datos de ejemplo</span>
+      </div>
+      <div class="days" id="days"></div>
+      <div class="conf"><span class="cap good" style="flex:none">Previsión fiable</span><span>A 3 días o menos suele acertar.</span></div>
+      <div class="filters">
+        <div class="sel" style="flex:1.3">Todas las especies<svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="sel" style="flex:1">Dificultad<svg class="ic" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>
+      </div>
+      <div class="boardh"><span class="over">Zonas favorables · por bosque</span><span class="lbl">a pie</span></div>
+      <div id="board"></div>
+    </div>
+    <div class="foot">
+      <div class="b1"><svg class="ic" viewBox="0 0 24 24"><circle cx="13" cy="4" r="1.8"/><path d="M9 21l2.5-7 3 3V21M8 11l3-3 3 1 2 3M11.5 14L10 9"/></svg>Ruta a pie · Valle del Genal</div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 CALENDARIO -->
+<section class="screen" data-shot="03-calendario" data-chrome="dark">
+  <div class="map" style="background-image:url(../shared/mapa/mapa-z12.png)"></div><div class="dim"></div>
+  <div class="sheet full">
+    <div class="grab"></div>
+    <div class="dock" data-on="hoy"></div>
+    <div class="hr"></div>
+    <div class="body scroll" style="padding-top:12px">
+      <div class="seg"><span>Por días</span><span class="on">Calendario</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:14px">
+        <div class="h2">Temporada por especie</div><span class="lbl">octubre marcado</span>
+      </div>
+      <div class="cal" id="cal"></div>
+      <div class="legend"><span><i style="background:var(--forest)"></i>Meses de temporada</span><span><i style="background:var(--ink)"></i>Mes actual</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 RECONOCER RESUMEN -->
+<section class="screen" data-shot="04-reconocer-resumen" data-chrome="dark">
+  <div class="map" style="background-image:url(../shared/mapa/mapa-z12.png)"></div><div class="dim"></div>
+  <div class="sheet full">
+    <div class="grab"></div>
+    <div class="dock" data-on="reconocer"></div>
+    <div class="hr"></div>
+    <div class="body scroll" style="padding-bottom:16px">
+      <div class="hero">
+        <div><img class="ph" style="height:132px" src="../shared/fotos/amanita_caesarea_2.jpg" alt="Tu foto (ejemplo)"><span class="credit"><b>Tu foto (ejemplo)</b> · Louis Aureglia · CC BY 4.0</span></div>
+        <div>
+          <div class="lbl" style="font-size:15px">Se parece mucho a tu foto</div>
+          <div class="h1" style="font-size:30px;margin-top:2px">Oronja</div>
+          <div class="sci" style="font-size:17px">Amanita caesarea</div>
+          <div style="font-size:14px;color:var(--ink-2);margin-top:8px;line-height:1.3">También: <i>A. muscaria</i> (algo parecida), <i>A. vaginata</i> (poco parecida, sin ficha)</div>
+        </div>
+      </div>
+      <div class="inst">
+        <div class="big">2</div>
+        <div><b>mortales sin descartar</b><span>Siguen en rojo hasta que una respuesta o una foto las descarte.</span></div>
+      </div>
+      <div class="boardh" style="margin-top:16px"><span class="over">No confundir con</span><span class="lbl">3 parecidas</span></div>
+      <div id="looks"></div>
+      <div class="boardh" style="margin-top:16px"><span class="over">Tus respuestas</span><span class="lbl">Editar</span></div>
+      <div id="resp"></div>
+    </div>
+    <div class="foot">
+      <div class="b1" style="margin-bottom:8px">Comparar con la oronja verde</div>
+      <div class="expert" data-expert></div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 RECONOCER COMPARAR -->
+<section class="screen" data-shot="05-reconocer-comparar" data-chrome="dark">
+  <div class="map" style="background-image:url(../shared/mapa/mapa-z12.png)"></div><div class="dim"></div>
+  <div class="sheet full">
+    <div class="grab"></div>
+    <div class="dock" data-on="reconocer"></div>
+    <div class="hr"></div>
+    <div class="body scroll" style="padding-bottom:16px" data-pair="0"></div>
+    <div class="foot"><div class="expert" data-expert></div></div>
+  </div>
+</section>
+
+<!-- 05b same pair, scrolled to the table and drawings -->
+<section class="screen" data-shot="05b-reconocer-comparar-rasgos" data-chrome="dark" data-scroll="330">
+  <div class="map" style="background-image:url(../shared/mapa/mapa-z12.png)"></div><div class="dim"></div>
+  <div class="sheet full">
+    <div class="grab"></div>
+    <div class="dock" data-on="reconocer"></div>
+    <div class="hr"></div>
+    <div class="body scroll" style="padding-bottom:16px" data-pair="0"></div>
+    <div class="foot"><div class="expert" data-expert></div></div>
+  </div>
+</section>
+
+<!-- 05c same pair, scrolled to the deciding-feature drawings -->
+<section class="screen" data-shot="05c-reconocer-comparar-dibujos" data-chrome="dark" data-scroll="2000">
+  <div class="map" style="background-image:url(../shared/mapa/mapa-z12.png)"></div><div class="dim"></div>
+  <div class="sheet full">
+    <div class="grab"></div>
+    <div class="dock" data-on="reconocer"></div>
+    <div class="hr"></div>
+    <div class="body scroll" style="padding-bottom:16px" data-pair="0"></div>
+    <div class="foot"><div class="expert" data-expert></div></div>
+  </div>
+</section>
+
+<!-- 06 FALSO POSITIVO -->
+<section class="screen" data-shot="06-reconocer-falso-positivo" data-chrome="dark">
+  <div class="map" style="background-image:url(../shared/mapa/mapa-z12.png)"></div><div class="dim"></div>
+  <div class="sheet full">
+    <div class="grab"></div>
+    <div class="dock" data-on="reconocer"></div>
+    <div class="hr"></div>
+    <div class="body scroll" style="padding-bottom:16px" id="fp"></div>
+    <div class="foot">
+      <div class="b1" style="margin-bottom:8px"><svg class="ic" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Hacer la foto del corte</div>
+      <div class="expert" data-expert></div>
+    </div>
+  </div>
+</section>
+
+<!-- 06b same, scrolled to items 3-4 -->
+<section class="screen" data-shot="06b-reconocer-falso-positivo-fiarte" data-scroll="2000" data-chrome="dark">
+  <div class="map" style="background-image:url(../shared/mapa/mapa-z12.png)"></div><div class="dim"></div>
+  <div class="sheet full">
+    <div class="grab"></div>
+    <div class="dock" data-on="reconocer"></div>
+    <div class="hr"></div>
+    <div class="body scroll" style="padding-bottom:16px" data-fp></div>
+    <div class="foot">
+      <div class="b1" style="margin-bottom:8px"><svg class="ic" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Hacer la foto del corte</div>
+      <div class="expert" data-expert></div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 MATAMOSCAS (descartada, still reachable) -->
+<section class="screen" data-shot="07-reconocer-muscaria" data-chrome="dark">
+  <div class="map" style="background-image:url(../shared/mapa/mapa-z12.png)"></div><div class="dim"></div>
+  <div class="sheet full">
+    <div class="grab"></div>
+    <div class="dock" data-on="reconocer"></div>
+    <div class="hr"></div>
+    <div class="body scroll" style="padding-bottom:16px" data-pair="2"></div>
+    <div class="foot"><div class="expert" data-expert></div></div>
+  </div>
+</section>
+
+<!-- 08 RUTA A PIE -->
+<section class="screen" data-shot="08-ruta-a-pie" data-chrome="dark" data-signal="off">
+  <div class="map" style="background-image:url(../shared/mapa/mapa-z14.png)"></div>
+  <div class="scrim"></div>
+  <svg class="ovl" id="route08"></svg>
+  <div class="float btn-ic" style="top:67px;left:16px" aria-label="Volver"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></div>
+  <div class="float" style="top:67px;left:84px;height:56px;padding:0 14px"><div class="offline" style="color:var(--ink)"><svg class="ic" viewBox="0 0 24 24"><path d="M3 3l18 18M8.5 16.5a5 5 0 017 0M5 12.5a10 10 0 014.5-2.4M19 12.5a10 10 0 00-2.2-1.6M12 20h.01"/></svg>Sin conexión · ruta guardada</div></div>
+  <div class="sheet" id="sheet08">
+    <div class="grab"></div>
+    <div class="body">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><div class="h2">Ruta a pie</div><span class="lbl">al punto · Sierra Bermeja</span></div>
+      <svg class="prof" id="prof08" viewBox="0 0 398 150" height="150" style="margin-top:6px"></svg>
+      <div class="legs">
+        <div><b>36′</b><span>a pie</span></div><div><b>920m</b><span>distancia</span></div>
+        <div><b>+138</b><span>m subida</span></div><div><b>−61</b><span>m bajada</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 56px;gap:10px;margin-top:12px">
+        <div class="b1"><svg class="ic" viewBox="0 0 24 24"><path d="M12 2l7 19-7-4-7 4z"/></svg>Seguir con GPS</div>
+        <div class="b3" style="width:56px;height:56px;border-radius:16px" aria-label="Más"><svg class="ic" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="19" cy="12" r="1.3" fill="currentColor"/></svg></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+const S = window.SETAS;
+const F = (id) => `../shared/fotos/${id}.jpg`;
+const esp = (id) => S.especies.find((e) => e.id === id) || {};
+const ICON = {
+  hoy:'<path d="M4 6h16v14H4z"/><path d="M4 10h16M8 3v5M16 3v5"/>',
+  sitios:'<path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  guia:'<path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h11"/>',
+  reconocer:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  ajustes:'<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>',
+  dots:'<circle cx="5" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="19" cy="12" r="1.3" fill="currentColor"/>',
+  chev:'<path d="M9 5l7 7-7 7"/>',
+  warn:'<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/>',
+};
+const ic = (k) => `<svg class="ic" viewBox="0 0 24 24">${ICON[k]}</svg>`;
+const DOCK = [['hoy','Hoy'],['sitios','Mis sitios'],['guia','Guía'],['reconocer','Reconocer'],['ajustes','Ajustes']];
+document.querySelectorAll('.dock').forEach((d) => {
+  d.innerHTML = DOCK.map(([k,t]) => `<div class="dk${d.dataset.on===k?' on':''}">${ic(k)}${t}</div>`).join('');
+});
+document.querySelectorAll('[data-expert]').forEach((e) => { e.innerHTML = ic('warn') + `<span>${S.reconocer.avisoExperto}</span>`; });
+
+/* ---- elevation profile (signature) ---- */
+const P = S.acceso.perfil, lo = Math.min(...P), hi = Math.max(...P), last = P[P.length-1];
+function profile(w, h, pad, labels){
+  const x0 = pad.l, x1 = w - pad.r, y0 = pad.t, y1 = h - pad.b;
+  const X = (i) => x0 + (x1 - x0) * i / (P.length - 1);
+  const Y = (v) => y1 - (y1 - y0) * (v - lo) / (hi - lo);
+  const pts = P.map((v,i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`);
+  const imax = P.indexOf(hi);
+  let s = `<path d="M${x0},${y1} L${pts.join(' L')} L${x1},${y1} Z" fill="#d6e6db"/>`+
+    `<polyline points="${pts.join(' ')}" fill="none" stroke="#1b4332" stroke-width="${labels?3.5:2.6}" stroke-linejoin="round" stroke-linecap="round"/>`+
+    `<line x1="${x0}" y1="${y1}" x2="${x1}" y2="${y1}" stroke="#7f8a83" stroke-width="1.5"/>`;
+  const pin = (x,y,t,fill) => `<circle cx="${x}" cy="${y}" r="${labels?11:8}" fill="${fill}" stroke="#fff" stroke-width="2"/><text x="${x}" y="${y+ (labels?4.5:3.5)}" text-anchor="middle" font-family="Atkinson Hyperlegible Mono" font-weight="800" font-size="${labels?13:10}" fill="#fff">${t}</text>`;
+  s += pin(X(0), Y(P[0]), 'P', '#0d1a13');
+  s += `<circle cx="${X(P.length-1)}" cy="${Y(last)}" r="${labels?8:6}" fill="#fff" stroke="#0d1a13" stroke-width="3"/>`;
+  if (labels){
+    const T = (x,y,t,a='middle',sz=13,wt=800,c='#0d1a13') => `<text x="${x}" y="${y}" text-anchor="${a}" font-family="Atkinson Hyperlegible Mono" font-weight="${wt}" font-size="${sz}" fill="${c}">${t}</text>`;
+    s += `<line x1="${X(imax)}" y1="${Y(hi)}" x2="${X(imax)}" y2="${y1}" stroke="#0d1a13" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+    s += T(X(0), Y(P[0]) - 18, `${P[0]} m`, 'start');
+    s += T(X(imax) - 6, Y(hi) - 12, `máx ${hi} m`, 'end');
+    
+    s += T(x0, h - 4, '0 m', 'start', 13, 700, '#36443c') + T(x1, h - 4, `920 m · fin ${last} m`, 'end', 13, 700, '#36443c');
+  }
+  return s;
+}
+document.getElementById('mini01').innerHTML = profile(150, 56, {l:12,r:8,t:8,b:9}, false);
+document.getElementById('prof08').innerHTML = profile(398, 150, {l:12,r:10,t:30,b:22}, true);
+
+/* ---- map route + markers ---- */
+function route(svg, pts, label){
+  const d = 'M' + pts.map((p) => p.join(',')).join(' L');
+  const [px,py] = pts[0], [ex,ey] = pts[pts.length-1];
+  svg.innerHTML =
+    `<path d="${d}" fill="none" stroke="#fff" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/>`+
+    `<path d="${d}" fill="none" stroke="#0d1a13" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="10 7"/>`+
+    `<rect x="${px-19}" y="${py-19}" width="38" height="38" rx="10" fill="#0d1a13" stroke="#fff" stroke-width="3"/>`+
+    `<text x="${px}" y="${py+7}" text-anchor="middle" font-family="Atkinson Hyperlegible Next" font-weight="800" font-size="21" fill="#fff">P</text>`+
+    `<circle cx="${ex}" cy="${ey}" r="30" fill="none" stroke="#fff" stroke-width="5"/><circle cx="${ex}" cy="${ey}" r="30" fill="none" stroke="#0d1a13" stroke-width="2.5"/>`+
+    `<path d="M${ex} ${ey-42}v18M${ex} ${ey+24}v18M${ex-42} ${ey}h18M${ex+24} ${ey}h18" stroke="#fff" stroke-width="6" stroke-linecap="round"/>`+
+    `<path d="M${ex} ${ey-42}v18M${ex} ${ey+24}v18M${ex-42} ${ey}h18M${ex+24} ${ey}h18" stroke="#0d1a13" stroke-width="2.5" stroke-linecap="round"/>`+
+    `<circle cx="${ex}" cy="${ey}" r="6" fill="#0d1a13" stroke="#fff" stroke-width="2.5"/>`+
+    (label ? `<g><rect x="${ex-196}" y="${ey-84}" width="236" height="34" rx="17" fill="#0d1a13"/><text x="${ex-78}" y="${ey-61}" text-anchor="middle" font-family="Atkinson Hyperlegible Next" font-weight="700" font-size="15" fill="#fff">${label}</text></g>` : '');
+}
+route(document.getElementById('route01'), [[60,452],[108,404],[158,400],[204,440],[300,438],[330,420],[338,330]], 'Punto elegido · 36 min a pie');
+route(document.getElementById('route08'), [[56,430],[104,382],[156,378],[204,420],[300,418],[330,400],[338,300]], null);
+
+/* ---- Hoy: day strip + board ---- */
+const lvl = {alta:3, media:2, baja:1};
+document.getElementById('days').innerHTML = S.dias.map((d,i) =>
+  `<div class="day${i===0?' on':''}"><div><b>${d.k}</b><br><span>${d.d||''}</span></div><div class="ticks">${[1,2,3].map((n)=>`<i class="${n<=lvl[d.conf]?'f':''}"></i>`).join('')}</div></div>`).join('');
+document.getElementById('board').innerHTML = S.top.map((t,i) => {
+  const e = esp(t.especie); const [zona, pueblo] = t.sitio.split(' · ');
+  const cap = t.estado === 'Buen momento' ? 'good' : 'mid';
+  return `<div class="brow${i===0?' on':''}">
+    <div style="position:relative">${e.foto?`<img class="thumb" src="${F(e.foto)}" alt="">`:`<div class="thumb" style="background:var(--wash);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--ink-2)">sin foto</div>`}</div>
+    <span class="rk">${t.n}</span>
+    <div class="bt"><b>${zona}</b><span class="s">${pueblo} · ${e.comun}</span><span class="cap ${cap}">${t.estado}</span></div>
+    <div class="bn"><span class="v">${t.min}</span><span class="u">min a pie</span><span class="u num">+${t.sube} m</span></div>
+    <div class="dots" aria-label="Más opciones">${ic('dots')}</div></div>`;
+}).join('');
+
+/* ---- calendar ---- */
+const M = 'EFMAMJJASOND'.split('');
+let cal = '<div></div>' + M.map((m,i) => `<div class="mh${i+1===S.mesActual?' now':''}">${m}</div>`).join('');
+S.especies.forEach((e) => {
+  cal += `<div class="nm"><b>${e.comun}</b><i>${e.cientifico.split(' / ')[0]}</i></div>`;
+  for (let m = 1; m <= 12; m++) cal += `<div class="c${e.meses.includes(m)?' in':''}${m===S.mesActual?' now':''}"><i></i></div>`;
+});
+document.getElementById('cal').innerHTML = cal;
+
+/* ---- recognizer summary ---- */
+const R = S.reconocer;
+const grav = (p) => p.gravedad === 'mortal' ? 'Mortal' : 'Tóxica';
+document.getElementById('looks').innerHTML = R.pares.map((p) => {
+  const open = p.estado === 'NO DESCARTADA';
+  return `<div class="lrow ${open?'dng':'ok'}">
+    <img class="thumb" src="${F(p.fotos[0])}" alt="">
+    <div><b>${p.comun} <span class="g" style="${open?'':'color:var(--ink-2)'}">· ${grav(p)}</span></b><i>${p.cientifico}</i><br>
+    <span class="cap ${open?'dng':'out'}">${p.estado}</span></div>
+    <div style="color:${open?'var(--danger)':'var(--ink-2)'}">${ic('chev')}</div></div>`;
+}).join('');
+document.getElementById('resp').innerHTML = R.respuestas.map((r) => `<div class="qa"><span>${r.p}</span><b>${r.r}</b></div>`).join('');
+
+/* ---- pair view ---- */
+const cand = esp('amanita_caesarea');
+function pairTabs(k){
+  return `<div class="pairs">${R.pares.map((p,i) => {
+    const open = p.estado === 'NO DESCARTADA';
+    return `<div class="pr ${open?'dg':'ok'}${i===k?' on':''}" ${i===k && !open ? 'style="background:var(--ink);border-color:var(--ink);color:#fff"':''}>${p.comun}<small>${open?'No descartada':'Descartada'}</small></div>`;
+  }).join('')}</div>`;
+}
+function pairView(k){
+  const p = R.pares[k]; const open = p.estado === 'NO DESCARTADA';
+  const pend = (t) => /No sé|Sin responder|No lo has/.test(t);
+  const drawings = p.rasgos.filter((r) => r.dib && r.separa === 'clave');
+  const anat = (r) => r.dib === 'huevo'
+    ? `<div class="an" style="grid-column:1/-1"><b style="margin:0 0 6px">${r.rasgo}</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><div data-anat="huevo-caesarea" style="width:96px"></div><span>Oronja: ${r.cand.toLowerCase()}</span></div><div><div data-anat="huevo-mortal" style="width:96px"></div><span><em>${p.comun}: ${r.pelig.toLowerCase()}</em></span></div></div></div>`
+    : `<div class="an"><div data-anat="${r.dib}"></div><b>${r.rasgo}</b><span>Oronja: ${r.cand.toLowerCase()}<br><em>${p.comun}: ${r.pelig.toLowerCase()}</em></span></div>`;
+  return `<div style="display:flex;align-items:center;gap:8px;margin-top:10px"><span class="lbl" style="font-size:15px">‹ Resumen</span><span class="lbl" style="margin-left:auto">Par ${k+1} de ${R.pares.length}</span></div>
+    ${pairTabs(k)}
+    <div style="margin-top:14px"><div class="h2">Oronja frente a ${p.comun.toLowerCase()}</div>
+      <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><span class="cap ${open?'dng':'out'}">${open?grav(p).toUpperCase()+' · ':''}${p.estado}</span>${open?'':`<span class="cap low">${grav(p)}</span>`}</div>
+      <p style="margin-top:8px;font-size:16px">${p.porQue}</p></div>
+    <div class="vs">
+      <div><img class="ph" src="${F(R.tuFoto)}" alt=""><span class="t">Tu foto (ejemplo)</span><span class="credit">${S.creditos[R.tuFoto]}</span></div>
+      <div><img class="ph" src="${F(cand.foto)}" alt=""><span class="t">Oronja</span><span class="credit">Guía · ${S.creditos[cand.foto]}</span></div>
+      <div><img class="ph${open?' dgph':''}" src="${F(p.fotos[0])}" alt=""><span class="t" style="${open?'color:var(--danger)':''}">${p.comun}</span><span class="credit">Guía · ${S.creditos[p.fotos[0]]}</span></div>
+    </div>
+    <table class="ft"><thead><tr><th style="width:21%">Rasgo</th><th style="width:25%">Oronja</th><th class="dg" style="width:27%">${p.comun}</th><th>Tú / se ve</th></tr></thead><tbody>
+    ${p.rasgos.map((r) => `<tr><td>${r.rasgo}<span class="tag ${r.separa==='clave'?'k':'n'}">${r.separa==='clave'?'▸ decide':r.separa==='no'?'no separa':'orienta'}</span></td><td>${r.cand}</td><td class="dg">${r.pelig}</td><td class="${pend(r.tu)?'pend':'tu'}">${r.tu}</td></tr>`).join('')}
+    </tbody></table>
+    <div class="boardh" style="margin-top:18px"><span class="over">Rasgos que deciden · dibujos</span></div>
+    <div class="anats">${drawings.map(anat).join('')}</div>`;
+}
+document.querySelectorAll('[data-pair]').forEach((el) => { el.innerHTML = pairView(+el.dataset.pair); });
+
+/* ---- false positive ---- */
+const p0 = R.pares[0], fp = p0.falsoPositivo;
+const FPH = `
+  <div style="display:flex;align-items:center;gap:8px;margin-top:10px"><span class="lbl" style="font-size:15px">‹ Oronja frente a oronja verde</span></div>
+  <div class="h1" style="margin-top:8px">Riesgo de falso positivo</div>
+  <div style="margin-top:6px"><span class="cap dng">MORTAL · NO DESCARTADA</span></div>
+  <div class="egg">
+    <div><div data-anat="huevo-caesarea"></div><b>Oronja</b><span>${p0.rasgos[5].cand}</span></div>
+    <div class="dg"><div data-anat="huevo-mortal"></div><b>Oronja verde · cicuta blanca</b><span>${p0.rasgos[5].pelig}</span></div>
+  </div>
+  <div style="font-size:14px;color:var(--ink-2);margin:8px 0 6px">Huevo cortado de arriba abajo. Tú: <b style="color:var(--amber)">${p0.rasgos[5].tu.toLowerCase()}</b>.</div>
+  <div class="fp"><span class="n">1</span><div><b>Por qué se parecen</b><p>${fp.parecido}</p></div></div>
+  <div class="fp"><span class="n">2</span><div><b>Qué las separa</b><p>${fp.separa}</p></div></div>
+  <div class="fp"><span class="n">3</span><div><b>Cuánto fiarte de esa diferencia</b>
+    <div class="gauge">${['Baja','Media','Alta'].map((g) => `<span class="${g.toLowerCase()===fp.nivel?'on':''}">${g}</span>`).join('')}</div>
+    <p style="font-size:14px;font-weight:700;color:var(--ink-2);margin-bottom:4px">Con tus respuestas de ahora</p><p>${fp.fiabilidad}</p></div></div>
+  <div class="fp"><span class="n">4</span><div><b>Qué foto hacer</b><p>${fp.foto}</p></div></div>`;
+document.querySelectorAll('#fp,[data-fp]').forEach((e) => { e.innerHTML = FPH; });
+})();
+</script>
+</body>
+</html>

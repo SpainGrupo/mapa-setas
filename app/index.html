@@ -57,6 +57,7 @@
           <label><input type="checkbox" data-capa="sombreado" checked /> Sombreado del relieve</label>
           <label><input type="checkbox" data-capa="curvas" checked /> Curvas de nivel (20 m)</label>
           <label><input type="checkbox" data-capa="protegidos" checked /> <span class="muestra-enp"></span> Espacios protegidos</label>
+          <label id="capa-restricciones"><input type="checkbox" data-capa="restricciones" checked /> <span class="muestra-restriccion" aria-hidden="true"></span> Recogida con autorización</label>
           <label><input type="checkbox" data-capa="idoneidad" checked /> Idoneidad</label>
           <label><input type="checkbox" data-capa="semaforo" /> <span class="muestra-semaforo"></span> Semáforo (especie elegida)</label>
           <label id="capa-rutas"><input type="checkbox" data-capa="rutas" /> <span class="muestra-rutas" aria-hidden="true"><i data-t="GR"></i><i data-t="PR"></i><i data-t="SL"></i></span> Rutas y caminos</label>
@@ -74,6 +75,7 @@
       </div>
       <div id="tarjeta-acceso" class="tarjeta-acceso" role="region" aria-label="Acceso a pie desde el coche" hidden>
         <div class="ta-cab"><b>Acceso a pie</b><span id="ta-coord" class="ta-coord"></span></div>
+        <p id="ta-restriccion" class="chip-restriccion" role="note" hidden></p>
         <p id="ta-estado" class="ta-estado" role="status"></p>
         <dl id="ta-datos" class="ta-datos" hidden>
           <div class="ta-via"><dt>Aparcar en</dt><dd id="ta-via"></dd></div>
@@ -221,6 +223,13 @@
         <p class="nota">Descarga aparte y opcional. Reconocedor: BioCLIP (Imageomics, licencia MIT), con ONNX Runtime Web (MIT).</p>
         <h2>Segunda opinión (Gemini)</h2>
         <p id="estado-gemini" class="estado">Pendiente de configurar</p>
+        <section id="normativa" class="normativa" aria-labelledby="tit-normativa" hidden>
+          <h2 id="tit-normativa">Normativa de recogida</h2>
+          <p id="normativa-aviso"></p>
+          <p class="nota">En el mapa, con rayado rojo (capa «Recogida con autorización»):</p>
+          <ul id="normativa-tipos" class="normativa-tipos"></ul>
+          <p id="normativa-orientativo" class="aviso-normativa"></p>
+        </section>
         <h2>Datos</h2>
         <p class="nota" id="info-datos"></p>
         <p class="atribucion">Datos: IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, © OpenStreetMap ODbL, Protomaps</p>
@@ -255,7 +264,8 @@
     <form id="frm-sitio" method="dialog">
       <h2 id="tit-sitio">Nuevo sitio</h2>
       <p id="coord-sitio" class="nota"></p>
-      <p id="acceso-sitio" class="nota" hidden></p>
+      <p id="acceso-sitio" class="nota acceso-sitio" role="status" hidden></p>
+      <p id="sitio-restriccion" class="chip-restriccion" role="note" hidden></p>
       <fieldset class="estrellas">
         <legend>Valoración</legend>
         <label><input type="radio" name="estrellas" value="1" checked /><span>★</span></label>

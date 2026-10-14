@@ -3,7 +3,8 @@ import './estilos.css';
 import { registerSW } from 'virtual:pwa-register';
 import type { Map as MapaML, GeoJSONSource, LngLat } from 'maplibre-gl';
 import { BASE_DATOS, cargarJson, cargarManifest, mb } from './datos';
-import { CAPAS_RUTAS, COLORES_IDONEIDAD, colorearSemaforo, crearMapa, origenes, ponerBase, ponerIdoneidad, verCapa, type Base } from './mapa';
+import { CAPAS_RESTRICCIONES, CAPAS_RUTAS, COLORES_IDONEIDAD, colorearSemaforo, crearMapa, origenes, ponerBase, ponerIdoneidad, restriccionEn, verCapa, type Base } from './mapa';
+import { ORIENTATIVO, textoChip, type Restriccion } from './restricciones';
 import { aparcamiento, centroCelda, consultar, esIOS, nombreVia, simplificar, textoSubida, textoTiempo, trazar, urlGoogleCoche, urlOtraApp } from './acceso';
 import { datosAcceso } from './acceso-datos';
 import { iniciarSelectorEspecie, pintarSelectorEspecie } from './selector-especie';
@@ -28,6 +29,10 @@ let manifest: Manifest | null = null;
 let mapa: MapaML | null = null;
 let gps: Gps | null = null;
 const nombres: Record<string, string> = {};
+const E2E = new URLSearchParams(location.search).get('e2e') === '1';
+/** «Hoy» del semáforo (Europe/Madrid). Solo en el e2e (?e2e=1&hoy=AAAA-MM-DD) se puede fijar, para que la temporada no dependa del mes. */
+const HOY_FIJO = E2E ? new URLSearchParams(location.search).get('hoy') : null;
+const hoyZona = () => (HOY_FIJO && /^\d{4}-\d{2}-\d{2}$/.test(HOY_FIJO) ? HOY_FIJO : fechaMadrid(new Date()));
 
 // ---------------------------------------------------------------- avisos y navegación
 
@@ -110,7 +115,7 @@ $('#btn-ver-ficha').addEventListener('click', () => {
 const CAPAS: Record<string, string[]> = {
   sombreado: ['sombreado'], curvas: ['curvas', 'curvas-cota'],
   protegidos: ['protegidos-relleno', 'protegidos-linea'], idoneidad: ['idoneidad'], semaforo: ['semaforo'],
-  rutas: CAPAS_RUTAS,
+  rutas: CAPAS_RUTAS, restricciones: CAPAS_RESTRICCIONES,
 };
 
 function pintarSitiosMapa(lista: Sitio[]) {
@@ -130,6 +135,7 @@ async function iniciarMapa() {
   rellenarEspecies($<HTMLSelectElement>('#filtro-especie'), ['', 'Todas']);
   rellenarEspecies($<HTMLSelectElement>('#sitio-especie'), ['', 'Sin especificar']);
   $('#capa-rutas').hidden = !manifest.rutas;
+  $('#capa-restricciones').hidden = !manifest.restricciones;
   $('#rampa').style.background = `linear-gradient(90deg, ${COLORES_IDONEIDAD.join(',')})`;
   try {
     const g = JSON.parse(localStorage.getItem('setas:capa') ?? 'null');
@@ -142,8 +148,10 @@ async function iniciarMapa() {
 
   mapa = crearMapa($('#mapa'), manifest);
   gps = new Gps(mapa, (m) => avisar(m));
-  if (import.meta.env.DEV || new URLSearchParams(location.search).get('e2e') === '1') (window as any).__setas = { mapa, origenes, meteo: () => ({ datos: meteo, origen: meteoOrigen, punto: puntoSel }),
-    acceso: () => ultimoAcceso, trazaAcceso: () => trazaAcceso,
+  if (import.meta.env.DEV || E2E) (window as any).__setas = { mapa, origenes, meteo: () => ({ datos: meteo, origen: meteoOrigen, punto: puntoSel }),
+    acceso: () => ultimoAcceso, trazaAcceso: () => trazaAcceso, hoy: hoyZona,
+    restriccionEn: (lat: number, lon: number) => manifest && restriccionEn(manifest, lat, lon),
+    sitioEditando: () => editando && { ...editando, foto: undefined }, accesoSitio: () => accesoSitio,
     resumenSemaforo: () => Object.fromEntries((manifest?.especies ?? []).map((e) => {
       const n: Record<string, number> = { verde: 0, amarillo: 0, rojo: 0, gris: 0 };
       for (const p of puntosMeteo) n[estadoEn(p, e.id)?.estado ?? 'gris']++;
@@ -263,6 +271,7 @@ interface UltimoAcceso {
   traza?: { pasos: number; vertices: number; completa: boolean; bloques: number };
   ms?: { consulta: number; traza: number; total: number };
   lector?: unknown;
+  restricciones?: Restriccion[] | null;
 }
 let ultimoAcceso: UltimoAcceso | null = null;
 let consultaAcceso = 0;
@@ -302,10 +311,70 @@ function estadoAcceso(texto: string, conDatos: boolean) {
   $<HTMLButtonElement>('#ta-otra').disabled = !conDatos;
 }
 
+interface CalculoAcceso {
+  estado: UltimoAcceso['estado'];
+  texto: string;                       // motivo cuando no hay acceso
+  acceso?: AccesoSitio;
+  linea?: [number, number][];
+  completa?: boolean;
+  traza?: UltimoAcceso['traza'];
+  ms?: UltimoAcceso['ms'];
+  lector?: unknown;
+}
+
+/** Aparcamiento, tiempo y subida a pie y trazado de un punto, con los datos locales (OPFS o HTTP). Nunca lanza. */
+async function calcularAcceso(lat: number, lon: number): Promise<CalculoAcceso> {
+  const t0 = performance.now();
+  let d;
+  try { d = manifest ? await datosAcceso(manifest) : null; } catch (e) {
+    console.warn('acceso', e);
+    return { estado: 'error', texto: 'No se pudieron leer los datos de acceso. Si no tienes cobertura, descarga los mapas en Ajustes cuando la tengas.' };
+  }
+  if (!d) return { estado: 'sin_datos', texto: navigator.onLine ? 'Esta versión de los mapas no trae datos de acceso.'
+    : 'Sin conexión y sin los datos de acceso descargados: descárgalos en Ajustes cuando tengas cobertura.' };
+  try {
+    const c = await consultar(d.cab, d.lector, lat, lon);
+    const t1 = performance.now();
+    if (c.estado === 'fuera') return { estado: 'fuera', texto: 'Este punto queda fuera de la zona con datos de acceso.' };
+    if (c.estado === 'sin_dato') return { estado: 'sin_dato', texto: 'No hay estimación de acceso para este punto: está fuera de la zona estudiada o en agua.' };
+    const ap = aparcamiento(d.aparcamientos, c.origen);
+    if (!ap) return { estado: 'sin_dato', texto: 'No se encontró el aparcamiento de este punto en los datos.' };
+    const tr = await trazar(d.cab, d.lector, c.celda);
+    const t2 = performance.now();
+    const vertices = simplificar(tr.celdas).map((x) => centroCelda(d.cab, x));
+    const linea: [number, number][] = [[lon, lat], ...vertices];
+    // Con la traza completa se aparca donde acaba (la celda de vía a la que llega); si se corta, en el punto
+    // representativo del aparcamiento (uno por vía y bloque de 300 m).
+    const [plon, plat] = tr.completa ? linea[linea.length - 1] : [ap.lon, ap.lat];
+    const via = nombreVia(ap);
+    return { estado: 'ok', texto: '', linea, completa: tr.completa,
+      acceso: { lat: +plat.toFixed(5), lon: +plon.toFixed(5), via, tiempo_min: c.tiempo_min, subida_m: c.subida_m },
+      traza: { pasos: tr.celdas.length - 1, vertices: linea.length, completa: tr.completa, bloques: tr.bloquesLeidos },
+      ms: { consulta: Math.round(t1 - t0), traza: Math.round(t2 - t1), total: Math.round(t2 - t0) }, lector: { ...d.estado } };
+  } catch (e) {
+    console.warn('acceso', e);
+    return { estado: 'error', texto: 'No se pudieron leer los datos de acceso de este punto.' };
+  }
+}
+
+/** Aviso (chip) de recinto restringido en el punto; oculto si no hay o no se puede saber. */
+async function pintarRestriccion(el: HTMLElement, lat: number, lon: number, vigente: () => boolean): Promise<Restriccion[] | null> {
+  el.hidden = true;
+  el.replaceChildren();
+  const rs = manifest ? await restriccionEn(manifest, lat, lon) : null;
+  if (!vigente() || !rs?.length) return rs;
+  for (const r of rs) {
+    const b = document.createElement('b'); b.textContent = `⚠ ${textoChip(r)}`;
+    const t = document.createElement('span'); t.textContent = r.texto;
+    el.append(b, t);
+  }
+  el.hidden = false;
+  return rs;
+}
+
 /** Ficha «Acceso» del punto: aparcamiento, tiempo y subida a pie y trazado aproximado (todo con los datos locales). */
 async function mostrarAcceso(lat: number, lon: number) {
   const n = ++consultaAcceso;
-  const t0 = performance.now();
   ultimoAcceso = { punto: { lat, lon }, estado: 'cargando' };
   $('#tarjeta-zona').hidden = true;
   $('#tarjeta-acceso').hidden = false;
@@ -313,54 +382,24 @@ async function mostrarAcceso(lat: number, lon: number) {
   $('#ta-coord').textContent = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
   estadoAcceso('Calculando el acceso…', false);
   pintarTrazaAcceso([{ type: 'Feature', properties: { tipo: 'destino' }, geometry: { type: 'Point', coordinates: [lon, lat] } }]);
-  const fin = (estado: UltimoAcceso['estado'], texto: string) => {
-    if (n !== consultaAcceso) return;
-    ultimoAcceso = { ...ultimoAcceso!, estado };
-    $('#tarjeta-acceso').dataset.estado = estado;
-    estadoAcceso(texto, false);
-  };
-  let d;
-  try { d = manifest ? await datosAcceso(manifest) : null; } catch (e) {
-    console.warn('acceso', e);
-    return fin('error', 'No se pudieron leer los datos de acceso. Si no tienes cobertura, descarga los mapas en Ajustes cuando la tengas.');
-  }
-  if (!d) return fin('sin_datos', navigator.onLine ? 'Esta versión de los mapas no trae datos de acceso.'
-    : 'Sin conexión y sin los datos de acceso descargados: descárgalos en Ajustes cuando tengas cobertura.');
-  try {
-    const c = await consultar(d.cab, d.lector, lat, lon);
-    const t1 = performance.now();
-    if (c.estado === 'fuera') return fin('fuera', 'Este punto queda fuera de la zona con datos de acceso.');
-    if (c.estado === 'sin_dato') return fin('sin_dato', 'No hay estimación de acceso para este punto: está fuera de la zona estudiada o en agua.');
-    const ap = aparcamiento(d.aparcamientos, c.origen);
-    if (!ap) return fin('sin_dato', 'No se encontró el aparcamiento de este punto en los datos.');
-    const tr = await trazar(d.cab, d.lector, c.celda);
-    const t2 = performance.now();
-    if (n !== consultaAcceso) return;
-    const vertices = simplificar(tr.celdas).map((x) => centroCelda(d.cab, x));
-    const linea: [number, number][] = [[lon, lat], ...vertices];
-    // Con la traza completa se aparca donde acaba (la celda de vía a la que llega); si se corta, en el punto
-    // representativo del aparcamiento (uno por vía y bloque de 300 m).
-    const [plon, plat] = tr.completa ? linea[linea.length - 1] : [ap.lon, ap.lat];
-    const via = nombreVia(ap);
-    const acceso: AccesoSitio = { lat: +plat.toFixed(5), lon: +plon.toFixed(5), via, tiempo_min: c.tiempo_min, subida_m: c.subida_m };
-    ultimoAcceso = { punto: { lat, lon }, estado: 'ok', acceso,
-      traza: { pasos: tr.celdas.length - 1, vertices: linea.length, completa: tr.completa, bloques: tr.bloquesLeidos },
-      ms: { consulta: Math.round(t1 - t0), traza: Math.round(t2 - t1), total: Math.round(t2 - t0) }, lector: { ...d.estado } };
-    $('#tarjeta-acceso').dataset.estado = 'ok';
-    $('#ta-via').textContent = via;
-    $('#ta-tiempo').textContent = textoTiempo(c.tiempo_min);
-    $('#ta-subida').textContent = textoSubida(c.subida_m);
-    estadoAcceso(tr.completa ? '' : 'El trazado se corta antes de llegar al coche: síguelo solo como orientación.', true);
-    pintarTrazaAcceso([
-      { type: 'Feature', properties: { tipo: 'traza' }, geometry: { type: 'LineString', coordinates: linea } },
-      { type: 'Feature', properties: { tipo: 'destino' }, geometry: { type: 'Point', coordinates: [lon, lat] } },
-      { type: 'Feature', properties: { tipo: 'aparcamiento', via }, geometry: { type: 'Point', coordinates: [acceso.lon, acceso.lat] } },
-    ]);
-    encuadrar(linea);
-  } catch (e) {
-    console.warn('acceso', e);
-    fin('error', 'No se pudieron leer los datos de acceso de este punto.');
-  }
+  const restr = pintarRestriccion($('#ta-restriccion'), lat, lon, () => n === consultaAcceso);
+  const c = await calcularAcceso(lat, lon);
+  const rs = await restr;
+  if (n !== consultaAcceso) return;
+  ultimoAcceso = { punto: { lat, lon }, estado: c.estado, acceso: c.acceso, traza: c.traza, ms: c.ms, lector: c.lector, restricciones: rs };
+  $('#tarjeta-acceso').dataset.estado = c.estado;
+  if (c.estado !== 'ok' || !c.acceso || !c.linea) { estadoAcceso(c.texto, false); return; }
+  const { acceso, linea } = c;
+  $('#ta-via').textContent = acceso.via;
+  $('#ta-tiempo').textContent = textoTiempo(acceso.tiempo_min);
+  $('#ta-subida').textContent = textoSubida(acceso.subida_m);
+  estadoAcceso(c.completa ? '' : 'El trazado se corta antes de llegar al coche: síguelo solo como orientación.', true);
+  pintarTrazaAcceso([
+    { type: 'Feature', properties: { tipo: 'traza' }, geometry: { type: 'LineString', coordinates: linea } },
+    { type: 'Feature', properties: { tipo: 'destino' }, geometry: { type: 'Point', coordinates: [lon, lat] } },
+    { type: 'Feature', properties: { tipo: 'aparcamiento', via: acceso.via }, geometry: { type: 'Point', coordinates: [acceso.lon, acceso.lat] } },
+  ]);
+  encuadrar(linea);
 }
 
 /** Si el trazado no cabe en la vista (por encima de la ficha), la mueve sin acercar. */
@@ -404,6 +443,8 @@ $('#ta-guardar').addEventListener('click', () => {
 // ---------------------------------------------------------------- formulario de sitio
 
 let editando: Sitio | null = null;
+/** Búsqueda automática del aparcamiento de un sitio nuevo sin él («Sitio aquí» o Reconocer). */
+let accesoSitio: { id: string; estado: 'buscando' | CalculoAcceso['estado']; promesa: Promise<void> } | null = null;
 let fotoNueva: Blob | null | undefined;   // undefined = sin cambios
 let urlFoto = '';
 
@@ -443,6 +484,11 @@ function abrirSitio(s: Sitio | null, punto?: { lat: number; lon: number }, previ
   $('#coord-sitio').textContent = `${editando.lat.toFixed(5)}, ${editando.lon.toFixed(5)} · ${new Date(editando.fecha).toLocaleString('es-ES')}`;
   $('#acceso-sitio').textContent = editando.acceso ? textoAccesoSitio(editando.acceso) : '';
   $('#acceso-sitio').hidden = !editando.acceso;
+  $('#acceso-sitio').dataset.estado = editando.acceso ? 'ok' : '';
+  const sitio = editando;
+  pintarRestriccion($('#sitio-restriccion'), sitio.lat, sitio.lon, () => editando === sitio);
+  accesoSitio = null;
+  if (!s && !sitio.acceso) buscarAccesoSitio(sitio);
   (frm.elements.namedItem('nota') as HTMLTextAreaElement).value = editando.nota;
   (frm.elements.namedItem('especie') as HTMLSelectElement).value = editando.especie;
   frm.querySelector<HTMLInputElement>(`input[name=estrellas][value="${editando.estrellas}"]`)!.checked = true;
@@ -450,6 +496,22 @@ function abrirSitio(s: Sitio | null, punto?: { lat: number; lon: number }, previ
   mostrarFoto(editando.foto);
   $<HTMLDialogElement>('#dlg-sitio').showModal();
   if (previo?.foto) reducirFoto(previo.foto).then((b) => { fotoNueva = b; mostrarFoto(b); });
+}
+
+/** Como la pulsación larga, pero para el formulario: rellena el aparcamiento del sitio nuevo (también sin red, desde OPFS). */
+function buscarAccesoSitio(sitio: Sitio) {
+  const el = $('#acceso-sitio');
+  el.hidden = false; el.dataset.estado = 'buscando';
+  el.textContent = 'Buscando dónde aparcar…';
+  const b: NonNullable<typeof accesoSitio> = { id: sitio.id, estado: 'buscando', promesa: Promise.resolve() };
+  b.promesa = calcularAcceso(sitio.lat, sitio.lon).then((c) => {
+    b.estado = c.estado;
+    if (editando !== sitio) return;
+    el.dataset.estado = c.estado;
+    if (c.acceso) { sitio.acceso = c.acceso; el.textContent = textoAccesoSitio(c.acceso); }
+    else el.textContent = `Sin aparcamiento estimado: ${c.texto[0].toLowerCase()}${c.texto.slice(1)}`;
+  });
+  accesoSitio = b;
 }
 
 $<HTMLInputElement>('[name=foto]').addEventListener('change', async (e) => {
@@ -470,6 +532,9 @@ $('#frm-sitio').addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!editando) return;
   const frm = e.target as HTMLFormElement;
+  // Si aún se busca el aparcamiento, se espera un poco (es local: suele tardar menos de un segundo).
+  if (accesoSitio?.id === editando.id && accesoSitio.estado === 'buscando')
+    await Promise.race([accesoSitio.promesa, new Promise((r) => setTimeout(r, 5000))]);
   const d = new FormData(frm);
   const s: Sitio = { ...editando, estrellas: Number(d.get('estrellas')) as 1 | 2 | 3,
     nota: String(d.get('nota') ?? ''), especie: String(d.get('especie') ?? '') };
@@ -571,7 +636,7 @@ function estadoEn(p: PuntoMeteo, especie: string): ResultadoSemaforo | null {
   const r = reglasDe(especie);
   const serie = meteo?.puntos[String(p.id)];
   if (!r || !serie || !meteo) return null;
-  return semaforo(serie, r, fechaMadrid(new Date()), { edadHoras: edadHoras(meteo) });
+  return semaforo(serie, r, hoyZona(), { edadHoras: edadHoras(meteo) });
 }
 
 function fechasTexto(r: ResultadoSemaforo): string {
@@ -633,7 +698,7 @@ function pintarHumedad(serie: DatosMeteo['puntos'][string] | undefined, p: Punto
   const caja = $('#zona-humedad');
   caja.hidden = !serie;
   if (!serie) return;
-  const hoy = fechaMadrid(new Date());
+  const hoy = hoyZona();
   const h = humedadAcumulada(serie, hoy);
   const n = (v: number, d = 0) => v.toLocaleString('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d }).replace('-', '−');
   $('#ind-balance b').textContent = Number.isFinite(h.balance_mm) ? `${h.balance_mm > 0 ? '+' : ''}${n(h.balance_mm)} mm` : 'sin dato';
@@ -685,7 +750,7 @@ function pintarZona() {
   graf.hidden = !serie;
   pintarHumedad(serie, puntoSel, elegida);
   if (!serie) return;
-  const hoyF = fechaMadrid(new Date());
+  const hoyF = hoyZona();
   const r = estadoEn(puntoSel, elegida);
   const reg = reglasDe(elegida);
   const ventana = r?.episodio && reg ? { desde: sumarDias(r.episodio, reg.ventana_dias[0]), hasta: sumarDias(r.episodio, reg.ventana_dias[1]),
@@ -774,6 +839,14 @@ async function pintarAjustes() {
   const q = await navigator.storage?.estimate?.().catch(() => undefined);
   $('#estado-almacen').textContent = `Almacenamiento persistente: ${persist ? 'sí' : 'no'}`
     + (q?.usage != null ? ` · en uso ${mb(q.usage)}${q.quota ? ` de ${mb(q.quota)}` : ''}` : '');
+  const nr = manifest?.restricciones;
+  $('#normativa').hidden = !nr;
+  if (nr) {
+    $('#normativa-aviso').textContent = nr.aviso;
+    const ul = $('#normativa-tipos');
+    ul.replaceChildren(...Object.values(nr.tipos).map((t) => { const li = document.createElement('li'); li.textContent = t; return li; }));
+    $('#normativa-orientativo').textContent = ORIENTATIVO;
+  }
   $('#info-datos').textContent = manifest
     ? `Total de datos offline: ${mb(total)} (${manifest.archivos.length} archivos). Generados el ${new Date(manifest.generado).toLocaleDateString('es-ES')}. Mapa base: ${manifest.base ?? '—'}.`
     : 'Sin datos de mapas.';

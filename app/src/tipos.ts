@@ -29,6 +29,8 @@ export interface Manifest {
   acceso?: { cabecera: string; datos: string; aparcamientos: string } | null;
   /** Rutas y senderos (GR/PR/SL), PMTiles con la capa 'rutas'. */
   rutas?: string | null;
+  /** Recintos donde recoger exige autorización (capa 'restricciones': tipo, nombre, zona, texto), textos por tipo y aviso legal. */
+  restricciones?: { capa: string; tipos: Record<string, string>; aviso: string } | null;
   archivos: { nombre: string; bytes: number }[];
   total_bytes: number;
   /** Reconocedor offline (modelo/construir.py): descarga opcional aparte, no cuenta en total_bytes. */

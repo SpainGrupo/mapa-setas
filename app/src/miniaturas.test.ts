@@ -21,7 +21,10 @@ describe('selector de especie: especie del mapa → miniatura', () => {
     expect(miniaturaEspecie('amanita_caesarea', null)).toBeNull();
   });
   it('las especies del mapa actuales tienen ficha con foto en la guía', () => {
-    for (const id of ['boletus_aereus', 'boletus_aestivalis', 'boletus_edulis', 'boletus_pinophilus', 'amanita_caesarea']) {
+    const ids = ['boletus_aereus', 'boletus_aestivalis', 'boletus_edulis', 'boletus_pinophilus', 'amanita_caesarea',
+      'lactarius_deliciosus', 'lactarius_sanguifluus', 'cantharellus_cibarius', 'amanita_ponderosa', 'macrolepiota_procera',
+      'pleurotus_eryngii', 'terfezia_arenaria'];   // las 12 del manifest (pipeline v2)
+    for (const id of ids) {
       const f = fichas.find((x) => x.id === fichaDeEspecieMapa(id));
       expect(f?.fotos.length, id).toBeGreaterThan(0);
       expect(miniaturaEspecie(id, indice), id).toContain(`/${f!.id}.jpg`);

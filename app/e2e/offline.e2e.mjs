@@ -16,12 +16,21 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const { chromium, devices } = createRequire(import.meta.url)('playwright');
 
-const URL_APP = (process.env.URL_APP ?? 'http://127.0.0.1:8765/') + '?e2e=1';
+// «Hoy» fijo para el semáforo (?hoy=, solo con ?e2e=1): el fixture de Open-Meteo y los estados esperados no
+// dependen del mes en que se ejecute el e2e (las especies tienen temporada).
+const HOY_E2E = '2026-10-14';
+const URL_APP = (process.env.URL_APP ?? 'http://127.0.0.1:8765/') + `?e2e=1&hoy=${HOY_E2E}`;
 const CAPTURAS = join(dirname(fileURLToPath(import.meta.url)), 'capturas');
 mkdirSync(CAPTURAS, { recursive: true });
 const PUNTO = { latitude: 36.589, longitude: -5.244 };   // máximo local de idoneidad de caesarea
 // Fase 8: celda de acceso con `uv run python -m setas_pipeline.acceso --consultar 36.61083 -5.24579` →
 // 35 min, +128 m, 9 pasos de 100 m, aparcamiento 88960 (36.60911, −5.25328, vía «service» sin nombre).
+// Restricciones: punto dentro del Parque Nacional Sierra de las Nieves (representative_point del recinto en
+// exportar.restricciones_gdf()); ACCESO y PUNTO quedan fuera de todo recinto.
+const RESTRINGIDO = { lat: 36.67638, lon: -4.97927, tipo: 'parque_nacional', chip: 'Parque Nacional · Sierra de las Nieves' };
+const ESPECIES_NUEVAS = ['lactarius_deliciosus', 'lactarius_sanguifluus', 'cantharellus_cibarius', 'amanita_ponderosa',
+  'macrolepiota_procera', 'pleurotus_eryngii', 'terfezia_arenaria'];
+const FICHA_DE = { boletus_aestivalis: 'boletus_reticulatus', lactarius_sanguifluus: 'lactarius_deliciosus' };
 const ACCESO = { lat: 36.61083, lon: -5.24579, tiempo: '35 min', subida: '+128 m', via: 'camino de servicio sin nombre', aparc: [36.60911, -5.25328] };
 const FIXTURE = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'fixtures/open-meteo.json'), 'utf8'));
 const NOTA = 'Ñandú & <castaños> "junto" al \'arroyo\' ✓';
@@ -39,7 +48,6 @@ const ctx = await nav.newContext({ ...devices['Pixel 7'], geolocation: PUNTO, pe
   acceptDownloads: true, locale: 'es-ES', timezoneId: 'Europe/Madrid' });
 
 // Open-Meteo falso: 30 días pasados + 7 de previsión alrededor de hoy (Madrid), elevación = alt_media del punto.
-const fechaMadrid = (d) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid' }).format(d);
 const sumar = (iso, n) => new Date(Date.parse(iso + 'T00:00:00Z') + n * 864e5).toISOString().slice(0, 10);
 let puntosMeteo = null, consultasMeteo = 0;
 await ctx.route('**/api.open-meteo.com/**', async (r) => {
@@ -47,7 +55,7 @@ await ctx.route('**/api.open-meteo.com/**', async (r) => {
   puntosMeteo ??= await (await fetch(new URL('data/meteo_puntos.json', URL_APP))).json();
   const u = new URL(r.request().url());
   const lat = u.searchParams.get('latitude').split(',').map(Number), lon = u.searchParams.get('longitude').split(',').map(Number);
-  const hoy = fechaMadrid(new Date());
+  const hoy = HOY_E2E;
   const rel = Array.from({ length: 37 }, (_, i) => i - 30);
   const una = (la, i) => ({ latitude: la, longitude: lon[i],
     elevation: puntosMeteo.find((p) => p.lat === la && p.lon === lon[i])?.alt_media ?? 0,
@@ -100,7 +108,7 @@ const fichaAcceso = async (origenEsperado) => {
     traza: window.__setas.trazaAcceso(),
     via: document.querySelector('#ta-via').textContent, tiempo: document.querySelector('#ta-tiempo').textContent,
     subida: document.querySelector('#ta-subida').textContent, zona: document.querySelector('#tarjeta-zona').hidden,
-    aviso: document.querySelector('.ta-aviso').textContent }));
+    aviso: document.querySelector('.ta-aviso').textContent, restr: document.querySelector('#ta-restriccion').hidden }));
   const linea = r.traza.find((f) => f.geometry.type === 'LineString');
   comprobar(r.tiempo === ACCESO.tiempo && r.subida === ACCESO.subida && r.via === ACCESO.via && r.zona,
     `pulsación larga → ficha «Acceso»: ${r.via}, ${r.tiempo}, ${r.subida} (sin tarjeta de zona)`);
@@ -108,7 +116,8 @@ const fichaAcceso = async (origenEsperado) => {
   comprobar(linea && linea.geometry.coordinates.length >= 2 && r.a.traza.completa && r.a.traza.pasos === 9
     && r.traza.some((f) => f.properties.tipo === 'aparcamiento') && km([r.a.acceso.lat, r.a.acceso.lon], ACCESO.aparc) < 0.4,
     `trazado a pie dibujado: ${r.a.traza.pasos} pasos, ${linea?.geometry.coordinates.length} vértices, aparcamiento a ${km([r.a.acceso.lat, r.a.acceso.lon], ACCESO.aparc).toFixed(2)} km del de Python`);
-  comprobar(r.a.lector.origen === origenEsperado, `bytes de acceso.bin desde ${r.a.lector.origen} (${r.a.lector.lecturas} lecturas, ${r.a.lector.bytes} B; consulta ${r.a.ms.consulta} ms, traza ${r.a.ms.traza} ms)`);
+  comprobar(r.restr && Array.isArray(r.a.restricciones) && r.a.restricciones.length === 0, 'fuera de recintos restringidos: sin aviso en la ficha');
+  comprobar(r.a.lector.origen === origenEsperado && r.a.lector.gzip === true, `bytes de acceso.bin.gz (gzip) desde ${r.a.lector.origen} (${r.a.lector.lecturas} lecturas, ${r.a.lector.bytes} B; consulta ${r.a.ms.consulta} ms, traza ${r.a.ms.traza} ms)`);
   return r.a;
 };
 // Selector de especie con fotos: abre la hoja y elige la fila (el <select> que guarda el valor está oculto).
@@ -159,7 +168,13 @@ try {
     'al abrir, el foco está en la especie elegida (aria-selected)');
   comprobar(/Boletus reticulatus|Boletus aestivalis/.test(await p.locator('#lista-especies [data-especie=boletus_aestivalis]').textContent()),
     'B. aestivalis muestra la foto y el nombre de la ficha de B. reticulatus');
+  const sang = await p.locator('#lista-especies [data-especie=lactarius_sanguifluus]').evaluate((o) => ({ t: o.textContent, src: o.querySelector('img')?.getAttribute('src') ?? '' }));
+  comprobar(/Lactarius sanguifluus/.test(sang.t) && /En la ficha del níscalo/.test(sang.t) && sang.src.includes('miniaturas/lactarius_deliciosus.jpg'),
+    `L. sanguifluus: nombre propio, «En la ficha del níscalo» y miniatura de L. deliciosus (${sang.src})`);
   await captura('selector-lista.png');
+  await p.locator('#lista-especies [data-especie=terfezia_arenaria]').scrollIntoViewIfNeeded();
+  await captura('selector-lista-nuevas.png');
+  await p.locator('#lista-especies [aria-selected=true]').focus();
   await p.keyboard.press('End');
   const ultima = idsMapa.at(-1);
   comprobar(await p.locator(`#lista-especies [data-especie=${ultima}]`).evaluate((o) => o === document.activeElement), 'teclado: Fin lleva a la última especie');
@@ -178,6 +193,60 @@ try {
   comprobar((await p.evaluate(() => window.__setas.mapa.getSource('idoneidad').url)).includes('idoneidad_boletus_edulis_')
     && /Boletus edulis/.test(await p.locator('#btn-especie').textContent()), 'tocar una fila cambia la capa de idoneidad');
   await captura('selector-boton.png');
+
+  // Idoneidad: los 12 × 6 PMTiles responden a Range con la cabecera PMTiles v3, y cada especie se pinta en el mapa.
+  const man = await p.evaluate(async () => (await fetch('data/manifest.json')).json());
+  const malos = [];
+  for (const e of man.especies) for (const u of man.umbrales) {
+    const r = await fetch(new URL(`data/idoneidad_${e.id}_${u}.pmtiles`, URL_APP), { headers: { Range: 'bytes=0-6' } });
+    const b = Buffer.from(await r.arrayBuffer());
+    if (r.status !== 206 || b.toString('latin1', 0, 7) !== 'PMTiles') malos.push(`${e.id}_${u}:${r.status}`);
+  }
+  comprobar(man.especies.length === 12 && !malos.length, `idoneidad: ${man.especies.length} especies × ${man.umbrales.length} umbrales servidos como PMTiles${malos.length ? ' — fallan ' + malos.join(', ') : ''}`);
+  await p.evaluate(({ latitude, longitude }) => window.__setas.mapa.jumpTo({ center: [longitude, latitude], zoom: 10 }), PUNTO);
+  for (const e of man.especies) {
+    await elegirEspecie(e.id);
+    await reposo();
+    const c = await p.evaluate(() => { const m = window.__setas.mapa; return { url: m.getSource('idoneidad').url, cargada: m.isSourceLoaded('idoneidad'),
+      vis: m.getLayoutProperty('idoneidad', 'visibility') !== 'none', btn: document.querySelector('#btn-especie').dataset.especie }; });
+    if (!(c.url.includes(`idoneidad_${e.id}_`) && c.cargada && c.vis && c.btn === e.id)) throw new Error(`Falla: capa de idoneidad de ${e.id}: ${JSON.stringify(c)}`);
+    if (ESPECIES_NUEVAS.includes(e.id)) await captura(`especie-${e.id}.png`);
+  }
+  ok(`las ${man.especies.length} capas de idoneidad cargan en el mapa al elegir cada especie (capturas de las ${ESPECIES_NUEVAS.length} nuevas)`);
+  await p.locator('#rng-umbral').evaluate((r) => { r.value = '1000'; r.dispatchEvent(new Event('input')); });
+  await reposo();
+  comprobar((await p.evaluate(() => window.__setas.mapa.getSource('idoneidad').url)).endsWith(`idoneidad_${man.especies.at(-1).id}_1000.pmtiles`)
+    && await p.evaluate(() => window.__setas.mapa.isSourceLoaded('idoneidad')), 'umbral ≥ 1000 m: cambia al PMTiles del umbral');
+  await p.locator('#rng-umbral').evaluate((r) => { r.value = '0'; r.dispatchEvent(new Event('input')); });
+
+  // Restricciones de recogida: capa activada por defecto, rayado rojo con borde y ventana con nombre, tipo y texto.
+  const rs0 = await p.evaluate(() => { const m = window.__setas.mapa;
+    return { capa: document.querySelector('[data-capa=restricciones]').checked, visible: !document.querySelector('#capa-restricciones').hidden,
+      relleno: m.getLayoutProperty('restricciones-relleno', 'visibility') !== 'none', patron: m.getPaintProperty('restricciones-relleno', 'fill-pattern'),
+      linea: m.getPaintProperty('restricciones-linea', 'line-color') }; });
+  comprobar(rs0.capa && rs0.visible && rs0.relleno && rs0.patron === 'rayado-restriccion' && rs0.linea === '#c62828',
+    'capa «Recogida con autorización» activada por defecto: relleno rayado y borde rojo');
+  await p.evaluate(({ lat, lon }) => window.__setas.mapa.jumpTo({ center: [lon, lat], zoom: 11 }), RESTRINGIDO);
+  await reposo();
+  comprobar(await p.evaluate(() => window.__setas.mapa.hasImage('rayado-restriccion')) && await p.evaluate(() =>
+    window.__setas.mapa.queryRenderedFeatures({ layers: ['restricciones-relleno'] }).length > 0), 'recintos restringidos pintados con el patrón rayado');
+  if (!(await p.locator('#tarjeta-zona').isHidden())) await p.locator('#tz-cerrar').click();
+  const cajaR = await p.locator('#mapa canvas').boundingBox();
+  await p.mouse.click(cajaR.x + cajaR.width / 2, cajaR.y + cajaR.height / 2);
+  const popR = p.locator('.popup-restriccion');
+  await popR.waitFor();
+  const txtPop = await popR.textContent();
+  comprobar(/Sierra de las Nieves/.test(txtPop) && /Parque Nacional/.test(txtPop) && /Ley 9\/2021/.test(txtPop) && /BOJA/.test(txtPop),
+    `tocar un recinto: ventana «${txtPop}»`);
+  if (!(await p.locator('#tarjeta-zona').isHidden())) await p.locator('#tz-cerrar').click();
+  await captura('restricciones-popup.png');
+  await p.locator('.maplibregl-popup-close-button').click();
+  await p.locator('#btn-capas').click();
+  await p.locator('[data-capa=restricciones]').uncheck();
+  comprobar(await p.evaluate(() => ['restricciones-relleno', 'restricciones-linea'].every((id) => window.__setas.mapa.getLayoutProperty(id, 'visibility') === 'none')),
+    'desactivar la capa oculta relleno y borde');
+  await p.locator('[data-capa=restricciones]').check();
+  await p.locator('#btn-capas').click();
 
   // Fondo Satélite (PNOA del IGN, teselas simuladas) y vuelta al mapa.
   await p.locator('#btn-capas').click();
@@ -211,6 +280,7 @@ try {
   await captura('satelite-vuelta-mapa.png');
   await p.locator('#btn-capas').click();
   await elegirEspecie(idsMapa[0]);   // el resto del recorrido parte de la especie por defecto
+  await p.evaluate(({ latitude, longitude }) => window.__setas.mapa.jumpTo({ center: [longitude, latitude], zoom: 12 }), PUNTO);
 
   // Fase 8 en línea: capa «Rutas y caminos» y ficha «Acceso» leyendo acceso.bin por HTTP Range.
   await p.locator('#btn-capas').click();
@@ -256,7 +326,7 @@ try {
   comprobar(await p.evaluate(() => ['rutas-fondo', 'rutas-marca', 'rutas-otros', 'rutas-etiqueta']
     .every((id) => window.__setas.mapa.getLayoutProperty(id, 'visibility') === 'none')), 'capa Rutas desactivada: sus cuatro capas ocultas');
   if (!(await p.locator('#tarjeta-zona').isHidden())) await p.locator('#tz-cerrar').click();
-  const enLinea = await fichaAcceso('http');
+  const enLinea = await fichaAcceso('http-completo');
   informe.acceso_http = { ms: enLinea.ms, lector: enLinea.lector };
   await captura('acceso-online.png');
   await p.locator('#ta-cerrar').click();
@@ -335,7 +405,17 @@ try {
   await p.locator('#tz-ver').click();
   await p.locator('#lista-semaforo .semaforo-fila').first().waitFor();
   const est1 = await estadosZona();
-  comprobar(igual(est1, FIXTURE.esperado), `Zona con el fixture: ${JSON.stringify(est1)}`);
+  comprobar(Object.keys(est1).length === 12 && igual(est1, FIXTURE.esperado), `Zona con el fixture (hoy ${HOY_E2E}), 12 especies: ${JSON.stringify(est1)}`);
+  const fuera = await p.locator('[data-especie=terfezia_arenaria] .mot').textContent();
+  comprobar(/^fuera de temporada \(sale en mar, abr, may\), pero llovió fuerte/.test(fuera)
+    && /fuera de temporada \(sale en feb, mar, abr\)/.test(await p.locator('[data-especie=amanita_ponderosa] .mot').textContent())
+    && /esperar, la ventana suele abrir/.test(await p.locator('[data-especie=lactarius_deliciosus] .mot').textContent()),
+    `temporada en la Zona: «${fuera}»`);
+  const desborde = await p.$$eval('#lista-semaforo .semaforo-fila', (bs) => bs.filter((b) => b.scrollWidth > b.clientWidth + 1).map((b) => b.dataset.especie));
+  comprobar(!desborde.length, `filas del semáforo sin desbordar en horizontal${desborde.length ? ': ' + desborde.join(', ') : ''}`);
+  await p.locator('#lista-semaforo [data-especie=terfezia_arenaria]').scrollIntoViewIfNeeded();
+  await captura('zona-temporada.png');
+  await p.locator('#lista-semaforo').evaluate((e) => e.closest('.pantalla, .cuerpo')?.scrollTo?.(0, 0));
   comprobar(/temperatura justa: máximas altas/.test(await p.locator('[data-especie=boletus_pinophilus] .mot').textContent())
     && /ventana pasada/.test(await p.locator('[data-especie=amanita_caesarea] .mot').textContent()), 'los motivos explican el amarillo y el rojo');
   comprobar(await p.locator('#grafico svg path[fill="#2a78d6"]').count() === Object.keys(FIXTURE.lluvia).length
@@ -489,6 +569,10 @@ try {
   await p.locator('#foto-sitio:not([hidden])').waitFor();
   const pre = await p.evaluate(() => ({ especie: document.querySelector('#sitio-especie').value, coord: document.querySelector('#coord-sitio').textContent }));
   comprobar(pre.especie === 'amanita_caesarea' && pre.coord.startsWith('36.58900, -5.24400'), `«Guardar sitio» rellena especie, foto y GPS (${pre.especie}, ${pre.coord})`);
+  await p.locator('#acceso-sitio:not([data-estado=buscando])').waitFor({ timeout: 15000 });
+  const accRec = await p.locator('#acceso-sitio').evaluate((e) => ({ estado: e.dataset.estado, t: e.textContent }));
+  comprobar(accRec.estado === 'ok' && /^Aparcar en .+ · \d.* a pie, \+\d+ m de subida$/.test(accRec.t),
+    `desde Reconocer, sin conexión, el formulario busca solo el aparcamiento: «${accRec.t}»`);
   await p.locator('textarea[name=nota]').fill('Desde Reconocer');
   await captura('reconocer-guardar.png');
   await p.locator('#btn-sitio-guardar').click();
@@ -558,18 +642,25 @@ try {
   await p.locator('#guia-ficha[data-id=amanita_caesarea]').waitFor();
   comprobar(await p.locator('#p-guia').isVisible(), '«Ver ficha» en el panel del mapa abre la ficha de la especie elegida');
   await p.getByRole('button', { name: /Mapa/ }).click();
-  await elegirEspecie('boletus_aestivalis');
-  await verFicha.waitFor();
-  await verFicha.click();
-  await p.locator('#guia-ficha[data-id=boletus_reticulatus]').waitFor();
-  ok('«Ver ficha» de Boletus aestivalis abre la ficha de B. reticulatus (sinónimo)');
-  await p.getByRole('button', { name: /Mapa/ }).click();
+  for (const id of idsMapa) {
+    await elegirEspecie(id);
+    await verFicha.waitFor({ timeout: 5000 }).catch(() => { throw new Error(`Falla: sin «Ver ficha» para ${id}`); });
+    await verFicha.click();
+    await p.locator(`#guia-ficha[data-id=${FICHA_DE[id] ?? id}]`).waitFor({ timeout: 5000 });
+    await p.getByRole('button', { name: /Mapa/ }).click();
+  }
+  ok(`sin conexión, «Ver ficha» funciona para las ${idsMapa.length} especies (B. aestivalis → B. reticulatus, L. sanguifluus → L. deliciosus)`);
   await elegirEspecie('amanita_caesarea');
 
   await p.getByRole('button', { name: 'Guardar sitio aquí' }).click();
   await p.locator('#dlg-sitio[open]').waitFor();
   await p.locator('.estrellas span', { hasText: /^★★★$/ }).click();
   await p.locator('textarea[name=nota]').fill(NOTA);
+  await p.locator('#acceso-sitio:not([data-estado=buscando])').waitFor({ timeout: 15000 });
+  const accGps = await p.locator('#acceso-sitio').evaluate((e) => ({ estado: e.dataset.estado, t: e.textContent }));
+  comprobar(accGps.estado === 'ok' && /^Aparcar en .+ a pie/.test(accGps.t) && await p.locator('#sitio-restriccion').isHidden(),
+    `«Sitio aquí» (GPS, sin conexión) busca solo el aparcamiento: «${accGps.t}»; sin aviso de restricción`);
+  const aparcGps = await p.evaluate(() => window.__setas.sitioEditando().acceso);
   await captura('04-nuevo-sitio.png');
   await p.locator('#btn-sitio-guardar').click();
   await p.locator('#dlg-sitio').waitFor({ state: 'hidden' });
@@ -577,7 +668,8 @@ try {
 
   await p.getByRole('button', { name: /Mis sitios/ }).click();
   await p.locator('.sitio').first().waitFor();
-  comprobar((await p.locator('.sitio .txt').first().textContent()) === NOTA, 'el sitio aparece en Mis sitios con su nota');
+  comprobar((await p.locator('.sitio .txt').first().textContent()) === NOTA && (await p.locator('.sitio').first().locator('.acceso').textContent()) === accGps.t,
+    'el sitio aparece en Mis sitios con su nota y el aparcamiento buscado');
   await captura('05-mis-sitios.png');
   const [descarga] = await Promise.all([p.waitForEvent('download'), p.getByRole('button', { name: 'Exportar GPX' }).click()]);
   const ruta = join(CAPTURAS, 'mis-sitios.gpx');
@@ -586,8 +678,8 @@ try {
   comprobar(gpx.includes('<wpt lat="36.589" lon="-5.244">') && gpx.includes('★★★ Amanita caesarea')
     && gpx.includes('&lt;castaños&gt;'), `GPX exportado (${descarga.suggestedFilename()})`);
   await p.locator('.sitio .acciones button', { hasText: 'Cómo llegar' }).first().click();
-  comprobar((await p.evaluate(() => window.__abiertos.at(-1))) === 'https://www.google.com/maps/dir/?api=1&destination=36.58900,-5.24400&travelmode=driving',
-    'Mis sitios: «Cómo llegar» de un sitio sin aparcamiento lleva al propio sitio en Google Maps');
+  comprobar((await p.evaluate(() => window.__abiertos.at(-1))) === `https://www.google.com/maps/dir/?api=1&destination=${aparcGps.lat.toFixed(5)},${aparcGps.lon.toFixed(5)}&travelmode=driving`,
+    'Mis sitios: «Cómo llegar» del sitio GPS lleva a su aparcamiento en Google Maps');
 
   // Fase 8 sin conexión: ficha «Acceso» desde OPFS, enlaces y «Guardar sitio» con el aparcamiento.
   await p.getByRole('button', { name: /Mapa/ }).click();
@@ -611,7 +703,7 @@ try {
   await p.locator('#btn-sitio-guardar').click();
   await p.locator('#dlg-sitio').waitFor({ state: 'hidden' });
   await p.getByRole('button', { name: /Mis sitios/ }).click();
-  const conAcceso = p.locator('.sitio', { has: p.locator('.acceso') });
+  const conAcceso = p.locator('.sitio', { has: p.locator('.acceso', { hasText: txtAcceso }) }).first();
   await conAcceso.waitFor();
   comprobar((await conAcceso.locator('.acceso').textContent()) === txtAcceso, 'Mis sitios muestra el tiempo a pie guardado');
   await conAcceso.locator('button', { hasText: 'Cómo llegar' }).click();
@@ -619,6 +711,32 @@ try {
     'Mis sitios: «Cómo llegar» lleva al aparcamiento guardado');
   await captura('acceso-mis-sitios.png');
   await p.getByRole('button', { name: /Mapa/ }).click();
+
+  // Sin conexión y con la capa oculta: la pulsación larga dentro del Parque Nacional avisa (lee la tesela de OPFS).
+  await p.locator('#btn-capas').click();
+  await p.locator('[data-capa=restricciones]').uncheck();
+  await p.locator('#btn-capas').click();
+  await p.evaluate(({ lat, lon }) => window.__setas.mapa.jumpTo({ center: [lon, lat], zoom: 14 }), RESTRINGIDO);
+  await reposo();
+  await pulsarLargo(RESTRINGIDO.lat, RESTRINGIDO.lon);
+  await p.locator('#tarjeta-acceso:not([data-estado=cargando])').waitFor({ timeout: 15000 });
+  const chip = p.locator('#ta-restriccion');
+  await chip.waitFor({ timeout: 5000 });
+  const rOff = await p.evaluate(() => ({ r: window.__setas.acceso().restricciones, o: window.__setas.origenes()['restricciones.pmtiles'] }));
+  comprobar((await chip.textContent()).includes(`⚠ ${RESTRINGIDO.chip}`) && rOff.r.some((r) => r.tipo === RESTRINGIDO.tipo) && rOff.o.origen === 'opfs' && rOff.o.http === 0,
+    `sin conexión, pulsación larga en un recinto (capa oculta): aviso «${await chip.textContent()}» leído de OPFS`);
+  await p.locator('#btn-capas').click();
+  await p.locator('[data-capa=restricciones]').check();
+  await p.locator('#btn-capas').click();
+  await reposo();
+  await captura('restricciones-acceso-offline.png');
+  await p.locator('#ta-guardar').click();
+  await p.locator('#dlg-sitio[open]').waitFor();
+  await p.locator('#sitio-restriccion:not([hidden])').waitFor({ timeout: 5000 });
+  comprobar((await p.locator('#sitio-restriccion').textContent()).includes(`⚠ ${RESTRINGIDO.chip}`), 'el formulario del sitio repite el aviso de restricción');
+  await captura('restricciones-sitio.png');
+  await p.locator('#btn-sitio-cancelar').click();
+  await p.locator('#ta-cerrar').click();
   await p.locator('#btn-capas').click();
   await p.locator('[data-capa=rutas]').check();
   await p.locator('#btn-capas').click();
@@ -634,6 +752,14 @@ try {
 
   await p.getByRole('button', { name: /Ajustes/ }).click();
   await captura('06-ajustes-offline.png');
+  const norm = await p.locator('#normativa').evaluate((e) => ({ vis: !e.hidden, t: e.innerText }));
+  comprobar(norm.vis && /Normativa de recogida/.test(norm.t) && /3 kg por persona y día/.test(norm.t) && /Zonas de Reserva/.test(norm.t)
+    && /Cádiz/.test(norm.t) && norm.t.includes('Información orientativa: comprueba la normativa vigente (BOJA) antes de recoger.'),
+    'Ajustes: «Normativa de recogida» con el aviso legal del manifest y la nota orientativa');
+  const totalAjustes = await p.locator('#info-datos').textContent();
+  informe.ajustes_total = totalAjustes;
+  await p.locator('#normativa').scrollIntoViewIfNeeded();
+  await captura('ajustes-normativa.png');
   comprobar(new RegExp(`Guía lista sin cobertura: textos y ${N_FOTOS} fotos`).test(await p.locator('#estado-guia').textContent()), `Ajustes: «${await p.locator('#estado-guia').textContent()}»`);
   await p.locator('#creditos-fotos summary').click();
   await p.locator('#lista-creditos .credito-especie').first().waitFor();

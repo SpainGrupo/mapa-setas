@@ -71,4 +71,11 @@ describe('especies del mapa ↔ fichas', () => {
     expect(especieMapaDeFicha('amanita_caesarea', mapa)).toBe('amanita_caesarea');
     expect(especieMapaDeFicha('lactarius_deliciosus', mapa)).toBe('lactarius_deliciosus');
   });
+  it('lactarius_sanguifluus se describe en la ficha del níscalo; la ficha del níscalo sigue llevando a L. deliciosus', async () => {
+    const { fichaDeEspecieMapa, especieMapaDeFicha, DESCRITA_EN_OTRA_FICHA } = await import('./guia');
+    expect(fichaDeEspecieMapa('lactarius_sanguifluus')).toBe('lactarius_deliciosus');
+    expect(DESCRITA_EN_OTRA_FICHA.has('lactarius_sanguifluus')).toBe(true);
+    expect(especieMapaDeFicha('lactarius_deliciosus', ['lactarius_sanguifluus', 'lactarius_deliciosus'])).toBe('lactarius_deliciosus');
+    expect(especieMapaDeFicha('lactarius_deliciosus', ['lactarius_sanguifluus'])).toBe('lactarius_sanguifluus');
+  });
 });

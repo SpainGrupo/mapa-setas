@@ -1,5 +1,5 @@
 {
- "_nota": "Fixture del e2e: días relativos a hoy (Europe/Madrid). 30 mm hace 17 días (el episodio) más lluvias sueltas que suman 4 días de lluvia en 30; tmin 13 y tmax 23 en todos los días; ET0 2 mm/día (balance 30 d = 46 − 60 = −14 mm); HR mínima 55 %; humedad del suelo 0,2 m³/m³ en todas las horas. La elevación del modelo se iguala a alt_media de cada punto (sin corrección por altitud). Los estados esperados valen con el manifest viejo (sin umbrales v2) y con el nuevo, siempre que hoy caiga en octubre o noviembre (temporada).",
+ "_nota": "Fixture del e2e: días relativos a «hoy», fijado a 2026-10-14 con ?hoy= (solo en modo e2e) para que la temporada de cada especie no dependa del mes en que se ejecute. 30 mm hace 17 días (el episodio) más lluvias sueltas que suman 4 días de lluvia en 30; tmin 13 y tmax 23 en todos los días; ET0 2 mm/día (balance 30 d = 46 − 60 = −14 mm); HR mínima 55 %; humedad del suelo 0,2 m³/m³ en todas las horas. La elevación del modelo se iguala a alt_media de cada punto (sin corrección por altitud). Con el manifest v2 (12 especies): L. deliciosus/sanguifluus esperan (ventana 20–40 días); A. ponderosa y T. arenaria quedan en amarillo «fuera de temporada, pero llovió fuerte» (30 mm ≥ 1,5 × episodio y suelo húmedo).",
  "lluvia": {
   "-22": 8,
   "-20": 6,
@@ -14,7 +14,14 @@
   "boletus_aestivalis": "verde",
   "boletus_edulis": "verde",
   "boletus_pinophilus": "amarillo",
-  "amanita_caesarea": "rojo"
+  "amanita_caesarea": "rojo",
+  "lactarius_deliciosus": "amarillo",
+  "lactarius_sanguifluus": "amarillo",
+  "cantharellus_cibarius": "verde",
+  "amanita_ponderosa": "amarillo",
+  "macrolepiota_procera": "verde",
+  "pleurotus_eryngii": "verde",
+  "terfezia_arenaria": "amarillo"
  },
  "et0": 2,
  "hr_min": 55,

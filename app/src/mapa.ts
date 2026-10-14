@@ -2,11 +2,14 @@ import * as maplibregl from 'maplibre-gl';
 import urlTrabajador from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import { type Map as MapaML, type MapMouseEvent, type StyleSpecification, type LayerSpecification } from 'maplibre-gl';
 import { PMTiles, Protocol } from 'pmtiles';
+import { VectorTile } from '@mapbox/vector-tile';
+import { PbfReader } from 'pbf';
 import { layers, namedFlavor } from '@protomaps/basemaps';
 import { FuenteOpfsHttp } from './fuente';
 import { archivoOpfs } from './opfs';
 import { BASE_DATOS } from './datos';
 import type { Manifest } from './tipos';
+import { NOMBRE_TIPO_RESTRICCION, ORIENTATIVO, aRestriccion, restriccionesEn, teselaDe, type Restriccion } from './restricciones';
 
 export const ATRIBUCION = 'IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, © OpenStreetMap ODbL, Protomaps';
 /** Ortofoto PNOA del IGN (WMTS, solo KVP según GetCapabilities; GoogleMapsCompatible hasta el nivel 19, JPEG). */
@@ -20,6 +23,7 @@ maplibregl.setWorkerUrl(urlTrabajador);
 const protocolo = new Protocol();
 maplibregl.addProtocol('pmtiles', protocolo.tile);
 const fuentes = new Map<string, FuenteOpfsHttp>();
+const archivosPm = new Map<string, PMTiles>();
 
 /** URL pmtiles:// de un archivo de datos; registra la Source OPFS/HTTP la primera vez. */
 function pm(nombre: string): string {
@@ -27,9 +31,36 @@ function pm(nombre: string): string {
   if (!fuentes.has(url)) {
     const f = new FuenteOpfsHttp(url, () => archivoOpfs(nombre));
     fuentes.set(url, f);
-    protocolo.add(new PMTiles(f));
+    const a = new PMTiles(f);
+    archivosPm.set(url, a);
+    protocolo.add(a);
   }
   return 'pmtiles://' + url;
+}
+
+/**
+ * Recintos restringidos (restricciones.pmtiles) que contienen el punto. Lee la tesela del nivel máximo del
+ * archivo con la misma Source OPFS/HTTP que el mapa: sin conexión sale de OPFS y no depende de que la capa esté
+ * visible. Sin tesela (fuera de todo recinto) → []. Si no se puede leer (sin red y sin descarga) → null.
+ */
+export async function restriccionEn(m: Manifest, lat: number, lon: number): Promise<Restriccion[] | null> {
+  if (!m.restricciones) return null;
+  const capa = m.restricciones.capa;
+  pm(capa);
+  const a = archivosPm.get(BASE_DATOS + capa)!;
+  try {
+    const z = (await a.getHeader()).maxZoom;
+    const { x, y } = teselaDe(lat, lon, z);
+    const t = await a.getZxy(z, x, y);
+    if (!t) return [];
+    const l = new VectorTile(new PbfReader(new Uint8Array(t.data))).layers.restricciones;
+    if (!l) return [];
+    const fs = Array.from({ length: l.length }, (_, i) => l.feature(i).toGeoJSON(x, y, z) as { properties: Record<string, unknown>; geometry: any });
+    return restriccionesEn(fs, lat, lon, m.restricciones.tipos);
+  } catch (e) {
+    console.warn('restricciones', e);
+    return null;
+  }
 }
 
 // Tras cambiar los archivos de OPFS (actualización o borrado) la app recarga la página (ver main.ts,
@@ -44,6 +75,32 @@ export const NOMBRE_TIPO_RUTA: Record<string, string> = {
   GR: 'Gran Recorrido (GR)', PR: 'Pequeño Recorrido (PR)', SL: 'Sendero Local (SL)', otro: 'Otro sendero o camino',
 };
 export const CAPAS_RUTAS = ['rutas-fondo', 'rutas-marca', 'rutas-otros', 'rutas-etiqueta'];
+export const CAPAS_RESTRICCIONES = ['restricciones-relleno', 'restricciones-linea'];
+export const COLOR_RESTRICCION = '#c62828';
+const RAYADO = 'rayado-restriccion';
+
+/** Patrón de rayas diagonales rojas (16 px, transparente entre rayas) para el relleno de las restricciones. */
+function imagenRayado(): { width: number; height: number; data: Uint8Array } {
+  const n = 16, data = new Uint8Array(n * n * 4);
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+    const d = (x + y) % 8;                       // raya de 2 px cada 8 px, a 45°
+    if (d > 1) continue;
+    const i = (y * n + x) * 4;
+    data.set([198, 40, 40, d === 0 ? 200 : 120], i);
+  }
+  return { width: n, height: n, data };
+}
+
+function popupRestriccion(r: Restriccion): HTMLElement {
+  const div = document.createElement('div');
+  div.className = 'popup-restriccion';
+  const b = document.createElement('strong'); b.textContent = r.nombre || 'Zona restringida';
+  const t = document.createElement('div'); t.className = 'pr-tipo'; t.textContent = NOMBRE_TIPO_RESTRICCION[r.tipo] ?? r.zona;
+  const x = document.createElement('div'); x.textContent = r.texto;
+  const a = document.createElement('div'); a.className = 'aviso'; a.textContent = ORIENTATIVO;
+  div.append(b, t, x, a);
+  return div;
+}
 const MARCADAS: any = ['in', ['get', 'tipo'], ['literal', ['GR', 'PR', 'SL']]];
 
 function capasRutas(): { lineas: LayerSpecification[]; etiqueta: LayerSpecification } {
@@ -89,7 +146,7 @@ function popupRuta(p: Record<string, unknown>): HTMLElement {
   return div;
 }
 
-function estilo(conMeteo: boolean, archivoRutas: string | null): StyleSpecification {
+function estilo(conMeteo: boolean, archivoRutas: string | null, archivoRestricciones: string | null): StyleSpecification {
   const raiz = new URL('./', document.baseURI).href;
   const base = layers('protomaps', namedFlavor('light'), { lang: 'es' }) as LayerSpecification[];
   const primerSimbolo = base.findIndex((l) => l.type === 'symbol');
@@ -105,6 +162,11 @@ function estilo(conMeteo: boolean, archivoRutas: string | null): StyleSpecificat
     { id: 'protegidos-linea', type: 'line', source: 'protegidos', 'source-layer': 'protegidos',
       paint: { 'line-color': '#6a1b9a', 'line-width': 2, 'line-dasharray': [3, 2] } },
   ];
+  if (archivoRestricciones) propias.push(
+    { id: 'restricciones-relleno', type: 'fill', source: 'restricciones', 'source-layer': 'restricciones',
+      paint: { 'fill-pattern': RAYADO, 'fill-opacity': 0.75 } },
+    { id: 'restricciones-linea', type: 'line', source: 'restricciones', 'source-layer': 'restricciones',
+      paint: { 'line-color': COLOR_RESTRICCION, 'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.2, 14, 2.5] } });
   const rutas = archivoRutas ? capasRutas() : null;
   if (rutas) propias.push(...rutas.lineas);
   const etiquetasCurvas: LayerSpecification = {
@@ -126,6 +188,7 @@ function estilo(conMeteo: boolean, archivoRutas: string | null): StyleSpecificat
       pnoa: { type: 'raster', tiles: [URL_PNOA], tileSize: 256, maxzoom: 19, attribution: ATRIBUCION_PNOA },
       ...(conMeteo ? { meteo_zonas: { type: 'vector' as const, url: pm('meteo_zonas.pmtiles') } } : {}),
       ...(archivoRutas ? { rutas: { type: 'vector' as const, url: pm(archivoRutas) } } : {}),
+      ...(archivoRestricciones ? { restricciones: { type: 'vector' as const, url: pm(archivoRestricciones) } } : {}),
     },
     layers: [{ id: 'pnoa', type: 'raster', source: 'pnoa', layout: { visibility: 'none' } }, ...base.slice(0, primerSimbolo), ...propias.filter((l) => conMeteo || l.id !== 'semaforo'),
       ...base.slice(primerSimbolo), etiquetasCurvas, ...(rutas ? [rutas.etiqueta] : [])],
@@ -137,7 +200,7 @@ export function crearMapa(contenedor: HTMLElement, m: Manifest): MapaML {
   const mx = (e - o) * 0.25, my = (n - s) * 0.25;
   const mapa = new maplibregl.Map({
     container: contenedor,
-    style: estilo(!!m.meteo, m.rutas ?? null),
+    style: estilo(!!m.meteo, m.rutas ?? null, m.restricciones?.capa ?? null),
     bounds: [[o, s], [e, n]],
     maxBounds: [[o - mx, s - my], [e + mx, n + my]],
     minZoom: 7,
@@ -147,6 +210,9 @@ export function crearMapa(contenedor: HTMLElement, m: Manifest): MapaML {
     pitchWithRotate: false,
   });
   mapa.touchZoomRotate.disableRotation();
+  mapa.on('styleimagemissing', (e: { id: string }) => {
+    if (e.id === RAYADO && !mapa.hasImage(RAYADO)) mapa.addImage(RAYADO, imagenRayado(), { pixelRatio: 2 });
+  });
   mapa.once('load', () => contenedor.querySelector('.maplibregl-compact-show')?.classList.remove('maplibregl-compact-show'));
   mapa.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-left');
   // Un solo manejador: primero senderos (con margen de 10 px, las líneas son finas) y si no, espacio protegido.
@@ -156,6 +222,13 @@ export function crearMapa(contenedor: HTMLElement, m: Manifest): MapaML {
     const ruta = visibles.length ? mapa.queryRenderedFeatures([[x - 10, y - 10], [x + 10, y + 10]], { layers: visibles })[0] : undefined;
     if (ruta) {
       new maplibregl.Popup({ maxWidth: '280px', className: 'popup-rutas' }).setLngLat(ev.lngLat).setDOMContent(popupRuta(ruta.properties)).addTo(mapa);
+      return;
+    }
+    const restr = mapa.getLayer('restricciones-relleno') && mapa.getLayoutProperty('restricciones-relleno', 'visibility') !== 'none'
+      ? mapa.queryRenderedFeatures(ev.point, { layers: ['restricciones-relleno'] })[0] : undefined;
+    if (restr) {
+      new maplibregl.Popup({ maxWidth: '290px', className: 'popup-restricciones', anchor: ev.point.y < mapa.getContainer().clientHeight * 0.6 ? 'top' : 'bottom' }).setLngLat(ev.lngLat)
+        .setDOMContent(popupRestriccion(aRestriccion(restr.properties, m.restricciones?.tipos))).addTo(mapa);
       return;
     }
     const f = mapa.getLayer('protegidos-relleno') ? mapa.queryRenderedFeatures(ev.point, { layers: ['protegidos-relleno'] })[0] : undefined;

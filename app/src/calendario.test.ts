@@ -50,7 +50,7 @@ describe('estado del calendario', () => {
     expect(estadoCalendario(D, [10, 11], r({ estado: 'amarillo', hasta: '2026-10-25' })).texto).toBe('Puede salir · aguanta hasta ~25/10');
   });
   it('rojo fuera de temporada → días hasta la temporada', () => {
-    expect(estadoCalendario(D, [2, 3, 4], r({ estado: 'rojo' }))).toMatchObject({ clase: 'fuera', texto: 'Empieza en ~110 días (temporada)' });
+    expect(estadoCalendario(D, [2, 3, 4], r({ estado: 'rojo' }))).toMatchObject({ clase: 'fuera', texto: 'Fuera de temporada: empieza en ~110 días' });
   });
   it('rojo o sin datos en temporada', () => {
     expect(estadoCalendario(D, [10], r({ estado: 'rojo' })).texto).toBe('En temporada, falta lluvia');

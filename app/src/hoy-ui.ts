@@ -109,7 +109,7 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIEleme
   li.append(cab, meta);
   if (s.restringido) {
     const r = document.createElement('p'); r.className = 'chip-restriccion tf-restr';
-    r.textContent = '⚠ Zona con autorización: recoger exige permiso';
+    r.textContent = '⚠ Recoger aquí exige autorización';
     li.append(r);
   }
   const acc = document.createElement('div'); acc.className = 'tf-acciones';
@@ -140,7 +140,7 @@ function pintarDias(hoy: string, fecha: string) {
   el.dataset.confianza = c;
   el.replaceChildren();
   const b = document.createElement('b'); b.textContent = `Confianza ${c}`;
-  el.append(b, ` · ${etiquetaDia(hoy, fecha) === 'hoy' ? 'hoy' : `${etiquetaDia(hoy, fecha)} (${fecha.slice(8, 10)}/${fecha.slice(5, 7)})`}. ${TEXTO_CONFIANZA[c]}`);
+  el.append(b, ` · ${etiquetaDia(hoy, fecha)} (${fecha.slice(8, 10)}/${fecha.slice(5, 7)}). ${TEXTO_CONFIANZA[c]}`);
 }
 
 export function elegirDia(f: string) {
@@ -241,7 +241,7 @@ export async function pintarHoy() {
   const general = datos && m ? topGeneral(datos, m.especies.map((e) => e.id), o, n) : [];
   const ul = $('#top-general');
   ul.replaceChildren();
-  $('#hoy-general-nota').textContent = `Los ${n} mejores sitios de cada seta que no está en rojo ese día, juntos y ordenados (máximo 20). Si dos setas caen a menos de 300 m, van en la misma fila.`;
+  $('#hoy-general-nota').textContent = `Los ${n} mejores sitios de cada seta que no esté en rojo ese día, de mejor a peor y hasta 20. Si dos setas quedan a menos de 300 m, comparten fila.`;
   if (!datos) vacio(ul, 'Esta versión de los mapas no trae sitios candidatos.');
   else if (!general.length) vacio(ul, 'Ese día todas las setas están en rojo o ningún sitio cumple la dificultad elegida.');
   general.forEach((f, i) => ul.append(fila(f.principal, f.entradas, i + 1)));

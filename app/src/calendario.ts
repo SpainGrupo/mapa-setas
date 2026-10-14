@@ -35,9 +35,9 @@ export function confianza(hoy: string, fecha: string): Confianza {
   return d <= 3 ? 'alta' : d <= 7 ? 'media' : 'baja';
 }
 export const TEXTO_CONFIANZA: Record<Confianza, string> = {
-  alta: 'Previsión fiable: faltan 3 días o menos.',
-  media: 'Previsión con dudas: a 4–7 días la lluvia aún puede cambiar.',
-  baja: 'Previsión poco fiable: a más de una semana, tómalo como tendencia.',
+  alta: 'A 3 días o menos vista, la previsión suele acertar.',
+  media: 'A 4 a 7 días vista, la lluvia prevista todavía puede cambiar.',
+  baja: 'A más de una semana vista, tómalo solo como tendencia.',
 };
 
 // ---------------------------------------------------------------- estado de cada especie en el calendario
@@ -95,7 +95,7 @@ export function estadoCalendario(fecha: string, meses: number[], r: ResultadoSem
     return { clase: 'sale', texto: hasta ? `Puede salir · aguanta hasta ~${ddmm(hasta)}` : 'Puede salir', hasta };
   }
   const dias = diasHastaTemporada(fecha, meses);
-  if (dias != null) return { clase: 'fuera', texto: `Empieza en ~${dias} días (temporada)`, dias };
+  if (dias != null) return { clase: 'fuera', texto: `Fuera de temporada: empieza en ~${dias} días`, dias };
   if (!meses.length) return { clase: 'temporada', texto: r?.estado === 'rojo' ? 'Falta lluvia' : 'Sin datos del tiempo' };
   return { clase: 'temporada', texto: r?.estado === 'rojo' ? 'En temporada, falta lluvia' : 'En temporada, sin datos del tiempo' };
 }

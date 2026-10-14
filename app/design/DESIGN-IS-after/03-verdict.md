@@ -1,4 +1,4 @@
-# 03 — Verdict: REDESIGN (by rule; scoped to the language, honesty and theme layer)
+# 03 — Verdict: REFINE (round 3, 20/30 — see 06-rescore-3.md; rounds 1–2 were REDESIGN at 15 and 19)
 
 The rebuild fixed the structure — map as figure, crosshair "Aquí", Hoy answer-first, a per-pair evidence view on the recognizer — and moved the score from 12 to 15/30, but it still ships a spec-forbidden "Apreciada" badge and edible wording on an unresolved recognizer result, the very jargon the spec bans by name, emoji icons plus a trend material, and no dark/dim theme, so it stays below the 20-point REFINE threshold with #9 at 0.
 

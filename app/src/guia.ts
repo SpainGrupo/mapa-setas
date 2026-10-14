@@ -106,3 +106,20 @@ export function miniaturaEspecie(idMapa: string, indice: IndiceGuia | null): str
   const v = indice?.miniaturas?.[ficha];
   return v ? `guia/miniaturas/${ficha}.jpg?v=${v}` : null;
 }
+
+export interface BannerFicha { clase: 'banner-peligro' | 'banner-comestible' | 'banner-experto'; titulo?: string; texto: string; rol: 'alert' | 'note' }
+
+/**
+ * Aviso fijo de la ficha. Si la ficha es de una especie comestible y se abre desde un resultado del reconocedor que
+ * aún tiene mortales sin descartar, el aviso de comestible se sustituye por uno rojo que las nombra (spec §2):
+ * nunca «Considerada comestible…» mientras una mortal parecida siga en la lista.
+ */
+export function bannerFicha(f: Ficha, mortalesSinDescartar: readonly string[], avisoExperto: string): BannerFicha {
+  if (!COMESTIBLES.has(f.grupo)) return { clase: 'banner-experto', texto: avisoExperto, rol: 'note' };
+  if (!mortalesSinDescartar.length) return { clase: 'banner-comestible', texto: AVISO_COMESTIBLE, rol: 'alert' };
+  const lista = mortalesSinDescartar.length === 1 ? mortalesSinDescartar[0]
+    : `${mortalesSinDescartar.slice(0, -1).join(', ')} y ${mortalesSinDescartar.at(-1)}`;
+  const una = mortalesSinDescartar.length === 1;
+  return { clase: 'banner-peligro', rol: 'alert', titulo: `${una ? 'Mortal' : 'Mortales'} sin descartar en tu foto`,
+    texto: `Tus respuestas aún no descartan ${lista}, ${una ? 'mortal' : 'mortales'}. No la consumas sin la confirmación de un experto.` };
+}

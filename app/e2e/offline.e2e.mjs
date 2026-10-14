@@ -202,6 +202,7 @@ try {
     .evaluate((s) => ({ t: s.textContent, title: s.title }));
   await p.locator('#dlg-especie').evaluate((d) => d.close());
   await elegirEspecie('pleurotus_eryngii');
+  await p.locator('#btn-capas').click();
   await p.locator('details.fiabilidad summary').click();
   const fiabLeyenda = await p.evaluate(() => ({ t: document.querySelector('#txt-fiabilidad').textContent,
     expl: document.querySelector('#txt-fiabilidad-expl').textContent,
@@ -210,6 +211,7 @@ try {
     && fiabLeyenda.vis && /no se usaron para ajustarlo/.test(fiabLeyenda.expl),
     `fiabilidad de P. eryngii «baja» en la hoja de especies y en la leyenda, con la explicación al desplegar`);
   await p.locator('details.fiabilidad summary').click();
+  await p.locator('#btn-capas').click();
   await elegirEspecie('boletus_edulis');
 
   // Idoneidad: los 12 × 6 PMTiles responden a Range con la cabecera PMTiles v3, y cada especie se pinta en el mapa.
@@ -463,10 +465,11 @@ try {
     && t0.general.every((f, i, a) => !i || a[i - 1].score >= f.score) && await p.locator('#top-general .top-fila').count() === t0.general.length,
     `top general: ${t0.general.length} filas ordenadas, sin especies en rojo (A. caesarea fuera); primera ${t0.general[0].especie} ${t0.general[0].puntuacion}/100`);
   const fila0 = p.locator('#top-general .top-fila').first();
-  const f0 = await fila0.evaluate((li) => ({ t: li.innerText, botones: [...li.querySelectorAll('button')].map((b) => b.textContent), img: li.querySelector('.miniatura-especie img')?.getAttribute('src') ?? '' }));
+  const f0 = await fila0.evaluate((li) => ({ t: li.innerText, botones: [...li.querySelectorAll('button')].map((b) => b.textContent || b.getAttribute('aria-label')),
+    menuOculto: li.querySelector('.tf-menu').hidden, img: li.querySelector('.miniatura-especie img')?.getAttribute('src') ?? '' }));
   comprobar(/de 100/.test(f0.t) && /a pie/.test(f0.t) && /km de (Marbella|ti)/.test(f0.t) && /(Fácil|Moderada|Difícil|Muy difícil)/.test(f0.t) && /Buen momento|Esperar|Sin datos/.test(f0.t)
-    && f0.botones.join('|') === 'Ver en mapa|Ruta a pie|Cómo llegar en coche|Guardar' && f0.img.includes('miniaturas/'),
-    'cada fila: miniatura, puntuación, semáforo, tiempo a pie, subida, dificultad, distancia y los cuatro botones');
+    && f0.botones.join('|') === 'Ruta a pie|Más acciones|Ver en mapa|Cómo llegar en coche|Guardar' && f0.menuOculto && f0.img.includes('miniaturas/'),
+    'cada fila: miniatura, puntuación, estado, tiempo a pie, subida, dificultad, distancia, «Ruta a pie» y el resto en «Más acciones»');
   ok(`filas con varias setas a ≤300 m: ${t0.general.filter((f) => f.especies.length > 1).map((f) => f.especies.join('+')).join(', ') || 'ninguna hoy'}`);
   await captura('hoy-general.png');
   comprobar(t0.top.length === 10 && t0.top.every((e) => e.especie === t0.especie), `top 10 de ${t0.especie}`);
@@ -535,6 +538,7 @@ try {
   await p.locator('.pestanas [data-p=p-hoy]').click();
   await p.waitForSelector('#top-general .top-fila');
   const g0 = (await tops()).general[0];
+  await p.locator('#top-general .top-fila').first().locator('.tf-mas').click();
   await p.locator('#top-general .top-fila').first().locator('button', { hasText: 'Ver en mapa' }).click();
   await p.locator('#tarjeta-acceso[data-estado=ok]').waitFor({ timeout: 15000 });
   comprobar(await p.locator('#sel-especie').inputValue() === g0.especie && await p.locator('#ta-ruta').isVisible() && await p.locator('#ta-otra').count() === 0,
@@ -650,6 +654,26 @@ try {
   comprobar(nd0.includes('amanita_phalloides') && nd0.includes('amanita_verna') && nd0.indexOf('amanita_phalloides') < 2,
     `A. phalloides y A. verna «no descartadas» en rojo (${nd0.join(', ')})`);
   comprobar(/NO DESCARTADA/.test(await p.locator('#rec-peligrosas .peligrosa[data-id=amanita_phalloides]').textContent()), 'phalloides marcada «NO DESCARTADA»');
+  // Comparación por pares: un par por peligrosa, filas que deciden primero y numeradas, rasgos sin comprobar con trazo.
+  const cmp = await p.evaluate(() => ({ pares: [...document.querySelectorAll('#rec-pares .par-tab')].map((b) => b.dataset.id),
+    sel: document.querySelector('#rec-pares [aria-selected=true]')?.dataset.id, marcas: [...document.querySelectorAll('#rec-par .par-tabla .fila-rasgo .marca')].map((m) => m.textContent),
+    falta: document.querySelectorAll('#rec-par .celda-tu.falta').length, decide: [...document.querySelectorAll('#rec-par .fila-rasgo')].map((f) => !!f.querySelector('.decide')),
+    fotos: document.querySelectorAll('#rec-par .par-fotos img').length, dibujos: document.querySelectorAll('#rec-par .dibujo svg').length,
+    fp: document.querySelector('#rec-par .falso-positivo')?.innerText ?? '' }));
+  comprobar(cmp.pares.slice(0, 2).sort().join() === 'amanita_phalloides,amanita_verna' && cmp.pares.includes('amanita_muscaria') && cmp.sel === cmp.pares[0]
+    && cmp.marcas.every((m, i) => m === String(i + 1)) && cmp.decide.indexOf(false) > 0 && cmp.decide.slice(cmp.decide.indexOf(false)).every((d) => !d)
+    && cmp.falta > 0 && cmp.fotos === 3 && cmp.dibujos > 0
+    && /Por qué se parecen/.test(cmp.fp) && /Qué las separa/.test(cmp.fp) && /Cuánto fiarte/.test(cmp.fp) && /Qué foto falta/.test(cmp.fp),
+    `comparación: ${cmp.pares.length} pares (${cmp.pares.slice(0, 3).join(', ')}…), ${cmp.marcas.length} rasgos numerados con los que deciden delante, ${cmp.falta} sin comprobar, 3 fotos y dibujos, bloque de falso positivo`);
+  // Spec §2: la ficha de la oronja abierta desde este resultado no dice «Considerada comestible…» sino que nombra las mortales.
+  await p.locator('.rec-cand').first().locator('button', { hasText: 'Ver ficha' }).click();
+  await p.locator('#guia-ficha[data-id=amanita_caesarea]').waitFor();
+  const avisoRec = await p.locator('#guia-ficha .ficha-fija').evaluate((e) => ({ t: e.innerText, rojo: !!e.querySelector('.banner-peligro'), com: !!e.querySelector('.banner-comestible') }));
+  comprobar(avisoRec.rojo && !avisoRec.com && /Amanita phalloides/.test(avisoRec.t) && /Amanita verna/.test(avisoRec.t) && !/comestible/i.test(avisoRec.t),
+    `ficha de la oronja desde Reconocer: aviso rojo «${avisoRec.t.replace(/\s+/g, ' ').slice(0, 120)}…» en vez del de comestible`);
+  await captura('reconocer-ficha-aviso-rojo.png');
+  await p.getByRole('button', { name: /Reconocer/ }).click();
+  await p.locator('#rec-resultado').waitFor();
   const textoRec = async () => p.locator('#p-reconocer').evaluate((e) => e.innerText);
   comprobar(!PROHIBIDO.test(await textoRec()), 'la pantalla de resultado no dice «comestible» ni «se puede comer»');
   comprobar((await p.locator('#rec-aviso-final').textContent()) === 'No consumas ninguna seta sin la confirmación de un experto.', 'aviso fijo del experto en el resultado');
@@ -665,6 +689,20 @@ try {
   comprobar(!nd1.includes('amanita_phalloides') && !nd1.includes('amanita_verna') && desc1.includes('amanita_phalloides'),
     `interior naranja y amarillo: phalloides y verna pasan a «descartadas por tus respuestas» (quedan: ${nd1.join(', ')})`);
   comprobar(await p.locator('#rec-aviso-final').isVisible() && !PROHIBIDO.test(await textoRec()), 'el aviso del experto sigue tras descartar');
+  comprobar(await p.locator('.par-tab[data-id=amanita_phalloides]').getAttribute('data-estado') === 'descartada'
+    && (await p.locator('.par-tab').last().getAttribute('data-estado')) === 'descartada', 'el par de phalloides pasa a «descartada» y al final, sin desaparecer');
+  await p.locator('.rec-cand').first().locator('button', { hasText: 'Ver ficha' }).click();
+  await p.locator('#guia-ficha[data-id=amanita_caesarea]').waitFor();
+  const avisoRec2 = await p.locator('#guia-ficha .ficha-fija').innerText();
+  comprobar(/Lepiota brunneoincarnata/.test(avisoRec2) && !/phalloides/.test(avisoRec2) && !/comestible/i.test(avisoRec2),
+    'con phalloides y verna descartadas, el aviso rojo nombra solo las mortales que quedan');
+  await p.evaluate(() => history.replaceState(null, ''));
+  await p.locator('.pestanas button[data-p=p-guia]').click();
+  await p.locator('.tarjeta-guia[data-id=amanita_caesarea]').click();
+  await p.locator('#guia-ficha[data-id=amanita_caesarea] .banner-comestible').waitFor();
+  ok('abierta desde la lista de la guía, la ficha vuelve al aviso normal');
+  await p.getByRole('button', { name: /Reconocer/ }).click();
+  await p.locator('#rec-resultado').waitFor();
   await p.locator('fieldset[data-pregunta=interior_huevo]').scrollIntoViewIfNeeded();
   await captura('reconocer-huevo-naranja.png');
   await responder('interior_huevo', 'blanco');

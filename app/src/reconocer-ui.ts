@@ -4,10 +4,12 @@
 import { BASE_DATOS, mb } from './datos';
 import { archivoModelo, borrarModelo, descargarModelo, estadoModelo } from './opfs';
 import type { Manifest } from './tipos';
-import { cargarGuia, fichasGuia, insignia } from './guia-ui';
+import { cargarGuia, fichasGuia, insignia, urlFotoGuia } from './guia-ui';
 import { binomio, nombreComun, type Ficha } from './guia';
 import { TEXTO_BANDA, type Candidato, type ResultadoModelo } from './reconocer-nucleo';
-import { AVISO_EXPERTO, evaluar, NO_SE, respuestasParaWorker, type Evaluacion, type Respuestas } from './seguridad';
+import { AVISO_EXPERTO, evaluar, NO_SE, respuestasParaWorker, sinComestible, type Evaluacion, type Respuestas } from './seguridad';
+import { construirPares, nombreConComun, type FilaRasgo, type Par } from './comparar';
+import { dibujoAnatomia, tituloAnatomia } from './anatomia';
 import {
   CALIDAD, fechaHoy, fusionarPeligrosas, MAX_BYTES_FOTO, MAX_LADO, pedirSegundaOpinion, urlWorker,
   type PeligrosaFusionada, type RespuestaGemini,
@@ -17,7 +19,8 @@ import type { OrdenReconocedor, RespuestaReconocedor } from './reconocedor.worke
 export interface OpcionesReconocer {
   manifest: () => Manifest | null;
   avisar: (t: string, ms?: number) => void;
-  verFicha: (id: string) => void;
+  /** `mortales`: nombres de las mortales aún sin descartar en este resultado (para el aviso de la ficha). */
+  verFicha: (id: string, mortales: () => string[]) => void;
   guardarSitio: (d: { especieGuia?: string; foto?: Blob; lat: number; lon: number }) => void;
 }
 
@@ -153,8 +156,17 @@ function nombreCandidato(c: Candidato): { cientifico: string; comun: string } {
 
 function botonFicha(id: string, texto = 'Ver ficha') {
   const b = el('button', 'btn-chico', texto);
-  b.addEventListener('click', () => op.verFicha(id));
+  b.type = 'button';
+  b.addEventListener('click', () => op.verFicha(id, mortalesSinDescartar));
   return b;
+}
+
+/** Mortales que el resultado actual aún no descarta (incluida la segunda opinión), con nombre científico y común. */
+function mortalesSinDescartar(): string[] {
+  if (!resultado) return [];
+  const ev = evaluar(resultado.noReconocido ? [] : resultado.candidatos, fichasGuia(), respuestas, resultado.noReconocido);
+  const lista = fusionarPeligrosas(ev.peligrosas, remota?.peligrosas_posibles ?? [], fichasGuia());
+  return lista.filter((p) => p.nivel === 'mortal').map((p) => { const f = fichaDe(p.id); return f ? nombreConComun(f) : p.nombre; });
 }
 
 function pintarCandidatos(r: ResultadoModelo) {
@@ -224,7 +236,17 @@ function lineaPeligrosa(p: PeligrosaFusionada): HTMLLIElement {
   if (f && nombreComun(f)) nom.append(` · ${nombreComun(f)}`);
   cab.append(nom, el('span', 'no-descartada', 'NO DESCARTADA'));
   li.append(cab, el('p', 'nota', `Por qué: ${p.motivos.join('; ')}.`));
-  if (f) li.append(botonFicha(f.id, 'Ver ficha y diferencias'));
+  if (f) {
+    const acc = el('div', 'acciones-peligrosa');
+    if (paresActuales.some((x) => x.ficha.id === f.id)) {
+      const c = el('button', 'btn-chico', 'Compararla');
+      c.type = 'button';
+      c.addEventListener('click', () => { parSel = f.id; pintarComparar(); $('#rec-comparar').scrollIntoView({ block: 'start', behavior: suave() }); });
+      acc.append(c);
+    }
+    acc.append(botonFicha(f.id, 'Ver ficha'));
+    li.append(acc);
+  }
   return li;
 }
 
@@ -243,8 +265,10 @@ function pintarSeguridad() {
     al.append(d);
   }
 
+  calcularPares(ev);
   const ul = $('#rec-peligrosas');
   ul.replaceChildren(...lista.map(lineaPeligrosa));
+  pintarComparar();
   $('#rec-sin-peligrosas').hidden = lista.length > 0;
 
   const desc = ev.peligrosas.filter((p) => p.descartada && !lista.some((l) => l.id === p.id));
@@ -263,6 +287,171 @@ function pintarSeguridad() {
   pintarPreguntasSiCambian(ev);
 }
 
+// ---------------------------------------------------------------- comparación por pares (marcas de campo)
+
+let paresActuales: Par[] = [];
+let parSel = '';
+let urlTuFoto = '';
+const suave = (): ScrollBehavior => (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
+
+function calcularPares(ev: Evaluacion) {
+  const top = resultado && !resultado.noReconocido ? resultado.candidatos[0] : undefined;
+  const f = top && !top.afin ? fichaDe(top.idGuia) : undefined;
+  paresActuales = f ? construirPares(f, ev, fichasGuia(), respuestas) : [];
+  if (!paresActuales.some((p) => p.ficha.id === parSel)) parSel = paresActuales[0]?.ficha.id ?? '';
+}
+
+const ESTADO_PAR: Record<Par['estado'], string> = { alerta: 'PROBABLE', no_descartada: 'NO DESCARTADA', descartada: 'DESCARTADA POR TU RESPUESTA' };
+const NIVEL: Record<string, string> = { mortal: 'MORTAL', toxica: 'TÓXICA' };
+
+function figura(src: string, nombre: string, pie: string, clase = ''): HTMLElement {
+  const fig = el('figure', clase);
+  const img = el('img'); img.src = src; img.alt = nombre; img.decoding = 'async'; img.loading = 'lazy';
+  const cap = el('figcaption');
+  cap.append(el('b', '', nombre), el('span', '', pie));
+  fig.append(img, cap);
+  return fig;
+}
+
+function marca(n: number, falta = false): HTMLSpanElement {
+  const m = el('span', `marca${falta ? ' falta' : ''}`, String(n));
+  m.setAttribute('aria-label', `rasgo ${n}${falta ? ', sin comprobar' : ''}`);
+  return m;
+}
+
+/** Lleva a la pregunta que aporta ese rasgo y la resalta un momento. */
+function irAPregunta(fila: FilaRasgo) {
+  const qs = [...$('#rec-preguntas').querySelectorAll<HTMLFieldSetElement>('fieldset[data-pregunta]')];
+  const ids = new Set(Object.entries(PREGUNTAS_RASGO).filter(([, r]) => r === fila.clave).map(([q]) => q));
+  const fs = qs.find((x) => ids.has(x.dataset.pregunta!) && !x.querySelector<HTMLInputElement>('input:checked:not([value=no_se])')) ?? qs.find((x) => ids.has(x.dataset.pregunta!));
+  if (!fs) return;
+  fs.scrollIntoView({ block: 'start', behavior: suave() });
+  fs.classList.add('resaltada');
+  setTimeout(() => fs.classList.remove('resaltada'), 1600);
+  fs.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true });
+}
+/** Rasgo de la tabla al que responde cada pregunta (la primera fila donde aparece). */
+const PREGUNTAS_RASGO: Record<string, string> = {
+  interior_huevo: 'fase_huevo', laminas_pie_color: 'himenio', color_poros: 'himenio', himenio_cantarelo: 'himenio',
+  color_reticulo: 'pie', pie_serpiente: 'pie', volva_saco: 'volva', anillo_doble_movil: 'anillo',
+  azulea_al_corte: 'carne_y_corte', carne_enrojece: 'carne_y_corte', color_latex: 'carne_y_corte', interior_gleba: 'carne_y_corte',
+  sombrero_mayor_10cm: 'sombrero', piel_dura_escamosa: 'sombrero', en_matas_madera: 'habitat', cordones_base: 'habitat',
+};
+
+function pintarComparar() {
+  const sec = $('#rec-comparar');
+  const tabs = $('#rec-pares'), cuerpo = $('#rec-par');
+  sec.hidden = !paresActuales.length;
+  if (!paresActuales.length) { tabs.replaceChildren(); cuerpo.replaceChildren(); return; }
+  const top = resultado!.candidatos[0];
+  const cand = fichaDe(top.idGuia)!;
+  tabs.replaceChildren(...paresActuales.map((p) => {
+    const b = el('button', 'par-tab');
+    b.type = 'button'; b.setAttribute('role', 'tab'); b.dataset.id = p.ficha.id; b.dataset.estado = p.estado;
+    b.setAttribute('aria-selected', String(p.ficha.id === parSel));
+    b.append(el('b', '', nombreComun(p.ficha) || binomio(p.ficha)),
+      el('small', '', p.estado === 'descartada' ? 'DESCARTADA' : `${NIVEL[p.peligrosa.nivel]} · ${ESTADO_PAR[p.estado]}`));
+    b.addEventListener('click', () => { parSel = p.ficha.id; pintarComparar(); });
+    return b;
+  }));
+  const par = paresActuales.find((p) => p.ficha.id === parSel)!;
+  const f = par.ficha;
+  cuerpo.replaceChildren();
+  cuerpo.dataset.id = f.id;
+  cuerpo.setAttribute('aria-label', `${binomio(cand)} frente a ${binomio(f)}`);
+
+  // Estado del par
+  const est = el('div', 'par-estado');
+  est.dataset.estado = par.estado;
+  est.setAttribute('role', par.estado === 'descartada' ? 'note' : 'alert');
+  est.append(el('b', '', `${NIVEL[par.peligrosa.nivel]} · ${ESTADO_PAR[par.estado]}`), el('p', '', sinComestible(par.falsoPositivo.fiarte)));
+  cuerpo.append(est);
+
+  // Fotos: la tuya, la de la candidata y la de la peligrosa (con autor y licencia)
+  const fotos = el('div', 'par-fotos');
+  if (urlTuFoto) fotos.append(figura(urlTuFoto, 'Tu foto', 'la que has analizado'));
+  const credito = (x: typeof f) => (x.fotos[0] ? `${x.fotos[0].autor} · ${x.fotos[0].licencia}` : '');
+  if (cand.fotos[0]) fotos.append(figura(urlFotoGuia(cand.fotos[0]), nombreComun(cand) || binomio(cand), credito(cand)));
+  if (f.fotos[0]) fotos.append(figura(urlFotoGuia(f.fotos[0]), nombreComun(f) || binomio(f), credito(f), 'es-peligrosa'));
+  cuerpo.append(fotos);
+
+  // Qué buscar en tus fotos: las marcas de los rasgos que deciden
+  const deciden = par.filas.filter((x) => x.decide);
+  if (deciden.length) {
+    const busca = el('p', 'busca');
+    busca.append('Busca en tus fotos:');
+    for (const x of deciden) { const s = el('span'); s.append(marca(x.marca, !!x.tu?.falta), x.titulo); busca.append(s); }
+    cuerpo.append(busca);
+  }
+
+  // Dibujos de anatomía, numerados
+  const conDibujo = par.filas.filter((x) => x.dibujos.candidata || x.dibujos.peligrosa);
+  if (conDibujo.length) {
+    const dib = el('div', 'par-dibujos');
+    for (const x of conDibujo) {
+      const fig = el('figure', 'dibujo');
+      fig.append(marca(x.marca, !!x.tu?.falta));
+      const { candidata: dc, peligrosa: dp } = x.dibujos;
+      if (dc && dp && dc !== dp) {
+        const dos = el('div', 'dibujo-par');
+        for (const [k, quien, clase] of [[dc, nombreComun(cand) || binomio(cand), ''], [dp, nombreComun(f) || binomio(f), 'es-peligrosa']] as const) {
+          const d = el('div', clase); d.innerHTML = dibujoAnatomia(k) ?? ''; d.append(el('small', '', quien)); dos.append(d);
+        }
+        fig.append(dos);
+      } else {
+        const d = el('div'); d.innerHTML = dibujoAnatomia((dc ?? dp)!) ?? '';
+        fig.append(d);
+        if (!(dc && dp)) fig.append(el('small', 'nota', `solo ${dc ? nombreComun(cand) || binomio(cand) : nombreComun(f) || binomio(f)}`));
+      }
+      fig.append(el('figcaption', '', dc === dp || !dc || !dp ? tituloAnatomia((dc ?? dp)!) : x.titulo));
+      dib.append(fig);
+    }
+    cuerpo.append(dib);
+  }
+
+  // Tabla rasgo | candidata | peligrosa | tú
+  const tabla = el('table', 'par-tabla');
+  const thead = el('thead', 'sr'); const trh = el('tr');
+  trh.append(el('th', '', nombreComun(cand) || binomio(cand)), el('th', 'peligrosa-col', nombreComun(f) || binomio(f)), el('th', '', 'Tú: respuesta o foto'));
+  thead.append(trh);
+  const tb = el('tbody');
+  for (const x of par.filas) {
+    const tr1 = el('tr', 'fila-rasgo');
+    const th = el('th'); th.colSpan = 3; th.scope = 'rowgroup';
+    const sp = el('span'); sp.append(marca(x.marca, !!x.tu?.falta), x.titulo);
+    if (x.decide) sp.append(el('small', 'decide', 'DECIDE'));
+    th.append(sp); tr1.append(th);
+    const tr2 = el('tr');
+    const tu = el('td', 'td-tu');
+    if (!x.tu) tu.append(el('span', 'celda-tu', 'Míralo en tu foto'));
+    else if (x.tu.falta) {
+      const b = el('button', 'celda-tu falta', `Falta: ${x.tu.texto.toLowerCase()}`);
+      b.type = 'button'; b.title = 'Ir a la pregunta';
+      b.addEventListener('click', () => irAPregunta(x));
+      tu.append(b);
+    } else tu.append(el('span', 'celda-tu', x.tu.texto));
+    const tdC = el('td', '', sinComestible(x.candidata)), tdP = el('td', 'td-peligrosa', sinComestible(x.peligrosa));
+    tdC.dataset.etq = nombreComun(cand) || binomio(cand); tdP.dataset.etq = nombreComun(f) || binomio(f); tu.dataset.etq = 'Tú';
+    tr2.append(tdC, tdP, tu);
+    tb.append(tr1, tr2);
+  }
+  tabla.append(thead, tb);
+  cuerpo.append(tabla);
+
+  // Riesgo de falso positivo
+  const fp = el('section', 'falso-positivo');
+  fp.append(el('h3', '', 'Riesgo de falso positivo'));
+  const dl = el('dl');
+  const lista = (xs: string[]) => { const ul = el('ul'); for (const t of xs) ul.append(el('li', '', sinComestible(t))); return ul; };
+  const dd = (x: string | HTMLElement) => { const d = el('dd'); d.append(x); return d; };
+  dl.append(el('dt', '', 'Por qué se parecen'), dd(lista(par.falsoPositivo.parecido)),
+    el('dt', '', 'Qué las separa'), dd(lista(par.falsoPositivo.separa)),
+    el('dt', '', 'Cuánto fiarte'), dd(sinComestible(par.falsoPositivo.fiarte)),
+    el('dt', '', 'Qué foto falta'), dd(par.falsoPositivo.fotos.length ? lista(par.falsoPositivo.fotos.map((t) => t[0].toUpperCase() + t.slice(1))) : 'Ninguna de las que deciden: ya has respondido a todas.'));
+  fp.append(dl, botonFicha(f.id, `Ficha de ${binomio(f)}`));
+  cuerpo.append(fp);
+}
+
 let firmaPreguntas = '';
 function pintarPreguntasSiCambian(ev: Evaluacion) {
   const firma = ev.preguntas.map((p) => p.id).join(',');
@@ -271,6 +460,8 @@ function pintarPreguntasSiCambian(ev: Evaluacion) {
 
 function pintarResultado() {
   if (!resultado) return;
+  if (urlTuFoto) URL.revokeObjectURL(urlTuFoto);
+  urlTuFoto = fotos[0] ? URL.createObjectURL(fotos[0]) : '';
   pintarCandidatos(resultado);
   firmaPreguntas = '';
   $('#rec-gemini-resultado').hidden = true;

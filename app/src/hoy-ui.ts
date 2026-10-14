@@ -9,7 +9,7 @@ import { acotarDia, confianza, diasChips, estadoCalendario, etiquetaDia, mejorRe
   TEXTO_CONFIANZA, type FilaCalendario } from './calendario';
 import { NOMBRE_DIFICULTAD, type Dificultad } from './ruta';
 import { textoSubida, textoTiempo } from './acceso';
-import { ICONO_ESTADO, NOMBRE_ESTADO } from './zona';
+import { NOMBRE_ESTADO } from './zona';
 import { datosEspecie } from './selector-especie';
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
@@ -81,7 +81,8 @@ function miniatura(id: string): HTMLElement {
   return caja;
 }
 
-/** Una fila de top: una o varias setas en el mismo sitio. */
+/** Una fila de top (como un panel de salidas): una o varias setas en el mismo sitio. Una sola acción principal
+ * («Ruta a pie»); el resto, en el menú «Más». */
 function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIElement {
   const s = principal.sitio;
   const li = document.createElement('li'); li.className = 'top-fila';
@@ -91,31 +92,52 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIEleme
   const cab = document.createElement('div'); cab.className = 'tf-cab';
   const num = document.createElement('span'); num.className = 'tf-pos'; num.textContent = String(pos);
   const minis = document.createElement('span'); minis.className = 'tf-minis';
-  for (const e of entradas.slice(0, 3)) minis.append(miniatura(e.especie));
+  for (const e of entradas.slice(0, 2)) minis.append(miniatura(e.especie));
   const tit = document.createElement('div'); tit.className = 'tf-tit';
   const b = document.createElement('b'); b.textContent = entradas.map((e) => nombre(e.especie)).join(' · ');
-  const est = document.createElement('span'); est.className = 'tf-estado';
-  est.textContent = entradas.length > 1
-    ? entradas.map((e) => `${ICONO_ESTADO[e.estado]} ${NOMBRE_ESTADO[e.estado]}`).filter((t, i, a) => a.indexOf(t) === i).join(' / ')
-    : `${ICONO_ESTADO[principal.estado]} ${NOMBRE_ESTADO[principal.estado]}`;
-  tit.append(b, est);
-  const pts = document.createElement('span'); pts.className = 'tf-puntos';
-  pts.innerHTML = `<b>${principal.puntuacion}</b><small>de 100</small>`;
-  pts.title = 'Puntuación del sitio para ese día: calidad del monte, semáforo y fiabilidad del mapa';
-  cab.append(num, minis, tit, pts);
+  tit.append(b);
+  const estados = entradas.length > 1 ? [...new Set(entradas.map((e) => e.estado))] : [principal.estado];
+  for (const e of estados) {
+    const est = document.createElement('span'); est.className = 'tf-estado chip-estado'; est.dataset.estado = e;
+    est.textContent = NOMBRE_ESTADO[e];
+    tit.append(est);
+  }
+  const cif = document.createElement('div'); cif.className = 'tf-cifra';
+  // Cifra grande: minutos («36») o, si pasa de la hora, «1 h 17» algo más pequeña; la unidad debajo.
+  const t = textoTiempo(s.t_pie_min).match(/^(?:(\d+) h)?\s*(?:(\d+) min)?$/);
+  const n = document.createElement('b'), u = document.createElement('small');
+  if (t && (t[1] || t[2])) {
+    n.textContent = t[1] ? `${t[1]} h${t[2] ? ` ${t[2]}` : ''}` : t[2];
+    if (t[1]) n.className = 'largo';
+    u.textContent = t[1] && t[2] ? 'min a pie' : t[1] ? 'a pie' : 'min a pie';
+  } else { n.className = 'largo'; n.textContent = textoTiempo(s.t_pie_min); u.textContent = 'a pie'; }
+  cif.append(n, u);
+  const sube = document.createElement('span'); sube.className = 'tf-sube'; sube.textContent = textoSubida(s.subida_m);
+  cif.append(sube);
+  cab.append(num, minis, tit, cif);
   const meta = document.createElement('p'); meta.className = 'tf-meta';
   const dif = document.createElement('span'); dif.className = `insignia-dif dif-${principal.dificultad}`; dif.textContent = NOMBRE_DIFICULTAD[principal.dificultad];
-  meta.append(`${textoTiempo(s.t_pie_min)} a pie · ${textoSubida(s.subida_m)} · `, dif, ` · ${textoLejania(s)}`);
+  const pts = document.createElement('span'); pts.className = 'tf-puntos'; pts.textContent = `Monte ${principal.puntuacion} de 100`;
+  pts.title = 'Puntuación del sitio para ese día: calidad del monte, semáforo y fiabilidad del mapa';
+  meta.append(dif, pts, textoLejania(s));
   li.append(cab, meta);
   if (s.restringido) {
     const r = document.createElement('p'); r.className = 'chip-restriccion tf-restr';
-    r.textContent = '⚠ Recoger aquí exige autorización';
+    r.textContent = 'Recoger aquí exige autorización';
     li.append(r);
   }
   const acc = document.createElement('div'); acc.className = 'tf-acciones';
   const esp = principal.especie;
-  acc.append(boton('Ver en mapa', () => ctx.verEnMapa(esp, s.lat, s.lon)), boton('Ruta a pie', () => ctx.rutaAPie(esp, s.lat, s.lon), 'btn btn-primario'),
-    boton('Cómo llegar en coche', () => ctx.coche(s.lat, s.lon)), boton('Guardar', () => ctx.guardar(esp, s.lat, s.lon)));
+  const ruta = boton('Ruta a pie', () => ctx.rutaAPie(esp, s.lat, s.lon), 'btn btn-primario');
+  ruta.insertAdjacentHTML('afterbegin', '<svg class="ico" aria-hidden="true"><use href="#i-caminar"/></svg>');
+  const mas = document.createElement('button'); mas.type = 'button'; mas.className = 'tf-mas';
+  mas.setAttribute('aria-label', 'Más acciones'); mas.setAttribute('aria-expanded', 'false');
+  mas.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-puntos"/></svg>';
+  const menu = document.createElement('div'); menu.className = 'tf-menu'; menu.hidden = true;
+  menu.append(boton('Ver en mapa', () => ctx.verEnMapa(esp, s.lat, s.lon), ''), boton('Cómo llegar en coche', () => ctx.coche(s.lat, s.lon), ''),
+    boton('Guardar', () => ctx.guardar(esp, s.lat, s.lon), ''));
+  mas.onclick = () => { menu.hidden = !menu.hidden; mas.setAttribute('aria-expanded', String(!menu.hidden)); };
+  acc.append(ruta, mas, menu);
   li.append(acc);
   return li;
 }
@@ -129,6 +151,8 @@ function pintarDias(hoy: string, fecha: string) {
   caja.replaceChildren(...diasChips(hoy).map((f) => {
     const b = boton(etiquetaDia(hoy, f), () => elegirDia(f), 'chip');
     b.dataset.fecha = f;
+    b.dataset.confianza = confianza(hoy, f);
+    b.title = `Previsión ${confianza(hoy, f)}`;
     b.setAttribute('aria-pressed', String(f === fecha));
     b.classList.toggle('activa', f === fecha);
     return b;
@@ -140,7 +164,7 @@ function pintarDias(hoy: string, fecha: string) {
   el.dataset.confianza = c;
   el.replaceChildren();
   const b = document.createElement('b'); b.textContent = `Confianza ${c}`;
-  el.append(b, ` · ${etiquetaDia(hoy, fecha)} (${fecha.slice(8, 10)}/${fecha.slice(5, 7)}). ${TEXTO_CONFIANZA[c]}`);
+  el.append(b, TEXTO_CONFIANZA[c]);
 }
 
 export function elegirDia(f: string) {

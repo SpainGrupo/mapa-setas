@@ -19,15 +19,23 @@ import type { AccesoSitio, Manifest, Sitio } from './tipos';
 import type { Feature } from 'geojson';
 import { edadHoras, fechaMadrid, obtener, CADUCIDAD_H, type DatosMeteo, type PuntoMeteo } from './meteo';
 import { bandaAltitud, ddmm, humedadAcumulada, semaforo, sumarDias, textoBanda, type ResultadoSemaforo } from './semaforo';
-import { expresionColores, haceTexto, ICONO_ESTADO, NOMBRE_ESTADO, puntoMasCercano } from './zona';
+import { expresionColores, haceTexto, NOMBRE_ESTADO, puntoMasCercano } from './zona';
 import { pintarGrafico } from './grafico';
 import { abrirFicha, cargarGuia, fichasGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, mostrarGuia, pintarCreditos, type EstadoFotos } from './guia-ui';
 import { binomio, especieMapaDeFicha, fichaDeEspecieMapa } from './guia';
 import { iniciarReconocer, mostrarReconocer, pintarAjustesModelo } from './reconocer-ui';
+import { Hoja } from './hoja';
 
 registerSW({ immediate: true });
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
+/** Texto de una cifra grande: los números en <b> (más grandes), las unidades normales. textContent no cambia. */
+function cifra(el: HTMLElement, texto: string) {
+  el.replaceChildren(...texto.split(/(\d[\d.,]*)/).filter(Boolean).map((t) => {
+    if (!/^\d/.test(t)) return t;
+    const b = document.createElement('b'); b.textContent = t; return b;
+  }));
+}
 let manifest: Manifest | null = null;
 let mapa: MapaML | null = null;
 let gps: Gps | null = null;
@@ -220,10 +228,47 @@ function aplicarBase(avisarSiCae: boolean) {
   document.body.dataset.base = base;
 }
 
-$('#btn-capas').addEventListener('click', () => {
-  const c = $('#capas');
-  c.hidden = !c.hidden;
-  $('#btn-capas').setAttribute('aria-expanded', String(!c.hidden));
+// ---------------------------------------------------------------- cromo del mapa: hojas, capas, «Aquí» y pista
+
+const hojaCapas = new Hoja($('#capas'), $('#capas .hoja-asa'), { retenes: (h) => [h], cerrable: true,
+  alCerrar: () => $('#btn-capas').setAttribute('aria-expanded', 'false') });
+new Hoja($('#tarjeta-acceso'), $('#tarjeta-acceso .hoja-asa'), { retenes: () => [92, 2000], inicial: 1, cerrable: true, alCerrar: () => cerrarAcceso() });
+new Hoja($('#tarjeta-ruta'), $('#tarjeta-ruta .hoja-asa'), { retenes: (h) => [92, Math.min(h, 330), h], inicial: 1, cerrable: true, alCerrar: () => cerrarRuta() });
+void hojaCapas;
+function abrirCapas(abrir: boolean) {
+  $('#capas').hidden = !abrir;
+  $('#btn-capas').setAttribute('aria-expanded', String(abrir));
+}
+$('#btn-capas').addEventListener('click', () => abrirCapas(!!$('#capas').hidden));
+$('#capas-cerrar').addEventListener('click', () => abrirCapas(false));
+
+/** body[data-hoja] (oculta los botones flotantes y la pista) y body[data-zona] (los sube sobre la tarjeta de zona). */
+function cromoMapa() {
+  const hoja = ['#tarjeta-acceso', '#tarjeta-ruta', '#capas', '#barra-mira'].some((s) => !$(s).hidden);
+  if (hoja) document.body.dataset.hoja = '1'; else delete document.body.dataset.hoja;
+  if (!$('#tarjeta-zona').hidden) document.body.dataset.zona = '1'; else delete document.body.dataset.zona;
+}
+const vigia = new MutationObserver(cromoMapa);
+for (const s of ['#tarjeta-acceso', '#tarjeta-ruta', '#capas', '#barra-mira', '#tarjeta-zona']) vigia.observe($(s), { attributes: true, attributeFilter: ['hidden'] });
+
+// Pista visible hasta que se abre la primera ficha de acceso (luego ya se sabe).
+const CLAVE_PISTA = 'setas:pista-acceso';
+try { $('#pista-acceso').hidden = localStorage.getItem(CLAVE_PISTA) === '1'; } catch { $('#pista-acceso').hidden = false; }
+function pistaVista() { $('#pista-acceso').hidden = true; try { localStorage.setItem(CLAVE_PISTA, '1'); } catch { /* solo esta sesión */ } }
+
+// Modo «Aquí»: cruz en el centro del mapa; se mueve el mapa y «Ver acceso aquí» (alternativa visible a la pulsación larga).
+function modoMira(activo: boolean) {
+  $('#mira').hidden = !activo;
+  $('#barra-mira').hidden = !activo;
+  if (activo) { $('#tarjeta-zona').hidden = true; if (!$('#tarjeta-acceso').hidden) cerrarAcceso(); if (!$('#tarjeta-ruta').hidden) cerrarRuta(); abrirCapas(false); }
+}
+$('#btn-mira').addEventListener('click', () => modoMira(true));
+$('#mira-cancelar').addEventListener('click', () => modoMira(false));
+$('#mira-ver').addEventListener('click', () => {
+  if (!mapa) return;
+  const c = mapa.getCenter();
+  modoMira(false);
+  mostrarAcceso(c.lat, c.lng);
 });
 /** Muestra «Buscando…» mientras se espera al GPS; si falla, lo sustituye por el motivo. */
 async function conPosicion<T>(f: () => Promise<T>): Promise<T | undefined> {
@@ -382,6 +427,9 @@ async function pintarRestriccion(el: HTMLElement, lat: number, lon: number, vige
 /** Ficha «Acceso» del punto: aparcamiento, tiempo y subida a pie y trazado aproximado (todo con los datos locales). */
 async function mostrarAcceso(lat: number, lon: number) {
   if (!$('#tarjeta-ruta').hidden) cerrarRuta();
+  pistaVista();
+  if (!$('#barra-mira').hidden) modoMira(false);
+  abrirCapas(false);
   const n = ++consultaAcceso;
   ultimoAcceso = { punto: { lat, lon }, estado: 'cargando' };
   $('#tarjeta-zona').hidden = true;
@@ -399,8 +447,8 @@ async function mostrarAcceso(lat: number, lon: number) {
   if (c.estado !== 'ok' || !c.acceso || !c.linea) { estadoAcceso(c.texto, false); return; }
   const { acceso, linea } = c;
   $('#ta-via').textContent = acceso.via;
-  $('#ta-tiempo').textContent = textoTiempo(acceso.tiempo_min);
-  $('#ta-subida').textContent = textoSubida(acceso.subida_m);
+  cifra($('#ta-tiempo'), textoTiempo(acceso.tiempo_min));
+  cifra($('#ta-subida'), textoSubida(acceso.subida_m));
   estadoAcceso(c.completa ? '' : 'El trazado se corta antes de llegar al coche: síguelo solo como orientación.', true);
   pintarTrazaAcceso([
     { type: 'Feature', properties: { tipo: 'traza' }, geometry: { type: 'LineString', coordinates: linea } },
@@ -418,7 +466,7 @@ function encuadrar(linea: [number, number][], tarjeta = '#tarjeta-acceso', ajust
   const alto = $(tarjeta).getBoundingClientRect().height;
   const caja = mapa.getContainer().getBoundingClientRect();
   const a = mapa.project(sw), b = mapa.project(ne);
-  const panel = document.querySelector('.panel-sup')?.getBoundingClientRect();
+  const panel = document.querySelector('.mapa-cab')?.getBoundingClientRect();
   const arriba = panel ? Math.max(24, panel.bottom - caja.top + 16) : 24;
   const dentro = (p: { x: number; y: number }) => p.x > 24 && p.x < caja.width - 24 && p.y > arriba && p.y < caja.height - alto - 40;
   if (dentro(a) && dentro(b)) return;
@@ -507,9 +555,9 @@ async function abrirRuta(lat: number, lon: number) {
   rutaActual = { destino: { lat, lon }, linea, perfil: per, acceso: c.acceso, dificultad: dif, completa: !!c.completa };
   t.dataset.estado = 'ok';
   $('#ru-via').textContent = `desde ${c.acceso.via}`;
-  $('#ru-distancia').textContent = textoDistancia(per.total_m);
-  $('#ru-tiempo').textContent = textoTiempo(c.acceso.tiempo_min);
-  $('#ru-subida').textContent = textoSubida(c.acceso.subida_m);
+  cifra($('#ru-distancia'), textoDistancia(per.total_m));
+  cifra($('#ru-tiempo'), textoTiempo(c.acceso.tiempo_min));
+  cifra($('#ru-subida'), textoSubida(c.acceso.subida_m));
   const insignia = $('#ru-dificultad');
   insignia.textContent = NOMBRE_DIFICULTAD[dif]; insignia.className = `insignia-dif dif-${dif}`; insignia.dataset.dificultad = dif;
   $('#ru-datos').hidden = false;
@@ -818,8 +866,8 @@ function elegirPunto(lat: number, lon: number, conTarjeta: boolean) {
 function pintarTarjeta() {
   if ($('#tarjeta-zona').hidden || !puntoSel) return;
   const r = estadoEn(puntoSel, especieSel());
-  $('#tz-estado').textContent = r ? `${ICONO_ESTADO[r.estado]} ${nombres[especieSel()]}: ${NOMBRE_ESTADO[r.estado]}`
-    : `${nombres[especieSel()]}: sin datos del tiempo`;
+  const punto = document.createElement('span'); punto.className = 'punto-estado'; punto.dataset.estado = r?.estado ?? 'gris'; punto.setAttribute('aria-hidden', 'true');
+  $('#tz-estado').replaceChildren(punto, r ? `${nombres[especieSel()]}: ${NOMBRE_ESTADO[r.estado]}` : `${nombres[especieSel()]}: sin datos del tiempo`);
   $('#tz-motivo').textContent = r ? [r.motivo, fechasTexto(r)].filter(Boolean).join(' · ') : 'Conéctate y pulsa «Actualizar tiempo» en Zona.';
 }
 $('#tz-cerrar').addEventListener('click', () => ($('#tarjeta-zona').hidden = true));
@@ -874,7 +922,7 @@ function pintarZona() {
     b.className = 'semaforo-fila' + (e.id === elegida ? ' elegida' : '');
     b.dataset.especie = e.id;
     b.dataset.estado = r?.estado ?? 'gris';
-    const ic = document.createElement('span'); ic.className = 'ic'; ic.textContent = ICONO_ESTADO[r?.estado ?? 'gris'];
+    const ic = document.createElement('span'); ic.className = 'ic punto-estado'; ic.dataset.estado = r?.estado ?? 'gris'; ic.setAttribute('aria-hidden', 'true');
     const esp = document.createElement('span'); esp.className = 'esp'; esp.textContent = e.nombre;
     const est = document.createElement('span'); est.className = 'est'; est.textContent = r ? NOMBRE_ESTADO[r.estado] : 'Sin datos del tiempo';
     const mot = document.createElement('span'); mot.className = 'mot'; mot.textContent = r?.motivo ?? '';
@@ -1051,7 +1099,7 @@ iniciarHoy({
 iniciarReconocer({
   manifest: () => manifest,
   avisar,
-  verFicha: (id) => { irA('p-guia'); abrirFicha(id); },
+  verFicha: (id, mortales) => { irA('p-guia'); abrirFicha(id, 'reconocer', mortales); },
   guardarSitio: ({ especieGuia, foto, lat, lon }) => abrirSitio(null, { lat, lon },
     { especie: especieGuia ? especieMapaDeFicha(especieGuia, (manifest?.especies ?? []).map((e) => e.id)) : '', foto }),
 });

@@ -20,8 +20,8 @@ export default defineConfig({
         scope: './',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#f4f1ea',
-        theme_color: '#1b4332',
+        background_color: '#eef1ec',
+        theme_color: '#eef1ec',
         icons: [
           { src: 'iconos/icono-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'iconos/icono-512.png', sizes: '512x512', type: 'image/png' },
@@ -29,7 +29,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,mjs,css,html,png,svg,pbf,json,webmanifest}', 'guia/miniaturas/*.jpg'],
+        globPatterns: ['**/*.{js,mjs,css,html,png,svg,pbf,json,webmanifest,woff2}', 'guia/miniaturas/*.jpg'],
         // La guía: especies.json e indice.json van en el precache; las fotos (~18 MB), en su propia caché
         // «guia-fotos», que rellena la página (ver src/guia-ui.ts) y aquí se sirve con CacheFirst.
         globIgnores: ['data/**', 'guia/fotos/**'],

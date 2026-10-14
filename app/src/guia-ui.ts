@@ -8,7 +8,7 @@
 // cobertura. Tampoco van en la descarga OPFS de mapas: esa la decide el usuario (cientos de MB) y la guía debe
 // funcionar aunque nunca descargue mapas; además un <img> no puede leer OPFS sin crear blob URLs a mano.
 import {
-  agrupar, AVISO_COMESTIBLE, binomio, COMESTIBLES, ETIQUETA_GRUPO, filtrar, nombreComun, TITULO_GRUPO, urlFoto,
+  agrupar, bannerFicha, binomio, COMESTIBLES, ETIQUETA_GRUPO, filtrar, nombreComun, TITULO_GRUPO, urlFoto,
   type Ficha, type Foto, type Grupo, type IndiceGuia,
 } from './guia';
 import { AVISO_EXPERTO } from './seguridad';
@@ -21,6 +21,8 @@ let porId = new Map<string, Ficha>();
 let indice: IndiceGuia | null = null;
 let carga: Promise<boolean> | null = null;
 let grupoSel: Grupo | '' = '';
+/** Mortales sin descartar del resultado del reconocedor desde el que se abrió la ficha (null: no viene de ahí). */
+let avisoReconocer: (() => string[]) | null = null;
 
 async function json<T>(ruta: string): Promise<T | null> {
   try {
@@ -62,6 +64,9 @@ export function insignia(g: Grupo): HTMLSpanElement {
   s.dataset.grupo = g;
   return s;
 }
+
+/** URL de una foto de la guía (con su hash de versión). */
+export const urlFotoGuia = (f: Foto) => urlFoto(f.archivo, indice);
 
 function imagen(f: Foto | undefined, alt: string, perezosa = true): HTMLImageElement {
   const img = el('img');
@@ -105,7 +110,7 @@ function pintarLista() {
       const txt = el('span', 'tg-texto');
       txt.append(el('b', '', nombreComun(f)), el('i', '', binomio(f)), insignia(f.grupo));
       b.append(imagen(f.fotos[0], ''), txt);
-      b.addEventListener('click', () => abrirFicha(f.id));
+      b.addEventListener('click', () => abrirFicha(f.id, 'lista'));
       li.append(b); ul.append(li);
     }
     sec.append(ul); cont.append(sec);
@@ -120,8 +125,14 @@ function verLista() {
 
 // ---------------------------------------------------------------- ficha
 
-/** Abre una ficha y la apila en el historial (el «atrás» del móvil vuelve a la lista o a la ficha anterior). */
-export async function abrirFicha(id: string) {
+/**
+ * Abre una ficha y la apila en el historial (el «atrás» del móvil vuelve a la lista o a la ficha anterior).
+ * `desde`: «reconocer» con `mortales` (las mortales sin descartar del resultado, ya nombradas) mantiene ese contexto
+ * para el aviso de la ficha; «guia» (enlaces dentro de la guía) lo conserva; cualquier otro origen lo borra.
+ */
+export async function abrirFicha(id: string, desde: 'reconocer' | 'guia' | 'lista' | 'otro' = 'otro', mortales?: () => string[]) {
+  if (desde === 'reconocer') avisoReconocer = mortales ?? null;
+  else if (desde !== 'guia') avisoReconocer = null;
   if (!await cargarGuia() || !porId.has(id)) return;
   history.pushState({ guia: id }, '');
   pintarFicha(id);
@@ -178,8 +189,8 @@ function comparativa(f: Ficha, c: { id: string; diferencias: string[] }): HTMLEl
   const ul = el('ul', 'diferencias');
   for (const d of c.diferencias) ul.append(el('li', '', d));
   const ir = el('button', 'btn ir-ficha', `Ver ficha de ${binomio(otra)} ›`);
-  ir.addEventListener('click', (e) => { e.stopPropagation(); abrirFicha(otra.id); });
-  card.addEventListener('click', () => abrirFicha(otra.id));
+  ir.addEventListener('click', (e) => { e.stopPropagation(); abrirFicha(otra.id, 'guia'); });
+  card.addEventListener('click', () => abrirFicha(otra.id, 'guia'));
   card.append(par, el('h4', '', 'Cómo distinguirlas'), ul, ir);
   return card;
 }
@@ -198,19 +209,18 @@ function pintarFicha(id: string) {
 
   const fija = el('div', 'ficha-fija');
   const barra = el('div', 'ficha-barra');
-  const volver = el('button', 'btn-volver', '‹ Guía');
+  const volver = el('button', 'btn-volver');
+  volver.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-atras"/></svg>Guía';
   volver.addEventListener('click', () => (history.state?.guia ? history.back() : verLista()));
   barra.append(volver, el('span', 'ficha-barra-tit', binomio(f)));
   fija.append(barra);
-  if (COMESTIBLES.has(f.grupo)) {
-    const b = el('div', 'banner-comestible', AVISO_COMESTIBLE);
-    b.setAttribute('role', 'alert');
-    fija.append(b);
-  } else {
-    const b = el('div', 'banner-experto', AVISO_EXPERTO);
-    b.setAttribute('role', 'note');
-    fija.append(b);
-  }
+  // Spec §2: desde un resultado con mortales sin descartar, nunca «Considerada comestible…»: aviso rojo que las nombra.
+  const aviso = bannerFicha(f, avisoReconocer?.() ?? [], AVISO_EXPERTO);
+  const b = el('div', aviso.clase);
+  b.setAttribute('role', aviso.rol);
+  if (aviso.titulo) b.append(el('b', '', aviso.titulo), el('span', '', aviso.texto));
+  else b.textContent = aviso.texto;
+  fija.append(b);
   v.append(fija);
 
   const cuerpo = el('div', 'cuerpo ficha-cuerpo');

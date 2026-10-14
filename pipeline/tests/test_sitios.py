@@ -7,6 +7,11 @@ from setas_pipeline.malla import Malla
 SIN = 0xFFFF
 
 
+def _cand(*a, **k):
+    k.setdefault("separacion_m", 0.0)
+    return S.candidatos(*a, **k)
+
+
 def _malla_sintetica():
     """10×10: mancha A (diagonal 8-conexa, 4 celdas), mancha B (bloque 2×3), celda suelta C (1 ha)."""
     idon = np.zeros((10, 10), np.uint8)
@@ -41,7 +46,7 @@ def test_representativo_mejor_celda_con_acceso():
     idon, tiempo, subida, origen, dist = _malla_sintetica()
     tiempo[6, 6] = SIN                                                      # la mejor de B sin acceso
     tiempo[7, 7] = 42; subida[7, 7] = 120; origen[7, 7] = 9; dist[7, 7] = 333.4
-    res = S.candidatos(idon, tiempo, subida, origen, dist)
+    res = _cand(idon, tiempo, subida, origen, dist)
     b = next(r for r in res if r["area_ha"] == 6.0)
     assert (b["fila"], b["col"]) == (7, 7)
     assert b["punt_max"] == 95 and b["punt_media"] == pytest.approx(77.5)
@@ -51,18 +56,19 @@ def test_representativo_mejor_celda_con_acceso():
 
 def test_mancha_sin_acceso_se_descarta_y_orden_por_calidad():
     idon, tiempo, subida, origen, dist = _malla_sintetica()
-    res = S.candidatos(idon, tiempo, subida, origen, dist)
+    res = _cand(idon, tiempo, subida, origen, dist)
     assert [r["area_ha"] for r in res] == [6.0, 4.0]                        # B: 77,5·ln7 > A: 71,25·ln5
-    assert res[0]["_calidad"] == pytest.approx(77.5 * math.log(7))
+    assert res[0]["_calidad"] == pytest.approx(77.5 * math.log(7) * 250 / 300)
+    assert res[0]["bonus_pisado"] == 0.83 and res[0]["area_mancha_ha"] == 6.0
     tiempo[0:4, 0:4] = SIN
-    assert [r["area_ha"] for r in S.candidatos(idon, tiempo, subida, origen, dist)] == [6.0]
-    assert len(S.candidatos(idon, *_malla_sintetica()[1:], maximo=1)) == 1
+    assert [r["area_ha"] for r in _cand(idon, tiempo, subida, origen, dist)] == [6.0]
+    assert len(_cand(idon, *_malla_sintetica()[1:], maximo=1)) == 1
 
 
 def test_dist_sin_dato_es_null():
     idon, tiempo, subida, origen, dist = _malla_sintetica()
     dist[:] = -9999.0
-    assert all(r["dist_camino_m"] is None for r in S.candidatos(idon, tiempo, subida, origen, dist))
+    assert all(r["dist_camino_m"] is None for r in _cand(idon, tiempo, subida, origen, dist))
 
 
 def test_georreferenciar_restringido_y_meteo():
@@ -70,7 +76,7 @@ def test_georreferenciar_restringido_y_meteo():
     from pyproj import Transformer
     idon, tiempo, subida, origen, dist = _malla_sintetica()
     m = Malla(x0=320000.0, y1=4060000.0, ancho=10, alto=10, celda=100.0)
-    res = S.candidatos(idon, tiempo, subida, origen, dist)
+    res = _cand(idon, tiempo, subida, origen, dist)
     tr = Transformer.from_crs("EPSG:25830", "EPSG:4326", always_xy=True)
     # Recinto que cubre solo la mitad sur de la malla (mancha B), en WGS84.
     lo0, la0 = tr.transform(m.x0 - 50, m.y1 - 1000 - 50)
@@ -78,10 +84,45 @@ def test_georreferenciar_restringido_y_meteo():
     lon_b, lat_b = tr.transform(m.x0 + 650, m.y1 - 650)        # centro de (6, 6)
     meteo = [{"id": 4, "lat": lat_b + 0.5, "lon": lon_b}, {"id": 7, "lat": lat_b, "lon": lon_b + 0.01}]
     g = S.georreferenciar(res, m, [box(lo0, la0, lo1, la1)], meteo)
-    assert list(g[0]) == ["id", "lat", "lon", "area_ha", "punt_media", "punt_max", "t_pie_min", "subida_m",
-                          "dist_camino_m", "aparcamiento_id", "restringido", "meteo_id"]
+    assert list(g[0]) == ["id", "lat", "lon", "area_ha", "area_mancha_ha", "punt_media", "punt_max", "t_pie_min",
+                          "subida_m", "dist_camino_m", "aparcamiento_id", "bonus_pisado", "restringido", "meteo_id"]
     b, a = g
     assert b["restringido"] is True and a["restringido"] is False
     assert b["meteo_id"] == 7
     assert b["lat"] == round(b["lat"], 5) and b["lon"] == pytest.approx(lon_b, abs=1e-4)
     assert S.georreferenciar(res, m, None, meteo)[0]["restringido"] is False
+
+
+def test_bonus_pisado():
+    assert S.bonus_pisado([0, 60, 150, 300, 900, -9999.0, np.nan]).tolist() == \
+        pytest.approx([0.4, 0.4, 0.5, 1.0, 1.0, 0.4, 0.4])
+
+
+def test_representativo_prefiere_lejos_del_camino():
+    idon, tiempo, subida, origen, dist = _malla_sintetica()
+    dist[:] = 0.0                     # todo en camino → bonus 0,4…
+    dist[7, 5] = 300.0                # …salvo (7, 5): 75 × 1 > 95 × 0,4
+    b = next(r for r in _cand(idon, tiempo, subida, origen, dist) if r["area_ha"] == 6.0)
+    assert (b["fila"], b["col"], b["bonus_pisado"]) == (7, 5, 1.0)
+    assert b["_calidad"] == pytest.approx(77.5 * math.log(7) * 1.0)
+
+
+def test_mancha_grande_se_trocea_por_km_y_descarta_trozos_pequenos():
+    idon = np.zeros((10, 25), np.uint8)
+    idon[2:5, 0:21] = 80              # una mancha de 63 ha que cruza 3 cuadrados de 1 km (cols 0-9, 10-19, 20)
+    u = np.zeros_like(idon, np.uint16); o = np.zeros_like(idon, np.uint32)
+    d = np.full(idon.shape, 500.0)
+    res = _cand(idon, u, u, o, d)
+    assert sorted(r["area_ha"] for r in res) == [3.0, 30.0, 30.0]
+    assert all(r["area_mancha_ha"] == 63.0 for r in res)
+    idon[3:5, 20] = 0                 # el trozo del tercer cuadrado queda en 1 ha → fuera
+    assert sorted(r["area_ha"] for r in _cand(idon, u, u, o, d)) == [30.0, 30.0]
+
+
+def test_diversidad_salta_los_cercanos():
+    idon = np.zeros((10, 40), np.uint8)
+    idon[0:2, 0:2] = 90; idon[0:2, 10:12] = 80; idon[0:2, 30:32] = 70     # a 1 km y a 3 km
+    u = np.zeros_like(idon, np.uint16); o = np.zeros_like(idon, np.uint32)
+    d = np.full(idon.shape, 500.0)
+    assert [r["punt_media"] for r in S.candidatos(idon, u, u, o, d)] == [90.0, 70.0]
+    assert [r["punt_media"] for r in S.candidatos(idon, u, u, o, d, separacion_m=0)] == [90.0, 80.0, 70.0]

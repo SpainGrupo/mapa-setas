@@ -62,7 +62,7 @@ export class Hoja {
     this.alto = this.el.offsetHeight;
     const ys = this.ys();
     this.reten = Math.min(this.op.inicial ?? ys.length - 1, ys.length - 1);
-    if (reducido()) { this.y = ys[this.reten]; this.pintar(); return; }
+    if (reducido()) { this.y = ys[this.reten]; this.pintar(); this.el.animate?.([{ opacity: 0 }, { opacity: 1 }], { duration: 150, easing: 'ease-out' }); return; }
     this.y = this.cerradoY(); this.v = 0;
     this.pintar();
     this.animar(ys[this.reten], MUELLE_SUAVE);

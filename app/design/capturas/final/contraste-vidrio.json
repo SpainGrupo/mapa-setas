@@ -1,0 +1,3566 @@
+[
+ {
+  "nombre": "mapa-reposo-1",
+  "n": 12,
+  "minimo": {
+   "contraste": 6.97,
+   "texto": "Aquí",
+   "raiz": "pista-acceso",
+   "fondo": [
+    213,
+    237,
+    218
+   ],
+   "color": [
+    140,
+    41,
+    1
+   ]
+  },
+  "fallan": [],
+  "filas": [
+   {
+    "raiz": "btn-especie",
+    "texto": "Tentullo",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 18,
+    "contraste": 14.66,
+    "fondo": [
+     214,
+     239,
+     218
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-especie",
+    "texto": "Boletus aereus",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 14,
+    "contraste": 8.26,
+    "fondo": [
+     212,
+     237,
+     217
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "Mantén pulsado el mapa o pulsa",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 13.98,
+    "fondo": [
+     208,
+     234,
+     214
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "Aquí",
+    "color": [
+     140,
+     41,
+     1
+    ],
+    "peso": "900",
+    "tam": 15,
+    "contraste": 6.97,
+    "fondo": [
+     213,
+     237,
+     218
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "para ver el acceso a pie",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 14.1,
+    "fondo": [
+     208,
+     235,
+     216
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "para ver el acceso a pie",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 14.53,
+    "fondo": [
+     213,
+     238,
+     217
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mapa",
+    "color": [
+     255,
+     255,
+     255
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 11.08,
+    "fondo": [
+     27,
+     67,
+     50
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Hoy",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.74,
+    "fondo": [
+     204,
+     230,
+     214
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mis sitios",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.85,
+    "fondo": [
+     207,
+     231,
+     216
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Guía",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 8.79,
+    "fondo": [
+     225,
+     242,
+     227
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Reconocer",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 8.11,
+    "fondo": [
+     216,
+     233,
+     221
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Ajustes",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.59,
+    "fondo": [
+     202,
+     228,
+     212
+    ],
+    "aa": true,
+    "grande": false
+   }
+  ]
+ },
+ {
+  "nombre": "mapa-reposo-2",
+  "n": 12,
+  "minimo": {
+   "contraste": 7.32,
+   "texto": "Aquí",
+   "raiz": "pista-acceso",
+   "fondo": [
+    233,
+    238,
+    228
+   ],
+   "color": [
+    140,
+    41,
+    1
+   ]
+  },
+  "fallan": [],
+  "filas": [
+   {
+    "raiz": "btn-especie",
+    "texto": "Tentullo",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 18,
+    "contraste": 15.82,
+    "fondo": [
+     237,
+     243,
+     231
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-especie",
+    "texto": "Boletus aereus",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 14,
+    "contraste": 9.04,
+    "fondo": [
+     236,
+     243,
+     230
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "Mantén pulsado el mapa o pulsa",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 14.78,
+    "fondo": [
+     233,
+     234,
+     228
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "Aquí",
+    "color": [
+     140,
+     41,
+     1
+    ],
+    "peso": "900",
+    "tam": 15,
+    "contraste": 7.32,
+    "fondo": [
+     233,
+     238,
+     228
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "para ver el acceso a pie",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 15.35,
+    "fondo": [
+     233,
+     240,
+     226
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "para ver el acceso a pie",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 15.89,
+    "fondo": [
+     236,
+     244,
+     231
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mapa",
+    "color": [
+     255,
+     255,
+     255
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 11.08,
+    "fondo": [
+     27,
+     67,
+     50
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Hoy",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.9,
+    "fondo": [
+     207,
+     232,
+     216
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mis sitios",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 8.03,
+    "fondo": [
+     211,
+     233,
+     220
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Guía",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.91,
+    "fondo": [
+     207,
+     232,
+     217
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Reconocer",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.92,
+    "fondo": [
+     208,
+     232,
+     217
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Ajustes",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.97,
+    "fondo": [
+     208,
+     233,
+     216
+    ],
+    "aa": true,
+    "grande": false
+   }
+  ]
+ },
+ {
+  "nombre": "mapa-acceso",
+  "n": 23,
+  "minimo": {
+   "contraste": 7.13,
+   "texto": "Estimación: puede haber fincas privadas,",
+   "raiz": "tarjeta-acceso",
+   "fondo": [
+    227,
+    241,
+    232
+   ],
+   "color": [
+    107,
+    71,
+    0
+   ]
+  },
+  "fallan": [],
+  "filas": [
+   {
+    "raiz": "btn-especie",
+    "texto": "Tentullo",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 18,
+    "contraste": 14.03,
+    "fondo": [
+     209,
+     234,
+     216
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-especie",
+    "texto": "Boletus aereus",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 14,
+    "contraste": 8.05,
+    "fondo": [
+     210,
+     234,
+     216
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "Acceso a pie",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 22,
+    "contraste": 15.25,
+    "fondo": [
+     227,
+     240,
+     233
+    ],
+    "aa": true,
+    "grande": true
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "36.61083, -5.24579",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 14,
+    "contraste": 8.74,
+    "fondo": [
+     227,
+     240,
+     233
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "Aparcar en",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 16,
+    "contraste": 8.87,
+    "fondo": [
+     228,
+     242,
+     232
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "camino de servicio sin nombre",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 18,
+    "contraste": 15.34,
+    "fondo": [
+     227,
+     241,
+     232
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "36",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 42,
+    "contraste": 15.47,
+    "fondo": [
+     228,
+     242,
+     232
+    ],
+    "aa": true,
+    "grande": true
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "min",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 20,
+    "contraste": 15.47,
+    "fondo": [
+     228,
+     242,
+     232
+    ],
+    "aa": true,
+    "grande": true
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "a pie",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 8.87,
+    "fondo": [
+     228,
+     242,
+     232
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "+",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 20,
+    "contraste": 16.37,
+    "fondo": [
+     242,
+     246,
+     241
+    ],
+    "aa": true,
+    "grande": true
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "138",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 42,
+    "contraste": 16.38,
+    "fondo": [
+     242,
+     246,
+     242
+    ],
+    "aa": true,
+    "grande": true
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "m",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 20,
+    "contraste": 16.6,
+    "fondo": [
+     245,
+     247,
+     244
+    ],
+    "aa": true,
+    "grande": true
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "de subida",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 9.39,
+    "fondo": [
+     239,
+     247,
+     240
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "Estimación: puede haber fincas privadas,",
+    "color": [
+     107,
+     71,
+     0
+    ],
+    "peso": "700",
+    "tam": 13.5,
+    "contraste": 7.13,
+    "fondo": [
+     227,
+     241,
+     232
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "Estimación: puede haber fincas privadas,",
+    "color": [
+     107,
+     71,
+     0
+    ],
+    "peso": "700",
+    "tam": 13.5,
+    "contraste": 7.19,
+    "fondo": [
+     228,
+     242,
+     232
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "En coche",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.88,
+    "fondo": [
+     255,
+     255,
+     255
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "Ruta a pie",
+    "color": [
+     255,
+     255,
+     255
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 11.08,
+    "fondo": [
+     27,
+     67,
+     50
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mapa",
+    "color": [
+     255,
+     255,
+     255
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 11.08,
+    "fondo": [
+     27,
+     67,
+     50
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Hoy",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.8,
+    "fondo": [
+     204,
+     231,
+     215
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mis sitios",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.87,
+    "fondo": [
+     205,
+     232,
+     216
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Guía",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.89,
+    "fondo": [
+     206,
+     232,
+     217
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Reconocer",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.87,
+    "fondo": [
+     205,
+     232,
+     216
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Ajustes",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.74,
+    "fondo": [
+     204,
+     230,
+     214
+    ],
+    "aa": true,
+    "grande": false
+   }
+  ]
+ },
+ {
+  "nombre": "mapa-capas",
+  "n": 27,
+  "minimo": {
+   "contraste": 7.7,
+   "texto": "Satélite",
+   "raiz": "capas",
+   "fondo": [
+    212,
+    227,
+    216
+   ],
+   "color": [
+    54,
+    68,
+    60
+   ]
+  },
+  "fallan": [],
+  "filas": [
+   {
+    "raiz": "btn-especie",
+    "texto": "Tentullo",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 18,
+    "contraste": 14.03,
+    "fondo": [
+     209,
+     234,
+     216
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-especie",
+    "texto": "Boletus aereus",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 14,
+    "contraste": 7.84,
+    "fondo": [
+     208,
+     231,
+     213
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Capas del mapa",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 22,
+    "contraste": 15.47,
+    "fondo": [
+     228,
+     242,
+     232
+    ],
+    "aa": true,
+    "grande": true
+   },
+   {
+    "raiz": "capas",
+    "texto": "Mapa",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 17,
+    "contraste": 17.88,
+    "fondo": [
+     255,
+     255,
+     255
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Satélite",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "800",
+    "tam": 17,
+    "contraste": 7.7,
+    "fondo": [
+     212,
+     227,
+     216
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Zonas lejos de pistas y carreteras",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 8.79,
+    "fondo": [
+     227,
+     241,
+     231
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "≥ 0 m",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "900",
+    "tam": 15,
+    "contraste": 15.62,
+    "fondo": [
+     229,
+     243,
+     234
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Zonas favorables",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 15.46,
+    "fondo": [
+     228,
+     242,
+     231
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "menos",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 13,
+    "contraste": 8.79,
+    "fondo": [
+     227,
+     241,
+     232
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "más",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 13,
+    "contraste": 9.02,
+    "fondo": [
+     230,
+     244,
+     233
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Fiabilidad: buena",
+    "color": [
+     27,
+     67,
+     50
+    ],
+    "peso": "800",
+    "tam": 15,
+    "contraste": 9.46,
+    "fondo": [
+     228,
+     240,
+     232
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "del mapa de esta especie",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 15,
+    "contraste": 8.74,
+    "fondo": [
+     227,
+     240,
+     233
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Zonas favorables",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.24,
+    "fondo": [
+     247,
+     252,
+     249
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Recogida con autorización",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.24,
+    "fondo": [
+     247,
+     252,
+     249
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Espacios protegidos",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.24,
+    "fondo": [
+     247,
+     252,
+     249
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Rutas y caminos",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.24,
+    "fondo": [
+     247,
+     252,
+     249
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Buen momento hoy (por zonas)",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.24,
+    "fondo": [
+     247,
+     252,
+     249
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Sombreado del relieve",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.35,
+    "fondo": [
+     247,
+     253,
+     249
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Curvas de nivel (20 m)",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.24,
+    "fondo": [
+     247,
+     252,
+     249
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Zonas estimadas con reglas de terreno y ",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 15,
+    "contraste": 8.79,
+    "fondo": [
+     227,
+     241,
+     231
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Zonas estimadas con reglas de terreno y ",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 15,
+    "contraste": 8.79,
+    "fondo": [
+     227,
+     241,
+     231
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mapa",
+    "color": [
+     255,
+     255,
+     255
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 11.08,
+    "fondo": [
+     27,
+     67,
+     50
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Hoy",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.8,
+    "fondo": [
+     204,
+     231,
+     215
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mis sitios",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.87,
+    "fondo": [
+     205,
+     232,
+     216
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Guía",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.89,
+    "fondo": [
+     206,
+     232,
+     217
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Reconocer",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.87,
+    "fondo": [
+     205,
+     232,
+     216
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Ajustes",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.74,
+    "fondo": [
+     204,
+     230,
+     214
+    ],
+    "aa": true,
+    "grande": false
+   }
+  ]
+ },
+ {
+  "nombre": "mapa-zona",
+  "n": 14,
+  "minimo": {
+   "contraste": 8.72,
+   "texto": "Boletus aereus",
+   "raiz": "btn-especie",
+   "fondo": [
+    230,
+    239,
+    232
+   ],
+   "color": [
+    54,
+    68,
+    60
+   ]
+  },
+  "fallan": [],
+  "filas": [
+   {
+    "raiz": "btn-especie",
+    "texto": "Tentullo",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 18,
+    "contraste": 15.25,
+    "fondo": [
+     231,
+     239,
+     232
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-especie",
+    "texto": "Boletus aereus",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 14,
+    "contraste": 8.72,
+    "fondo": [
+     230,
+     239,
+     232
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-zona",
+    "texto": "Boletus aereus: Buen momento",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 15.84,
+    "fondo": [
+     236,
+     243,
+     236
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-zona",
+    "texto": "Boletus aereus: Buen momento",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 16.59,
+    "fondo": [
+     245,
+     247,
+     243
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-zona",
+    "texto": "ventana abierta: 30 mm el 27/09, hace 17",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 15,
+    "contraste": 9.42,
+    "fondo": [
+     244,
+     246,
+     242
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-zona",
+    "texto": "ventana abierta: 30 mm el 27/09, hace 17",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 15,
+    "contraste": 9.45,
+    "fondo": [
+     245,
+     246,
+     243
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-zona",
+    "texto": "ventana abierta: 30 mm el 27/09, hace 17",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 15,
+    "contraste": 9.59,
+    "fondo": [
+     246,
+     248,
+     244
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-zona",
+    "texto": "Ver zona",
+    "color": [
+     255,
+     255,
+     255
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 11.08,
+    "fondo": [
+     27,
+     67,
+     50
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mapa",
+    "color": [
+     255,
+     255,
+     255
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 11.08,
+    "fondo": [
+     27,
+     67,
+     50
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Hoy",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 9.26,
+    "fondo": [
+     242,
+     244,
+     240
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mis sitios",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 9.23,
+    "fondo": [
+     240,
+     244,
+     240
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Guía",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 9.18,
+    "fondo": [
+     219,
+     248,
+     250
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Reconocer",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 9.19,
+    "fondo": [
+     215,
+     249,
+     251
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Ajustes",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 9.19,
+    "fondo": [
+     215,
+     249,
+     251
+    ],
+    "aa": true,
+    "grande": false
+   }
+  ]
+ },
+ {
+  "nombre": "satelite-reposo-1",
+  "n": 12,
+  "minimo": {
+   "contraste": 6.68,
+   "texto": "Aquí",
+   "raiz": "pista-acceso",
+   "fondo": [
+    207,
+    233,
+    212
+   ],
+   "color": [
+    140,
+    41,
+    1
+   ]
+  },
+  "fallan": [],
+  "filas": [
+   {
+    "raiz": "btn-especie",
+    "texto": "Tentullo",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 18,
+    "contraste": 13.36,
+    "fondo": [
+     217,
+     225,
+     214
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-especie",
+    "texto": "Boletus aereus",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 14,
+    "contraste": 7.48,
+    "fondo": [
+     216,
+     222,
+     212
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "Mantén pulsado el mapa o pulsa",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 12.97,
+    "fondo": [
+     213,
+     222,
+     212
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "Aquí",
+    "color": [
+     140,
+     41,
+     1
+    ],
+    "peso": "900",
+    "tam": 15,
+    "contraste": 6.68,
+    "fondo": [
+     207,
+     233,
+     212
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "para ver el acceso a pie",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 13.22,
+    "fondo": [
+     202,
+     228,
+     209
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "para ver el acceso a pie",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 13.09,
+    "fondo": [
+     211,
+     224,
+     211
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mapa",
+    "color": [
+     255,
+     255,
+     255
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 11.08,
+    "fondo": [
+     27,
+     67,
+     50
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Hoy",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.39,
+    "fondo": [
+     200,
+     225,
+     209
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mis sitios",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.42,
+    "fondo": [
+     202,
+     225,
+     210
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Guía",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.49,
+    "fondo": [
+     210,
+     224,
+     212
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Reconocer",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.36,
+    "fondo": [
+     212,
+     221,
+     211
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Ajustes",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.39,
+    "fondo": [
+     203,
+     224,
+     210
+    ],
+    "aa": true,
+    "grande": false
+   }
+  ]
+ },
+ {
+  "nombre": "satelite-reposo-2",
+  "n": 12,
+  "minimo": {
+   "contraste": 7.02,
+   "texto": "Aquí",
+   "raiz": "pista-acceso",
+   "fondo": [
+    232,
+    233,
+    217
+   ],
+   "color": [
+    140,
+    41,
+    1
+   ]
+  },
+  "fallan": [],
+  "filas": [
+   {
+    "raiz": "btn-especie",
+    "texto": "Tentullo",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 18,
+    "contraste": 14.12,
+    "fondo": [
+     228,
+     230,
+     213
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-especie",
+    "texto": "Boletus aereus",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 14,
+    "contraste": 8.17,
+    "fondo": [
+     226,
+     232,
+     213
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "Mantén pulsado el mapa o pulsa",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 14.2,
+    "fondo": [
+     233,
+     229,
+     217
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "Aquí",
+    "color": [
+     140,
+     41,
+     1
+    ],
+    "peso": "900",
+    "tam": 15,
+    "contraste": 7.02,
+    "fondo": [
+     232,
+     233,
+     217
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "para ver el acceso a pie",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 14.45,
+    "fondo": [
+     229,
+     233,
+     215
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pista-acceso",
+    "texto": "para ver el acceso a pie",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 14.16,
+    "fondo": [
+     232,
+     229,
+     216
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mapa",
+    "color": [
+     255,
+     255,
+     255
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 11.08,
+    "fondo": [
+     27,
+     67,
+     50
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Hoy",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.63,
+    "fondo": [
+     202,
+     229,
+     208
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mis sitios",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.63,
+    "fondo": [
+     205,
+     228,
+     211
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Guía",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.51,
+    "fondo": [
+     201,
+     227,
+     208
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Reconocer",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.53,
+    "fondo": [
+     202,
+     227,
+     209
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Ajustes",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.58,
+    "fondo": [
+     202,
+     228,
+     209
+    ],
+    "aa": true,
+    "grande": false
+   }
+  ]
+ },
+ {
+  "nombre": "satelite-acceso",
+  "n": 23,
+  "minimo": {
+   "contraste": 6.95,
+   "texto": "Estimación: puede haber fincas privadas,",
+   "raiz": "tarjeta-acceso",
+   "fondo": [
+    225,
+    238,
+    229
+   ],
+   "color": [
+    107,
+    71,
+    0
+   ]
+  },
+  "fallan": [],
+  "filas": [
+   {
+    "raiz": "btn-especie",
+    "texto": "Tentullo",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 18,
+    "contraste": 13.16,
+    "fondo": [
+     203,
+     227,
+     209
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-especie",
+    "texto": "Boletus aereus",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 14,
+    "contraste": 7.5,
+    "fondo": [
+     204,
+     226,
+     210
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "Acceso a pie",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 22,
+    "contraste": 14.76,
+    "fondo": [
+     225,
+     236,
+     229
+    ],
+    "aa": true,
+    "grande": true
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "36.61083, -5.24579",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 14,
+    "contraste": 8.47,
+    "fondo": [
+     226,
+     236,
+     229
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "Aparcar en",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 16,
+    "contraste": 8.57,
+    "fondo": [
+     225,
+     238,
+     229
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "camino de servicio sin nombre",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 18,
+    "contraste": 14.75,
+    "fondo": [
+     228,
+     235,
+     230
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "36",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 42,
+    "contraste": 15.18,
+    "fondo": [
+     226,
+     240,
+     229
+    ],
+    "aa": true,
+    "grande": true
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "min",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 20,
+    "contraste": 15.06,
+    "fondo": [
+     225,
+     239,
+     229
+    ],
+    "aa": true,
+    "grande": true
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "a pie",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 8.71,
+    "fondo": [
+     226,
+     240,
+     230
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "+",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 20,
+    "contraste": 14.84,
+    "fondo": [
+     231,
+     235,
+     230
+    ],
+    "aa": true,
+    "grande": true
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "138",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 42,
+    "contraste": 14.81,
+    "fondo": [
+     230,
+     235,
+     230
+    ],
+    "aa": true,
+    "grande": true
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "m",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 20,
+    "contraste": 14.84,
+    "fondo": [
+     231,
+     235,
+     230
+    ],
+    "aa": true,
+    "grande": true
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "de subida",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 8.5,
+    "fondo": [
+     231,
+     235,
+     230
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "Estimación: puede haber fincas privadas,",
+    "color": [
+     107,
+     71,
+     0
+    ],
+    "peso": "700",
+    "tam": 13.5,
+    "contraste": 6.95,
+    "fondo": [
+     225,
+     238,
+     229
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "Estimación: puede haber fincas privadas,",
+    "color": [
+     107,
+     71,
+     0
+    ],
+    "peso": "700",
+    "tam": 13.5,
+    "contraste": 7,
+    "fondo": [
+     225,
+     239,
+     230
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "En coche",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.88,
+    "fondo": [
+     255,
+     255,
+     255
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-acceso",
+    "texto": "Ruta a pie",
+    "color": [
+     255,
+     255,
+     255
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 11.08,
+    "fondo": [
+     27,
+     67,
+     50
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mapa",
+    "color": [
+     255,
+     255,
+     255
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 11.08,
+    "fondo": [
+     27,
+     67,
+     50
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Hoy",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.39,
+    "fondo": [
+     200,
+     225,
+     208
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mis sitios",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.33,
+    "fondo": [
+     200,
+     224,
+     208
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Guía",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.33,
+    "fondo": [
+     200,
+     224,
+     208
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Reconocer",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.28,
+    "fondo": [
+     200,
+     223,
+     208
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Ajustes",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.33,
+    "fondo": [
+     200,
+     224,
+     208
+    ],
+    "aa": true,
+    "grande": false
+   }
+  ]
+ },
+ {
+  "nombre": "satelite-capas",
+  "n": 27,
+  "minimo": {
+   "contraste": 7.28,
+   "texto": "Reconocer",
+   "raiz": "pestanas",
+   "fondo": [
+    200,
+    223,
+    208
+   ],
+   "color": [
+    54,
+    68,
+    60
+   ]
+  },
+  "fallan": [],
+  "filas": [
+   {
+    "raiz": "btn-especie",
+    "texto": "Tentullo",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 18,
+    "contraste": 13.16,
+    "fondo": [
+     203,
+     227,
+     209
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-especie",
+    "texto": "Boletus aereus",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 14,
+    "contraste": 7.31,
+    "fondo": [
+     202,
+     223,
+     208
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Capas del mapa",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 22,
+    "contraste": 15.02,
+    "fondo": [
+     227,
+     238,
+     230
+    ],
+    "aa": true,
+    "grande": true
+   },
+   {
+    "raiz": "capas",
+    "texto": "Mapa",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "800",
+    "tam": 17,
+    "contraste": 7.43,
+    "fondo": [
+     209,
+     223,
+     212
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Satélite",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 17,
+    "contraste": 17.88,
+    "fondo": [
+     255,
+     255,
+     255
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Zonas lejos de pistas y carreteras",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 8.58,
+    "fondo": [
+     225,
+     238,
+     230
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "≥ 0 m",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "900",
+    "tam": 15,
+    "contraste": 15.07,
+    "fondo": [
+     225,
+     239,
+     230
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Zonas favorables",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 15,
+    "contraste": 15.17,
+    "fondo": [
+     225,
+     240,
+     230
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "menos",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 13,
+    "contraste": 8.57,
+    "fondo": [
+     225,
+     238,
+     229
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "más",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 13,
+    "contraste": 8.71,
+    "fondo": [
+     226,
+     240,
+     230
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Fiabilidad: buena",
+    "color": [
+     27,
+     67,
+     50
+    ],
+    "peso": "800",
+    "tam": 15,
+    "contraste": 9.14,
+    "fondo": [
+     225,
+     236,
+     229
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "del mapa de esta especie",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 15,
+    "contraste": 8.46,
+    "fondo": [
+     225,
+     236,
+     229
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Zonas favorables",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.09,
+    "fondo": [
+     246,
+     251,
+     248
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Recogida con autorización",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.09,
+    "fondo": [
+     246,
+     251,
+     248
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Espacios protegidos",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.09,
+    "fondo": [
+     246,
+     251,
+     248
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Rutas y caminos",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.09,
+    "fondo": [
+     246,
+     251,
+     248
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Buen momento hoy (por zonas)",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.06,
+    "fondo": [
+     248,
+     250,
+     249
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Sombreado del relieve",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.09,
+    "fondo": [
+     246,
+     251,
+     248
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Curvas de nivel (20 m)",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 17.2,
+    "fondo": [
+     246,
+     252,
+     248
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Zonas estimadas con reglas de terreno y ",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 15,
+    "contraste": 8.57,
+    "fondo": [
+     225,
+     238,
+     229
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "capas",
+    "texto": "Zonas estimadas con reglas de terreno y ",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 15,
+    "contraste": 8.57,
+    "fondo": [
+     225,
+     238,
+     229
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mapa",
+    "color": [
+     255,
+     255,
+     255
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 11.08,
+    "fondo": [
+     27,
+     67,
+     50
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Hoy",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.39,
+    "fondo": [
+     200,
+     225,
+     208
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mis sitios",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.33,
+    "fondo": [
+     200,
+     224,
+     208
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Guía",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.33,
+    "fondo": [
+     200,
+     224,
+     208
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Reconocer",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.28,
+    "fondo": [
+     200,
+     223,
+     208
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Ajustes",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.33,
+    "fondo": [
+     200,
+     224,
+     208
+    ],
+    "aa": true,
+    "grande": false
+   }
+  ]
+ },
+ {
+  "nombre": "satelite-zona",
+  "n": 14,
+  "minimo": {
+   "contraste": 7.32,
+   "texto": "Reconocer",
+   "raiz": "pestanas",
+   "fondo": [
+    215,
+    219,
+    215
+   ],
+   "color": [
+    54,
+    68,
+    60
+   ]
+  },
+  "fallan": [],
+  "filas": [
+   {
+    "raiz": "btn-especie",
+    "texto": "Tentullo",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 18,
+    "contraste": 13.96,
+    "fondo": [
+     228,
+     228,
+     216
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-especie",
+    "texto": "Boletus aereus",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 14,
+    "contraste": 8,
+    "fondo": [
+     228,
+     228,
+     217
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-zona",
+    "texto": "Boletus aereus: Buen momento",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 15.26,
+    "fondo": [
+     232,
+     239,
+     230
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-zona",
+    "texto": "Boletus aereus: Buen momento",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 15.41,
+    "fondo": [
+     237,
+     239,
+     230
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-zona",
+    "texto": "ventana abierta: 30 mm el 27/09, hace 17",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 15,
+    "contraste": 8.83,
+    "fondo": [
+     237,
+     239,
+     231
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-zona",
+    "texto": "ventana abierta: 30 mm el 27/09, hace 17",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 15,
+    "contraste": 8.85,
+    "fondo": [
+     238,
+     239,
+     230
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-zona",
+    "texto": "ventana abierta: 30 mm el 27/09, hace 17",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "400",
+    "tam": 15,
+    "contraste": 9.1,
+    "fondo": [
+     241,
+     242,
+     235
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "tarjeta-zona",
+    "texto": "Ver zona",
+    "color": [
+     255,
+     255,
+     255
+    ],
+    "peso": "700",
+    "tam": 17,
+    "contraste": 11.08,
+    "fondo": [
+     27,
+     67,
+     50
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mapa",
+    "color": [
+     255,
+     255,
+     255
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 11.08,
+    "fondo": [
+     27,
+     67,
+     50
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Hoy",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.93,
+    "fondo": [
+     225,
+     228,
+     212
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Mis sitios",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.79,
+    "fondo": [
+     223,
+     226,
+     211
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Guía",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.52,
+    "fondo": [
+     217,
+     222,
+     217
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Reconocer",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.32,
+    "fondo": [
+     215,
+     219,
+     215
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "pestanas",
+    "texto": "Ajustes",
+    "color": [
+     54,
+     68,
+     60
+    ],
+    "peso": "700",
+    "tam": 12,
+    "contraste": 7.39,
+    "fondo": [
+     216,
+     220,
+     216
+    ],
+    "aa": true,
+    "grande": false
+   }
+  ]
+ }
+]

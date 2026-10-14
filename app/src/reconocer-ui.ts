@@ -277,7 +277,7 @@ function pintarSeguridad() {
     const f = fichaDe(p.id);
     const li = el('li', 'descartada');
     li.dataset.id = p.id;
-    li.append(el('i', '', f ? binomio(f) : p.id), ` — descartada por tus respuestas (${p.motivo}). Compruébalo con un experto.`);
+    li.append(el('i', '', f ? binomio(f) : p.id), `: descartada por tus respuestas (${p.motivo}). Compruébalo con un experto.`);
     return li;
   }));
   $('#rec-descartadas').hidden = !desc.length;
@@ -425,7 +425,7 @@ function pintarComparar() {
     const tu = el('td', 'td-tu');
     if (!x.tu) tu.append(el('span', 'celda-tu', 'Míralo en tu foto'));
     else if (x.tu.falta) {
-      const b = el('button', 'celda-tu falta', `Falta: ${x.tu.texto.toLowerCase()}`);
+      const b = el('button', 'celda-tu falta', x.tu.texto === 'No sé' ? 'Sin comprobar: respondiste «No sé»' : 'Sin comprobar');
       b.type = 'button'; b.title = 'Ir a la pregunta';
       b.addEventListener('click', () => irAPregunta(x));
       tu.append(b);
@@ -447,7 +447,7 @@ function pintarComparar() {
   dl.append(el('dt', '', 'Por qué se parecen'), dd(lista(par.falsoPositivo.parecido)),
     el('dt', '', 'Qué las separa'), dd(lista(par.falsoPositivo.separa)),
     el('dt', '', 'Cuánto fiarte'), dd(sinComestible(par.falsoPositivo.fiarte)),
-    el('dt', '', 'Qué foto falta'), dd(par.falsoPositivo.fotos.length ? lista(par.falsoPositivo.fotos.map((t) => t[0].toUpperCase() + t.slice(1))) : 'Ninguna de las que deciden: ya has respondido a todas.'));
+    el('dt', '', 'Qué foto falta'), dd(par.falsoPositivo.fotos.length ? lista(par.falsoPositivo.fotos.map((t) => t[0].toUpperCase() + t.slice(1))) : 'Ninguna: ya has respondido a todo lo que decide.'));
   fp.append(dl, botonFicha(f.id, `Ficha de ${binomio(f)}`));
   cuerpo.append(fp);
 }

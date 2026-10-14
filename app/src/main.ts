@@ -585,6 +585,7 @@ function seguirRuta() {
   const t = $('#tarjeta-ruta');
   t.dataset.seguir = '1';
   $('#ru-seguir').hidden = false;
+  $('#tarjeta-ruta .hoja-cuerpo').scrollTop = 0;   // «Dejar de seguir» queda arriba, a la vista
   $('#ru-seguir-btn').textContent = 'Dejar de seguir';
   $('#ru-restante').textContent = '—';
   $('#ru-fuera').hidden = true;

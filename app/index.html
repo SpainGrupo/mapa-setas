@@ -3,14 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#eef1ec" />
-  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#eef1ec" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#141a17" media="(prefers-color-scheme: dark)" />
+  <meta name="color-scheme" content="light dark" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="description" content="Mapa offline de zonas favorables para setas." />
   <link rel="icon" href="iconos/icono-192.png" />
   <link rel="apple-touch-icon" href="iconos/apple-touch-icon.png" />
   <title>Mapa de setas</title>
+  <script>try { const t = localStorage.getItem('setas:tema'); if (t === 'claro' || t === 'oscuro') document.documentElement.dataset.tema = t; } catch {}</script>
 </head>
 <body>
   <svg class="sprite" aria-hidden="true" focusable="false">
@@ -34,6 +36,7 @@
     <symbol id="i-puntos" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></symbol>
     <symbol id="i-abajo" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
     <symbol id="i-atras" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
     <symbol id="i-alerta" viewBox="0 0 24 24"><path d="M12 3 2.5 20h19z"/><path d="M12 10v4.5M12 17.2v.3"/></symbol>
   </svg>
 
@@ -74,7 +77,7 @@
           </label>
           <div class="leyenda"><span>Zonas favorables</span><span class="rampa" id="rampa"></span><span class="leyenda-ext"><span>menos</span><span>más</span></span></div>
           <details class="fiabilidad">
-            <summary><span id="txt-fiabilidad" class="insignia-fiabilidad">Fiabilidad: sin validar</span><span class="nota">del mapa de esta especie</span></summary>
+            <summary><span id="txt-fiabilidad" class="insignia-fiabilidad">Mapa sin comprobar</span></summary>
             <p id="txt-fiabilidad-expl" class="nota"></p>
           </details>
           <div class="interruptores" role="group" aria-label="Capas">
@@ -91,8 +94,8 @@
       </div>
 
       <div class="fabs">
-        <button id="btn-aqui" class="fab vidrio" type="button" aria-label="Guardar sitio aquí"><svg class="ico" aria-hidden="true"><use href="#i-mas"/></svg></button>
-        <button id="btn-centrar" class="fab vidrio" type="button" aria-label="Centrar en mí"><svg class="ico" aria-hidden="true"><use href="#i-centrar"/></svg></button>
+        <button id="btn-aqui" class="fab vidrio" type="button" aria-label="Guardar sitio aquí"><svg class="ico" aria-hidden="true"><use href="#i-mas"/></svg><span aria-hidden="true">Guardar</span></button>
+        <button id="btn-centrar" class="fab vidrio" type="button" aria-label="Centrar en mí"><svg class="ico" aria-hidden="true"><use href="#i-centrar"/></svg><span aria-hidden="true">Centrar</span></button>
         <button id="btn-mira" class="fab fab-acento" type="button" aria-label="Aquí: ver cómo llegar a pie a un punto"><svg class="ico" aria-hidden="true"><use href="#i-mira"/></svg><span>Aquí</span></button>
       </div>
 
@@ -287,14 +290,14 @@
         <p id="rec-progreso" class="nota" hidden>Comparando… La primera vez tarda unos segundos en cargar el reconocedor.</p>
         <div id="rec-resultado" class="rec-resultado" hidden>
           <div id="rec-alertas"></div>
-          <h2>Se parecen a tu foto</h2>
-          <p id="rec-no-reconocido" class="caja-nota" hidden>No se reconoce la seta en las fotos. Prueba con otras fotos más cercanas y nítidas.</p>
-          <ol id="rec-candidatos" class="rec-candidatos"></ol>
           <h2 class="titulo-peligro">Peligrosas sin descartar</h2>
           <p class="nota">Siguen aquí hasta que tus respuestas las descarten con rasgos claros. «No sé» nunca descarta.</p>
           <ul id="rec-peligrosas" class="rec-peligrosas"></ul>
           <p id="rec-sin-peligrosas" class="nota" hidden>Ninguna de la guía en estos grupos. Eso no significa que la seta sea segura.</p>
           <details id="rec-descartadas" class="creditos" hidden><summary>Descartadas por tus respuestas</summary><ul class="lista-descartadas"></ul></details>
+          <h2>Se parecen a tu foto</h2>
+          <p id="rec-no-reconocido" class="caja-nota" hidden>No se reconoce la seta en las fotos. Prueba con otras fotos más cercanas y nítidas.</p>
+          <ol id="rec-candidatos" class="rec-candidatos"></ol>
           <section id="rec-comparar" class="rec-comparar" aria-labelledby="tit-comparar" hidden>
             <h2 id="tit-comparar">Compáralas tú</h2>
             <p class="nota">Cada número señala el mismo rasgo en la tabla, en el dibujo y en lo que debes buscar en tus fotos. Un recuadro de trazos es un rasgo que aún no has comprobado.</p>
@@ -322,7 +325,7 @@
           <h2>Mapas sin conexión</h2>
           <p id="estado-descarga" class="estado">Comprobando…</p>
           <progress id="prog-descarga" max="1" value="0" hidden></progress>
-          <button id="btn-descargar" class="btn btn-primario btn-ancho" type="button">Descargar mapas para uso sin cobertura</button>
+          <button id="btn-descargar" class="btn btn-primario btn-ancho" type="button">Descargar mapas para usar sin conexión</button>
           <button id="btn-borrar-mapas" class="btn btn-peligro" type="button" hidden>Borrar mapas descargados</button>
           <p id="estado-almacen" class="nota"></p>
         </section>
@@ -330,7 +333,7 @@
           <h2>Reconocedor sin conexión</h2>
           <p id="estado-modelo" class="estado">Comprobando…</p>
           <progress id="prog-modelo" max="1" value="0" hidden></progress>
-          <button id="btn-modelo" class="btn btn-primario btn-ancho" type="button">Descargar reconocedor sin cobertura</button>
+          <button id="btn-modelo" class="btn btn-primario btn-ancho" type="button">Descargar reconocedor para usar sin conexión</button>
           <button id="btn-borrar-modelo" class="btn btn-peligro" type="button" hidden>Borrar reconocedor</button>
           <p class="nota">Descarga aparte y opcional. Reconocedor: BioCLIP (Imageomics, licencia MIT), con ONNX Runtime Web (MIT).</p>
         </section>
@@ -343,6 +346,12 @@
           <h2>Pestaña Hoy</h2>
           <label class="campo"><span class="etq">Sitios por seta en «Mejores sitios»</span>
             <select id="ajuste-top-n"><option value="2">2 por seta</option><option value="3">3 por seta</option></select>
+          </label>
+        </section>
+        <section class="grupo-ajustes">
+          <h2>Pantalla</h2>
+          <label class="campo"><span class="etq">Colores</span>
+            <select id="ajuste-tema"><option value="">Como el teléfono</option><option value="claro">Claros (al sol)</option><option value="oscuro">Oscuros (al anochecer)</option></select>
           </label>
         </section>
         <section class="grupo-ajustes">

@@ -5,16 +5,18 @@ export type Fiabilidad = 'buena' | 'media' | 'baja' | 'sin_validar';
 export const EXPLICACION_FIABILIDAD =
   'Mide cuántos hallazgos reales de GBIF caen donde el mapa marca zona buena. Se comprueba en zonas que no se usaron para ajustarlo.';
 
-const TEXTO: Record<Fiabilidad, string> = { buena: 'buena', media: 'media', baja: 'baja', sin_validar: 'sin validar' };
+const TEXTO: Record<Fiabilidad, string> = {
+  buena: 'Mapa comprobado: acierta bien', media: 'Mapa comprobado: acierta a medias', baja: 'Mapa comprobado: acierta poco', sin_validar: 'Mapa sin comprobar',
+};
 
 /** Normaliza el valor del manifest: lo ausente o desconocido cuenta como «sin_validar». */
 export function nivelFiabilidad(f: unknown): Fiabilidad {
   return typeof f === 'string' && Object.hasOwn(TEXTO, f) ? (f as Fiabilidad) : 'sin_validar';
 }
 
-/** «Fiabilidad: buena / media / baja / sin validar». */
+/** «Mapa comprobado: acierta bien / a medias / poco» o «Mapa sin comprobar» (palabras llanas). */
 export function textoFiabilidad(f: unknown): string {
-  return `Fiabilidad: ${TEXTO[nivelFiabilidad(f)]}`;
+  return TEXTO[nivelFiabilidad(f)];
 }
 
 /** Insignia de texto (con la explicación como tooltip). */

@@ -76,7 +76,8 @@ export function pintarSelectorEspecie() {
     const b = document.createElement('b'); b.textContent = d.comun;
     const i = document.createElement('i'); i.textContent = d.cientifico;
     txt.append(b, i, insigniaFiabilidad(e.fiabilidad));
-    const marca = document.createElement('span'); marca.className = 'se-marca'; marca.setAttribute('aria-hidden', 'true'); marca.textContent = elegida ? '✓' : '';
+    const marca = document.createElement('span'); marca.className = 'se-marca'; marca.setAttribute('aria-hidden', 'true');
+    if (elegida) marca.innerHTML = '<svg class="ico"><use href="#i-check"/></svg>';
     li.append(caja, txt, marca);
     ul.append(li);
   }

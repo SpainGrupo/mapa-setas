@@ -1,7 +1,7 @@
 [
  {
   "nombre": "mapa-reposo-1",
-  "n": 12,
+  "n": 14,
   "minimo": {
    "contraste": 6.97,
    "texto": "Aquí",
@@ -134,6 +134,44 @@
     "grande": false
    },
    {
+    "raiz": "btn-aqui",
+    "texto": "Guardar",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 13,
+    "contraste": 13.79,
+    "fondo": [
+     210,
+     231,
+     219
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-centrar",
+    "texto": "Centrar",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 13,
+    "contraste": 13.48,
+    "fondo": [
+     206,
+     229,
+     217
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
     "raiz": "pestanas",
     "texto": "Mapa",
     "color": [
@@ -251,7 +289,7 @@
  },
  {
   "nombre": "mapa-reposo-2",
-  "n": 12,
+  "n": 14,
   "minimo": {
    "contraste": 7.32,
    "texto": "Aquí",
@@ -379,6 +417,44 @@
      236,
      244,
      231
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-aqui",
+    "texto": "Guardar",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 13,
+    "contraste": 14.26,
+    "fondo": [
+     216,
+     234,
+     222
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-centrar",
+    "texto": "Centrar",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 13,
+    "contraste": 13.83,
+    "fondo": [
+     208,
+     232,
+     218
     ],
     "aa": true,
     "grande": false
@@ -960,15 +1036,15 @@
  },
  {
   "nombre": "mapa-capas",
-  "n": 27,
+  "n": 26,
   "minimo": {
-   "contraste": 7.7,
-   "texto": "Satélite",
-   "raiz": "capas",
+   "contraste": 7.74,
+   "texto": "Ajustes",
+   "raiz": "pestanas",
    "fondo": [
-    212,
-    227,
-    216
+    204,
+    230,
+    214
    ],
    "color": [
     54,
@@ -1064,11 +1140,11 @@
     ],
     "peso": "800",
     "tam": 17,
-    "contraste": 7.7,
+    "contraste": 7.85,
     "fondo": [
-     212,
-     227,
-     216
+     214,
+     229,
+     218
     ],
     "aa": true,
     "grande": false
@@ -1170,7 +1246,7 @@
    },
    {
     "raiz": "capas",
-    "texto": "Fiabilidad: buena",
+    "texto": "Mapa comprobado: acierta bien",
     "color": [
      27,
      67,
@@ -1178,26 +1254,7 @@
     ],
     "peso": "800",
     "tam": 15,
-    "contraste": 9.46,
-    "fondo": [
-     228,
-     240,
-     232
-    ],
-    "aa": true,
-    "grande": false
-   },
-   {
-    "raiz": "capas",
-    "texto": "del mapa de esta especie",
-    "color": [
-     54,
-     68,
-     60
-    ],
-    "peso": "400",
-    "tam": 15,
-    "contraste": 8.74,
+    "contraste": 9.45,
     "fondo": [
      227,
      240,
@@ -1495,7 +1552,7 @@
  },
  {
   "nombre": "mapa-zona",
-  "n": 14,
+  "n": 16,
   "minimo": {
    "contraste": 8.72,
    "texto": "Boletus aereus",
@@ -1547,6 +1604,44 @@
      230,
      239,
      232
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-aqui",
+    "texto": "Guardar",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 13,
+    "contraste": 15.22,
+    "fondo": [
+     237,
+     237,
+     231
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-centrar",
+    "texto": "Centrar",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 13,
+    "contraste": 15.24,
+    "fondo": [
+     238,
+     237,
+     230
     ],
     "aa": true,
     "grande": false
@@ -1783,7 +1878,7 @@
  },
  {
   "nombre": "satelite-reposo-1",
-  "n": 12,
+  "n": 14,
   "minimo": {
    "contraste": 6.68,
    "texto": "Aquí",
@@ -1916,6 +2011,44 @@
     "grande": false
    },
    {
+    "raiz": "btn-aqui",
+    "texto": "Guardar",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 13,
+    "contraste": 12.5,
+    "fondo": [
+     202,
+     220,
+     210
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-centrar",
+    "texto": "Centrar",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 13,
+    "contraste": 12.53,
+    "fondo": [
+     200,
+     221,
+     208
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
     "raiz": "pestanas",
     "texto": "Mapa",
     "color": [
@@ -2033,7 +2166,7 @@
  },
  {
   "nombre": "satelite-reposo-2",
-  "n": 12,
+  "n": 14,
   "minimo": {
    "contraste": 7.02,
    "texto": "Aquí",
@@ -2161,6 +2294,44 @@
      232,
      229,
      216
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-aqui",
+    "texto": "Guardar",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 13,
+    "contraste": 13.3,
+    "fondo": [
+     208,
+     227,
+     212
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-centrar",
+    "texto": "Centrar",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 13,
+    "contraste": 13.12,
+    "fondo": [
+     201,
+     227,
+     210
     ],
     "aa": true,
     "grande": false
@@ -2742,7 +2913,7 @@
  },
  {
   "nombre": "satelite-capas",
-  "n": 27,
+  "n": 26,
   "minimo": {
    "contraste": 7.28,
    "texto": "Reconocer",
@@ -2827,11 +2998,11 @@
     ],
     "peso": "800",
     "tam": 17,
-    "contraste": 7.43,
+    "contraste": 7.57,
     "fondo": [
-     209,
-     223,
-     212
+     211,
+     225,
+     214
     ],
     "aa": true,
     "grande": false
@@ -2952,7 +3123,7 @@
    },
    {
     "raiz": "capas",
-    "texto": "Fiabilidad: buena",
+    "texto": "Mapa comprobado: acierta bien",
     "color": [
      27,
      67,
@@ -2961,25 +3132,6 @@
     "peso": "800",
     "tam": 15,
     "contraste": 9.14,
-    "fondo": [
-     225,
-     236,
-     229
-    ],
-    "aa": true,
-    "grande": false
-   },
-   {
-    "raiz": "capas",
-    "texto": "del mapa de esta especie",
-    "color": [
-     54,
-     68,
-     60
-    ],
-    "peso": "400",
-    "tam": 15,
-    "contraste": 8.46,
     "fondo": [
      225,
      236,
@@ -3277,7 +3429,7 @@
  },
  {
   "nombre": "satelite-zona",
-  "n": 14,
+  "n": 16,
   "minimo": {
    "contraste": 7.32,
    "texto": "Reconocer",
@@ -3329,6 +3481,44 @@
      228,
      228,
      217
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-aqui",
+    "texto": "Guardar",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 13,
+    "contraste": 13.52,
+    "fondo": [
+     224,
+     225,
+     211
+    ],
+    "aa": true,
+    "grande": false
+   },
+   {
+    "raiz": "btn-centrar",
+    "texto": "Centrar",
+    "color": [
+     13,
+     26,
+     19
+    ],
+    "peso": "800",
+    "tam": 13,
+    "contraste": 13.58,
+    "fondo": [
+     226,
+     225,
+     211
     ],
     "aa": true,
     "grande": false

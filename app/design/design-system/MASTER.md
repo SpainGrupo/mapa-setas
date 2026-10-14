@@ -114,4 +114,8 @@ Plain words: "Zonas favorables" (not idoneidad), "Previsión fiable / media / po
 ## 9. Overrides log (phase 3–4)
 
 - (phase 3) Field marks on photos: no per-photo coordinates exist in the data, so the numbers appear on the table rows and drawings and as a "Busca en tus fotos" legend under the photos instead of pinned points. Pinned points need per-photo coordinates (data work).
-- (phase 3) Dark/dim theme deferred: sunlight-first light theme only; `color-scheme: light`.
+- (phase 3) Dark/dim theme first deferred; (phase 4, after design-is #9 = 0) added: dusk tokens under `prefers-color-scheme: dark` plus a manual "Colores" setting in Ajustes (`data-tema`). Text-colour tokens `--bosque-tx`, `--peligro-tx`, `--ambar-tx`, `--oxido-tx` split from fill tokens; charts and anatomy drawings stay on light paper. Glass in dark: `oklch(22% 0.014 160 / 0.82)`, measured ≥ 6:1 on real tiles (`capturas/final/contraste-vidrio-oscuro.json`).
+- (phase 4) Emoji icons (☠ ⚠ 🟢 ✓) replaced by sprite SVG / CSS mask icons; state dots are CSS.
+- (phase 4) Vocabulary: "Fiabilidad: …" → "Mapa comprobado: acierta bien / a medias / poco" · "Mapa sin comprobar"; "sin cobertura" → "sin conexión"; day chips say "previsión fiable / media / solo tendencia" in text.
+- (phase 4) Honesty: no "Apreciada" badge in the recognizer, nor on a ficha opened from a result with an unresolved mortal; "Peligrosas sin descartar" comes before "Se parecen a tu foto"; similarity chip is a light outline.
+- (phase 4) Toast moved to the bottom, above the tab bar.

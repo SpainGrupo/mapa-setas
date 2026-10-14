@@ -219,7 +219,7 @@ function aplicarBase(avisarSiCae: boolean) {
   if (!mapa?.getLayer('pnoa')) return;
   const quiere = baseGuardada();
   const base: Base = quiere === 'satelite' && !navigator.onLine ? 'mapa' : quiere;
-  if (base !== quiere && avisarSiCae) avisar('La vista satélite necesita cobertura');
+  if (base !== quiere && avisarSiCae) avisar('La vista satélite necesita conexión');
   const somb = $<HTMLInputElement>('[data-capa=sombreado]');
   somb.disabled = base === 'satelite';
   somb.closest('label')?.classList.toggle('desactivada', somb.disabled);
@@ -380,10 +380,10 @@ async function calcularAcceso(lat: number, lon: number): Promise<CalculoAcceso> 
   let d;
   try { d = manifest ? await datosAcceso(manifest) : null; } catch (e) {
     console.warn('acceso', e);
-    return { estado: 'error', texto: 'No se pudieron leer los datos de acceso. Vuelve a descargar los mapas en Ajustes cuando tengas cobertura.' };
+    return { estado: 'error', texto: 'No se pudieron leer los datos de acceso. Vuelve a descargar los mapas en Ajustes cuando tengas conexión.' };
   }
   if (!d) return { estado: 'sin_datos', texto: navigator.onLine ? 'Esta versión de los mapas no trae datos de acceso.'
-    : 'Sin conexión y sin datos de acceso descargados. Descárgalos en Ajustes cuando tengas cobertura.' };
+    : 'Sin conexión y sin datos de acceso descargados. Descárgalos en Ajustes cuando tengas conexión.' };
   try {
     const c = await consultar(d.cab, d.lector, lat, lon);
     const t1 = performance.now();
@@ -416,7 +416,8 @@ async function pintarRestriccion(el: HTMLElement, lat: number, lon: number, vige
   const rs = manifest ? await restriccionEn(manifest, lat, lon) : null;
   if (!vigente() || !rs?.length) return rs;
   for (const r of rs) {
-    const b = document.createElement('b'); b.textContent = `⚠ ${textoChip(r)}`;
+    const b = document.createElement('b'); b.textContent = textoChip(r);
+    b.insertAdjacentHTML('afterbegin', '<svg class="ico" aria-hidden="true"><use href="#i-alerta"/></svg>');
     const t = document.createElement('span'); t.textContent = r.texto;
     el.append(b, t);
   }
@@ -743,7 +744,7 @@ async function pintarLista(l?: Sitio[]) {
   ul.replaceChildren();
   if (!lista.length) {
     const li = document.createElement('li'); li.className = 'vacio';
-    li.textContent = todos.length ? 'Ningún sitio con esa especie.' : 'Aún no hay sitios. Usa «Sitio aquí» o mantén pulsado el mapa.';
+    li.textContent = todos.length ? 'Ningún sitio con esa especie.' : 'Aún no hay sitios. En el mapa, pulsa «Guardar» para guardar donde estás, o abre el acceso de un punto y pulsa el marcador.';
     ul.append(li); return;
   }
   for (const s of lista) {
@@ -761,7 +762,7 @@ async function pintarLista(l?: Sitio[]) {
     ver.onclick = () => { irA('p-mapa'); mapa?.flyTo({ center: [s.lon, s.lat], zoom: 15 }); };
     const ed = document.createElement('button'); ed.className = 'btn'; ed.textContent = 'Editar';
     ed.onclick = () => abrirSitio(s);
-    const ir = document.createElement('button'); ir.className = 'btn'; ir.textContent = 'Cómo llegar';
+    const ir = document.createElement('button'); ir.className = 'btn btn-primario'; ir.textContent = 'Cómo llegar';
     ir.title = s.acceso ? 'En coche hasta el aparcamiento guardado (Google Maps)' : 'En coche hasta el sitio (Google Maps)';
     ir.onclick = () => abrirEnlace(urlGoogleCoche(s.acceso?.lat ?? s.lat, s.acceso?.lon ?? s.lon));
     acc.append(ver, ir, ed); li.append(acc);
@@ -896,7 +897,7 @@ function pintarHumedad(serie: DatosMeteo['puntos'][string] | undefined, p: Punto
   const n = (v: number, d = 0) => v.toLocaleString('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d }).replace('-', '−');
   $('#ind-balance b').textContent = Number.isFinite(h.balance_mm) ? `${h.balance_mm > 0 ? '+' : ''}${n(h.balance_mm)} mm` : 'sin dato';
   $('#ind-dias b').textContent = `${h.dias_lluvia} de 30`;
-  $('#ind-suelo b').textContent = Number.isFinite(h.suelo) ? n(h.suelo, 2) : 'sin dato';
+  $('#ind-suelo b').textContent = Number.isFinite(h.suelo) ? `${n(h.suelo, 2)} m³/m³` : 'sin dato';
   const reg = reglasDe(especie);
   const txt = reg ? textoBanda(bandaAltitud(serie, hoy, reg, p.alt_media), p.alt_media) : '';
   const banda = $('#zona-banda');
@@ -913,7 +914,7 @@ function pintarZona() {
   const graf = $('#zona-grafico');
   $('#zona-ir-mapa').hidden = !!puntoSel;
   if (!puntoSel) { $('#zona-punto').textContent = 'Toca el mapa para elegir una zona.'; graf.hidden = true; return; }
-  $('#zona-punto').textContent = `Zona del punto ${puntoSel.id} · ${puntoSel.lat.toFixed(3)}, ${puntoSel.lon.toFixed(3)} · bosque a ~${puntoSel.alt_media} m de altitud media`;
+  $('#zona-punto').textContent = `Zona elegida en el mapa (${puntoSel.lat.toFixed(3)}, ${puntoSel.lon.toFixed(3)}) · su bosque está a unos ${puntoSel.alt_media} m de altitud`;
   const elegida = especieSel();
   const orden = [...(manifest?.especies ?? [])].sort((a, b) => Number(b.id === elegida) - Number(a.id === elegida));
   for (const e of orden) {
@@ -1003,7 +1004,7 @@ function pintarEstadoGuia(e: EstadoFotos = fotosSinConexion()) {
   const el = $('#estado-guia');
   const completas = e.total > 0 && e.guardadas === e.total;
   el.textContent = !e.total ? (navigator.onLine ? 'Preparando la guía…' : 'Sin conexión: la guía no está guardada todavía.')
-    : completas ? `Guía lista sin cobertura: textos y ${e.total} fotos guardados.`
+    : completas ? `Guía lista sin conexión: textos y ${e.total} fotos guardados.`
     : e.trabajando ? `Guardando fotos de la guía… ${e.guardadas} de ${e.total}`
     : `Fotos de la guía guardadas: ${e.guardadas} de ${e.total}.${navigator.onLine ? '' : ' Faltan; conéctate para completarlas.'}`;
   $<HTMLButtonElement>('#btn-guia-fotos').hidden = completas || e.trabajando || !e.total;
@@ -1018,7 +1019,7 @@ async function pintarAjustes() {
   const est = estadoDescarga();
   const btn = $<HTMLButtonElement>('#btn-descargar');
   const total = manifest?.total_bytes ?? 0;
-  btn.textContent = `Descargar mapas para uso sin cobertura (${mb(total)})`;
+  btn.textContent = `Descargar mapas para usar sin conexión (${mb(total)})`;
   btn.disabled = !manifest || !navigator.onLine;
   if (est) {
     const desfasado = manifest && manifest.generado !== est.generado;
@@ -1026,7 +1027,7 @@ async function pintarAjustes() {
       + (desfasado ? ' · hay una versión más nueva' : '');
     btn.textContent = desfasado ? `Actualizar mapas (${mb(total)})` : `Volver a descargar (${mb(total)})`;
   } else {
-    $('#estado-descarga').textContent = 'No descargado: sin cobertura el mapa no se verá.';
+    $('#estado-descarga').textContent = 'No descargado: sin conexión el mapa no se verá.';
   }
   $('#btn-borrar-mapas').hidden = !est;
   const persist = await navigator.storage?.persisted?.().catch(() => false);
@@ -1064,12 +1065,22 @@ $('#btn-descargar').addEventListener('click', async () => {
   }
 });
 $('#btn-borrar-mapas').addEventListener('click', async () => {
-  if (!confirm('¿Borrar los mapas descargados? Sin cobertura no se verá el mapa.')) return;
+  if (!confirm('¿Borrar los mapas descargados? Sin conexión no se verá el mapa.')) return;
   await borrarMapas();
   recargarTrasCambioDeMapas('Mapas borrados');
 });
 window.addEventListener('online', () => { pintarAjustes(); guardarFotosSinConexion(pintarEstadoGuia); });
 window.addEventListener('offline', () => pintarAjustes());
+
+// Colores: como el teléfono, claros (sol) u oscuros (anochecer). El atributo se pone también en index.html antes de pintar.
+{
+  const sel = $<HTMLSelectElement>('#ajuste-tema');
+  try { sel.value = localStorage.getItem('setas:tema') ?? ''; } catch { /* sin almacenamiento */ }
+  sel.addEventListener('change', () => {
+    if (sel.value) document.documentElement.dataset.tema = sel.value; else delete document.documentElement.dataset.tema;
+    try { if (sel.value) localStorage.setItem('setas:tema', sel.value); else localStorage.removeItem('setas:tema'); } catch { /* solo esta sesión */ }
+  });
+}
 
 iniciarHoy({
   manifest: () => manifest,

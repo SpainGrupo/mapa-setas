@@ -207,7 +207,7 @@ try {
   const fiabLeyenda = await p.evaluate(() => ({ t: document.querySelector('#txt-fiabilidad').textContent,
     expl: document.querySelector('#txt-fiabilidad-expl').textContent,
     vis: document.querySelector('#txt-fiabilidad-expl').checkVisibility() }));
-  comprobar(fiabFila.t === 'Fiabilidad: baja' && /GBIF/.test(fiabFila.title) && fiabLeyenda.t === 'Fiabilidad: baja'
+  comprobar(fiabFila.t === 'Mapa comprobado: acierta poco' && /GBIF/.test(fiabFila.title) && fiabLeyenda.t === 'Mapa comprobado: acierta poco'
     && fiabLeyenda.vis && /no se usaron para ajustarlo/.test(fiabLeyenda.expl),
     `fiabilidad de P. eryngii «baja» en la hoja de especies y en la leyenda, con la explicación al desplegar`);
   await p.locator('details.fiabilidad summary').click();
@@ -356,7 +356,7 @@ try {
   await p.getByRole('button', { name: /Ajustes/ }).click();
   const btn = p.locator('#btn-descargar');
   const texto = await btn.textContent();
-  comprobar(/Descargar mapas para uso sin cobertura \(\d+ MB\)/.test(texto), `botón de descarga: «${texto}»`);
+  comprobar(/Descargar mapas para usar sin conexión \(\d+ MB\)/.test(texto), `botón de descarga: «${texto}»`);
   const recarga = p.waitForEvent('load', { timeout: 600000 });
   await btn.click();
   await recarga;
@@ -549,7 +549,7 @@ try {
   await p.getByRole('button', { name: /Ajustes/ }).click();
   const btnModelo = p.locator('#btn-modelo');
   const txtModelo = await btnModelo.textContent();
-  comprobar(/^Descargar reconocedor sin cobertura \(≈\d+ MB\)$/.test(txtModelo), `botón del reconocedor: «${txtModelo}»`);
+  comprobar(/^Descargar reconocedor para usar sin conexión \(≈\d+ MB\)$/.test(txtModelo), `botón del reconocedor: «${txtModelo}»`);
   comprobar(/Pendiente de configurar/.test(await p.locator('#estado-gemini').textContent()), 'Ajustes: segunda opinión «Pendiente de configurar» sin VITE_WORKER_URL');
   const mapasAntes = await p.evaluate(() => JSON.parse(localStorage.getItem('setas:mapas-descargados')).archivos);
   comprobar(!Object.keys(mapasAntes).some((n) => /onnx|wasm|texto_f16/.test(n)), 'la descarga de mapas no incluye el reconocedor');
@@ -578,7 +578,7 @@ try {
   const grupos = await p.$$eval('.grupo-guia h2', (hs) => hs.map((h) => h.textContent));
   comprobar(await p.locator('.tarjeta-guia').count() === N_FICHAS && grupos.length === 4, `Guía: ${N_FICHAS} especies en 4 grupos (${grupos.join(', ')})`);
   const textosInsignias = await p.$$eval('.insignia', (xs) => [...new Set(xs.map((x) => x.textContent))]);
-  comprobar(!textosInsignias.some((t) => /comestible/i.test(t)) && textosInsignias.includes('☠ MORTAL'),
+  comprobar(!textosInsignias.some((t) => /comestible/i.test(t)) && textosInsignias.includes('MORTAL'),
     `ninguna insignia dice «comestible» (${textosInsignias.join(', ')})`);
   await captura('guia-lista.png');
   await p.locator('#guia-buscar').fill('cesar');
@@ -768,12 +768,12 @@ try {
   const teselasAntes = teselasPnoa;
   await p.locator('#btn-capas').click();
   await p.locator('.base-mapa span', { hasText: 'Satélite' }).click();
-  await p.waitForFunction(() => /La vista satélite necesita cobertura/.test(document.querySelector('#aviso').textContent)
+  await p.waitForFunction(() => /La vista satélite necesita conexión/.test(document.querySelector('#aviso').textContent)
     && !document.querySelector('#aviso').hidden);
   const off = await p.evaluate(() => ({ base: document.body.dataset.base, pnoa: window.__setas.mapa.getLayoutProperty('pnoa', 'visibility'),
     mapa: document.querySelector('input[name=base][value=mapa]').checked }));
   comprobar(off.base === 'mapa' && off.pnoa === 'none' && off.mapa && teselasPnoa === teselasAntes,
-    'sin conexión, «Satélite» avisa «La vista satélite necesita cobertura» y se queda en el mapa');
+    'sin conexión, «Satélite» avisa «La vista satélite necesita conexión» y se queda en el mapa');
   await captura('satelite-offline-aviso.png');
   await p.locator('.base-mapa span', { hasText: 'Mapa' }).click();
   await p.locator('#btn-capas').click();
@@ -926,7 +926,7 @@ try {
   const chip = p.locator('#ta-restriccion');
   await chip.waitFor({ timeout: 5000 });
   const rOff = await p.evaluate(() => ({ r: window.__setas.acceso().restricciones, o: window.__setas.origenes()['restricciones.pmtiles'] }));
-  comprobar((await chip.textContent()).includes(`⚠ ${RESTRINGIDO.chip}`) && rOff.r.some((r) => r.tipo === RESTRINGIDO.tipo) && rOff.o.origen === 'opfs' && rOff.o.http === 0,
+  comprobar((await chip.textContent()).includes(RESTRINGIDO.chip) && rOff.r.some((r) => r.tipo === RESTRINGIDO.tipo) && rOff.o.origen === 'opfs' && rOff.o.http === 0,
     `sin conexión, pulsación larga en un recinto (capa oculta): aviso «${await chip.textContent()}» leído de OPFS`);
   await p.locator('#btn-capas').click();
   await p.locator('[data-capa=restricciones]').check();
@@ -936,7 +936,7 @@ try {
   await p.locator('#ta-guardar').click();
   await p.locator('#dlg-sitio[open]').waitFor();
   await p.locator('#sitio-restriccion:not([hidden])').waitFor({ timeout: 5000 });
-  comprobar((await p.locator('#sitio-restriccion').textContent()).includes(`⚠ ${RESTRINGIDO.chip}`), 'el formulario del sitio repite el aviso de restricción');
+  comprobar((await p.locator('#sitio-restriccion').textContent()).includes(RESTRINGIDO.chip), 'el formulario del sitio repite el aviso de restricción');
   await captura('restricciones-sitio.png');
   await p.locator('#btn-sitio-cancelar').click();
   await p.locator('#ta-cerrar').click();
@@ -963,7 +963,7 @@ try {
   informe.ajustes_total = totalAjustes;
   await p.locator('#normativa').scrollIntoViewIfNeeded();
   await captura('ajustes-normativa.png');
-  comprobar(new RegExp(`Guía lista sin cobertura: textos y ${N_FOTOS} fotos`).test(await p.locator('#estado-guia').textContent()), `Ajustes: «${await p.locator('#estado-guia').textContent()}»`);
+  comprobar(new RegExp(`Guía lista sin conexión: textos y ${N_FOTOS} fotos`).test(await p.locator('#estado-guia').textContent()), `Ajustes: «${await p.locator('#estado-guia').textContent()}»`);
   await p.locator('#creditos-fotos summary').click();
   await p.locator('#lista-creditos .credito-especie').first().waitFor();
   comprobar(await p.locator('#lista-creditos li').count() === N_CREDITOS, `Créditos de fotos: ${N_CREDITOS} entradas con autor y licencia`);

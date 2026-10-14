@@ -27,7 +27,7 @@ const cr = (a, b) => { const x = L(a), y = L(b); return (Math.max(x, y) + 0.05) 
 
 const nav = await chromium.launch();
 const ctx = await nav.newContext({ viewport: { width: 430, height: 932 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true,
-  geolocation: PUNTO, permissions: ['geolocation'], locale: 'es-ES', timezoneId: 'Europe/Madrid' });
+  geolocation: PUNTO, permissions: ['geolocation'], locale: 'es-ES', timezoneId: 'Europe/Madrid', colorScheme: process.env.TEMA === 'oscuro' ? 'dark' : 'light' });
 let puntosMeteo = null;
 await ctx.route('**/api.open-meteo.com/**', async (r) => {
   puntosMeteo ??= await (await fetch(new URL('data/meteo_puntos.json', URL_APP))).json();
@@ -78,7 +78,7 @@ async function medir(nombre) {
   const bs = await cajas();
   await p.addStyleTag({ content: '.vidrio, .vidrio * { color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; } .vidrio input::after { opacity: 1; }', });
   await p.waitForTimeout(150);
-  const png = await p.screenshot({ path: join(DIR, `contraste-${nombre}.png`) });
+  const png = await p.screenshot({ path: join(DIR, `contraste-${process.env.TEMA === 'oscuro' ? 'oscuro-' : ''}${nombre}.png`) });
   await p.evaluate(() => document.querySelectorAll('style').forEach((s) => { if (s.textContent.includes('-webkit-text-fill-color: transparent')) s.remove(); }));
   return { nombre, bs, png };
 }
@@ -149,6 +149,6 @@ for (const base of ['mapa', 'satelite']) {
   informe.push(await analizar(await medir(`${base}-zona`)));
   await p.locator('#tz-cerrar').click();
 }
-writeFileSync(join(DIR, 'contraste-vidrio.json'), JSON.stringify(informe.map(({ filas, ...r }) => ({ ...r, filas: filas.map(({ x, y, w, h, ...f }) => f) })), null, 1));
+writeFileSync(join(DIR, process.env.TEMA === 'oscuro' ? 'contraste-vidrio-oscuro.json' : 'contraste-vidrio.json'), JSON.stringify(informe.map(({ filas, ...r }) => ({ ...r, filas: filas.map(({ x, y, w, h, ...f }) => f) })), null, 1));
 for (const r of informe) console.log(`${r.nombre.padEnd(18)} ${String(r.n).padStart(3)} líneas · mínimo ${r.minimo?.contraste}:1 («${r.minimo?.texto}» en ${r.minimo?.raiz})${r.fallan.length ? ' · FALLAN: ' + r.fallan.join('; ') : ' · todo AA'}`);
 await nav.close();

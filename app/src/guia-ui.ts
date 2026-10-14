@@ -23,6 +23,8 @@ let carga: Promise<boolean> | null = null;
 let grupoSel: Grupo | '' = '';
 /** Mortales sin descartar del resultado del reconocedor desde el que se abrió la ficha (null: no viene de ahí). */
 let avisoReconocer: (() => string[]) | null = null;
+/** La ficha se abrió desde un resultado del reconocedor: «atrás» vuelve al resultado. */
+let desdeReconocer = false;
 
 async function json<T>(ruta: string): Promise<T | null> {
   try {
@@ -131,8 +133,8 @@ function verLista() {
  * para el aviso de la ficha; «guia» (enlaces dentro de la guía) lo conserva; cualquier otro origen lo borra.
  */
 export async function abrirFicha(id: string, desde: 'reconocer' | 'guia' | 'lista' | 'otro' = 'otro', mortales?: () => string[]) {
-  if (desde === 'reconocer') avisoReconocer = mortales ?? null;
-  else if (desde !== 'guia') avisoReconocer = null;
+  if (desde === 'reconocer') { avisoReconocer = mortales ?? null; desdeReconocer = true; }
+  else if (desde !== 'guia') { avisoReconocer = null; desdeReconocer = false; }
   if (!await cargarGuia() || !porId.has(id)) return;
   history.pushState({ guia: id }, '');
   pintarFicha(id);
@@ -147,7 +149,9 @@ window.addEventListener('popstate', (e) => {
 function caja(clase: string, titulo: string, texto: string, rol = 'note'): HTMLDivElement {
   const d = el('div', clase);
   d.setAttribute('role', rol);
-  d.append(el('b', '', titulo), el('p', '', texto));
+  const b = el('b', '', titulo);
+  if (/peligro/.test(clase)) b.insertAdjacentHTML('afterbegin', '<svg class="ico" aria-hidden="true"><use href="#i-alerta"/></svg>');
+  d.append(b, el('p', '', texto));
   return d;
 }
 
@@ -173,14 +177,15 @@ function carrusel(f: Ficha): HTMLElement {
   return fig;
 }
 
-function comparativa(f: Ficha, c: { id: string; diferencias: string[] }): HTMLElement {
+function comparativa(f: Ficha, c: { id: string; diferencias: string[] }, sinApreciada = false): HTMLElement {
   const otra = porId.get(c.id)!;
   const card = el('article', `comparar g-${otra.grupo}`);
   card.dataset.id = otra.id;
   const lado = (x: Ficha, etiqueta: string) => {
     const fig = el('figure');
     const cap = el('figcaption');
-    cap.append(el('small', '', etiqueta), el('b', '', nombreComun(x)), el('i', '', binomio(x)), insignia(x.grupo));
+    cap.append(el('small', '', etiqueta), el('b', '', nombreComun(x)), el('i', '', binomio(x)));
+    if (!(sinApreciada && COMESTIBLES.has(x.grupo))) cap.append(insignia(x.grupo));
     fig.append(imagen(x.fotos[0], binomio(x)), cap);
     return fig;
   };
@@ -210,12 +215,16 @@ function pintarFicha(id: string) {
   const fija = el('div', 'ficha-fija');
   const barra = el('div', 'ficha-barra');
   const volver = el('button', 'btn-volver');
-  volver.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-atras"/></svg>Guía';
-  volver.addEventListener('click', () => (history.state?.guia ? history.back() : verLista()));
+  volver.innerHTML = `<svg class="ico" aria-hidden="true"><use href="#i-atras"/></svg>${desdeReconocer ? 'Tu resultado' : 'Guía'}`;
+  volver.addEventListener('click', () => {
+    if (desdeReconocer) { document.querySelector<HTMLButtonElement>('.pestanas button[data-p=p-reconocer]')?.click(); return; }
+    if (history.state?.guia) history.back(); else verLista();
+  });
   barra.append(volver, el('span', 'ficha-barra-tit', binomio(f)));
   fija.append(barra);
   // Spec §2: desde un resultado con mortales sin descartar, nunca «Considerada comestible…»: aviso rojo que las nombra.
   const aviso = bannerFicha(f, avisoReconocer?.() ?? [], AVISO_EXPERTO);
+  const peligroAbierto = aviso.clase === 'banner-peligro';
   const b = el('div', aviso.clase);
   b.setAttribute('role', aviso.rol);
   if (aviso.titulo) b.append(el('b', '', aviso.titulo), el('span', '', aviso.texto));
@@ -224,15 +233,16 @@ function pintarFicha(id: string) {
   v.append(fija);
 
   const cuerpo = el('div', 'cuerpo ficha-cuerpo');
-  if (f.grupo === 'mortal') cuerpo.append(caja('caja-peligro mortal', '☠ MORTAL', f.toxicidad_nota, 'alert'));
-  else if (f.grupo === 'toxica') cuerpo.append(caja('caja-peligro toxica', '⚠ Tóxica', f.toxicidad_nota, 'alert'));
+  if (f.grupo === 'mortal') cuerpo.append(caja('caja-peligro mortal', 'MORTAL', f.toxicidad_nota, 'alert'));
+  else if (f.grupo === 'toxica') cuerpo.append(caja('caja-peligro toxica', 'TÓXICA', f.toxicidad_nota, 'alert'));
 
   const cab = el('header', 'ficha-cab');
   const h = el('h1', '', nombreComun(f));
-  cab.append(h, el('p', 'cientifico', f.nombre_cientifico), insignia(f.grupo));
+  cab.append(h, el('p', 'cientifico', f.nombre_cientifico));
+  if (!peligroAbierto) cab.append(insignia(f.grupo));   // sin «Apreciada» mientras una mortal siga sin descartar
   if (f.nombres_comunes.length > 1) cab.append(el('p', 'otros-nombres', `También: ${f.nombres_comunes.slice(1).join(', ')}`));
   cuerpo.append(cab, carrusel(f));
-  if (COMESTIBLES.has(f.grupo)) cuerpo.append(caja('caja-nota', 'Precaución', f.toxicidad_nota));
+  if (COMESTIBLES.has(f.grupo) && !peligroAbierto) cuerpo.append(caja('caja-nota', 'Precaución', f.toxicidad_nota));
 
   const rasgos = el('section', 'rasgos');
   rasgos.append(el('h2', '', 'Rasgos clave: compruébalos todos'));
@@ -245,7 +255,7 @@ function pintarFicha(id: string) {
   if (f.no_confundir_con.length) {
     const sec = el('section', 'no-confundir');
     sec.append(el('h2', '', 'No confundir con…'));
-    for (const c of f.no_confundir_con) if (porId.has(c.id)) sec.append(comparativa(f, c));
+    for (const c of f.no_confundir_con) if (porId.has(c.id)) sec.append(comparativa(f, c, peligroAbierto));
     cuerpo.append(sec);
   }
 

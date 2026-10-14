@@ -4,10 +4,10 @@ import { EXPLICACION_FIABILIDAD, insigniaFiabilidad, nivelFiabilidad, textoFiabi
 
 describe('fiabilidad por especie', () => {
   it('texto de cada nivel', () => {
-    expect(textoFiabilidad('buena')).toBe('Fiabilidad: buena');
-    expect(textoFiabilidad('media')).toBe('Fiabilidad: media');
-    expect(textoFiabilidad('baja')).toBe('Fiabilidad: baja');
-    expect(textoFiabilidad('sin_validar')).toBe('Fiabilidad: sin validar');
+    expect(textoFiabilidad('buena')).toBe('Mapa comprobado: acierta bien');
+    expect(textoFiabilidad('media')).toBe('Mapa comprobado: acierta a medias');
+    expect(textoFiabilidad('baja')).toBe('Mapa comprobado: acierta poco');
+    expect(textoFiabilidad('sin_validar')).toBe('Mapa sin comprobar');
   });
   it('lo ausente o desconocido es «sin validar»', () => {
     expect(nivelFiabilidad(undefined)).toBe('sin_validar');
@@ -16,7 +16,7 @@ describe('fiabilidad por especie', () => {
   });
   it('la insignia lleva el nivel y la explicación como tooltip', () => {
     const s = insigniaFiabilidad('baja');
-    expect(s.textContent).toBe('Fiabilidad: baja');
+    expect(s.textContent).toBe('Mapa comprobado: acierta poco');
     expect(s.dataset.fiabilidad).toBe('baja');
     expect(s.title).toBe(EXPLICACION_FIABILIDAD);
     expect(EXPLICACION_FIABILIDAD).not.toMatch(/[—–]/);

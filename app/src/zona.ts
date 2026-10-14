@@ -4,7 +4,6 @@ import type { Estado } from './semaforo';
 
 // Paleta de estado (fija; siempre acompañada de icono y texto, nunca solo color).
 export const COLOR_ESTADO: Record<Estado, string> = { verde: '#0ca30c', amarillo: '#fab219', rojo: '#d03b3b', gris: '#8a8a86' };
-export const ICONO_ESTADO: Record<Estado, string> = { verde: '🟢', amarillo: '🟡', rojo: '🔴', gris: '⚪' };
 export const NOMBRE_ESTADO: Record<Estado, string> = { verde: 'Buen momento', amarillo: 'Esperar', rojo: 'Mal momento', gris: 'Sin datos fiables' };
 
 /** Punto más cercano (equirectangular; de sobra para distancias de decenas de km). */

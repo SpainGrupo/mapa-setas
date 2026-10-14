@@ -117,7 +117,7 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIEleme
   cab.append(num, minis, tit, cif);
   const meta = document.createElement('p'); meta.className = 'tf-meta';
   const dif = document.createElement('span'); dif.className = `insignia-dif dif-${principal.dificultad}`; dif.textContent = NOMBRE_DIFICULTAD[principal.dificultad];
-  const pts = document.createElement('span'); pts.className = 'tf-puntos'; pts.textContent = `Monte ${principal.puntuacion} de 100`;
+  const pts = document.createElement('span'); pts.className = 'tf-puntos'; pts.textContent = `Calidad del monte: ${principal.puntuacion} de 100`;
   pts.title = 'Puntuación del sitio para ese día: calidad del monte, semáforo y fiabilidad del mapa';
   meta.append(dif, pts, textoLejania(s));
   li.append(cab, meta);
@@ -152,6 +152,7 @@ function pintarDias(hoy: string, fecha: string) {
     const b = boton(etiquetaDia(hoy, f), () => elegirDia(f), 'chip');
     b.dataset.fecha = f;
     b.dataset.confianza = confianza(hoy, f);
+    b.dataset.nivel = { alta: 'previsión fiable', media: 'previsión media', baja: 'solo tendencia' }[confianza(hoy, f)];
     b.title = `Previsión ${confianza(hoy, f)}`;
     b.setAttribute('aria-pressed', String(f === fecha));
     b.classList.toggle('activa', f === fecha);

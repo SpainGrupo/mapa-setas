@@ -30,7 +30,7 @@ const MARCO = `
 
 const nav = await chromium.launch();
 const ctx = await nav.newContext({ viewport: { width: 430, height: 932 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true,
-  geolocation: PUNTO, permissions: ['geolocation'], locale: 'es-ES', timezoneId: 'Europe/Madrid',
+  geolocation: PUNTO, permissions: ['geolocation'], locale: 'es-ES', timezoneId: 'Europe/Madrid', colorScheme: process.env.TEMA === 'oscuro' ? 'dark' : 'light',
   userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1' });
 // Open-Meteo con el fixture del e2e (los mismos días y estados que la prueba): las capturas no dependen del tiempo real.
 let puntosMeteo = null;

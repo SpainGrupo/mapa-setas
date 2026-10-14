@@ -26,7 +26,7 @@ export const ORDEN_GRUPOS: Grupo[] = ['apreciada', 'comestible_menor', 'mortal',
 
 /** Nunca «Comestible» a secas: la etiqueta de un grupo comestible no debe sonar a permiso para comer. */
 export const ETIQUETA_GRUPO: Record<Grupo, string> = {
-  apreciada: 'Apreciada', comestible_menor: 'Poco valor', toxica: 'Tóxica', mortal: '☠ MORTAL',
+  apreciada: 'Apreciada', comestible_menor: 'Poco valor', toxica: 'Tóxica', mortal: 'MORTAL',
 };
 export const TITULO_GRUPO: Record<Grupo, string> = {
   apreciada: 'Muy apreciadas', comestible_menor: 'De poco valor', toxica: 'Tóxicas', mortal: 'Mortales',

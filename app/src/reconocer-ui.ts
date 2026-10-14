@@ -110,8 +110,8 @@ function pintarEstado() {
   const est = estadoModelo();
   const listoModelo = !!(m && est);
   $('#rec-estado').textContent = !m ? 'El reconocedor no está en esta versión de los datos.'
-    : listoModelo ? 'Reconocedor listo, funciona sin cobertura.'
-    : `Para reconocer sin cobertura, descarga antes el reconocedor en Ajustes (≈${mb(m.total_bytes)}).`;
+    : listoModelo ? 'Reconocedor listo, funciona sin conexión.'
+    : `Para reconocer sin conexión, descarga antes el reconocedor en Ajustes (≈${mb(m.total_bytes)}).`;
   $('#rec-ir-ajustes').hidden = listoModelo || !m;
   $<HTMLButtonElement>('#rec-analizar').disabled = !listoModelo || !fotos.length;
 }
@@ -188,7 +188,8 @@ function pintarCandidatos(r: ResultadoModelo) {
     const f = fichaDe(c.idGuia);
     if (f) {
       const fila = el('span', 'rec-acciones');
-      fila.append(insignia(f.grupo));
+      // Spec §2: nada de «Apreciada» junto a un candidato; solo se marca el peligro (tóxica o mortal).
+      if (f.grupo === 'mortal' || f.grupo === 'toxica') fila.append(insignia(f.grupo));
       if (c.afin) fila.append(el('span', 'nota', `parecida a ${binomio(f)}`));
       fila.append(botonFicha(f.id, c.afin ? `Ficha de ${binomio(f)}` : 'Ver ficha'));
       li.append(fila);
@@ -261,7 +262,9 @@ function pintarSeguridad() {
   for (const a of ev.alertas) {
     const d = el('div', `alerta-roja n-${a.nivel}`);
     d.setAttribute('role', 'alert');
-    d.append(el('b', '', a.nivel === 'mortal' ? '☠ PELIGRO MORTAL' : '⚠ PELIGRO: TÓXICA'), el('p', '', a.texto));
+    const t = el('b', '', a.nivel === 'mortal' ? 'PELIGRO MORTAL' : 'PELIGRO: TÓXICA');
+    t.insertAdjacentHTML('afterbegin', '<svg class="ico" aria-hidden="true"><use href="#i-alerta"/></svg>');
+    d.append(t, el('p', '', a.texto));
     al.append(d);
   }
 
@@ -483,7 +486,7 @@ function pintarGemini() {
   b.disabled = !navigator.onLine;
   $('#rec-gemini-nota').textContent = !URL_WORKER ? ''
     : navigator.onLine ? 'Envía las fotos, tus respuestas y la fecha y posición a un servicio externo (Google Gemini).'
-    : 'Sin conexión: la segunda opinión necesita cobertura.';
+    : 'Sin conexión: la segunda opinión necesita internet.';
 }
 
 async function aJpeg(b: Blob): Promise<Blob> {
@@ -583,7 +586,7 @@ export function pintarAjustesModelo() {
   const m = op.manifest()?.modelo;
   const est = estadoModelo();
   const btn = $<HTMLButtonElement>('#btn-modelo');
-  $('#estado-gemini').textContent = URL_WORKER ? 'Configurada: necesita cobertura.' : 'Pendiente de configurar (falta la dirección del servicio).';
+  $('#estado-gemini').textContent = URL_WORKER ? 'Configurada: necesita conexión.' : 'Pendiente de configurar (falta la dirección del servicio).';
   if (!m) {
     $('#estado-modelo').textContent = 'No disponible en esta versión de los datos.';
     btn.hidden = true; $('#btn-borrar-modelo').hidden = true; return;
@@ -591,11 +594,11 @@ export function pintarAjustesModelo() {
   btn.hidden = false;
   btn.disabled = !navigator.onLine;
   const desfasado = !!est && est.generado !== m.version;
-  btn.textContent = !est ? `Descargar reconocedor sin cobertura (≈${mb(m.total_bytes)})`
+  btn.textContent = !est ? `Descargar reconocedor para usar sin conexión (≈${mb(m.total_bytes)})`
     : desfasado ? `Actualizar reconocedor (≈${mb(m.total_bytes)})` : `Volver a descargar el reconocedor (≈${mb(m.total_bytes)})`;
   $('#estado-modelo').textContent = est
     ? `Descargado el ${new Date(est.fecha).toLocaleString('es-ES')} · ${mb(est.bytes)}${desfasado ? ' · hay una versión más nueva' : ''}`
-    : 'No descargado: opcional. Sin él no se puede reconocer sin cobertura.';
+    : 'No descargado: opcional. Sin él no se puede reconocer sin conexión.';
   $('#btn-borrar-modelo').hidden = !est;
 }
 
@@ -611,7 +614,7 @@ async function descargar() {
       $('#estado-modelo').textContent = `Descargando el reconocedor… ${mb(h)} de ${mb(t)}`;
     });
     reiniciarReconocedor();
-    op.avisar('Reconocedor descargado: ya funciona sin cobertura');
+    op.avisar('Reconocedor descargado: ya funciona sin conexión');
   } catch (e) {
     op.avisar(`Error al descargar el reconocedor: ${(e as Error).message}${estadoModelo() ? '. El anterior sigue disponible.' : ''}`, 6000);
   } finally {
@@ -640,7 +643,7 @@ export function iniciarReconocer(o: OpcionesReconocer) {
   $('#rec-guardar').addEventListener('click', guardar);
   $('#btn-modelo').addEventListener('click', descargar);
   $('#btn-borrar-modelo').addEventListener('click', async () => {
-    if (!confirm('¿Borrar el reconocedor descargado? Sin él no se puede reconocer sin cobertura.')) return;
+    if (!confirm('¿Borrar el reconocedor descargado? Sin él no se puede reconocer sin conexión.')) return;
     reiniciarReconocedor();
     await borrarModelo();
     pintarAjustesModelo(); pintarEstado();

@@ -25,8 +25,8 @@ REQUIRE_KV = "true"
 
 # Contador del límite diario. Crear con `npx wrangler kv namespace create RATE_LIMIT`
 # y pegar aquí el id que devuelve. Con REQUIRE_KV="true", sin este binding el Worker responde 503.
-# [[kv_namespaces]]
-# binding = "RATE_LIMIT"
-# id = "PEGAR_AQUI_EL_ID"
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "0277e4003a8a4dbdb1c7726ef9c3dd3b"
 
 # GEMINI_API_KEY es un secreto: `npx wrangler secret put GEMINI_API_KEY` (nunca en este archivo).

@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import {
   aparcamiento, aUtm30, celdaDe, centroCelda, consultar, deUtm30, esIOS, lectorBlob, nombreVia, parsearCabecera,
   simplificar, textoSubida, textoTiempo, trazar, urlAppleMaps, urlGeo, urlGoogleCoche, urlOtraApp, type Lector,
-  descomprimir, nombreBinario,
+  descomprimir, nombreBinario, altitudes, celdaDeIndice,
 } from './acceso';
 import { gzipSync } from 'node:zlib';
 
@@ -14,12 +14,14 @@ import { gzipSync } from 'node:zlib';
 const SIN32 = 0xffffffff, SIN16 = 0xffff, SIN8 = 255;
 const al4 = (n: number) => Math.ceil(n / 4) * 4;
 /** Rejilla de ancho×alto con origen en (x0, y1) y celdas de 100 m; valores por celda (null = sin dato). */
-function rejilla(ancho: number, alto: number, celdas: Record<string, [number, number, number, number]>, x0 = 300000, y1 = 4100000) {
+function rejilla(ancho: number, alto: number, celdas: Record<string, [number, number, number, number]>, x0 = 300000, y1 = 4100000,
+  alt?: (fila: number, col: number) => number | null) {
   const n = ancho * alto;
-  const off = { origen_id: 0, tiempo_pie_min: al4(4 * n), subida_m: 0, direccion: 0 };
+  const off = { origen_id: 0, tiempo_pie_min: al4(4 * n), subida_m: 0, direccion: 0, altitud: 0 };
   off.subida_m = off.tiempo_pie_min + al4(2 * n);
   off.direccion = off.subida_m + al4(2 * n);
-  const total = off.direccion + al4(n);
+  off.altitud = off.direccion + al4(n);
+  const total = alt ? off.altitud + al4(2 * n) : off.altitud;
   const buf = new ArrayBuffer(total), v = new DataView(buf);
   for (let i = 0; i < n; i++) {
     v.setUint32(off.origen_id + 4 * i, SIN32, true); v.setUint16(off.tiempo_pie_min + 2 * i, SIN16, true);
@@ -30,8 +32,9 @@ function rejilla(ancho: number, alto: number, celdas: Record<string, [number, nu
     v.setUint32(off.origen_id + 4 * i, o, true); v.setUint16(off.tiempo_pie_min + 2 * i, t, true);
     v.setUint16(off.subida_m + 2 * i, s, true); v.setUint8(off.direccion + i, d);
   }
-  const j = {
-    version: 1, crs: 'EPSG:25830', res_m: 100, origen_xy: [x0, y1], ancho, alto, endianness: 'little', bytes: total,
+  if (alt) for (let i = 0; i < n; i++) v.setUint16(off.altitud + 2 * i, alt(Math.floor(i / ancho), i % ancho) ?? SIN16, true);
+  const j: any = {
+    version: alt ? 2 : 1, crs: 'EPSG:25830', res_m: 100, origen_xy: [x0, y1], ancho, alto, endianness: 'little', bytes: total,
     capas: {
       origen_id: { dtype: 'uint32', offset: off.origen_id, bytes: 4 * n, nodata: SIN32 },
       tiempo_pie_min: { dtype: 'uint16', offset: off.tiempo_pie_min, bytes: 2 * n, nodata: SIN16 },
@@ -39,6 +42,7 @@ function rejilla(ancho: number, alto: number, celdas: Record<string, [number, nu
       direccion: { dtype: 'uint8', offset: off.direccion, bytes: n, nodata: SIN8 },
     },
   };
+  if (alt) j.capas.altitud = { dtype: 'uint16', offset: off.altitud, bytes: 2 * n, nodata: SIN16 };
   return { j, cab: parsearCabecera(j), blob: new Blob([buf]) };
 }
 /** Centro (lat, lon) de una celda de la rejilla. */
@@ -69,7 +73,8 @@ describe('cabecera', () => {
   });
   it.each([
     ['no es objeto', () => null],
-    ['versión', (j: any) => ({ ...j, version: 2 })],
+    ['versión', (j: any) => ({ ...j, version: 3 })],
+    ['v2 sin altitud', (j: any) => ({ ...j, version: 2 })],
     ['CRS', (j: any) => ({ ...j, crs: 'EPSG:4326' })],
     ['endianness', (j: any) => ({ ...j, endianness: 'big' })],
     ['dimensiones', (j: any) => ({ ...j, ancho: 0 })],
@@ -82,6 +87,22 @@ describe('cabecera', () => {
     ['fuera del archivo', (j: any) => ({ ...j, bytes: 10 })],
   ])('rechaza: %s', (_, mutar) => {
     const { j } = rejilla(5, 4, CAMINO);
+    expect(() => parsearCabecera(mutar(j))).toThrow(/acceso\.json/);
+  });
+  it('acepta la versión 2 con la capa altitud', () => {
+    const { cab } = rejilla(5, 4, CAMINO, 300000, 4100000, (f, c) => 100 + f * 10 + c);
+    expect(cab.version).toBe(2);
+    expect(cab.altitud?.offset).toBe(cab.capas.direccion.offset + 20);
+    expect(cab.altitud?.nodata).toBe(SIN16);
+  });
+  it('la versión 1 no trae altitud', () => {
+    expect(rejilla(5, 4, CAMINO).cab.altitud).toBeUndefined();
+  });
+  it.each([
+    ['dtype de altitud', (j: any) => ({ ...j, capas: { ...j.capas, altitud: { ...j.capas.altitud, dtype: 'int16' } } })],
+    ['bytes de altitud', (j: any) => ({ ...j, capas: { ...j.capas, altitud: { ...j.capas.altitud, bytes: 4 } } })],
+  ])('v2 rechaza: %s', (_, mutar) => {
+    const { j } = rejilla(5, 4, CAMINO, 300000, 4100000, () => 1);
     expect(() => parsearCabecera(mutar(j))).toThrow(/acceso\.json/);
   });
   it('la cabecera real del pipeline (si existe) se lee', () => {
@@ -205,6 +226,10 @@ describe('datos reales del pipeline (si existen): mismo resultado que acceso.py 
     expect(r.bytes).toBeLessThan(200_000);
     const ap = aparcamiento(JSON.parse(readFileSync(dir + 'aparcamientos.json', 'utf8')), c.origen);
     expect(ap).toMatchObject({ lat: 36.59074, lon: -5.24772, tipo: 'service' });
+    if (cab.version === 2) {
+      const a = await altitudes(cab, l, t.celdas);
+      expect(a.every((v) => v > 0 && v < 3500)).toBe(true);   // Serranía de Ronda / Sierra de las Nieves
+    }
   });
 });
 
@@ -249,5 +274,23 @@ describe('enlaces', () => {
     expect(nombreBinario({ acceso: { cabecera: 'a', datos: 'acceso.bin.gz', aparcamientos: 'b' }, archivos: [] })).toBe('acceso.bin.gz');
     expect(nombreBinario({ archivos: [{ nombre: 'acceso.bin.gz', bytes: 1 }] })).toBe('acceso.bin.gz');
     expect(nombreBinario({ archivos: [] })).toBe('acceso.bin');
+  });
+});
+
+describe('altitudes', () => {
+  it('lee la altitud de cada celda (NaN fuera, sin dato o con v1)', async () => {
+    const { cab, blob } = rejilla(5, 40, CAMINO, 300000, 4100000, (f, c) => (f === 2 && c === 2 ? null : 100 + f * 10 + c));
+    const { r, l } = contado(lectorBlob(blob));
+    const a = await altitudes(cab, l, [{ fila: 0, col: 0 }, { fila: 3, col: 4 }, { fila: 2, col: 2 }, { fila: 39, col: 1 }, { fila: 40, col: 0 }]);
+    expect(a.slice(0, 2)).toEqual([100, 134]);
+    expect(a[2]).toBeNaN();
+    expect(a[3]).toBe(491);
+    expect(a[4]).toBeNaN();
+    expect(r.lecturas).toBe(2);   // dos bloques de 32 filas
+    const v1 = rejilla(5, 4, CAMINO);
+    expect((await altitudes(v1.cab, lectorBlob(v1.blob), [{ fila: 0, col: 0 }]))[0]).toBeNaN();
+  });
+  it('índice plano → celda', () => {
+    expect(celdaDeIndice({ ancho: 2451 }, 2451 * 7 + 12)).toEqual({ fila: 7, col: 12 });
   });
 });

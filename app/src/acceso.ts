@@ -5,6 +5,8 @@
 // aparcamiento, 1..8 = N, NE, E, SE, S, SW, W, NW hacia el paso anterior camino del coche; 255 = sin dato).
 // La app no carga el archivo entero: lee los pocos bytes de una celda y, para el trazado, bloques de filas de
 // la capa direccion (Blob.slice sobre el archivo de OPFS o peticiones Range por HTTP).
+// Versión 2 (2026-10-14) añade al final la capa altitud (u16, m; nodata 0xFFFF) para el perfil de la ruta a pie.
+// La app lee las dos versiones; con la 1 no hay perfil.
 import type { Manifest } from './tipos';
 
 export type Capa = 'origen_id' | 'tiempo_pie_min' | 'subida_m' | 'direccion';
@@ -19,13 +21,16 @@ export interface Cabecera {
   alto: number;
   bytes: number;
   capas: Record<Capa, { offset: number; nodata: number }>;
+  /** Solo en la versión 2. */
+  altitud?: { offset: number; nodata: number };
+  version: 1 | 2;
 }
 
 /** Valida acceso.json; lanza si el formato no es el que la app sabe leer. */
 export function parsearCabecera(j: any): Cabecera {
   const mal = (m: string) => { throw new Error(`acceso.json: ${m}`); };
   if (!j || typeof j !== 'object') mal('no es un objeto');
-  if (j.version !== 1) mal(`versión ${j.version} no soportada`);
+  if (j.version !== 1 && j.version !== 2) mal(`versión ${j.version} no soportada`);
   if (j.crs !== 'EPSG:25830') mal(`CRS ${j.crs} no soportado`);
   if (j.endianness !== 'little') mal('se espera little-endian');
   const { ancho, alto, res_m: res } = j;
@@ -33,17 +38,20 @@ export function parsearCabecera(j: any): Cabecera {
   if (!(res > 0)) mal('resolución inválida');
   const [x0, y1] = Array.isArray(j.origen_xy) ? j.origen_xy : [];
   if (!Number.isFinite(x0) || !Number.isFinite(y1)) mal('origen inválido');
-  const capas = {} as Cabecera['capas'];
-  for (const c of Object.keys(TAM) as Capa[]) {
+  const capa = (c: string, dtype: string, tam: number) => {
     const d = j.capas?.[c];
     if (!d) mal(`falta la capa ${c}`);
-    if (d.dtype !== DTYPE[c]) mal(`${c}: dtype ${d.dtype}`);
+    if (d.dtype !== dtype) mal(`${c}: dtype ${d.dtype}`);
     if (d.offset % 4 !== 0) mal(`${c}: offset no alineado`);
-    if (d.bytes !== ancho * alto * TAM[c]) mal(`${c}: ${d.bytes} bytes`);
+    if (d.bytes !== ancho * alto * tam) mal(`${c}: ${d.bytes} bytes`);
     if (d.offset + d.bytes > j.bytes) mal(`${c}: fuera del archivo`);
-    capas[c] = { offset: d.offset, nodata: d.nodata };
-  }
-  return { res, x0, y1, ancho, alto, bytes: j.bytes, capas };
+    return { offset: d.offset as number, nodata: d.nodata as number };
+  };
+  const capas = {} as Cabecera['capas'];
+  for (const c of Object.keys(TAM) as Capa[]) capas[c] = capa(c, DTYPE[c], TAM[c]);
+  const cab: Cabecera = { res, x0, y1, ancho, alto, bytes: j.bytes, capas, version: j.version };
+  if (j.version === 2) cab.altitud = capa('altitud', 'uint16', 2);
+  return cab;
 }
 
 // ---------------------------------------------------------------- UTM huso 30 (ETRS89 ≈ WGS84 al cm)
@@ -180,6 +188,33 @@ export async function trazar(cab: Cabecera, lector: Lector, inicio: Celda, maxPa
   }
   return { celdas, completa: false, bloquesLeidos: bloques.size };
 }
+
+/**
+ * Altitud (m) de cada celda, de la capa altitud (versión 2); NaN donde no hay dato o si la cabecera es v1.
+ * Lee bloques de FILAS_BLOQUE filas, como trazar().
+ */
+export async function altitudes(cab: Cabecera, lector: Lector, celdas: Celda[]): Promise<number[]> {
+  const capa = cab.altitud;
+  if (!capa) return celdas.map(() => NaN);
+  const bloques = new Map<number, DataView>();
+  const out: number[] = [];
+  for (const { fila, col } of celdas) {
+    if (fila < 0 || col < 0 || fila >= cab.alto || col >= cab.ancho) { out.push(NaN); continue; }
+    const b = Math.floor(fila / FILAS_BLOQUE);
+    let v = bloques.get(b);
+    if (!v) {
+      const f0 = b * FILAS_BLOQUE, nf = Math.min(FILAS_BLOQUE, cab.alto - f0);
+      v = new DataView(await lector.leer(capa.offset + f0 * cab.ancho * 2, nf * cab.ancho * 2));
+      bloques.set(b, v);
+    }
+    const a = v.getUint16(((fila - b * FILAS_BLOQUE) * cab.ancho + col) * 2, true);
+    out.push(a === capa.nodata ? NaN : a);
+  }
+  return out;
+}
+
+/** Celda de un índice plano (fila·ancho + col), el `id` de los sitios de sitios.json. */
+export const celdaDeIndice = (cab: Pick<Cabecera, 'ancho'>, i: number): Celda => ({ fila: Math.floor(i / cab.ancho), col: i % cab.ancho });
 
 /** Quita los vértices intermedios de los tramos rectos (misma dirección). */
 export function simplificar(celdas: Celda[]): Celda[] {

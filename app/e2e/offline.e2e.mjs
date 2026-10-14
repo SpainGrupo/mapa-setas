@@ -47,7 +47,7 @@ const nav = await chromium.launch();
 const ctx = await nav.newContext({ ...devices['Pixel 7'], geolocation: PUNTO, permissions: ['geolocation'],
   acceptDownloads: true, locale: 'es-ES', timezoneId: 'Europe/Madrid' });
 
-// Open-Meteo falso: 30 días pasados + 7 de previsión alrededor de hoy (Madrid), elevación = alt_media del punto.
+// Open-Meteo falso: 30 días pasados + 16 de previsión (hoy incluido) alrededor de hoy (Madrid), elevación = alt_media del punto.
 const sumar = (iso, n) => new Date(Date.parse(iso + 'T00:00:00Z') + n * 864e5).toISOString().slice(0, 10);
 let puntosMeteo = null, consultasMeteo = 0;
 await ctx.route('**/api.open-meteo.com/**', async (r) => {
@@ -56,7 +56,8 @@ await ctx.route('**/api.open-meteo.com/**', async (r) => {
   const u = new URL(r.request().url());
   const lat = u.searchParams.get('latitude').split(',').map(Number), lon = u.searchParams.get('longitude').split(',').map(Number);
   const hoy = HOY_E2E;
-  const rel = Array.from({ length: 37 }, (_, i) => i - 30);
+  if (u.searchParams.get('forecast_days') !== '16') throw new Error(`forecast_days=${u.searchParams.get('forecast_days')}`);
+  const rel = Array.from({ length: 46 }, (_, i) => i - 30);
   const una = (la, i) => ({ latitude: la, longitude: lon[i],
     elevation: puntosMeteo.find((p) => p.lat === la && p.lon === lon[i])?.alt_media ?? 0,
     daily: { time: rel.map((k) => sumar(hoy, k)), precipitation_sum: rel.map((k) => FIXTURE.lluvia[k] ?? 0),
@@ -447,6 +448,99 @@ try {
   await p.locator('#zona-grafico').scrollIntoViewIfNeeded();
   await captura('09-zona-grafico.png');
 
+  // Fase 9: pestaña Hoy con el día fijo (?hoy=) y el fixture de 16 días.
+  await p.locator('.pestanas [data-p=p-hoy]').click();
+  await p.waitForSelector('#top-general .top-fila');
+  const tops = () => p.evaluate(() => window.__setas.tops());
+  const firma = (t) => t.general.map((f) => `${f.especie}:${f.id}:${f.puntuacion}`).join(',');
+  const t0 = await tops();
+  comprobar(t0.fecha === HOY_E2E && t0.confianza === 'alta' && /Confianza alta/.test(await p.locator('#hoy-confianza').textContent())
+    && await p.locator('#hoy-dias .chip').count() === 7 && (await p.locator('#hoy-dias .chip').nth(4).textContent()) === 'dom 18'
+    && await p.locator('#hoy-fecha').evaluate((i) => i.max) === sumar(HOY_E2E, 15),
+    'Hoy: 7 chips de día («dom 18»…), selector de fecha hasta +15 y confianza «alta» hoy');
+  comprobar(t0.general.length > 5 && t0.general.length <= 20 && t0.general.every((f) => f.estado !== 'rojo')
+    && !t0.general.some((f) => f.especie === 'amanita_caesarea')
+    && t0.general.every((f, i, a) => !i || a[i - 1].score >= f.score) && await p.locator('#top-general .top-fila').count() === t0.general.length,
+    `top general: ${t0.general.length} filas ordenadas, sin especies en rojo (A. caesarea fuera); primera ${t0.general[0].especie} ${t0.general[0].puntuacion}/100`);
+  const fila0 = p.locator('#top-general .top-fila').first();
+  const f0 = await fila0.evaluate((li) => ({ t: li.innerText, botones: [...li.querySelectorAll('button')].map((b) => b.textContent), img: li.querySelector('.miniatura-especie img')?.getAttribute('src') ?? '' }));
+  comprobar(/de 100/.test(f0.t) && /a pie/.test(f0.t) && /km de (Marbella|ti)/.test(f0.t) && /(Fácil|Moderada|Difícil|Muy difícil)/.test(f0.t) && /Buen momento|Esperar|Sin datos/.test(f0.t)
+    && f0.botones.join('|') === 'Ver en mapa|Ruta a pie|Cómo llegar en coche|Guardar' && f0.img.includes('miniaturas/'),
+    'cada fila: miniatura, puntuación, semáforo, tiempo a pie, subida, dificultad, distancia y los cuatro botones');
+  ok(`filas con varias setas a ≤300 m: ${t0.general.filter((f) => f.especies.length > 1).map((f) => f.especies.join('+')).join(', ') || 'ninguna hoy'}`);
+  await captura('hoy-general.png');
+  comprobar(t0.top.length === 10 && t0.top.every((e) => e.especie === t0.especie), `top 10 de ${t0.especie}`);
+  await p.locator('#hoy-especie').selectOption('amanita_caesarea');
+  await p.waitForFunction(() => window.__setas.tops().especie === 'amanita_caesarea' && window.__setas.tops().top.length === 10);
+  comprobar((await tops()).top.every((e) => e.estado === 'rojo'), 'top 10 de A. caesarea: sale aunque esté en rojo (todo en rojo ese día)');
+  await p.locator('#hoy-especie').selectOption('boletus_aereus');
+  await p.waitForFunction(() => window.__setas.tops().especie === 'boletus_aereus');
+  await p.locator('#tit-top-especie').scrollIntoViewIfNeeded();
+  await captura('hoy-especie.png');
+  // Calendario: 12 especies × 12 meses, marca en octubre y estado de cada una; tocar una → su top 10.
+  const cal = await p.evaluate(() => ({ filas: [...document.querySelectorAll('#calendario .cal-fila')].map((b) => ({ id: b.dataset.especie, clase: b.dataset.clase,
+    t: b.querySelector('.cal-estado').textContent, meses: b.querySelectorAll('.cal-meses i').length, oct: b.querySelectorAll('.cal-meses i')[9].classList.contains('actual') })) }));
+  comprobar(cal.filas.length === 12 && cal.filas.every((f) => f.meses === 12 && f.oct)
+    && cal.filas[0].clase === 'sale' && cal.filas[0].id.startsWith('boletus_')
+    && /^Ya sale · aguanta hasta ~\d\d\/\d\d$/.test(cal.filas[0].t)
+    && cal.filas.find((f) => f.id === 'lactarius_deliciosus').t.startsWith('Empieza en ~')
+    && cal.filas.find((f) => f.id === 'amanita_caesarea').t === 'En temporada, falta lluvia',
+    `calendario 12×12 con marca en octubre: ${cal.filas.map((f) => `${f.id.split('_')[1]} «${f.t}»`).join(', ')}`);
+  await p.locator('#tit-calendario').scrollIntoViewIfNeeded();
+  await captura('calendario-hoy.png');
+  await p.locator('#calendario .cal-fila[data-especie=lactarius_deliciosus]').click();
+  await p.waitForFunction(() => window.__setas.tops().especie === 'lactarius_deliciosus');
+  await p.locator('#hoy-ver-ficha:not([hidden])').waitFor({ timeout: 5000 });
+  comprobar((await tops()).top.length === 10, 'tocar una seta del calendario muestra su top 10 y «Ver ficha»');
+  await captura('calendario-tocar.png');
+  // +4 días: confianza media y el orden cambia (los níscalos entran en ventana).
+  await p.locator('#hoy-dias .chip[data-fecha="' + sumar(HOY_E2E, 4) + '"]').click();
+  await p.waitForFunction((f) => window.__setas.tops()?.fecha === f && document.body.dataset.hoy === f, sumar(HOY_E2E, 4));
+  const t4 = await tops();
+  comprobar(t4.confianza === 'media' && /Confianza media/.test(await p.locator('#hoy-confianza').textContent()) && firma(t4) !== firma(t0),
+    `+4 días (${t4.fecha}): confianza «media» y el top general cambia (${t4.general.slice(0, 3).map((f) => f.especie).join(', ')}…)`);
+  const est4 = Object.fromEntries(t4.calendario.map((c) => [c.id, c.clase]));
+  comprobar(est4.lactarius_deliciosus === 'sale' && cal.filas.find((f) => f.id === 'lactarius_deliciosus').clase === 'pronto',
+    `el semáforo se proyecta a ese día: L. deliciosus pasa de «empieza pronto» a «${t4.calendario.find((c) => c.id === 'lactarius_deliciosus').texto}»`);
+  await p.locator('#p-hoy').evaluate((e) => e.scrollTo(0, 0));
+  await captura('hoy-mas4.png');
+  await p.locator('#hoy-fecha').fill(sumar(HOY_E2E, 12));
+  await p.locator('#hoy-fecha').dispatchEvent('change');
+  await p.waitForFunction((f) => window.__setas.tops()?.fecha === f, sumar(HOY_E2E, 12));
+  comprobar((await tops()).confianza === 'baja', '+12 días con el selector de fecha: confianza «baja»');
+  // Filtro de dificultad (se guarda).
+  await p.locator('#hoy-dias .chip').first().click();
+  await p.locator('#hoy-dificultad').selectOption('facil');
+  await p.waitForFunction(() => window.__setas.tops().general.every((f) => f.dificultad === 'facil'));
+  const tf = await tops();
+  comprobar(tf.general.length > 0 && tf.general.every((f) => f.dificultad === 'facil') && tf.top.every((e) => e.dificultad === 'facil')
+    && firma(tf) !== firma(t0) && await p.evaluate(() => localStorage.getItem('setas:dificultad-max')) === 'facil',
+    `filtro «Solo fácil»: ${tf.general.length} filas, todas fáciles, y se guarda`);
+  await p.locator('#top-general').scrollIntoViewIfNeeded();
+  await captura('hoy-filtro-facil.png');
+  await p.locator('#hoy-dificultad').selectOption('');
+  await p.waitForFunction((f) => window.__setas.tops().general.length === f, t0.general.length);
+  // N por seta en Ajustes (3) → más filas.
+  await p.getByRole('button', { name: /Ajustes/ }).click();
+  await p.locator('#ajuste-top-n').selectOption('3');
+  await p.locator('.pestanas [data-p=p-hoy]').click();
+  await p.waitForSelector('#top-general .top-fila');
+  const t3 = await tops();
+  const porEspecie = (t) => Math.max(...Object.values(t.general.flatMap((f) => f.especies).reduce((o, e) => ({ ...o, [e]: (o[e] ?? 0) + 1 }), {})));
+  comprobar(firma(t3) !== firma(t0) && porEspecie(t3) === 3 && porEspecie(t0) <= 2 && /Los 3 mejores/.test(await p.locator('#hoy-general-nota').textContent()),
+    `Ajustes «3 por seta»: hasta 3 sitios por seta en ${t3.general.length} filas (con 2: como mucho ${porEspecie(t0)})`);
+  await p.getByRole('button', { name: /Ajustes/ }).click();
+  await p.locator('#ajuste-top-n').selectOption('2');
+  // «Ver en mapa» desde una fila: especie elegida y ficha de acceso en el sitio.
+  await p.locator('.pestanas [data-p=p-hoy]').click();
+  await p.waitForSelector('#top-general .top-fila');
+  const g0 = (await tops()).general[0];
+  await p.locator('#top-general .top-fila').first().locator('button', { hasText: 'Ver en mapa' }).click();
+  await p.locator('#tarjeta-acceso[data-estado=ok]').waitFor({ timeout: 15000 });
+  comprobar(await p.locator('#sel-especie').inputValue() === g0.especie && await p.locator('#ta-ruta').isVisible() && await p.locator('#ta-otra').count() === 0,
+    `«Ver en mapa» abre el mapa en el sitio con ${g0.especie} elegida y la ficha de acceso (con «Ruta a pie», sin «Abrir en otra app»)`);
+  await p.locator('#ta-cerrar').click();
+
   // Fase 5: descarga aparte y opcional del reconocedor (no entra en la de mapas).
   await p.getByRole('button', { name: /Ajustes/ }).click();
   const btnModelo = p.locator('#btn-modelo');
@@ -604,7 +698,14 @@ try {
   await p.locator('#rec-resultado').scrollIntoViewIfNeeded();
   await captura('reconocer-phalloides.png');
   const consultasAntes = consultasMeteo;
-  await p.getByRole('button', { name: /Zona/ }).click();
+  await p.locator('.pestanas [data-p=p-hoy]').click();
+  await p.waitForSelector('#top-general .top-fila');
+  const tOff = await p.evaluate(() => window.__setas.tops());
+  comprobar(!tOff.sinSitios && tOff.general.length > 5 && tOff.top.length === 10 && tOff.fecha === HOY_E2E
+    && await p.locator('#calendario .cal-fila').count() === 12 && /guardado/.test(await p.locator('#hoy-meteo').textContent()),
+    `sin conexión, Hoy sale de OPFS (sitios.json) y la caché del tiempo: ${tOff.general.length} filas, top 10 y calendario`);
+  await captura('hoy-offline.png');
+  await p.locator('#hoy-zona').click();
   await p.locator('#lista-semaforo .semaforo-fila').first().waitFor();
   const txtMeteo = await p.locator('#estado-meteo').textContent();
   comprobar(/Sin conexión: último dato guardado, actualizado hace/.test(txtMeteo), `Zona sin conexión: «${txtMeteo}»`);
@@ -707,9 +808,7 @@ try {
   await p.locator('#ta-coche').click();
   comprobar((await p.evaluate(() => window.__abiertos.at(-1))) === `https://www.google.com/maps/dir/?api=1&destination=${destino}&travelmode=driving`,
     `«Cómo llegar en coche» abre Google Maps hacia el aparcamiento (${destino})`);
-  await p.locator('#ta-otra').click();
-  const geo = await p.evaluate(() => window.__abiertos.at(-1));
-  comprobar(geo.startsWith(`geo:${destino}?q=${destino}(`) && geo.includes(encodeURIComponent(ACCESO.via)), `«Abrir en otra app» (Android): ${geo}`);
+  comprobar(await p.locator('#ta-otra').count() === 0 && await p.locator('#ta-ruta').isEnabled(), 'la ficha ya no trae «Abrir en otra app» y sí «Ruta a pie»');
   await p.locator('#ta-guardar').click();
   await p.locator('#dlg-sitio[open]').waitFor();
   const txtAcceso = await p.locator('#acceso-sitio').textContent();
@@ -728,6 +827,55 @@ try {
     'Mis sitios: «Cómo llegar» lleva al aparcamiento guardado');
   await captura('acceso-mis-sitios.png');
   await p.getByRole('button', { name: /Mapa/ }).click();
+
+  // Fase 9 sin conexión: «Ruta a pie» desde la ficha de acceso → perfil, dificultad y seguimiento con GPS simulado.
+  // (en ACCESO ya hay un sitio guardado, y la pulsación larga sobre un sitio no abre la ficha: se pulsa 150 m al norte)
+  const RUTA = { lat: ACCESO.lat + 0.00135, lon: ACCESO.lon };
+  await p.evaluate(({ lat, lon }) => window.__setas.mapa.jumpTo({ center: [lon, lat], zoom: 15 }), RUTA);
+  await reposo();
+  await pulsarLargo(RUTA.lat, RUTA.lon);
+  await p.locator('#tarjeta-acceso[data-estado=ok]').waitFor({ timeout: 15000 });
+  const fichaRuta = await p.evaluate(() => ({ t: document.querySelector('#ta-tiempo').textContent, s: document.querySelector('#ta-subida').textContent,
+    a: window.__setas.acceso().acceso }));
+  await p.evaluate(() => { delete document.body.dataset.ruta; });
+  await p.locator('#ta-ruta').click();
+  await p.waitForSelector('body[data-ruta=ok]', { state: 'attached', timeout: 15000 });
+  const rutaP = await p.evaluate(() => ({ r: window.__setas.ruta(), d: document.querySelector('#ru-distancia').textContent, t: document.querySelector('#ru-tiempo').textContent,
+    s: document.querySelector('#ru-subida').textContent, dif: document.querySelector('#ru-dificultad').textContent,
+    linea: document.querySelectorAll('#ru-perfil svg .linea-perfil').length, acceso: !document.querySelector('#tarjeta-acceso').hidden,
+    traza: window.__setas.trazaAcceso().find((f) => f.geometry.type === 'LineString')?.geometry.coordinates.length }));
+  const altOk = rutaP.r.perfil.alt.filter(Number.isFinite);
+  const difEsperada = fichaRuta.a.tiempo_min <= 30 && fichaRuta.a.subida_m <= 150 ? 'Fácil' : fichaRuta.a.tiempo_min <= 60 && fichaRuta.a.subida_m <= 350 ? 'Moderada'
+    : fichaRuta.a.tiempo_min <= 120 && fichaRuta.a.subida_m <= 700 ? 'Difícil' : 'Muy difícil';
+  const pasosRuta = rutaP.r.linea.length - 2;
+  comprobar(rutaP.t === fichaRuta.t && rutaP.s === fichaRuta.s && rutaP.dif === difEsperada
+    && rutaP.r.perfil.total_m >= pasosRuta * 100 - 1 && rutaP.r.perfil.total_m <= pasosRuta * 141.5 && /^\d+ m$|km$/.test(rutaP.d) && !rutaP.acceso && pasosRuta >= 5,
+    `«Ruta a pie» sin conexión: ${rutaP.d} (${pasosRuta} pasos de 100/141 m), ${rutaP.t}, ${rutaP.s}, dificultad ${rutaP.dif}`);
+  comprobar(rutaP.linea === 1 && altOk.length === rutaP.r.perfil.alt.length && altOk.every((a) => a > 100 && a < 2000)
+    && km([rutaP.r.linea[0][1], rutaP.r.linea[0][0]], [fichaRuta.a.lat, fichaRuta.a.lon]) < 0.01,
+    `perfil de altura del coche al punto (${Math.round(rutaP.r.perfil.min)}–${Math.round(rutaP.r.perfil.max)} m, ${rutaP.r.perfil.alt.length} puntos de la capa altitud)`);
+  await captura('ruta-perfil.png');
+  const lin = rutaP.r.linea;
+  await p.locator('#ru-seguir-btn').click();
+  const irGps = async (lat, lon) => {
+    await ctx.setGeolocation({ latitude: lat, longitude: lon, accuracy: 8 });
+    await p.waitForFunction(([la, lo]) => { const s = window.__setas.seguimiento(); return s && Math.abs(s.lat - la) < 1e-7 && Math.abs(s.lon - lo) < 1e-7; }, [lat, lon], { timeout: 10000 });
+    return p.evaluate(() => ({ s: window.__setas.seguimiento(), r: document.querySelector('#ru-restante').textContent, fuera: !document.querySelector('#ru-fuera').hidden,
+      txt: document.querySelector('#ru-fuera').textContent }));
+  };
+  const g1 = await irGps(lin[0][1], lin[0][0]);
+  const g2 = await irGps(lin[5][1], lin[5][0]);
+  comprobar(!g1.fuera && !g2.fuera && g1.s.restante_m > g2.s.restante_m && g2.s.restante_m > 0 && /m$/.test(g2.r),
+    `seguir con GPS (simulado): al salir quedan ${g1.r}; a mitad, ${g2.r}`);
+  await captura('ruta-seguir.png');
+  const g3 = await irGps(lin[5][1] + 0.0015, lin[5][0]);
+  comprobar(g3.fuera && g3.s.aRuta_m > 80 && /^Fuera de ruta/.test(g3.txt), `a ${Math.round(g3.s.aRuta_m)} m del trazado: «${g3.txt}»`);
+  await captura('ruta-fuera.png');
+  const g4 = await irGps(lin.at(-1)[1], lin.at(-1)[0]);
+  comprobar(!g4.fuera && g4.s.restante_m < 60, `en el punto: quedan ${g4.r}`);
+  await p.locator('#ru-seguir-btn').click();
+  await p.locator('#ru-cerrar').click();
+  await ctx.setGeolocation(PUNTO);
 
   // Sin conexión y con la capa oculta: la pulsación larga dentro del Parque Nacional avisa (lee la tesela de OPFS).
   await p.locator('#btn-capas').click();

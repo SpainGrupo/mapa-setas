@@ -16,6 +16,8 @@ export function etiquetaDia(hoy: string, fecha: string): string {
   return `${SEMANA[new Date(fecha + 'T12:00:00Z').getUTCDay()]} ${+fecha.slice(8, 10)}`;
 }
 
+export const sumarDiasMax = (hoy: string) => sumarDias(hoy, DIAS_MAX);
+
 /** Los días de los chips: hoy y los 6 siguientes. */
 export const diasChips = (hoy: string) => Array.from({ length: DIAS_CHIPS }, (_, i) => sumarDias(hoy, i));
 

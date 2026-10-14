@@ -529,3 +529,79 @@ input[type=search]:focus-visible { outline: 3px solid var(--foco); border-color:
 .normativa p { margin: 6px 0; }
 .normativa-tipos { margin: 4px 0 8px; padding-left: 20px; font-size: 15px; display: grid; gap: 4px; }
 .aviso-normativa { font-size: 14px; color: #7a4a00; background: #fff6e0; border-radius: 8px; padding: 8px 10px; }
+
+/* ---------------------------------------------------------------- Fase 9: Hoy, tops, calendario y ruta a pie */
+.chips-dias { gap: 6px; }
+.chips-dias .chip { padding: 6px 12px; font-size: 15px; }
+.confianza { margin: 0; padding: 10px 12px; border-radius: 12px; border: 2px solid; font-size: 16px; line-height: 1.35; }
+.confianza b { font-size: 18px; text-transform: uppercase; letter-spacing: .3px; }
+.confianza[data-confianza=alta] { background: #e3f3e8; border-color: #1e6b3a; color: #123d22; }
+.confianza[data-confianza=media] { background: #fff4d6; border-color: #b07a00; color: #4d3500; }
+.confianza[data-confianza=baja] { background: #fde8e8; border-color: #a4161a; color: #5c0a0c; }
+.saltos { display: flex; flex-wrap: wrap; gap: 6px; }
+.saltos .chip { display: inline-flex; align-items: center; text-decoration: none; font-size: 15px; }
+#p-hoy h2 { margin: 12px 0 0; scroll-margin-top: 12px; }
+.tops { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.top-fila { background: #fff; border: 2px solid var(--borde); border-radius: 12px; padding: 10px; display: grid; gap: 8px; }
+.top-fila[data-estado=verde] { border-left: 6px solid #0ca30c; }
+.top-fila[data-estado=amarillo] { border-left: 6px solid #fab219; }
+.top-fila[data-estado=rojo] { border-left: 6px solid #d03b3b; }
+.top-fila[data-estado=gris] { border-left: 6px solid #8a8a86; }
+.tf-cab { display: grid; grid-template-columns: auto auto 1fr auto; gap: 8px; align-items: center; }
+.tf-pos { font-weight: 800; font-size: 15px; color: var(--texto-2); min-width: 1.4em; text-align: right; }
+.tf-minis { display: flex; }
+.tf-minis .miniatura-especie { width: 44px; height: 44px; border-radius: 8px; overflow: hidden; background: #e7e2d6; border: 2px solid #fff;
+  display: grid; place-items: center; flex: none; }
+.tf-minis .miniatura-especie + .miniatura-especie { margin-left: -14px; }
+.tf-minis img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tf-tit { display: grid; gap: 2px; min-width: 0; }
+.tf-tit b { font-size: 16px; overflow-wrap: anywhere; }
+.tf-estado { font-size: 14px; font-weight: 600; }
+.tf-puntos { display: grid; justify-items: center; line-height: 1; }
+.tf-puntos b { font-size: 26px; font-variant-numeric: tabular-nums; }
+.tf-puntos small { font-size: 12px; color: var(--texto-2); }
+.tf-meta { margin: 0; font-size: 15px; color: var(--texto); line-height: 1.6; }
+.tf-restr { font-weight: 700; }
+.tf-acciones { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.tf-acciones .btn { min-width: 0; padding: 6px 8px; font-size: 15px; }
+.insignia-dif { display: inline-block; font-weight: 800; font-size: 14px; padding: 1px 9px; border-radius: 999px; border: 2px solid; line-height: 1.4; white-space: nowrap; }
+.dif-facil { color: #123d22; background: #e3f3e8; border-color: #1e6b3a; }
+.dif-moderada { color: #4d3500; background: #fff4d6; border-color: #b07a00; }
+.dif-dificil { color: #6b2a00; background: #ffe6d1; border-color: #b34700; }
+.dif-muy_dificil { color: #fff; background: #8e1b1b; border-color: #5c0a0c; }
+.calendario { display: grid; gap: 6px; }
+.cal-cab, .cal-fila { display: grid; grid-template-columns: minmax(0, 1fr) 156px; gap: 8px; align-items: center; }
+.cal-cab { padding: 0 12px; font-size: 12px; color: var(--texto-2); font-weight: 700; }
+.cal-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.cal-fila { width: 100%; text-align: left; background: #fff; border: 2px solid var(--borde); border-radius: 12px; padding: 8px 12px;
+  cursor: pointer; min-height: var(--toque); font: inherit; color: inherit; }
+.cal-fila[data-clase=sale] { border-color: #1e6b3a; box-shadow: inset 4px 0 0 #0ca30c; }
+.cal-fila[data-clase=pronto] { box-shadow: inset 4px 0 0 #fab219; }
+.cal-texto { display: grid; gap: 1px; min-width: 0; }
+.cal-texto b { font-size: 15px; overflow-wrap: anywhere; }
+.cal-estado { font-size: 14px; color: var(--texto-2); }
+.cal-fila[data-clase=sale] .cal-estado { color: #123d22; font-weight: 700; }
+.cal-meses { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1px; }
+.cal-meses i { font-style: normal; text-align: center; height: 18px; line-height: 18px; border-radius: 3px; }
+.cal-fila .cal-meses i { background: #ece8de; }
+.cal-fila .cal-meses i.si { background: var(--verde-claro); }
+.cal-meses i.actual { outline: 2px solid var(--texto); outline-offset: -1px; }
+.cal-cab .cal-meses i.actual { background: var(--texto); color: #fff; outline: 0; }
+.tarjeta-ruta { gap: 6px; }
+.ru-datos { grid-template-columns: repeat(4, auto); justify-content: space-between; }
+.ru-perfil { min-height: 40px; }
+.perfil-svg { display: block; touch-action: pan-y; }
+.perfil-svg text { font-family: inherit; font-variant-numeric: tabular-nums; }
+.ru-seguir { display: grid; gap: 6px; }
+.ru-quedan { margin: 0; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.ru-quedan span { font-size: 17px; font-weight: 700; }
+.ru-quedan b { font-size: 40px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.ru-fuera { margin: 0; background: #a4161a; color: #fff; font-weight: 800; font-size: 18px; border-radius: 10px; padding: 10px 12px; }
+.tarjeta-ruta[data-seguir="1"] .ru-perfil, .tarjeta-ruta[data-seguir="1"] #ru-perfil-dato,
+.tarjeta-ruta[data-seguir="1"] .ta-aviso { display: none; }
+.ru-botones { grid-template-columns: 1fr 1fr; }
+.tarjeta-ruta { max-height: 64%; padding-top: 10px; }
+.tarjeta-ruta .grafico-dato { min-height: 0; margin: 0 4px; font-size: 14px; }
+/* Con la ruta abierta, el panel de especie se oculta: la ruta y su ficha se reparten la pantalla. */
+body[data-ruta-abierta] .panel-sup { display: none; }
+.tf-acciones .btn { line-height: 1.15; }

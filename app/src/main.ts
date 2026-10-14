@@ -5,7 +5,10 @@ import type { Map as MapaML, GeoJSONSource, LngLat } from 'maplibre-gl';
 import { BASE_DATOS, cargarJson, cargarManifest, mb } from './datos';
 import { CAPAS_RESTRICCIONES, CAPAS_RUTAS, COLORES_IDONEIDAD, colorearSemaforo, crearMapa, origenes, ponerBase, ponerIdoneidad, restriccionEn, verCapa, type Base } from './mapa';
 import { ORIENTATIVO, textoChip, type Restriccion } from './restricciones';
-import { aparcamiento, centroCelda, consultar, esIOS, nombreVia, simplificar, textoSubida, textoTiempo, trazar, urlGoogleCoche, urlOtraApp } from './acceso';
+import { altitudes, aparcamiento, centroCelda, consultar, nombreVia, simplificar, textoSubida, textoTiempo, trazar, urlGoogleCoche, type Celda } from './acceso';
+import { dificultad, NOMBRE_DIFICULTAD, perfil, seguir, textoDistancia, type Dificultad, type Perfil, type Seguimiento } from './ruta';
+import { pintarPerfil } from './perfil-grafico';
+import { iniciarHoy, pintarHoy, resumenHoy } from './hoy-ui';
 import { datosAcceso } from './acceso-datos';
 import { iniciarSelectorEspecie, pintarSelectorEspecie } from './selector-especie';
 import { Gps } from './gps';
@@ -65,6 +68,7 @@ function irA(id: string) {
   if (id === 'p-sitios') pintarLista();
   if (id === 'p-ajustes') pintarAjustes();
   if (id === 'p-zona') pintarZona();
+  if (id === 'p-hoy') pintarHoy();
   if (id === 'p-guia') mostrarGuia();
   if (id === 'p-reconocer') mostrarReconocer();
 }
@@ -149,7 +153,8 @@ async function iniciarMapa() {
   mapa = crearMapa($('#mapa'), manifest);
   gps = new Gps(mapa, (m) => avisar(m));
   if (import.meta.env.DEV || E2E) (window as any).__setas = { mapa, origenes, meteo: () => ({ datos: meteo, origen: meteoOrigen, punto: puntoSel }),
-    acceso: () => ultimoAcceso, trazaAcceso: () => trazaAcceso, hoy: hoyZona,
+    acceso: () => ultimoAcceso, trazaAcceso: () => trazaAcceso, hoy: hoyZona, tops: resumenHoy,
+    ruta: () => rutaActual && { ...rutaActual, perfil: { ...rutaActual.perfil } }, seguimiento: () => seguimiento,
     restriccionEn: (lat: number, lon: number) => manifest && restriccionEn(manifest, lat, lon),
     sitioEditando: () => editando && { ...editando, foto: undefined }, accesoSitio: () => accesoSitio,
     resumenSemaforo: () => Object.fromEntries((manifest?.especies ?? []).map((e) => {
@@ -308,7 +313,7 @@ function estadoAcceso(texto: string, conDatos: boolean) {
   $('#ta-estado').hidden = !texto;
   $('#ta-datos').hidden = !conDatos;
   $<HTMLButtonElement>('#ta-coche').disabled = !conDatos;
-  $<HTMLButtonElement>('#ta-otra').disabled = !conDatos;
+  $<HTMLButtonElement>('#ta-ruta').disabled = !conDatos;
 }
 
 interface CalculoAcceso {
@@ -320,6 +325,8 @@ interface CalculoAcceso {
   traza?: UltimoAcceso['traza'];
   ms?: UltimoAcceso['ms'];
   lector?: unknown;
+  /** Celdas de la traza, del punto al coche (acceso.trazar). */
+  celdas?: Celda[];
 }
 
 /** Aparcamiento, tiempo y subida a pie y trazado de un punto, con los datos locales (OPFS o HTTP). Nunca lanza. */
@@ -347,7 +354,7 @@ async function calcularAcceso(lat: number, lon: number): Promise<CalculoAcceso> 
     // representativo del aparcamiento (uno por vía y bloque de 300 m).
     const [plon, plat] = tr.completa ? linea[linea.length - 1] : [ap.lon, ap.lat];
     const via = nombreVia(ap);
-    return { estado: 'ok', texto: '', linea, completa: tr.completa,
+    return { estado: 'ok', texto: '', linea, completa: tr.completa, celdas: tr.celdas,
       acceso: { lat: +plat.toFixed(5), lon: +plon.toFixed(5), via, tiempo_min: c.tiempo_min, subida_m: c.subida_m },
       traza: { pasos: tr.celdas.length - 1, vertices: linea.length, completa: tr.completa, bloques: tr.bloquesLeidos },
       ms: { consulta: Math.round(t1 - t0), traza: Math.round(t2 - t1), total: Math.round(t2 - t0) }, lector: { ...d.estado } };
@@ -374,6 +381,7 @@ async function pintarRestriccion(el: HTMLElement, lat: number, lon: number, vige
 
 /** Ficha «Acceso» del punto: aparcamiento, tiempo y subida a pie y trazado aproximado (todo con los datos locales). */
 async function mostrarAcceso(lat: number, lon: number) {
+  if (!$('#tarjeta-ruta').hidden) cerrarRuta();
   const n = ++consultaAcceso;
   ultimoAcceso = { punto: { lat, lon }, estado: 'cargando' };
   $('#tarjeta-zona').hidden = true;
@@ -402,19 +410,21 @@ async function mostrarAcceso(lat: number, lon: number) {
   encuadrar(linea);
 }
 
-/** Si el trazado no cabe en la vista (por encima de la ficha), la mueve sin acercar. */
-function encuadrar(linea: [number, number][]) {
+/** Si el trazado no cabe en la vista (por encima de la ficha), la mueve sin acercar (o aleja si hace falta, con `ajustar`). */
+function encuadrar(linea: [number, number][], tarjeta = '#tarjeta-acceso', ajustar = false) {
   if (!mapa) return;
   const lons = linea.map((p) => p[0]), lats = linea.map((p) => p[1]);
   const sw: [number, number] = [Math.min(...lons), Math.min(...lats)], ne: [number, number] = [Math.max(...lons), Math.max(...lats)];
-  const alto = $('#tarjeta-acceso').getBoundingClientRect().height;
+  const alto = $(tarjeta).getBoundingClientRect().height;
   const caja = mapa.getContainer().getBoundingClientRect();
   const a = mapa.project(sw), b = mapa.project(ne);
   const panel = document.querySelector('.panel-sup')?.getBoundingClientRect();
   const arriba = panel ? Math.max(24, panel.bottom - caja.top + 16) : 24;
   const dentro = (p: { x: number; y: number }) => p.x > 24 && p.x < caja.width - 24 && p.y > arriba && p.y < caja.height - alto - 40;
   if (dentro(a) && dentro(b)) return;
-  mapa.fitBounds([sw, ne], { padding: { top: arriba + 20, left: 40, right: 40, bottom: alto + 50 }, maxZoom: mapa.getZoom(), duration: 400 });
+  const pad = { top: arriba + 20, left: 40, right: 40, bottom: alto + 50 };
+  if (pad.top + pad.bottom > caja.height - 60) pad.bottom = Math.max(40, caja.height - 60 - pad.top);
+  mapa.fitBounds([sw, ne], { padding: pad, maxZoom: ajustar ? 16 : mapa.getZoom(), duration: E2E ? 0 : 400 });
 }
 
 /** https en otra pestaña; geo: con un enlace (así lo abre Android con la app elegida). */
@@ -423,22 +433,141 @@ function abrirEnlace(url: string) {
   const a = document.createElement('a'); a.href = url; a.rel = 'noopener';
   document.body.append(a); a.click(); a.remove();
 }
-const ios = () => esIOS(navigator.userAgent, navigator.maxTouchPoints);
-
 $('#ta-cerrar').addEventListener('click', cerrarAcceso);
 $('#ta-coche').addEventListener('click', () => {
   const a = ultimoAcceso?.acceso;
   if (a) abrirEnlace(urlGoogleCoche(a.lat, a.lon));
 });
-$('#ta-otra').addEventListener('click', () => {
-  const a = ultimoAcceso?.acceso;
-  if (a) abrirEnlace(urlOtraApp(a.lat, a.lon, `Aparcamiento: ${a.via}`, ios()));
+$('#ta-ruta').addEventListener('click', () => {
+  const p = ultimoAcceso?.punto;
+  if (p && ultimoAcceso?.estado === 'ok') abrirRuta(p.lat, p.lon);
 });
 $('#ta-guardar').addEventListener('click', () => {
   if (!ultimoAcceso) return;
   const { punto, acceso } = ultimoAcceso;
   abrirSitio(null, punto, { acceso });
 });
+
+// ---------------------------------------------------------------- Ruta a pie (fase 9)
+
+interface RutaActual {
+  destino: { lat: number; lon: number };
+  /** Del coche al punto, [lon, lat]: centros de las celdas de la traza y el punto exacto al final. */
+  linea: [number, number][];
+  perfil: Perfil;
+  acceso: AccesoSitio;
+  dificultad: Dificultad;
+  completa: boolean;
+}
+let rutaActual: RutaActual | null = null;
+let consultaRuta = 0;
+let seguimiento: (Seguimiento & { lat: number; lon: number; precision: number }) | null = null;
+let dejarGps: (() => void) | null = null;
+let bloqueoPantalla: { release(): Promise<void> } | null = null;
+
+function cerrarRuta() {
+  consultaRuta++;
+  pararSeguimiento();
+  rutaActual = null;
+  $('#tarjeta-ruta').hidden = true;
+  delete document.body.dataset.rutaAbierta;
+  pintarTrazaAcceso([]);
+}
+
+/** Ficha «Ruta a pie» sobre el mapa: trazado del coche al punto, distancia, tiempo, subida, dificultad y perfil. */
+async function abrirRuta(lat: number, lon: number) {
+  const n = ++consultaRuta;
+  pararSeguimiento();
+  rutaActual = null;
+  irA('p-mapa');
+  if (!$('#tarjeta-acceso').hidden) { consultaAcceso++; $('#tarjeta-acceso').hidden = true; }
+  $('#tarjeta-zona').hidden = true;
+  const t = $('#tarjeta-ruta');
+  t.hidden = false; t.dataset.estado = 'cargando'; delete t.dataset.seguir;
+  document.body.dataset.rutaAbierta = '1';
+  $('#ru-estado').textContent = 'Calculando la ruta…'; $('#ru-estado').hidden = false;
+  $('#ru-datos').hidden = true; $('#ru-perfil').replaceChildren(); $('#ru-perfil-dato').textContent = ''; $('#ru-via').textContent = '';
+  for (const b of ['#ru-seguir-btn', '#ru-coche']) $<HTMLButtonElement>(b).disabled = true;
+  $('#ru-seguir-btn').textContent = 'Seguir con GPS';
+  pintarTrazaAcceso([{ type: 'Feature', properties: { tipo: 'destino' }, geometry: { type: 'Point', coordinates: [lon, lat] } }]);
+  const c = await calcularAcceso(lat, lon);
+  if (n !== consultaRuta) return;
+  const d = manifest ? await datosAcceso(manifest).catch(() => null) : null;
+  if (c.estado !== 'ok' || !c.acceso || !c.celdas || !d) {
+    t.dataset.estado = c.estado === 'ok' ? 'error' : c.estado;
+    $('#ru-estado').textContent = c.texto || 'No se pudo calcular la ruta.';
+    return;
+  }
+  const celdas = [...c.celdas].reverse();
+  const alts = await altitudes(d.cab, d.lector, celdas).catch(() => celdas.map(() => NaN));
+  if (n !== consultaRuta) return;
+  const per = perfil(celdas, alts, d.cab.res);
+  const linea: [number, number][] = [...celdas.map((x) => centroCelda(d.cab, x)), [lon, lat]];
+  const dif = dificultad(c.acceso.tiempo_min, c.acceso.subida_m);
+  rutaActual = { destino: { lat, lon }, linea, perfil: per, acceso: c.acceso, dificultad: dif, completa: !!c.completa };
+  t.dataset.estado = 'ok';
+  $('#ru-via').textContent = `desde ${c.acceso.via}`;
+  $('#ru-distancia').textContent = textoDistancia(per.total_m);
+  $('#ru-tiempo').textContent = textoTiempo(c.acceso.tiempo_min);
+  $('#ru-subida').textContent = textoSubida(c.acceso.subida_m);
+  const insignia = $('#ru-dificultad');
+  insignia.textContent = NOMBRE_DIFICULTAD[dif]; insignia.className = `insignia-dif dif-${dif}`; insignia.dataset.dificultad = dif;
+  $('#ru-datos').hidden = false;
+  $('#ru-estado').textContent = c.completa ? '' : 'El trazado se corta antes de llegar al coche: síguelo solo como orientación.';
+  $('#ru-estado').hidden = !!c.completa;
+  for (const b of ['#ru-seguir-btn', '#ru-coche']) $<HTMLButtonElement>(b).disabled = false;
+  pintarPerfil($('#ru-perfil'), per, (txt) => ($('#ru-perfil-dato').textContent = txt));
+  pintarTrazaAcceso([
+    { type: 'Feature', properties: { tipo: 'traza' }, geometry: { type: 'LineString', coordinates: linea } },
+    { type: 'Feature', properties: { tipo: 'destino' }, geometry: { type: 'Point', coordinates: [lon, lat] } },
+    { type: 'Feature', properties: { tipo: 'aparcamiento', via: c.acceso.via }, geometry: { type: 'Point', coordinates: [c.acceso.lon, c.acceso.lat] } },
+  ]);
+  encuadrar(linea, '#tarjeta-ruta', true);
+  document.body.dataset.ruta = 'ok';
+}
+
+async function pedirBloqueoPantalla() {
+  try { bloqueoPantalla = await (navigator as any).wakeLock?.request('screen') ?? null; } catch { bloqueoPantalla = null; }
+}
+document.addEventListener('visibilitychange', () => { if (dejarGps && document.visibilityState === 'visible') pedirBloqueoPantalla(); });
+
+/** Modo «Seguir con GPS»: distancia que queda siguiendo la ruta y aviso si te alejas más de 80 m. Sin red: solo GPS. */
+function seguirRuta() {
+  if (!gps || !rutaActual) return;
+  const t = $('#tarjeta-ruta');
+  t.dataset.seguir = '1';
+  $('#ru-seguir').hidden = false;
+  $('#ru-seguir-btn').textContent = 'Dejar de seguir';
+  $('#ru-restante').textContent = '—';
+  $('#ru-fuera').hidden = true;
+  $('#ru-gps').textContent = 'Buscando tu posición…';
+  pedirBloqueoPantalla();
+  const ruta = rutaActual;
+  dejarGps = gps.escuchar((pos) => {
+    if (rutaActual !== ruta) return;
+    const s = seguir(ruta.linea, pos);
+    seguimiento = { ...s, ...pos };
+    $('#ru-restante').textContent = textoDistancia(s.restante_m);
+    $('#ru-fuera').hidden = !s.fuera;
+    $('#ru-fuera').textContent = s.fuera ? `Fuera de ruta: estás a ${textoDistancia(s.aRuta_m)} del trazado. Vuelve hacia la línea azul.` : '';
+    t.dataset.fuera = String(s.fuera);
+    $('#ru-gps').textContent = `Llevas ${textoDistancia(s.recorrido_m)} · GPS ±${Math.round(pos.precision)} m`;
+    if (mapa && !mapa.getBounds().contains([pos.lon, pos.lat])) mapa.easeTo({ center: [pos.lon, pos.lat], duration: E2E ? 0 : 500 });
+  });
+}
+
+function pararSeguimiento() {
+  dejarGps?.(); dejarGps = null; seguimiento = null;
+  bloqueoPantalla?.release().catch(() => {}); bloqueoPantalla = null;
+  const t = $('#tarjeta-ruta');
+  delete t.dataset.seguir; delete t.dataset.fuera;
+  $('#ru-seguir').hidden = true;
+  $('#ru-seguir-btn').textContent = 'Seguir con GPS';
+}
+
+$('#ru-seguir-btn').addEventListener('click', () => (dejarGps ? pararSeguimiento() : seguirRuta()));
+$('#ru-coche').addEventListener('click', () => { const a = rutaActual?.acceso; if (a) abrirEnlace(urlGoogleCoche(a.lat, a.lon)); });
+$('#ru-cerrar').addEventListener('click', cerrarRuta);
 
 // ---------------------------------------------------------------- formulario de sitio
 
@@ -639,6 +768,20 @@ function estadoEn(p: PuntoMeteo, especie: string): ResultadoSemaforo | null {
   return semaforo(serie, r, hoyZona(), { edadHoras: edadHoras(meteo) });
 }
 
+/** Semáforo de una especie en el punto meteo `id` un día concreto (pestaña Hoy: hoy … +15 con la serie guardada). */
+function estadoPunto(id: number, especie: string, fecha: string): ResultadoSemaforo | null {
+  const r = reglasDe(especie);
+  const serie = meteo?.puntos[String(id)];
+  if (!r || !serie || !meteo) return null;
+  return semaforo(serie, r, fecha, { edadHoras: edadHoras(meteo) });
+}
+
+function textoMeteoCorto(): string {
+  if (!meteo) return navigator.onLine ? 'Sin datos del tiempo todavía: los sitios salen sin semáforo.' : 'Sin conexión y sin datos del tiempo guardados: los sitios salen sin semáforo.';
+  const h = edadHoras(meteo);
+  return `Tiempo ${navigator.onLine ? '' : 'guardado, '}actualizado ${haceTexto(h)}${h > CADUCIDAD_H ? ' · datos antiguos: semáforo en gris' : ''}.`;
+}
+
 function fechasTexto(r: ResultadoSemaforo): string {
   if (r.estado === 'verde' && r.hasta) return `Hasta el ${ddmm(r.hasta)} aprox.`;
   if (r.estado === 'amarillo' && r.desde) return `Desde el ${ddmm(r.desde)} aprox.`;
@@ -668,7 +811,7 @@ function elegirPunto(lat: number, lon: number, conTarjeta: boolean) {
   puntoSel = p;
   localStorage.setItem(CLAVE_PUNTO, String(p.id));
   pintarPuntoMapa();
-  if (conTarjeta) { if (!$('#tarjeta-acceso').hidden) cerrarAcceso(); $('#tarjeta-zona').hidden = false; }
+  if (conTarjeta && $('#tarjeta-ruta').hidden) { if (!$('#tarjeta-acceso').hidden) cerrarAcceso(); $('#tarjeta-zona').hidden = false; }
   pintarTarjeta();
 }
 
@@ -682,6 +825,7 @@ function pintarTarjeta() {
 $('#tz-cerrar').addEventListener('click', () => ($('#tarjeta-zona').hidden = true));
 $('#tz-ver').addEventListener('click', () => irA('p-zona'));
 $('#zona-ir-mapa').addEventListener('click', () => irA('p-mapa'));
+$('#zona-volver').addEventListener('click', () => irA('p-hoy'));
 
 function pintarEstadoMeteo() {
   const el = $('#estado-meteo');
@@ -774,6 +918,7 @@ function repintarMeteo() {
   pintarSemaforoMapa();
   pintarTarjeta();
   if ($('#p-zona').classList.contains('activa')) pintarZona();
+  if ($('#p-hoy').classList.contains('activa')) pintarHoy();
 }
 
 async function cargarMeteo(forzar: boolean) {
@@ -876,6 +1021,32 @@ $('#btn-borrar-mapas').addEventListener('click', async () => {
 });
 window.addEventListener('online', () => { pintarAjustes(); guardarFotosSinConexion(pintarEstadoGuia); });
 window.addEventListener('offline', () => pintarAjustes());
+
+iniciarHoy({
+  manifest: () => manifest,
+  hoy: hoyZona,
+  hayMeteo: () => !!meteo,
+  textoMeteo: textoMeteoCorto,
+  estadoPunto,
+  posicion: () => gps?.ultima ?? null,
+  verEnMapa: async (especie, lat, lon) => {
+    irA('p-mapa');
+    const sel = $<HTMLSelectElement>('#sel-especie');
+    if (sel.value !== especie) { sel.value = especie; sel.dispatchEvent(new Event('change')); }
+    mapa?.jumpTo({ center: [lon, lat], zoom: Math.max(14, mapa.getZoom()) });
+    mostrarAcceso(lat, lon);
+  },
+  rutaAPie: (_especie, lat, lon) => abrirRuta(lat, lon),
+  coche: async (lat, lon) => {
+    const c = await calcularAcceso(lat, lon);
+    if (c.acceso) abrirEnlace(urlGoogleCoche(c.acceso.lat, c.acceso.lon));
+    else avisar(`Sin aparcamiento estimado: ${c.texto}`, 5000);
+  },
+  guardar: (especie, lat, lon) => abrirSitio(null, { lat, lon }, { especie }),
+  hayFicha: async (especie) => !!(await cargarGuia()) && hayFicha(fichaDeEspecieMapa(especie)),
+  verFicha: (especie) => { irA('p-guia'); abrirFicha(fichaDeEspecieMapa(especie)); },
+  irZona: () => irA('p-zona'),
+});
 
 iniciarReconocer({
   manifest: () => manifest,

@@ -20,6 +20,7 @@
     <symbol id="i-centrar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/><path d="M12 1.8v3.4M12 18.8v3.4M1.8 12h3.4M18.8 12h3.4"/></symbol>
     <symbol id="i-mas" viewBox="0 0 24 24"><path d="M12 4.5v15M4.5 12h15"/></symbol>
     <symbol id="i-seta" viewBox="0 0 24 24"><path d="M3 12.5C3 7.3 7 4 12 4s9 3.3 9 8.5z"/><path d="M9.5 12.5v5.2a2.5 2.5 0 0 0 5 0v-5.2"/></symbol>
+    <symbol id="i-calendario" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="m9 15 2 2 4-4"/></symbol>
     <symbol id="i-fotos" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="m21 15.5-4.5-4.5L7 20"/></symbol>
   </svg>
   <main id="pantallas">
@@ -89,10 +90,33 @@
         <p class="ta-aviso">Estimación: puede haber fincas privadas, vallas o barrancos.</p>
         <div class="ta-botones">
           <button id="ta-coche" class="btn btn-primario">Cómo llegar en coche</button>
-          <button id="ta-otra" class="btn">Abrir en otra app</button>
+          <button id="ta-ruta" class="btn">Ruta a pie</button>
           <button id="ta-guardar" class="btn">Guardar sitio</button>
         </div>
         <button id="ta-cerrar" class="btn-x" aria-label="Cerrar">×</button>
+      </div>
+      <div id="tarjeta-ruta" class="tarjeta-acceso tarjeta-ruta" role="region" aria-label="Ruta a pie" hidden>
+        <div class="ta-cab"><b>Ruta a pie</b><span id="ru-via" class="ta-coord"></span></div>
+        <div id="ru-seguir" class="ru-seguir" hidden>
+          <p class="ru-quedan"><span>Te quedan</span><b id="ru-restante">—</b></p>
+          <p id="ru-fuera" class="ru-fuera" role="alert" hidden></p>
+          <p id="ru-gps" class="ta-estado" role="status"></p>
+        </div>
+        <p id="ru-estado" class="ta-estado" role="status"></p>
+        <dl id="ru-datos" class="ta-datos ru-datos" hidden>
+          <div><dt>Distancia</dt><dd id="ru-distancia"></dd></div>
+          <div><dt>Tiempo</dt><dd id="ru-tiempo"></dd></div>
+          <div><dt>Subida</dt><dd id="ru-subida"></dd></div>
+          <div><dt>Dificultad</dt><dd><span id="ru-dificultad" class="insignia-dif"></span></dd></div>
+        </dl>
+        <div id="ru-perfil" class="ru-perfil"></div>
+        <p id="ru-perfil-dato" class="grafico-dato" aria-live="polite"></p>
+        <p class="ta-aviso">Trazado aproximado (rejilla de 100 m). Puede cruzar fincas, vallas o barrancos: manda lo que veas.</p>
+        <div class="ta-botones ru-botones">
+          <button id="ru-seguir-btn" class="btn btn-primario">Seguir con GPS</button>
+          <button id="ru-coche" class="btn">Cómo llegar en coche</button>
+        </div>
+        <button id="ru-cerrar" class="btn-x" aria-label="Cerrar">×</button>
       </div>
       <p id="sin-datos" class="sin-datos" role="status" hidden>No hay mapas. Conéctate a internet o descárgalos en Ajustes.</p>
     </section>
@@ -110,9 +134,49 @@
       </div>
     </section>
 
+    <section id="p-hoy" class="pantalla" aria-label="Hoy">
+      <header class="cab"><h1>Hoy: dónde ir</h1></header>
+      <div class="cuerpo">
+        <div class="aviso-seguridad" role="note">No consumas ninguna seta sin confirmación de un experto</div>
+        <p id="hoy-meteo" class="estado"></p>
+        <div class="campo">
+          <span class="etq" id="etq-dia">Día</span>
+          <div id="hoy-dias" class="chips chips-dias" role="group" aria-labelledby="etq-dia"></div>
+        </div>
+        <label class="campo"><span class="etq">Otro día (hasta dentro de 15)</span><input id="hoy-fecha" type="date" /></label>
+        <p id="hoy-confianza" class="confianza" role="status"></p>
+        <label class="campo"><span class="etq">Hasta qué dificultad</span>
+          <select id="hoy-dificultad">
+            <option value="">Cualquiera</option>
+            <option value="dificil">Hasta difícil</option>
+            <option value="moderada">Hasta moderada</option>
+            <option value="facil">Solo fácil</option>
+          </select>
+        </label>
+        <nav class="saltos" aria-label="Secciones de Hoy">
+          <a href="#tit-top-general" class="chip">Mejores sitios</a><a href="#tit-top-especie" class="chip">Por seta</a><a href="#tit-calendario" class="chip">Calendario</a>
+        </nav>
+        <h2 id="tit-top-general">Mejores sitios</h2>
+        <p id="hoy-general-nota" class="nota"></p>
+        <ol id="top-general" class="tops"></ol>
+        <h2 id="tit-top-especie">Top 10 por seta</h2>
+        <div class="fila-especie">
+          <label class="campo"><span class="etq">Seta</span><select id="hoy-especie"></select></label>
+          <button id="hoy-ver-ficha" class="btn btn-ficha" hidden><svg class="ico" aria-hidden="true"><use href="#i-libro"/></svg>Ver ficha</button>
+        </div>
+        <ol id="top-especie" class="tops"></ol>
+        <h2 id="tit-calendario">Calendario</h2>
+        <p class="nota">Meses de temporada de cada seta y cómo va el día elegido. Toca una para ver sus mejores sitios.</p>
+        <div id="calendario" class="calendario"></div>
+        <button id="hoy-zona" class="btn"><svg class="ico" aria-hidden="true"><use href="#i-semaforo"/></svg>Lluvia y temperaturas de la zona del mapa</button>
+        <p class="nota fija">Orientativo: reglas de aficionado, no ciencia exacta. La puntuación mide lo bueno que es el monte, no si hay setas.</p>
+      </div>
+    </section>
+
     <section id="p-zona" class="pantalla" aria-label="Zona">
       <header class="cab"><h1>Zona: cuándo ir</h1></header>
       <div class="cuerpo">
+        <button id="zona-volver" class="btn">← Volver a Hoy</button>
         <div class="fila-estado">
           <p id="estado-meteo" class="estado">Sin datos del tiempo.</p>
           <button id="btn-meteo" class="btn">Actualizar tiempo</button>
@@ -216,6 +280,10 @@
         <button id="btn-descargar" class="btn btn-grande">Descargar mapas para uso sin cobertura</button>
         <button id="btn-borrar-mapas" class="btn btn-peligro" hidden>Borrar mapas descargados</button>
         <p id="estado-almacen" class="nota"></p>
+        <h2>Pestaña Hoy</h2>
+        <label class="campo"><span class="etq">Sitios por seta en «Mejores sitios»</span>
+          <select id="ajuste-top-n"><option value="2">2 por seta</option><option value="3">3 por seta</option></select>
+        </label>
         <h2>Guía de especies sin cobertura</h2>
         <p id="estado-guia" class="estado">Comprobando…</p>
         <button id="btn-guia-fotos" class="btn" hidden>Guardar las fotos que faltan</button>
@@ -250,7 +318,7 @@
   <nav class="pestanas" aria-label="Secciones">
     <button data-p="p-mapa" class="activa" aria-current="page"><svg class="ico" aria-hidden="true"><use href="#i-mapa"/></svg><span>Mapa</span></button>
     <button data-p="p-sitios"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg><span>Mis sitios</span></button>
-    <button data-p="p-zona"><svg class="ico" aria-hidden="true"><use href="#i-semaforo"/></svg><span>Zona</span></button>
+    <button data-p="p-hoy"><svg class="ico" aria-hidden="true"><use href="#i-calendario"/></svg><span>Hoy</span></button>
     <button data-p="p-guia"><svg class="ico" aria-hidden="true"><use href="#i-libro"/></svg><span>Guía</span></button>
     <button data-p="p-reconocer"><svg class="ico" aria-hidden="true"><use href="#i-camara"/></svg><span>Reconocer</span></button>
     <button data-p="p-ajustes"><svg class="ico" aria-hidden="true"><use href="#i-ajustes"/></svg><span>Ajustes</span></button>

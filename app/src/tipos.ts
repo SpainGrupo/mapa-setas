@@ -32,6 +32,8 @@ export interface Manifest {
   rutas?: string | null;
   /** Recintos donde recoger exige autorización (capa 'restricciones': tipo, nombre, zona, texto), textos por tipo y aviso legal. */
   restricciones?: { capa: string; tipos: Record<string, string>; aviso: string } | null;
+  /** Sitios candidatos por especie (pipeline sitios.py), para los tops de la pestaña Hoy. */
+  sitios?: { archivo: string; version: number; n_por_especie?: Record<string, number> } | null;
   archivos: { nombre: string; bytes: number }[];
   total_bytes: number;
   /** Reconocedor offline (modelo/construir.py): descarga opcional aparte, no cuenta en total_bytes. */
@@ -43,6 +45,8 @@ export interface PaqueteModelo {
   ort_version: string;
   etiquetas: number;
   dir: string;                 // relativo a data/, con barra final
+  /** Sitios candidatos por especie (pipeline sitios.py), para los tops de la pestaña Hoy. */
+  sitios?: { archivo: string; version: number; n_por_especie?: Record<string, number> } | null;
   archivos: { nombre: string; bytes: number }[];
   total_bytes: number;
 }

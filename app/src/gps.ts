@@ -22,6 +22,7 @@ export class Gps {
   private watch: number | null = null;
   private esperando: Espera[] = [];
   private avisado = false;      // el aviso de error sale una vez hasta la siguiente lectura buena
+  private escuchas = new Set<(p: Posicion) => void>();
   constructor(private mapa: MapaML, private alError: (m: string) => void) {}
 
   private montar() {
@@ -50,6 +51,7 @@ export class Gps {
         { type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: [pos.lon, pos.lat] } },
       ] });
       this.esperando.splice(0).forEach((w) => { clearTimeout(w.t); w.ok(pos); });
+      this.escuchas.forEach((f) => f(pos));
     }, (e) => {
       const denegado = e.code === e.PERMISSION_DENIED;
       const mensaje = denegado ? SIN_PERMISO : 'No se pudo obtener la posición GPS.';
@@ -73,6 +75,14 @@ export class Gps {
       this.esperando.push(w);
       this.iniciar();
     });
+  }
+
+  /** Llama a `f` con cada lectura nueva (arranca el GPS); devuelve la función para dejar de escuchar. */
+  escuchar(f: (p: Posicion) => void): () => void {
+    this.escuchas.add(f);
+    this.iniciar();
+    if (this.ultima) f(this.ultima);
+    return () => { this.escuchas.delete(f); };
   }
 
   async centrar() {

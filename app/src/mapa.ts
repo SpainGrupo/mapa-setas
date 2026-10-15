@@ -10,6 +10,8 @@ import { archivoOpfs } from './opfs';
 import { BASE_DATOS } from './datos';
 import type { Manifest } from './tipos';
 import { NOMBRE_TIPO_RESTRICCION, ORIENTATIVO, aRestriccion, restriccionesEn, teselaDe, type Restriccion } from './restricciones';
+import { etiquetaTitularidad, TEXTO_TITULARIDAD, type Titularidad } from './titularidad';
+import { AVISO_CITAS, COLOR_ORIGEN, expresionColorOrigen, filasCita, filtroCitas } from './citas';
 
 export const ATRIBUCION = 'IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, © OpenStreetMap ODbL, Protomaps';
 /** Ortofoto PNOA del IGN (WMTS, solo KVP según GetCapabilities; GoogleMapsCompatible hasta el nivel 19, JPEG). */
@@ -105,6 +107,11 @@ export const NOMBRE_TIPO_RUTA: Record<string, string> = {
 };
 export const CAPAS_RUTAS = ['rutas-fondo', 'rutas-marca', 'rutas-otros', 'rutas-etiqueta'];
 export const CAPAS_RESTRICCIONES = ['restricciones-relleno', 'restricciones-linea'];
+export const CAPAS_TITULARIDAD = ['titularidad-relleno', 'titularidad-linea', 'pasos-linea'];
+export const CAPAS_SOLO_PUBLICOS = ['fuera-publico'];
+export const CAPAS_CITAS = ['citas'];
+export const COLOR_TITULARIDAD = { monte_junta: '#2e7d32', monte_municipal: '#1565c0', paso: '#8d5524' };
+const CLASES_MONTE: any = ['in', ['get', 'clase'], ['literal', ['monte_junta', 'monte_municipal']]];
 export const COLOR_RESTRICCION = '#c62828';
 const RAYADO = 'rayado-restriccion';
 
@@ -131,6 +138,55 @@ function popupRestriccion(r: Restriccion): HTMLElement {
   return div;
 }
 const MARCADAS: any = ['in', ['get', 'tipo'], ['literal', ['GR', 'PR', 'SL']]];
+
+function popupMonte(p: Record<string, unknown>): HTMLElement {
+  const div = document.createElement('div');
+  div.className = 'popup-monte';
+  const clase = String(p.clase ?? '') as 'monte_junta' | 'monte_municipal';
+  const b = document.createElement('strong'); b.textContent = String(p.nombre || 'Monte público');
+  const t = document.createElement('div'); t.className = 'pm-clase'; t.dataset.clase = clase; t.textContent = TEXTO_TITULARIDAD[clase] ?? '';
+  const d = document.createElement('div'); d.textContent = [p.detalle, p.codigo].filter(Boolean).join(' · ');
+  const a = document.createElement('div'); a.className = 'aviso'; a.textContent = `${ORIENTATIVO} Fuente: REDIAM, Catálogo de Montes Públicos.`;
+  div.append(b, t, d, a);
+  return div;
+}
+
+function popupPaso(p: Record<string, unknown>): HTMLElement {
+  const div = document.createElement('div');
+  div.className = 'popup-paso';
+  const b = document.createElement('strong'); b.textContent = String(p.nombre || (p.tipo === 'via_pecuaria' ? 'Vía pecuaria' : 'Sendero de uso público'));
+  const t = document.createElement('div'); t.textContent = `${p.tipo === 'via_pecuaria' ? 'Vía pecuaria' : 'Sendero de uso público'}: ${TEXTO_TITULARIDAD.paso_publico.toLowerCase()}.`;
+  const a = document.createElement('div'); a.className = 'aviso'; a.textContent = 'Fuente: REDIAM. El trazado de las vías pecuarias no deslindadas es aproximado.';
+  div.append(b, t, a);
+  return div;
+}
+
+function popupCita(p: Record<string, unknown>, nombre: (id: string) => string): HTMLElement {
+  const div = document.createElement('div');
+  div.className = 'popup-cita';
+  const dl = document.createElement('dl');
+  for (const f of filasCita(p, nombre)) {
+    const dt = document.createElement('dt'); dt.textContent = f.etiqueta;
+    const dd = document.createElement('dd');
+    if (f.enlace) {
+      const a = document.createElement('a'); a.href = f.enlace; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = f.valor;
+      dd.append(a);
+    } else dd.textContent = f.valor;
+    if (f.etiqueta === 'Origen') {
+      const m = document.createElement('span'); m.className = 'muestra-origen'; m.setAttribute('aria-hidden', 'true');
+      m.style.setProperty('--c', COLOR_ORIGEN[String(p.origen) as keyof typeof COLOR_ORIGEN] ?? COLOR_ORIGEN.imba);
+      dd.prepend(m);
+    }
+    dl.append(dt, dd);
+  }
+  const a = document.createElement('div'); a.className = 'aviso'; a.textContent = AVISO_CITAS;
+  div.append(dl, a);
+  return div;
+}
+
+/** Nombre de especie para los popups de citas (main.ts lo rellena con el manifest y la guía). */
+let nombreEspecie: (id: string) => string = (id) => id;
+export function ponerNombresEspecie(f: (id: string) => string) { nombreEspecie = f; }
 
 function capasRutas(): { lineas: LayerSpecification[]; etiqueta: LayerSpecification } {
   const oculta = { visibility: 'none' as const };
@@ -175,7 +231,8 @@ function popupRuta(p: Record<string, unknown>): HTMLElement {
   return div;
 }
 
-function estilo(conMeteo: boolean, archivoRutas: string | null, archivoRestricciones: string | null): StyleSpecification {
+function estilo(conMeteo: boolean, archivoRutas: string | null, archivoRestricciones: string | null,
+  archivoTitularidad: string | null = null, archivoCitas: string | null = null): StyleSpecification {
   const raiz = new URL('./', document.baseURI).href;
   const base = layers('protomaps', namedFlavor('light'), { lang: 'es' }) as LayerSpecification[];
   const primerSimbolo = base.findIndex((l) => l.type === 'symbol');
@@ -200,8 +257,25 @@ function estilo(conMeteo: boolean, archivoRutas: string | null, archivoRestricci
       paint: { 'fill-pattern': RAYADO, 'fill-opacity': 0.75 } },
     { id: 'restricciones-linea', type: 'line', source: 'restricciones', 'source-layer': 'restricciones',
       paint: { 'line-color': COLOR_RESTRICCION, 'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.2, 14, 2.5] } });
+  if (archivoTitularidad) propias.push(
+    { id: 'titularidad-relleno', type: 'fill', source: 'titularidad', 'source-layer': 'titularidad', filter: CLASES_MONTE,
+      layout: { visibility: 'none' },
+      paint: { 'fill-color': ['match', ['get', 'clase'], 'monte_junta', COLOR_TITULARIDAD.monte_junta, COLOR_TITULARIDAD.monte_municipal],
+        'fill-opacity': 0.12 } },
+    { id: 'titularidad-linea', type: 'line', source: 'titularidad', 'source-layer': 'titularidad', filter: CLASES_MONTE,
+      layout: { visibility: 'none' },
+      paint: { 'line-color': ['match', ['get', 'clase'], 'monte_junta', COLOR_TITULARIDAD.monte_junta, COLOR_TITULARIDAD.monte_municipal],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1, 14, 2.5] } },
+    { id: 'pasos-linea', type: 'line', source: 'titularidad', 'source-layer': 'pasos', minzoom: 9,
+      layout: { visibility: 'none', 'line-cap': 'round' },
+      paint: { 'line-color': COLOR_TITULARIDAD.paso, 'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1, 14, 3],
+        'line-dasharray': [1, 1.5], 'line-opacity': 0.9 } });
   const rutas = archivoRutas ? capasRutas() : null;
   if (rutas) propias.push(...rutas.lineas);
+  if (archivoCitas) propias.push(
+    { id: 'citas', type: 'circle', source: 'citas', 'source-layer': 'citas', layout: { visibility: 'none' },
+      paint: { 'circle-color': expresionColorOrigen() as any, 'circle-radius': ['interpolate', ['linear'], ['zoom'], 7, 3.5, 14, 7],
+        'circle-stroke-color': '#ffffff', 'circle-stroke-width': 1.5, 'circle-opacity': 0.95 } });
   const etiquetasCurvas: LayerSpecification = {
     id: 'curvas-cota', type: 'symbol', source: 'curvas', 'source-layer': 'curvas', minzoom: 13,
     filter: ['get', 'principal'],
@@ -222,6 +296,8 @@ function estilo(conMeteo: boolean, archivoRutas: string | null, archivoRestricci
       ...(conMeteo ? { meteo_zonas: { type: 'vector' as const, url: pm('meteo_zonas.pmtiles') } } : {}),
       ...(archivoRutas ? { rutas: { type: 'vector' as const, url: pm(archivoRutas) } } : {}),
       ...(archivoRestricciones ? { restricciones: { type: 'vector' as const, url: pm(archivoRestricciones) } } : {}),
+      ...(archivoTitularidad ? { titularidad: { type: 'vector' as const, url: pm(archivoTitularidad) } } : {}),
+      ...(archivoCitas ? { citas: { type: 'vector' as const, url: pm(archivoCitas) } } : {}),
     },
     layers: [{ id: 'pnoa', type: 'raster', source: 'pnoa', layout: { visibility: 'none' } }, ...base.slice(0, primerSimbolo), ...propias.filter((l) => conMeteo || l.id !== 'semaforo'),
       ...base.slice(primerSimbolo), etiquetasCurvas, ...(rutas ? [rutas.etiqueta] : [])],
@@ -233,7 +309,7 @@ export function crearMapa(contenedor: HTMLElement, m: Manifest): MapaML {
   const mx = (e - o) * 0.25, my = (n - s) * 0.25;
   const mapa = new maplibregl.Map({
     container: contenedor,
-    style: estilo(!!m.meteo, m.rutas ?? null, m.restricciones?.capa ?? null),
+    style: estilo(!!m.meteo, m.rutas ?? null, m.restricciones?.capa ?? null, m.titularidad?.capa ?? null, m.citas?.capa ?? null),
     bounds: [[o, s], [e, n]],
     maxBounds: [[o - mx, s - my], [e + mx, n + my]],
     minZoom: 7,
@@ -249,7 +325,16 @@ export function crearMapa(contenedor: HTMLElement, m: Manifest): MapaML {
   mapa.once('load', () => contenedor.querySelector('.maplibregl-compact-show')?.classList.remove('maplibregl-compact-show'));
   mapa.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-left');
   // Un solo manejador: primero senderos (con margen de 10 px, las líneas son finas) y si no, espacio protegido.
+  const visible = (id: string) => !!mapa.getLayer(id) && mapa.getLayoutProperty(id, 'visibility') === 'visible';
   mapa.on('click', (ev: MapMouseEvent) => {
+    const { x: cx, y: cy } = ev.point;
+    const ancla = ev.point.y < mapa.getContainer().clientHeight * 0.6 ? 'top' : 'bottom';
+    const cita = visible('citas') ? mapa.queryRenderedFeatures([[cx - 8, cy - 8], [cx + 8, cy + 8]], { layers: ['citas'] })[0] : undefined;
+    if (cita) {
+      new maplibregl.Popup({ maxWidth: '300px', className: 'popup-citas', anchor: ancla }).setLngLat(ev.lngLat)
+        .setDOMContent(popupCita(cita.properties, nombreEspecie)).addTo(mapa);
+      return;
+    }
     const visibles = CAPAS_RUTAS.slice(0, 3).filter((id) => mapa.getLayer(id) && mapa.getLayoutProperty(id, 'visibility') === 'visible');
     const { x, y } = ev.point;
     const ruta = visibles.length ? mapa.queryRenderedFeatures([[x - 10, y - 10], [x + 10, y + 10]], { layers: visibles })[0] : undefined;
@@ -294,6 +379,11 @@ export function ponerIdoneidad(mapa: MapaML, especie: string, umbral: number) {
   mapa.addSource('idoneidad', { type: 'raster', url: pm(`idoneidad_${especie}_${umbral}.pmtiles`), tileSize: 256 });
   mapa.addLayer({ id: 'idoneidad', type: 'raster', source: 'idoneidad', paint: { 'raster-opacity': 0.72, 'raster-resampling': 'nearest' } },
     'protegidos-relleno');
+}
+
+/** Filtra la capa de citas por la especie del mapa (null = todas). */
+export function filtrarCitas(mapa: MapaML, especie: string | null) {
+  if (mapa.getLayer('citas')) mapa.setFilter('citas', filtroCitas(especie) as any);
 }
 
 export function verCapa(mapa: MapaML, ids: string[], visible: boolean) {

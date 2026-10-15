@@ -490,6 +490,48 @@ def exportar_restricciones(out: Path = APP):
     return gdf
 
 
+# Capa «Citas y sitios conocidos» (2026-10-15): puntos de citas.geojson dentro del mapa base.
+ORIGENES_CITAS = ("foro", "literatura", "inat", "observation", "gbif", "imba")
+ID_CITAS_A_PIPELINE = {"boletus_reticulatus": "boletus_aestivalis"}     # id de la guía → clave de especies.yaml
+
+
+def citas_capa(citas: dict, bbox) -> list[dict]:
+    """Features de la capa de citas dentro de bbox=(oeste, sur, este, norte), con la especie del mapa
+    (`especie_mapa`, clave de especies.yaml) además del id de la guía."""
+    out = []
+    for f in citas.get("features", []):
+        p = f["properties"]
+        if not (bbox[0] <= p["lon"] <= bbox[2] and bbox[1] <= p["lat"] <= bbox[3]):
+            continue
+        q = {k: p.get(k) for k in ("especie", "fecha", "precision_m", "origen", "fuente", "url", "licencia",
+                                   "atribucion", "confianza")}
+        q["especie_mapa"] = ID_CITAS_A_PIPELINE.get(p["especie"], p["especie"])
+        q["fecha"] = (q["fecha"] or "")[:10] or None
+        out.append({"type": "Feature", "geometry": f["geometry"], "properties": {k: v for k, v in q.items()
+                                                                                 if v is not None}})
+    return out
+
+
+def exportar_citas(out: Path = APP) -> dict:
+    from collections import Counter
+    ruta = OUT / "citas.geojson"
+    if not ruta.exists():
+        print("  WARNING: falta data/out/citas.geojson (uv run python -m setas_pipeline.citas)", flush=True)
+        return {}
+    bbox, _ = _bbox_zona()
+    feats = citas_capa(json.loads(ruta.read_text()), bbox)
+    with tempfile.TemporaryDirectory() as tmp:
+        gj = Path(tmp) / "citas.geojson"
+        gj.write_text(json.dumps({"type": "FeatureCollection", "features": feats}, ensure_ascii=False))
+        _tippecanoe(gj, out / "citas.pmtiles", "citas", 6, 14,
+                    ["-r1", "--no-feature-limit", "--no-tile-size-limit",
+                     "--attribution=GBIF.org · iNaturalist · Observation.org · foros y literatura (cada cita con su licencia)"])
+    res = {"n": len(feats), "por_origen": dict(Counter(f["properties"]["origen"] for f in feats))}
+    (OUT / "citas_capa.json").write_text(json.dumps(res, ensure_ascii=False))
+    print(f"  citas: {res}", flush=True)
+    return res
+
+
 def exportar_base(out: Path = APP, maxzoom: int = ZOOM_BASE_MAX, build: str | None = None):
     """Extracto del build diario de Protomaps recortado a la zona (+ margen)."""
     import requests
@@ -530,6 +572,10 @@ def escribir_manifest(out: Path = APP) -> dict:
         # Modelo v2: capa legal (Zonas de Reserva de los PORN, Reservas Naturales, Parque Nacional).
         "restricciones": ({"capa": "restricciones.pmtiles", "tipos": TEXTO_RESTRICCION, "aviso": AVISO_LEGAL}
                           if (out / "restricciones.pmtiles").exists() else None),
+        # 2026-10-15: titularidad (montes públicos, cotos, señales OSM, pasos públicos) y citas conocidas.
+        "titularidad": (titularidad_manifest() if (out / "titularidad.pmtiles").exists() else None),
+        "citas": ({"capa": "citas.pmtiles", **_leer_json(OUT / "citas_capa.json")}
+                  if (out / "citas.pmtiles").exists() else None),
         # Fase 9: sitios candidatos por especie (también en la descarga offline, vía `archivos`).
         "sitios": sitios_manifest(out),
         "archivos": archivos,
@@ -598,6 +644,11 @@ def main(argv=None):
         print("restricciones…", flush=True); exportar_restricciones()
     if pasos == {"restricciones"}:
         print("restricciones…", flush=True); exportar_restricciones()
+    if pasos & {"titularidad", "todo"}:
+        from .titularidad import construir as construir_titularidad
+        print("titularidad…", flush=True); construir_titularidad()
+    if pasos & {"citas", "capas", "todo"}:
+        print("citas…", flush=True); exportar_citas()
     if pasos & {"base", "todo"}:
         exportar_base(maxzoom=a.maxzoom)
     if pasos & {"meteo", "todo"}:

@@ -24,7 +24,10 @@ const CAPTURAS = join(dirname(fileURLToPath(import.meta.url)), 'capturas');
 mkdirSync(CAPTURAS, { recursive: true });
 const PUNTO = { latitude: 36.589, longitude: -5.244 };   // máximo local de idoneidad de caesarea
 // Fase 8: celda de acceso con `uv run python -m setas_pipeline.acceso --consultar 36.61083 -5.24579` →
-// 36 min, +138 m, 9 pasos de 100 m, aparcamiento 85182 (36.60908, −5.25496, vía «service» sin nombre).
+// 36 min, +138 m, 9 pasos de 100 m, aparcamiento 85183 (36.60908, −5.25496, vía «service» sin nombre).
+// Titularidad (2026-10-15, titularidad.titularidad_puntos): ACCESO «probablemente privado» con coto; MONTE es el
+// representative_point de «Sierra Blanca» (monte público de la Junta, sobre Marbella). CITA: cita de iNaturalist de
+// A. caesarea (citas.geojson) dentro del mapa.
 // Restricciones: punto dentro del Parque Nacional Sierra de las Nieves (representative_point del recinto en
 // exportar.restricciones_gdf()); ACCESO y PUNTO quedan fuera de todo recinto.
 const RESTRINGIDO = { lat: 36.67638, lon: -4.97927, tipo: 'parque_nacional', chip: 'Parque Nacional · Sierra de las Nieves' };
@@ -269,6 +272,106 @@ try {
     'desactivar la capa oculta relleno y borde');
   await p.locator('[data-capa=restricciones]').check();
   await p.locator('#btn-capas').click();
+
+  // Titularidad (2026-10-15): capa «Montes públicos y pasos» apagada por defecto; al encenderla, montes de la Junta y
+  // municipales y vías pecuarias; ventana del monte; leyenda con la norma; «Solo montes públicos» vela lo demás.
+  if (!(await p.locator('#tarjeta-zona').isHidden())) await p.locator('#tz-cerrar').click();
+  await p.locator('#btn-capas').click();
+  const tit0 = await p.evaluate(() => ({ visible: !document.querySelector('#capa-titularidad').hidden,
+    marcada: document.querySelector('[data-capa=titularidad]').checked, solo: document.querySelector('[data-capa=solo_publicos]').checked,
+    capa: window.__setas.mapa.getLayoutProperty('titularidad-relleno', 'visibility') }));
+  await p.locator('[data-capa=titularidad]').check();
+  await p.locator('#leyenda-titularidad summary').scrollIntoViewIfNeeded();
+  await p.locator('#leyenda-titularidad summary').click();
+  await p.locator('#leyenda-titularidad-nota').scrollIntoViewIfNeeded();
+  const leyT = await p.locator('#leyenda-titularidad').textContent();
+  await captura('titularidad-leyenda.png');
+  await p.locator('#leyenda-titularidad summary').click();
+  await p.locator('#btn-capas').click();
+  await p.evaluate(({ lat, lon }) => window.__setas.mapa.jumpTo({ center: [lon, lat], zoom: 13 }), MONTE);
+  await reposo();
+  const titMapa = await p.evaluate(() => { const m = window.__setas.mapa;
+    return { montes: m.queryRenderedFeatures({ layers: ['titularidad-relleno'] }).map((f) => f.properties.clase),
+      pasos: m.getLayoutProperty('pasos-linea', 'visibility'), nPasos: m.queryRenderedFeatures({ layers: ['pasos-linea'] }).length }; });
+  comprobar(tit0.visible && !tit0.marcada && !tit0.solo && tit0.capa === 'none' && titMapa.montes.includes('monte_junta') && titMapa.pasos === 'visible' && titMapa.nPasos > 0
+    && /Monte público \(Junta\)/.test(leyT) && /consulta al ayuntamiento/.test(leyT) && /paso público, no recoger fuera/.test(leyT)
+    && /Probablemente privado|probablemente privado/.test(leyT) && /Ley 43\/2003.*art\. 36/.test(leyT) && /BOJA 196\), punto 8/.test(leyT),
+    `capa de titularidad apagada por defecto; encendida pinta ${titMapa.montes.length} recintos de monte público y ${titMapa.nPasos} tramos de paso público; leyenda con la Ley 43/2003 art. 36 y la Res. BOJA 196 punto 8`);
+  const cajaT = await p.locator('#mapa canvas').boundingBox();
+  await p.mouse.click(cajaT.x + cajaT.width / 2, cajaT.y + cajaT.height / 2);
+  const popM = p.locator('.popup-monte');
+  await popM.waitFor();
+  const txtM = await popM.textContent();
+  const tzT = p.locator('#tz-titularidad');
+  await tzT.waitFor({ timeout: 10000 });
+  const txtTz = await tzT.textContent();
+  comprobar(new RegExp(MONTE.nombre).test(txtM) && /Monte público \(Junta\)/.test(txtM) && /Monte público \(Junta\) · Sierra Blanca/.test(txtTz),
+    `tocar el monte: ventana «${txtM.slice(0, 60)}…» y tarjeta de zona «${txtTz.slice(0, 50)}…»`);
+  await captura('titularidad-monte.png');
+  if (!(await p.locator('#tarjeta-zona').isHidden())) await p.locator('#tz-cerrar').click();
+  await p.locator('.maplibregl-popup-close-button').click();
+  const titPuntos = await p.evaluate(async ([a, b]) => [await window.__setas.titularidadEn(a.lat, a.lon), await window.__setas.titularidadEn(b.lat, b.lon)],
+    [MONTE, ACCESO]);
+  comprobar(titPuntos[0]?.clase === 'monte_junta' && titPuntos[0]?.monte === MONTE.nombre && titPuntos[1]?.clase === 'privado'
+    && titPuntos[1]?.refuerzos?.includes('coto'), `titularidadEn: Sierra Blanca → monte de la Junta; ACCESO → probablemente privado (refuerzo: ${titPuntos[1]?.refuerzos})`);
+  await pulsarLargo(MONTE.lat, MONTE.lon);
+  await p.locator('#ta-titularidad:not([hidden])').waitFor({ timeout: 15000 });
+  const taT = await p.locator('#ta-titularidad').evaluate((e) => ({ t: e.textContent, clase: e.dataset.clase }));
+  comprobar(taT.clase === 'monte_junta' && /Monte público \(Junta\) · Sierra Blanca/.test(taT.t) && /BOJA 196/.test(taT.t),
+    `ficha «Acceso» en el monte: «${taT.t.slice(0, 45)}…» con la norma`);
+  await captura('titularidad-ficha.png');
+  await p.locator('#ta-cerrar').click();
+  await p.locator('#btn-capas').click();
+  await p.locator('[data-capa=solo_publicos]').check();
+  await p.locator('#btn-capas').click();
+  await p.evaluate(({ lat, lon }) => window.__setas.mapa.jumpTo({ center: [lon, lat], zoom: 11 }), MONTE);
+  await reposo();
+  const velo = await p.evaluate(() => ({ vis: window.__setas.mapa.getLayoutProperty('fuera-publico', 'visibility'),
+    n: window.__setas.mapa.queryRenderedFeatures({ layers: ['fuera-publico'] }).length, hoy: document.querySelector('#hoy-solo-publicos').checked,
+    pref: localStorage.getItem('setas:solo-publicos') }));
+  comprobar(velo.vis === 'visible' && velo.n > 0 && velo.hoy && velo.pref === '1', `«Solo montes públicos» en el mapa: velo sobre lo demás (${velo.n} polígonos) y el interruptor del Top marcado también ${JSON.stringify(velo)}`);
+  await captura('titularidad-solo-publicos.png');
+  await p.locator('#btn-capas').click();
+  await p.locator('[data-capa=solo_publicos]').uncheck();
+  await p.locator('[data-capa=titularidad]').uncheck();
+  await p.locator('#btn-capas').click();
+  comprobar(await p.evaluate(() => window.__setas.mapa.getLayoutProperty('fuera-publico', 'visibility') === 'none'
+    && !document.querySelector('#hoy-solo-publicos').checked), 'apagar «Solo montes públicos» quita el velo (y el del Top)');
+
+  // Citas y sitios conocidos (2026-10-15): apagada por defecto; filtrada por la seta del mapa; ventana con especie,
+  // fecha, precisión, origen, enlace a la fuente y atribución/licencia.
+  await elegirEspecie(CITA.especie);
+  await p.locator('#btn-capas').click();
+  const cit0 = await p.evaluate(() => ({ visible: !document.querySelector('#capa-citas').hidden, marcada: document.querySelector('[data-capa=citas]').checked,
+    capa: window.__setas.mapa.getLayoutProperty('citas', 'visibility') }));
+  await p.locator('[data-capa=citas]').check();
+  await p.locator('#leyenda-citas summary').scrollIntoViewIfNeeded();
+  const leyC = await p.locator('#leyenda-citas').textContent();
+  await p.locator('#btn-capas').click();
+  await p.evaluate(({ lat, lon }) => window.__setas.mapa.jumpTo({ center: [lon, lat], zoom: 14 }), CITA);
+  await reposo();
+  const citMapa = await p.evaluate(() => { const m = window.__setas.mapa;
+    return { filtro: JSON.stringify(m.getFilter('citas')), especies: [...new Set(m.queryRenderedFeatures({ layers: ['citas'] }).map((f) => f.properties.especie_mapa))] }; });
+  comprobar(cit0.visible && !cit0.marcada && cit0.capa === 'none' && citMapa.filtro.includes(CITA.especie) && citMapa.especies.length === 1
+    && citMapa.especies[0] === CITA.especie && /iNaturalist/.test(leyC) && /Foro/.test(leyC) && /GBIF/.test(leyC),
+    `capa de citas apagada por defecto; encendida, filtrada por ${CITA.especie} y leyenda por origen`);
+  const cajaC = await p.locator('#mapa canvas').boundingBox();
+  await p.mouse.click(cajaC.x + cajaC.width / 2, cajaC.y + cajaC.height / 2);
+  const popC = p.locator('.popup-cita');
+  await popC.waitFor();
+  const cita = await popC.evaluate((d) => ({ dt: [...d.querySelectorAll('dt')].map((x) => x.textContent), dd: [...d.querySelectorAll('dd')].map((x) => x.textContent),
+    enlace: d.querySelector('dd a')?.getAttribute('href'), destino: d.querySelector('dd a')?.target, aviso: d.querySelector('.aviso').textContent }));
+  comprobar(cita.dt.join('|') === 'Especie|Fecha|Precisión|Origen|Fuente|Atribución' && /caesarea|Oronja|oronja/.test(cita.dd[0])
+    && cita.dd[1] === '17/11/2024' && cita.dd[2] === '3 m' && cita.dd[3] === 'iNaturalist' && /^https:\/\/www\.gbif\.org\/occurrence\//.test(cita.enlace)
+    && cita.destino === '_blank' && /olgaferbei/.test(cita.dd[5]) && /CC-BY-NC/.test(cita.dd[5]) && /no dice que se pueda recoger/.test(cita.aviso) && !PROHIBIDO.test(cita.aviso),
+    `ventana de la cita: ${cita.dd.join(' · ')}`);
+  if (!(await p.locator('#tarjeta-zona').isHidden())) await p.locator('#tz-cerrar').click();
+  await captura('citas-popup.png');
+  await p.locator('.maplibregl-popup-close-button').click();
+  await p.locator('#btn-capas').click();
+  await p.locator('[data-capa=citas]').uncheck();
+  await p.locator('#btn-capas').click();
+  await elegirEspecie('boletus_edulis');
 
   // Fondo Satélite (PNOA del IGN, teselas simuladas) y vuelta al mapa.
   await p.locator('#btn-capas').click();

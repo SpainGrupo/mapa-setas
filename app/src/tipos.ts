@@ -34,6 +34,11 @@ export interface Manifest {
   restricciones?: { capa: string; tipos: Record<string, string>; aviso: string } | null;
   /** Sitios candidatos por especie (pipeline sitios.py), para los tops de la pestaña Hoy. */
   sitios?: { archivo: string; version: number; n_por_especie?: Record<string, number> } | null;
+  /** Titularidad (titularidad.py): montes públicos, cotos, señales OSM y pasos públicos; textos, aviso y norma. */
+  titularidad?: { capa: string; textos: Record<string, string>; aviso: string; norma: string; montes_junta?: number;
+    montes_municipales?: number } | null;
+  /** Citas y sitios conocidos (exportar.exportar_citas): PMTiles con la capa 'citas'. */
+  citas?: { capa: string; n?: number; por_origen?: Record<string, number> } | null;
   archivos: { nombre: string; bytes: number }[];
   total_bytes: number;
   /** Reconocedor offline (modelo/construir.py): descarga opcional aparte, no cuenta en total_bytes. */

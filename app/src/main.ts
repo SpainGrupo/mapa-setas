@@ -117,6 +117,7 @@ function aplicarIdoneidad() {
   pintarTarjeta();
   pintarBotonFicha();
   pintarSelectorEspecie();
+  aplicarFiltroCitas();
 }
 
 /** «Ver ficha» junto al selector de especie, solo si la especie del mapa tiene ficha en la guía. */
@@ -133,7 +134,23 @@ const CAPAS = (): Record<string, string[]> => ({
   sombreado: ['sombreado'], curvas: ['curvas', 'curvas-cota'],
   protegidos: ['protegidos-relleno', 'protegidos-linea'], idoneidad: ['idoneidad'], semaforo: ['semaforo'],
   rutas: M!.CAPAS_RUTAS, restricciones: M!.CAPAS_RESTRICCIONES,
+  titularidad: M!.CAPAS_TITULARIDAD, solo_publicos: M!.CAPAS_SOLO_PUBLICOS, citas: M!.CAPAS_CITAS,
 });
+
+// «Solo montes públicos»: un interruptor en el mapa (velo sobre lo demás) y otro en el Top del día; comparten preferencia.
+const CLAVE_SOLO_PUBLICOS = 'setas:solo-publicos';
+function soloPublicos(): boolean { try { return localStorage.getItem(CLAVE_SOLO_PUBLICOS) === '1'; } catch { return false; } }
+function ponerSoloPublicos(v: boolean) {
+  try { localStorage.setItem(CLAVE_SOLO_PUBLICOS, v ? '1' : '0'); } catch { /* solo esta sesión */ }
+  for (const c of document.querySelectorAll<HTMLInputElement>('[data-capa=solo_publicos], #hoy-solo-publicos')) c.checked = v;
+  if (mapa) M!.verCapa(mapa, M!.CAPAS_SOLO_PUBLICOS, v);
+}
+
+/** Citas: solo la seta del mapa salvo «todas las especies». */
+function aplicarFiltroCitas() {
+  if (!mapa || !M) return;
+  M.filtrarCitas(mapa, $<HTMLInputElement>('#citas-todas').checked ? null : $<HTMLSelectElement>('#sel-especie').value);
+}
 
 function pintarSitiosMapa(lista: Sitio[]) {
   const src = mapa?.getSource('sitios') as GeoJSONSource | undefined;
@@ -153,7 +170,20 @@ async function iniciarMapa() {
   rellenarEspecies($<HTMLSelectElement>('#sitio-especie'), ['', 'Sin especificar']);
   $('#capa-rutas').hidden = !manifest.rutas;
   $('#capa-restricciones').hidden = !manifest.restricciones;
+  for (const s of ['#capa-titularidad', '#capa-solo-publicos', '#leyenda-titularidad']) $(s).hidden = !manifest.titularidad;
+  for (const s of ['#capa-citas', '#leyenda-citas']) $(s).hidden = !manifest.citas;
+  $('#hoy-solo-publicos-campo').hidden = !manifest.titularidad;
+  $('#leyenda-titularidad-nota').textContent = `${AVISO_TITULARIDAD} ${NORMA_TITULARIDAD}`;
+  $('#leyenda-citas-nota').textContent = AVISO_CITAS;
+  $('#leyenda-citas-lista').replaceChildren(...ORIGENES_CITA.map((o) => {
+    const li = document.createElement('li'); li.dataset.origen = o;
+    const m = document.createElement('span'); m.className = 'muestra-origen'; m.setAttribute('aria-hidden', 'true'); m.style.setProperty('--c', COLOR_ORIGEN[o]);
+    const n = manifest!.citas?.por_origen?.[o];
+    li.append(m, `${NOMBRE_ORIGEN[o]}${n != null ? ` (${n})` : ''}`);
+    return li;
+  }));
   M = await import('./mapa');
+  M.ponerNombresEspecie((id) => nombres[id] ?? id);
   $('#rampa').style.background = `linear-gradient(90deg, ${M.COLORES_IDONEIDAD.join(',')})`;
   try {
     const g = JSON.parse(localStorage.getItem('setas:capa') ?? 'null');
@@ -198,12 +228,19 @@ async function iniciarMapa() {
     });
     pintarSemaforoMapa();
     pintarPuntoMapa();
+    ponerSoloPublicos(soloPublicos());
+    aplicarFiltroCitas();
     document.body.dataset.mapa = 'listo';
   });
   $('#sel-especie').addEventListener('change', aplicarIdoneidad);
   $('#rng-umbral').addEventListener('input', aplicarIdoneidad);
   document.querySelectorAll<HTMLInputElement>('[data-capa]').forEach((c) =>
-    c.addEventListener('change', () => mapa && M!.verCapa(mapa, CAPAS()[c.dataset.capa!], c.checked)));
+    c.addEventListener('change', () => {
+      if (c.dataset.capa === 'solo_publicos') { ponerSoloPublicos(c.checked); return; }
+      if (mapa) M!.verCapa(mapa, CAPAS()[c.dataset.capa!], c.checked);
+      if (c.dataset.capa === 'citas') $('#citas-opciones').hidden = !c.checked;
+    }));
+  $('#citas-todas').addEventListener('change', aplicarFiltroCitas);
   document.querySelectorAll<HTMLInputElement>('input[name=base]').forEach((r) => r.addEventListener('change', () => {
     try { localStorage.setItem(CLAVE_BASE, r.value); } catch { /* sin almacenamiento: solo esta sesión */ }
     aplicarBase(true);

@@ -38,6 +38,15 @@ describe('prepararManifest: manifest de Marbella tal como lo emite el pipeline (
   it('sin atribuciones en el manifest: Marbella conserva las de hoy', () => {
     expect(m.atribuciones).toEqual(LEGADO_MARBELLA.atribuciones);
   });
+  it('con las atribuciones por capa del yaml (sin mapa ni fuentes): legado para el mapa y las rutas, capas tal cual', () => {
+    const a = prepararManifest(base({ atribuciones: { titularidad: 'REDIAM, Junta de Andalucía', idoneidad: 'IGN · REDIAM', n: 3 } }), 'marbella').atribuciones;
+    expect(a.mapa).toBe(LEGADO_MARBELLA.atribuciones.mapa);
+    expect(a.fuentes).toEqual(LEGADO_MARBELLA.atribuciones.fuentes);
+    expect(a.capas).toEqual({ titularidad: 'REDIAM, Junta de Andalucía', idoneidad: 'IGN · REDIAM' });
+  });
+  it('otra región sin `mapa`: la de idoneidad más el mapa base', () => {
+    expect(prepararManifest(base({ atribuciones: { idoneidad: 'IGN · ICV' } }), 'alicante').atribuciones.mapa).toBe('IGN · ICV · Protomaps');
+  });
 });
 
 describe('prepararManifest: región sin campos nuevos que no es Marbella', () => {
@@ -45,7 +54,7 @@ describe('prepararManifest: región sin campos nuevos que no es Marbella', () =>
     const m = prepararManifest(base(), 'prueba');
     expect(m.region).toEqual({ id: 'prueba', nombre: 'prueba', origen: { lat: 38, lon: 0 }, etiqueta_origen: 'del centro de la zona' });
     expect(m.normas_legado).toEqual([]);
-    expect(m.atribuciones).toEqual({ mapa: '', fuentes: { osm: 'OpenStreetMap' } });
+    expect(m.atribuciones).toEqual({ mapa: '', fuentes: { osm: 'OpenStreetMap' }, capas: {} });
   });
 });
 
@@ -73,6 +82,7 @@ describe('prepararManifest: campos nuevos', () => {
   it('región, atribuciones, ccaa y avisos (solo textos)', () => {
     expect(m.region.etiqueta_origen).toBe('de Alicante');
     expect(m.atribuciones.fuentes).toEqual({ osm: 'OpenStreetMap', icv: 'Institut Cartogràfic Valencià' });
+    expect(m.atribuciones.mapa).toBe('ICV CC BY 4.0');
     expect(m.ccaa).toBe('ccaa.pmtiles');
     expect(m.avisos).toEqual(['MFE de Murcia sin datos']);
   });

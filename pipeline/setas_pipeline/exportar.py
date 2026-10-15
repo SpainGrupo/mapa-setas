@@ -580,6 +580,8 @@ def escribir_manifest(region: Region, out: Path | None = None) -> dict:
         "region": {"id": region.id, "nombre": region.nombre, "origen": list(region.origen),
                    "etiqueta_origen": region.etiqueta_origen},
         "legal": {"ccaa": region.legal["ccaa"]},
+        # Atribuciones de la región (yaml `atribuciones`): la app cita su fuente en popups y en Ajustes.
+        "atribuciones": region.atribuciones,
         "bbox": [round(v, 5) for v in bbox],
         "especies": especies(region),
         "umbrales": list(UMBRALES),

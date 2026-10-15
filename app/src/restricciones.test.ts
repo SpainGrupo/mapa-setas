@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Geometry } from 'geojson';
-import { aRestriccion, dentroDe, nombreLegible, restriccionesEn, teselaDe, textoChip } from './restricciones';
+import { aRestriccion, dentroDe, nombreLegible, orientativo, restriccionesEn, teselaDe, textoChip } from './restricciones';
 
 const cuadrado = (x0: number, y0: number, x1: number, y1: number) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]];
 const conHueco: Geometry = { type: 'Polygon', coordinates: [cuadrado(0, 0, 10, 10), cuadrado(4, 4, 6, 6)] };
@@ -43,5 +43,16 @@ describe('restricciones: textos', () => {
       { properties: { tipo: 'reserva_natural', nombre: 'LAGUNA' }, geometry: { type: 'Polygon', coordinates: [cuadrado(20, 20, 21, 21)] } as Geometry }];
     expect(restriccionesEn(fs, 2, 2).map((r) => r.nombre)).toEqual(['Grazalema']);
     expect(restriccionesEn(fs, 5, 5)).toEqual([]);
+  });
+});
+
+describe('orientativo', () => {
+  it('con BOJA da exactamente el texto de antes (e2e de Marbella)', () => {
+    expect(orientativo(['BOJA'])).toBe('Información orientativa: comprueba la normativa vigente (BOJA) antes de recoger.');
+  });
+  it('varias normas sin repetir, y sin normas', () => {
+    expect(orientativo(['DOGV', 'BORM', 'DOGV'])).toBe('Información orientativa: comprueba la normativa vigente (DOGV, BORM) antes de recoger.');
+    expect(orientativo([])).toBe('Información orientativa: comprueba la normativa vigente antes de recoger.');
+    expect(orientativo(['', 'DOCM'])).toBe('Información orientativa: comprueba la normativa vigente (DOCM) antes de recoger.');
   });
 });

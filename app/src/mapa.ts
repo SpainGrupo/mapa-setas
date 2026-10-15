@@ -9,11 +9,11 @@ import { FuenteOpfsHttp } from './fuente';
 import { archivoOpfs } from './opfs';
 import { baseDatos } from './datos';
 import type { Manifest } from './tipos';
-import { NOMBRE_TIPO_RESTRICCION, ORIENTATIVO, aRestriccion, restriccionesEn, teselaDe, type Restriccion } from './restricciones';
+import { nombreFuente, normasNota, type ManifestApp } from './manifest-region';
+import { NOMBRE_TIPO_RESTRICCION, orientativo, aRestriccion, restriccionesEn, teselaDe, type Restriccion } from './restricciones';
 import { etiquetaTitularidad, TEXTO_TITULARIDAD, type Titularidad } from './titularidad';
 import { AVISO_CITAS, COLOR_ORIGEN, expresionColorOrigen, filasCita, filtroCitas } from './citas';
 
-export const ATRIBUCION = 'IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, © OpenStreetMap ODbL, Protomaps';
 /** Ortofoto PNOA del IGN (WMTS, solo KVP según GetCapabilities; GoogleMapsCompatible hasta el nivel 19, JPEG). */
 export const URL_PNOA = 'https://www.ign.es/wmts/pnoa-ma?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OI.OrthoimageCoverage'
   + '&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg';
@@ -113,36 +113,36 @@ function imagenRayado(): { width: number; height: number; data: Uint8Array } {
   return { width: n, height: n, data };
 }
 
-function popupRestriccion(r: Restriccion): HTMLElement {
+function popupRestriccion(r: Restriccion, nota: string): HTMLElement {
   const div = document.createElement('div');
   div.className = 'popup-restriccion';
   const b = document.createElement('strong'); b.textContent = r.nombre || 'Zona restringida';
   const t = document.createElement('div'); t.className = 'pr-tipo'; t.textContent = NOMBRE_TIPO_RESTRICCION[r.tipo] ?? r.zona;
   const x = document.createElement('div'); x.textContent = r.texto;
-  const a = document.createElement('div'); a.className = 'aviso'; a.textContent = ORIENTATIVO;
+  const a = document.createElement('div'); a.className = 'aviso'; a.textContent = nota;
   div.append(b, t, x, a);
   return div;
 }
 const MARCADAS: any = ['in', ['get', 'tipo'], ['literal', ['GR', 'PR', 'SL']]];
 
-function popupMonte(p: Record<string, unknown>): HTMLElement {
+function popupMonte(p: Record<string, unknown>, nota: string, fuente: string): HTMLElement {
   const div = document.createElement('div');
   div.className = 'popup-monte';
   const clase = String(p.clase ?? '') as 'monte_junta' | 'monte_municipal';
   const b = document.createElement('strong'); b.textContent = String(p.nombre || 'Monte público');
   const t = document.createElement('div'); t.className = 'pm-clase'; t.dataset.clase = clase; t.textContent = TEXTO_TITULARIDAD[clase] ?? '';
   const d = document.createElement('div'); d.textContent = [p.detalle, p.codigo].filter(Boolean).join(' · ');
-  const a = document.createElement('div'); a.className = 'aviso'; a.textContent = `${ORIENTATIVO} Fuente: REDIAM, Catálogo de Montes Públicos.`;
+  const a = document.createElement('div'); a.className = 'aviso'; a.textContent = `${nota}${fuente ? ` Fuente: ${fuente}.` : ''}`;
   div.append(b, t, d, a);
   return div;
 }
 
-function popupPaso(p: Record<string, unknown>): HTMLElement {
+function popupPaso(p: Record<string, unknown>, fuente: string): HTMLElement {
   const div = document.createElement('div');
   div.className = 'popup-paso';
   const b = document.createElement('strong'); b.textContent = String(p.nombre || (p.tipo === 'via_pecuaria' ? 'Vía pecuaria' : 'Sendero de uso público'));
   const t = document.createElement('div'); t.textContent = `${p.tipo === 'via_pecuaria' ? 'Vía pecuaria' : 'Sendero de uso público'}: ${TEXTO_TITULARIDAD.paso_publico.toLowerCase()}.`;
-  const a = document.createElement('div'); a.className = 'aviso'; a.textContent = 'Fuente: REDIAM. El trazado de las vías pecuarias no deslindadas es aproximado.';
+  const a = document.createElement('div'); a.className = 'aviso'; a.textContent = `${fuente ? `Fuente: ${fuente}. ` : ''}El trazado de las vías pecuarias no deslindadas puede ser aproximado.`;
   div.append(b, t, a);
   return div;
 }
@@ -198,7 +198,7 @@ function capasRutas(): { lineas: LayerSpecification[]; etiqueta: LayerSpecificat
   };
 }
 
-function popupRuta(p: Record<string, unknown>): HTMLElement {
+function popupRuta(p: Record<string, unknown>, fuentes: Record<string, string>): HTMLElement {
   const div = document.createElement('div');
   div.className = 'popup-ruta';
   const tipo = String(p.tipo ?? 'otro');
@@ -211,7 +211,7 @@ function popupRuta(p: Record<string, unknown>): HTMLElement {
   div.append(b, t);
   if (p.dificultad) div.append(linea(`Dificultad: ${p.dificultad}`));
   const f = String(p.fuente ?? '');
-  const fu = linea(`Fuente: ${f === 'rediam' ? 'REDIAM (Junta de Andalucía)' : f === 'osm' ? 'OpenStreetMap' : f || '—'}`);
+  const fu = linea(`Fuente: ${nombreFuente(f, fuentes)}`);
   fu.className = 'aviso';
   div.append(fu);
   return div;
@@ -290,7 +290,9 @@ function estilo(conMeteo: boolean, archivoRutas: string | null, archivoRestricci
   };
 }
 
-export function crearMapa(contenedor: HTMLElement, m: Manifest): MapaML {
+export function crearMapa(contenedor: HTMLElement, m: ManifestApp): MapaML {
+  const nota = orientativo(normasNota(m));
+  const fuenteTitularidad = m.atribuciones.capas.titularidad ?? '';
   const [o, s, e, n] = m.bbox;
   const mx = (e - o) * 0.25, my = (n - s) * 0.25;
   const mapa = new maplibregl.Map({
@@ -300,7 +302,7 @@ export function crearMapa(contenedor: HTMLElement, m: Manifest): MapaML {
     maxBounds: [[o - mx, s - my], [e + mx, n + my]],
     minZoom: 7,
     maxZoom: 17,
-    attributionControl: { compact: true, customAttribution: ATRIBUCION },
+    attributionControl: { compact: true, customAttribution: m.atribuciones.mapa || undefined },
     dragRotate: false,
     pitchWithRotate: false,
   });
@@ -325,24 +327,24 @@ export function crearMapa(contenedor: HTMLElement, m: Manifest): MapaML {
     const { x, y } = ev.point;
     const ruta = visibles.length ? mapa.queryRenderedFeatures([[x - 10, y - 10], [x + 10, y + 10]], { layers: visibles })[0] : undefined;
     if (ruta) {
-      new maplibregl.Popup({ maxWidth: '280px', className: 'popup-rutas' }).setLngLat(ev.lngLat).setDOMContent(popupRuta(ruta.properties)).addTo(mapa);
+      new maplibregl.Popup({ maxWidth: '280px', className: 'popup-rutas' }).setLngLat(ev.lngLat).setDOMContent(popupRuta(ruta.properties, m.atribuciones.fuentes)).addTo(mapa);
       return;
     }
     const restr = mapa.getLayer('restricciones-relleno') && mapa.getLayoutProperty('restricciones-relleno', 'visibility') !== 'none'
       ? mapa.queryRenderedFeatures(ev.point, { layers: ['restricciones-relleno'] })[0] : undefined;
     if (restr) {
       new maplibregl.Popup({ maxWidth: '290px', className: 'popup-restricciones', anchor: ev.point.y < mapa.getContainer().clientHeight * 0.6 ? 'top' : 'bottom' }).setLngLat(ev.lngLat)
-        .setDOMContent(popupRestriccion(aRestriccion(restr.properties, m.restricciones?.tipos))).addTo(mapa);
+        .setDOMContent(popupRestriccion(aRestriccion(restr.properties, m.restricciones?.tipos), nota)).addTo(mapa);
       return;
     }
     const paso = visible('pasos-linea') ? mapa.queryRenderedFeatures([[cx - 8, cy - 8], [cx + 8, cy + 8]], { layers: ['pasos-linea'] })[0] : undefined;
     if (paso) {
-      new maplibregl.Popup({ maxWidth: '280px', className: 'popup-pasos', anchor: ancla }).setLngLat(ev.lngLat).setDOMContent(popupPaso(paso.properties)).addTo(mapa);
+      new maplibregl.Popup({ maxWidth: '280px', className: 'popup-pasos', anchor: ancla }).setLngLat(ev.lngLat).setDOMContent(popupPaso(paso.properties, fuenteTitularidad)).addTo(mapa);
       return;
     }
     const monte = visible('titularidad-relleno') ? mapa.queryRenderedFeatures(ev.point, { layers: ['titularidad-relleno'] })[0] : undefined;
     if (monte) {
-      new maplibregl.Popup({ maxWidth: '290px', className: 'popup-montes', anchor: ancla }).setLngLat(ev.lngLat).setDOMContent(popupMonte(monte.properties)).addTo(mapa);
+      new maplibregl.Popup({ maxWidth: '290px', className: 'popup-montes', anchor: ancla }).setLngLat(ev.lngLat).setDOMContent(popupMonte(monte.properties, nota, fuenteTitularidad)).addTo(mapa);
       return;
     }
     const f = mapa.getLayer('protegidos-relleno') ? mapa.queryRenderedFeatures(ev.point, { layers: ['protegidos-relleno'] })[0] : undefined;
@@ -351,7 +353,7 @@ export function crearMapa(contenedor: HTMLElement, m: Manifest): MapaML {
     div.className = 'popup-enp';
     const b = document.createElement('strong'); b.textContent = String(f.properties.nombre ?? 'Espacio protegido');
     const p = document.createElement('div'); p.textContent = String(f.properties.figura ?? '');
-    const a = document.createElement('div'); a.className = 'aviso'; a.textContent = 'Consulta la normativa de recolección del espacio.';
+    const a = document.createElement('div'); a.className = 'aviso'; a.textContent = m.texto_protegido;
     div.append(b, p, a);
     new maplibregl.Popup({ maxWidth: '280px' }).setLngLat(ev.lngLat).setDOMContent(div).addTo(mapa);
   });

@@ -1,11 +1,22 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import type { Geometry } from 'geojson';
-import { AVISO_TITULARIDAD, detallesTitularidad, esPublico, etiquetaTitularidad, NORMA_TITULARIDAD, TEXTO_TITULARIDAD, textoTitularidad } from './titularidad';
+import { detallesTitularidad, esPublico, etiquetaTitularidad, normaTitularidad, notaTitularidad, ponerTextosTitularidad, TEXTO_TITULARIDAD,
+  textoTitularidad } from './titularidad';
+
+// manifest.titularidad de Marbella (pipeline/regiones/marbella.yaml legal.titularidad).
+const NORMA_M = 'Ley 43/2003 de Montes, art. 36.1: el titular del monte es el propietario de sus frutos espontáneos. Resolución de 23-09-2026 (BOJA 196), punto 8: en terrenos particulares hace falta la autorización del propietario para recoger setas.';
+const MARBELLA = {
+  textos: { monte_junta: 'Monte público (Junta)', monte_municipal: 'Monte público municipal: consulta al ayuntamiento',
+    privado: 'Probablemente privado: necesitas permiso del dueño para recoger', paso_publico: 'Paso público, no recoger fuera', coto: 'Coto de caza' },
+  aviso: `No hay datos abiertos fiables de vallas ni de quién es dueño de cada finca. Fuera de los montes públicos marcados, asume que es privado y pide permiso. ${NORMA_M}`,
+  norma: NORMA_M,
+};
 
 const caja = (o: number, s: number, e: number, n: number): Geometry => ({ type: 'Polygon', coordinates: [[[o, s], [e, s], [e, n], [o, n], [o, s]]] });
 const f = (clase: string, g: Geometry, nombre?: string) => ({ properties: { clase, ...(nombre ? { nombre } : {}) }, geometry: g });
 
 describe('titularidad', () => {
+  beforeEach(() => ponerTextosTitularidad(MARBELLA));
   const capa = [
     f('monte_junta', caja(-5, 36, -4.9, 36.1), 'El Meliche'),
     f('monte_municipal', caja(-4.9, 36, -4.8, 36.1), 'Sierra Blanca'),
@@ -37,9 +48,21 @@ describe('titularidad', () => {
     expect(t.paso).toBe(true);
     expect(detallesTitularidad(t)).toContain('Cordel de Benahavís a Ojén: paso público, no recoger fuera');
   });
-  it('cita la norma y nunca habla de comestibilidad', () => {
-    expect(NORMA_TITULARIDAD).toMatch(/Ley 43\/2003.*art\. 36/);
-    expect(NORMA_TITULARIDAD).toMatch(/Resolución de 23-09-2026 \(BOJA 196\), punto 8/);
-    expect(`${AVISO_TITULARIDAD} ${NORMA_TITULARIDAD} ${Object.values(TEXTO_TITULARIDAD).join(' ')}`).not.toMatch(/comestible|se puede comer/i);
+  it('cita la norma del manifest y nunca habla de comestibilidad', () => {
+    expect(normaTitularidad()).toMatch(/Ley 43\/2003.*art\. 36/);
+    expect(normaTitularidad()).toMatch(/Resolución de 23-09-2026 \(BOJA 196\), punto 8/);
+    expect(notaTitularidad()).toBe(MARBELLA.aviso);
+    expect(`${notaTitularidad()} ${Object.values(TEXTO_TITULARIDAD).join(' ')}`).not.toMatch(/comestible|se puede comer/i);
+  });
+  it('sin titularidad en el manifest: textos neutros, sin organismos ni boletines de otra región', () => {
+    ponerTextosTitularidad(null);
+    const todo = `${notaTitularidad()} ${normaTitularidad()} ${Object.values(TEXTO_TITULARIDAD).join(' ')}`;
+    expect(todo).not.toMatch(/Junta|BOJA|REDIAM|Andaluc/);
+    expect(textoTitularidad({ clase: 'monte_junta', monte: 'X' })).toBe('Monte público autonómico · X');
+    expect(notaTitularidad()).toMatch(/Ley 43\/2003/);
+  });
+  it('un aviso sin la norma la lleva detrás', () => {
+    ponerTextosTitularidad({ aviso: 'Aviso.', norma: 'Norma.' });
+    expect(notaTitularidad()).toBe('Aviso. Norma.');
   });
 });

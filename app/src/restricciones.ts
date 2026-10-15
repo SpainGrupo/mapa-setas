@@ -9,7 +9,11 @@ export interface Restriccion { tipo: string; nombre: string; zona: string; texto
 export const NOMBRE_TIPO_RESTRICCION: Record<string, string> = {
   zona_reserva: 'Zona de Reserva', reserva_natural: 'Reserva Natural', parque_nacional: 'Parque Nacional',
 };
-export const ORIENTATIVO = 'Información orientativa: comprueba la normativa vigente (BOJA) antes de recoger.';
+/** Nota bajo la normativa: cita las siglas de los boletines de la zona (EntradaLegal.sigla o normas de legado). */
+export function orientativo(normas: string[]): string {
+  const n = [...new Set(normas.filter(Boolean))];
+  return `Información orientativa: comprueba la normativa vigente${n.length ? ` (${n.join(', ')})` : ''} antes de recoger.`;
+}
 
 /** Tesela XYZ (Web Mercator) que contiene el punto en el nivel z. */
 export function teselaDe(lat: number, lon: number, z: number): { x: number; y: number } {

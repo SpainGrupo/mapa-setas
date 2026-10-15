@@ -1487,7 +1487,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - `hoy-ui.ts`: `ContextoHoy.manifest: () => ManifestApp | null`.
   - `index.html`: `<p class="atribucion" id="atrib-datos">` y `<p class="atribucion" id="atrib-inicio">`, vacíos; los rellena `main.ts`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Añade a `app/src/restricciones.test.ts` (junta el import):
 ```ts
@@ -1503,12 +1503,12 @@ describe('orientativo', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd app && npx vitest run src/restricciones.test.ts`
 Expected: FAIL, «orientativo is not a function».
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `app/src/restricciones.ts`. Sustituye la línea de `ORIENTATIVO` por:
 ```ts
@@ -1558,12 +1558,12 @@ function textoLejania(p: { lat: number; lon: number }): string {
   $('#atrib-inicio').textContent = atrib;
 ```
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 Run: `cd app && npx vitest run && npx tsc --noEmit && grep -rn "Marbella\|MARBELLA\|BOJA\|REDIAM" src/*.ts index.html | grep -v "\.test\.ts" | grep -v "manifest-region.ts"`
 Expected: tests y tipos en verde. El grep no devuelve nada; el único sitio con esos nombres es la tabla de legado de `manifest-region.ts`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add app/src/restricciones.ts app/src/restricciones.test.ts app/src/ranking.ts app/src/hoy-ui.ts app/src/mapa.ts app/src/main.ts app/index.html
@@ -2592,3 +2592,5 @@ El código cambió desde que se escribió el plan: la fase A (pipeline multi-reg
 3. **`legal.ccaa[].id` del pipeline es corto** (`AND`, como fija la spec §3.6 y los tests de la fase A). La app mantiene los ids canónicos (`andalucia`, `comunitat_valenciana`, `region_murcia`, `castilla_la_mancha`, compartidos con el Worker) y acepta los alias `AND`/`CV`/`MUR`/`CLM` (`idCcaa()` en `manifest-region.ts`). **Fase C:** `alicante.yaml` y `ccaa.pmtiles` deben usar uno de esos dos juegos de ids.
 4. **`legal.ccaa[].norma` es la cita completa** («Resolución de 23-09-2026 … (BOJA 196, 08-10-2026)»), no la sigla. La app saca la sigla (`siglaNorma()`: BOJA, DOGV, BORM, DOCM, BOE; una norma corta se toma tal cual) y la guarda en `EntradaLegal.sigla`, que es lo que citan la nota orientativa y el enlace «Texto oficial (…)». La nota de Marbella sigue diciendo «(BOJA)».
 5. **Marbella ya trae `legal`** con `verificado: false` (pendiente de Alexander) y `cupo_kg_dia: 3`. Por eso Ajustes de Marbella pasa a enseñar la entrada por CCAA («Andalucía · Pendiente de verificar», el mismo texto del aviso y el enlace al BOJA) en lugar del aviso suelto; el cupo no se pinta aparte (no está verificado), pero el texto del aviso ya lo cita. `normas_legado` solo se usa si no hay ninguna entrada válida.
+6. **Atribuciones (cambio mínimo en el pipeline).** El manifest de la fase A no traía `atribuciones`. `exportar.py` ahora emite `atribuciones = region.atribuciones` (el bloque del yaml: idoneidad, protegidos, restricciones, rutas, titularidad…; `mapa` y `fuentes` son opcionales) y `dorado.py` añade `atribuciones` a `MANIFEST_NUEVAS` (con su test). La app: `atribuciones.mapa` si viene; si no, el texto de legado en Marbella o `idoneidad + « · Protomaps»` en otra región; `atribuciones.capas` guarda las de cada capa y la de titularidad se cita en los popups de montes y pasos. El manifest de Marbella se regeneró (`exportar manifest regiones`). **Fase C:** `alicante.yaml` puede declarar `atribuciones.mapa` y `atribuciones.fuentes` (valor de `fuente` de rutas.pmtiles → nombre).
+7. **Titularidad (llegó con la fusión de `main`).** `titularidad.ts` deja de llevar «Junta» y «BOJA 196»: `ponerTextosTitularidad(manifest.titularidad)` carga textos, aviso y norma del manifest (yaml `legal.titularidad`); sin ellos quedan textos neutros (monte «autonómico», solo la Ley 43/2003). La leyenda de `index.html` rellena los dos textos de monte desde el manifest. La nota de «Puntuación del día» y el comentario de `ranking.ts` dicen «autonómico o municipal». El popup de pasos deja «Fuente: REDIAM» por la atribución de titularidad y dice que el trazado «puede ser» aproximado.

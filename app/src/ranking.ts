@@ -38,7 +38,6 @@ export const FACTOR_FIABILIDAD: Record<Fiabilidad, number> = { buena: 1, media: 
 export const CALIDAD_MAX = 100 * Math.log(101);
 export const MAX_GENERAL = 20;
 export const RADIO_FUSION_M = 300;
-export const MARBELLA = { lat: 36.5101, lon: -4.8825 };
 
 export const calidad = (s: SitioCandidato) => s.punt_media * Math.log(1 + s.area_ha) * (s.bonus_pisado ?? 1);
 export const puntuacion100 = (score: number) => Math.max(0, Math.min(100, Math.round((100 * score) / CALIDAD_MAX)));
@@ -59,7 +58,7 @@ export interface Opciones {
   estadoEn: EstadoEn;
   fiabilidad: (especie: string) => Fiabilidad;
   maxDificultad: Dificultad | null;
-  /** Solo sitios en monte público (Junta o municipal). */
+  /** Solo sitios en monte público (autonómico o municipal). */
   soloPublicos?: boolean;
 }
 

@@ -5,17 +5,17 @@ import type { Map as MapaML, GeoJSONSource, LngLat } from 'maplibre-gl';
 import { baseDatos, cargarJson, cargarManifest, mb } from './datos';
 import { cargarRegiones, claveRegion, establecerActiva, hayRegionActiva, regionActiva, resolverRegion, type RegionIndice } from './region';
 import { migrarARegiones } from './migracion';
-import type { ManifestApp } from './manifest-region';
+import { normasNota, type ManifestApp } from './manifest-region';
 import type { Base } from './mapa';
 // MapLibre (≈1 MB) va en su propio trozo y se carga al arrancar el mapa: el resto de la app se pinta antes.
 let M: typeof import('./mapa') | null = null;
-import { ORIENTATIVO, textoChip, type Restriccion } from './restricciones';
+import { orientativo, textoChip, type Restriccion } from './restricciones';
 import { altitudes, aparcamiento, centroCelda, consultar, nombreVia, simplificar, textoSubida, textoTiempo, trazar, urlGoogleCoche, type Celda } from './acceso';
 import { dificultad, NOMBRE_DIFICULTAD, perfil, seguir, textoDistancia, type Dificultad, type Perfil, type Seguimiento } from './ruta';
 import { pintarPerfil } from './perfil-grafico';
 import { iniciarHoy, pintarHoy, resumenHoy, sitiosCandidatos } from './hoy-ui';
 import { diasEspecie, puntoReferencia, referenciaVista, ventanaEspecie, type PuntoRef, type Vista } from './ventana-especie';
-import { AVISO_TITULARIDAD, detallesTitularidad, esPublico, NORMA_TITULARIDAD, textoTitularidad, type Titularidad } from './titularidad';
+import { detallesTitularidad, esPublico, normaTitularidad, notaTitularidad, ponerTextosTitularidad, TEXTO_TITULARIDAD, textoTitularidad, type Titularidad } from './titularidad';
 import { AVISO_CITAS, COLOR_ORIGEN, NOMBRE_ORIGEN, ORIGENES_CITA } from './citas';
 import { bloqueCuando } from './ventana-ui';
 import type { SitiosJson } from './ranking';
@@ -168,6 +168,12 @@ function pintarSitiosMapa(lista: Sitio[]) {
 async function iniciarMapa() {
   manifest = await cargarManifest();
   if (!manifest) { $('#sin-datos').hidden = false; return; }
+  const atrib = manifest.atribuciones.mapa ? `Datos: ${manifest.atribuciones.mapa}` : '';
+  $('#atrib-datos').textContent = atrib;
+  $('#atrib-inicio').textContent = atrib;
+  ponerTextosTitularidad(manifest.titularidad);
+  $('#leyenda-monte-junta').textContent = TEXTO_TITULARIDAD.monte_junta;
+  $('#leyenda-monte-municipal').textContent = TEXTO_TITULARIDAD.monte_municipal;
   for (const e of manifest.especies) nombres[e.id] = e.nombre;
   iniciarSelectorEspecie(() => manifest?.especies ?? [], { estadoHoy: estadoHoyRef, hoy: hoyZona, lugar: lugarRef });
   cargarGuia().then((ok) => { if (ok) for (const f of fichasGuia()) nombres[f.id] ??= binomio(f); pintarSelectorEspecie(); });
@@ -179,7 +185,7 @@ async function iniciarMapa() {
   for (const s of ['#capa-titularidad', '#capa-solo-publicos', '#leyenda-titularidad']) $(s).hidden = !manifest.titularidad;
   for (const s of ['#capa-citas', '#leyenda-citas']) $(s).hidden = !manifest.citas;
   $('#hoy-solo-publicos-campo').hidden = !manifest.titularidad;
-  $('#leyenda-titularidad-nota').textContent = `${AVISO_TITULARIDAD} ${NORMA_TITULARIDAD}`;
+  $('#leyenda-titularidad-nota').textContent = notaTitularidad();
   $('#leyenda-citas-nota').textContent = AVISO_CITAS;
   $('#leyenda-citas-lista').replaceChildren(...ORIGENES_CITA.map((o) => {
     const li = document.createElement('li'); li.dataset.origen = o;
@@ -490,8 +496,8 @@ async function pintarTitularidad(el: HTMLElement, lat: number, lon: number, vige
   b.insertAdjacentHTML('afterbegin', `<svg class="ico" aria-hidden="true"><use href="#${esPublico(t) ? 'i-pin' : 'i-alerta'}"/></svg>`);
   el.append(b);
   for (const d of detallesTitularidad(t)) { const s = document.createElement('span'); s.textContent = d; el.append(s); }
-  if (conNorma) { const n = document.createElement('small'); n.textContent = NORMA_TITULARIDAD; el.append(n); }
-  el.title = NORMA_TITULARIDAD;
+  if (conNorma) { const n = document.createElement('small'); n.textContent = normaTitularidad(); el.append(n); }
+  el.title = normaTitularidad();
   el.hidden = false;
   return t;
 }
@@ -1174,7 +1180,7 @@ async function pintarAjustes() {
     $('#normativa-aviso').textContent = nr.aviso;
     const ul = $('#normativa-tipos');
     ul.replaceChildren(...Object.values(nr.tipos).map((t) => { const li = document.createElement('li'); li.textContent = t; return li; }));
-    $('#normativa-orientativo').textContent = ORIENTATIVO;
+    $('#normativa-orientativo').textContent = orientativo(normasNota(manifest!));
   }
   $('#info-datos').textContent = manifest
     ? `Total de datos offline: ${mb(total)} (${manifest.archivos.length} archivos). Generados el ${new Date(manifest.generado).toLocaleDateString('es-ES')}. Mapa base: ${manifest.base ?? '—'}.`

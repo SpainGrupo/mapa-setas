@@ -97,8 +97,8 @@
           </div>
           <details id="leyenda-titularidad" class="leyenda-titularidad" hidden>
             <summary>Leyenda: quién es el dueño del monte</summary>
-            <p><span class="muestra-monte" data-clase="monte_junta" aria-hidden="true"></span>Monte público (Junta)</p>
-            <p><span class="muestra-monte" data-clase="monte_municipal" aria-hidden="true"></span>Monte público municipal: consulta al ayuntamiento</p>
+            <p><span class="muestra-monte" data-clase="monte_junta" aria-hidden="true"></span><span id="leyenda-monte-junta"></span></p>
+            <p><span class="muestra-monte" data-clase="monte_municipal" aria-hidden="true"></span><span id="leyenda-monte-municipal"></span></p>
             <p><span class="muestra-paso" aria-hidden="true"></span>Vía pecuaria o sendero de uso público: paso público, no recoger fuera</p>
             <p><span class="muestra-privado" aria-hidden="true"></span>Lo demás: probablemente privado, necesitas permiso del dueño para recoger</p>
             <p id="leyenda-titularidad-nota" class="nota"></p>
@@ -390,7 +390,7 @@
         <section class="grupo-ajustes">
           <h2>Datos</h2>
           <p class="nota" id="info-datos"></p>
-          <p class="atribucion">Datos: IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, © OpenStreetMap ODbL, Protomaps</p>
+          <p class="atribucion" id="atrib-datos"></p>
           <p class="atribucion">Datos meteorológicos: Open-Meteo.com (CC BY 4.0)</p>
           <p class="atribucion">Letra: Atkinson Hyperlegible Next y Mono (Braille Institute, SIL OFL 1.1)</p>
           <details id="creditos-fotos" class="creditos">
@@ -417,7 +417,7 @@
     <h2>Antes de empezar</h2>
     <p>El mapa marca zonas con buenas condiciones según reglas de terreno, bosque y tiempo. No garantiza que haya setas ni identifica especies.</p>
     <div class="aviso-seguridad" role="note"><svg class="ico" aria-hidden="true"><use href="#i-alerta"/></svg>No consumas ninguna seta sin confirmación de un experto</div>
-    <p class="atribucion">Datos: IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, © OpenStreetMap ODbL, Protomaps</p>
+    <p class="atribucion" id="atrib-inicio"></p>
     <form method="dialog"><button class="btn btn-primario btn-ancho" value="ok">Entendido</button></form>
   </dialog>
 

@@ -28,7 +28,7 @@ def test_sin_generado_quita_la_clave_a_cualquier_profundidad():
 
 
 def test_normalizar_manifest_ignora_solo_las_claves_nuevas_multi_region():
-    m = {"generado": "t", "bbox": [1], "region": {"id": "marbella"}, "legal": {"ccaa": []},
+    m = {"generado": "t", "bbox": [1], "region": {"id": "marbella"}, "legal": {"ccaa": []}, "atribuciones": {"rutas": "OSM"},
          "especies": [{"id": "a", "sin_habitat": False, "nombre": "A"}],
          "archivos": [{"nombre": "x.pmtiles", "bytes": 10}, {"nombre": "a.json", "bytes": 5}],
          "total_bytes": 15, "otra_nueva": 1}

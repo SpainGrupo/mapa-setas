@@ -229,6 +229,7 @@ def test_manifest_lleva_region_legal_y_sin_habitat(tmp_path):
     assert [c["id"] for c in m["legal"]["ccaa"]] == ["AND"] and m["legal"]["ccaa"][0]["verificado"] is False
     assert all(e["sin_habitat"] is False for e in m["especies"])
     assert json.loads((r.app / "manifest.json").read_text())["region"]["id"] == "marbella"
+    assert m["atribuciones"] == r.atribuciones and "titularidad" in m["atribuciones"]
 
 
 def test_regiones_json_indexa_las_que_tienen_manifest(tmp_path):

@@ -21,7 +21,13 @@ export interface EntradaLegal {
   sigla: string;
   cupo_kg_dia: number | null; texto: string; verificado: boolean; fuente_url: string;
 }
-export interface Atribuciones { mapa: string; fuentes: Record<string, string> }
+export interface Atribuciones {
+  mapa: string;
+  /** Valor de la propiedad `fuente` de rutas.pmtiles → nombre legible. */
+  fuentes: Record<string, string>;
+  /** Atribución por capa tal como la emite el pipeline (yaml `atribuciones`: idoneidad, protegidos, titularidad…). */
+  capas: Record<string, string>;
+}
 export interface ManifestApp extends Manifest {
   region: RegionManifest;
   legal: EntradaLegal[];
@@ -43,7 +49,7 @@ const OSM = { osm: 'OpenStreetMap' };
 export const LEGADO_MARBELLA = {
   region: { id: 'marbella', nombre: 'Marbella', origen: { lat: 36.5101, lon: -4.8825 }, etiqueta_origen: 'de Marbella' } as RegionManifest,
   atribuciones: { mapa: 'IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, © OpenStreetMap ODbL, Protomaps',
-    fuentes: { rediam: 'REDIAM (Junta de Andalucía)', ...OSM } } as Atribuciones,
+    fuentes: { rediam: 'REDIAM (Junta de Andalucía)', ...OSM }, capas: {} } as Atribuciones,
   texto_protegido: TEXTO_PROTEGIDO,
   chip_sitio_restringido: CHIP_RESTRINGIDO,
   normas: ['BOJA'],
@@ -99,9 +105,13 @@ export function prepararManifest(m: Manifest, idRegion: string): ManifestApp {
   const legadoMarbella = idRegion === 'marbella';
   const legal = obj(m.legal);
   const atr = obj(m.atribuciones);
-  const fuentesAtr = obj(atr?.fuentes) ?? {};
-  const fuentes: Record<string, string> = atr ? { ...OSM } : legadoMarbella ? { ...LEGADO_MARBELLA.atribuciones.fuentes } : { ...OSM };
-  for (const [k, v] of Object.entries(fuentesAtr)) if (typeof v === 'string') fuentes[k] = v;
+  const fuentesAtr = obj(atr?.fuentes);
+  const fuentes: Record<string, string> = !fuentesAtr && legadoMarbella ? { ...LEGADO_MARBELLA.atribuciones.fuentes } : { ...OSM };
+  for (const [k, v] of Object.entries(fuentesAtr ?? {})) if (typeof v === 'string') fuentes[k] = v;
+  const capas: Record<string, string> = {};
+  for (const [k, v] of Object.entries(atr ?? {})) if (k !== 'mapa' && typeof v === 'string' && v.trim()) capas[k] = v.trim();
+  // Control del mapa: `mapa` si la región lo declara; si no, el legado de Marbella o la de idoneidad + el mapa base.
+  const mapa = txt(atr?.mapa) || (legadoMarbella ? LEGADO_MARBELLA.atribuciones.mapa : capas.idoneidad ? `${capas.idoneidad} · Protomaps` : '');
   const entradas = Array.isArray(legal?.ccaa) ? legal.ccaa.map(entradaLegal).filter((e): e is EntradaLegal => !!e) : [];
   return {
     ...m,
@@ -111,12 +121,16 @@ export function prepararManifest(m: Manifest, idRegion: string): ManifestApp {
     legal: entradas,
     texto_protegido: txt(legal?.texto_protegido) || TEXTO_PROTEGIDO,
     chip_sitio_restringido: txt(legal?.chip_sitio_restringido) || CHIP_RESTRINGIDO,
-    atribuciones: { mapa: atr ? txt(atr.mapa) : legadoMarbella ? LEGADO_MARBELLA.atribuciones.mapa : '', fuentes },
+    atribuciones: { mapa, fuentes, capas },
     normas_legado: !entradas.length && legadoMarbella ? [...LEGADO_MARBELLA.normas] : [],
     avisos: Array.isArray(m.avisos) ? m.avisos.filter((a): a is string => typeof a === 'string' && a.trim() !== '') : [],
     ccaa: typeof m.ccaa === 'string' && m.ccaa ? m.ccaa : null,
   };
 }
+
+/** Siglas de los boletines para la nota «orientativa» (legado de Marbella sin `legal`: BOJA). */
+export const normasNota = (m: Pick<ManifestApp, 'legal' | 'normas_legado'>, entradas = m.legal) =>
+  (m.legal.length ? entradas.map((e) => e.sigla) : m.normas_legado);
 
 /** Nombre legible del valor `fuente` de una entidad (rutas.pmtiles). */
 export function nombreFuente(f: string, fuentes: Record<string, string>): string {

@@ -1,17 +1,17 @@
 // Pestaña «Hoy» (fase 9): selector de día, confianza de la previsión, mejores sitios (general y por seta) y calendario.
 // La lógica está en ranking.ts y calendario.ts; aquí solo el DOM. main.ts le pasa lo que necesita en iniciarHoy().
 import { cargarJson } from './datos';
-import type { Manifest } from './tipos';
+import type { ManifestApp } from './manifest-region';
 import type { ResultadoSemaforo } from './semaforo';
 import { nivelFiabilidad, type Fiabilidad } from './fiabilidad';
-import { distanciaM, MARBELLA, parsearSitios, topEspecie, topGeneral, type Entrada, type FilaGeneral, type Opciones, type SitiosJson } from './ranking';
+import { distanciaM, parsearSitios, topEspecie, topGeneral, type Entrada, type FilaGeneral, type Opciones, type SitiosJson } from './ranking';
 import { acotarDia, confianza, diasChips, estadoCalendario, etiquetaDia, mejorResultado, MESES_CORTOS, ordenarCalendario, sumarDiasMax,
   TEXTO_CONFIANZA, type FilaCalendario } from './calendario';
 import { NOMBRE_DIFICULTAD, type Dificultad } from './ruta';
 import { textoSubida, textoTiempo } from './acceso';
 import { NOMBRE_ESTADO } from './zona';
 import { datosEspecie } from './selector-especie';
-import { detallesTitularidad, esPublico, NORMA_TITULARIDAD, textoTitularidad } from './titularidad';
+import { detallesTitularidad, esPublico, normaTitularidad, textoTitularidad } from './titularidad';
 
 /** Explicación de la cifra del Top (2026-10-15: antes «Calidad del monte», que no decía que entra el tiempo). */
 export const EXPLICACION_PUNTUACION = 'Hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa.';
@@ -19,7 +19,7 @@ export const EXPLICACION_PUNTUACION = 'Hábitat × tamaño de la mancha × lejan
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 
 export interface ContextoHoy {
-  manifest: () => Manifest | null;
+  manifest: () => ManifestApp | null;
   hoy: () => string;
   hayMeteo: () => boolean;
   textoMeteo: () => string;
@@ -68,9 +68,14 @@ const fiab = (id: string): Fiabilidad => nivelFiabilidad(ctx.manifest()?.especie
 
 function textoLejania(p: { lat: number; lon: number }): string {
   const yo = ctx.posicion();
-  const km = distanciaM(yo ?? MARBELLA, p) / 1000;
+  const region = ctx.manifest()?.region;
+  const desde = yo ?? region?.origen;
+  if (!desde) return '';
+  const km = distanciaM(desde, p) / 1000;
   const n = km < 10 ? km.toLocaleString('es-ES', { maximumFractionDigits: 1 }) : Math.round(km).toLocaleString('es-ES');
-  return `a ${n} km ${yo ? 'de ti' : 'de Marbella'} en línea recta`;
+  // Origen de la región: su etiqueta («de <origen>»); sin ella, sin «de …» para no inventar.
+  const de = yo ? 'de ti' : region!.etiqueta_origen;
+  return `a ${n} km ${de ? `${de} ` : ''}en línea recta`;
 }
 
 function boton(texto: string, f: () => void, clase = 'btn') {
@@ -143,12 +148,12 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIEleme
   const tl = s.titularidad ?? { clase: 'privado' as const };
   const ti = document.createElement('p'); ti.className = 'chip-titularidad tf-titularidad'; ti.dataset.clase = tl.clase;
   ti.textContent = textoTitularidad(tl);
-  ti.title = [...detallesTitularidad(tl), NORMA_TITULARIDAD].join(' ');
+  ti.title = [...detallesTitularidad(tl), normaTitularidad()].join(' ');
   li.dataset.titularidad = tl.clase;
   li.append(ti);
   if (s.restringido) {
     const r = document.createElement('p'); r.className = 'chip-restriccion tf-restr';
-    r.textContent = 'Recoger aquí exige autorización';
+    r.textContent = ctx.manifest()?.chip_sitio_restringido ?? '';
     li.append(r);
   }
   const acc = document.createElement('div'); acc.className = 'tf-acciones';
@@ -306,7 +311,7 @@ export async function pintarHoy() {
   const ul = $('#top-general');
   ul.replaceChildren();
   $('#hoy-general-nota').textContent = `Los ${n} mejores sitios de cada seta que no esté en rojo ese día, de mejor a peor y hasta 20. Si dos setas quedan a menos de 300 m, comparten fila.`
-    + (o.soloPublicos ? ' Solo sitios en monte público (Junta o municipal).' : '');
+    + (o.soloPublicos ? ' Solo sitios en monte público (autonómico o municipal).' : '');
   if (!datos) vacio(ul, 'Esta versión de los mapas no trae sitios candidatos.');
   else if (!general.length) vacio(ul, o.soloPublicos ? 'Ese día ningún sitio en monte público cumple los filtros.'
     : 'Ese día todas las setas están en rojo o ningún sitio cumple la dificultad elegida.');

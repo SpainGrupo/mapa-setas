@@ -331,7 +331,10 @@ def construir(region, refrescar=False) -> tuple[list[dict], dict]:
             if r and dentro_radio(r["lat"], r["lon"], centro, radio_km):
                 todos.append(r)
     csv_ = region.citas.get("sitios_csv")
-    sitios, st = leer_sitios(Path(csv_) if csv_ else None, centro, radio_km)
+    ruta_csv = Path(csv_) if csv_ else None
+    if ruta_csv and not ruta_csv.is_absolute():
+        ruta_csv = Path(__file__).parent.parent / "regiones" / ruta_csv
+    sitios, st = leer_sitios(ruta_csv, centro, radio_km)
     stats["sitios_csv"] = st
     todos += sitios
     stats["antes_dedupe"] = len(todos)

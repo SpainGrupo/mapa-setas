@@ -119,8 +119,8 @@ citas:                                          # citas.py (2026-10-15)
   centro: {lon: -4.88, lat: 36.51}              # antes CENTRO (redondeado; no es el origen exacto)
   radio_km: 200
   # CSV de sitios de foros/literatura (lugar, lat, lon, precision, especies, fecha, fuente_url, confianza, cita).
-  # PENDIENTE: vive en un scratchpad de una sesión anterior; si desaparece, citas.py lo omite. Moverlo a raw/citas/.
-  sitios_csv: "/private/tmp/claude-501/-Users-alexanderkrupnov-Documents-Claude-setas/7214647d-a696-4dc3-ada4-f359ab46a9c4/scratchpad/sitios-conocidos.csv"
+  # Relativo a pipeline/regiones/ (versionado).
+  sitios_csv: "marbella-sitios-conocidos.csv"
 
 legal:
   aviso: &aviso "Málaga (Res. 23-09-2026, BOJA 196, vigente hasta 31-05-2027): autoconsumo ≤3 kg por persona y día sin autorización en montes públicos, salvo Zonas de Reserva; de día, sin rastrillos ni remover el mantillo. Fincas privadas: permiso del propietario. Cádiz: la última resolución encontrada es de 2019, sin confirmar su vigencia."

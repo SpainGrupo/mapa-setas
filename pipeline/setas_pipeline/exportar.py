@@ -65,9 +65,14 @@ def colormap() -> np.ndarray:
     return lut
 
 
-def aplicar_umbral(idon: np.ndarray, dist: np.ndarray, umbral: float) -> np.ndarray:
-    """Deja a 0 (transparente) las celdas a menos de `umbral` m del acceso o sin distancia."""
+MIN_PINTAR = 30            # por debajo no se pinta en el mapa (el 50 % de las celdas coloreadas estaba en 1–29)
+
+
+def aplicar_umbral(idon: np.ndarray, dist: np.ndarray, umbral: float, minimo: int = MIN_PINTAR) -> np.ndarray:
+    """Deja a 0 (transparente) las celdas a menos de `umbral` m del acceso, sin distancia o con
+    idoneidad < `minimo`."""
     out = idon.copy()
+    out[out < minimo] = 0
     out[~(dist >= umbral)] = 0
     out[dist < 0] = 0
     return out
@@ -344,7 +349,8 @@ def especies() -> list[dict]:
     d = yaml.safe_load(ESPECIES.read_text())
     cal = _calibracion()
     return [{"id": k, "nombre": v["nombre"], **({"tiempo": v["tiempo"]} if "tiempo" in v else {}),
-             "fiabilidad": fiabilidad(cal.get(k, {}).get("n"), cal.get(k, {}).get("lift_validacion"))}
+             "fiabilidad": fiabilidad(cal.get(k, {}).get("n"), cal.get(k, {}).get("lift_validacion")),
+             "n_citas": cal.get(k, {}).get("n")}
             for k, v in d.items()]
 
 

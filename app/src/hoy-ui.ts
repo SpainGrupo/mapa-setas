@@ -11,6 +11,10 @@ import { NOMBRE_DIFICULTAD, type Dificultad } from './ruta';
 import { textoSubida, textoTiempo } from './acceso';
 import { NOMBRE_ESTADO } from './zona';
 import { datosEspecie } from './selector-especie';
+import { detallesTitularidad, esPublico, NORMA_TITULARIDAD, textoTitularidad } from './titularidad';
+
+/** Explicación de la cifra del Top (2026-10-15: antes «Calidad del monte», que no decía que entra el tiempo). */
+export const EXPLICACION_PUNTUACION = 'Hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa.';
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 
@@ -131,10 +135,17 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIEleme
   cab.append(num, minis, tit, cif);
   const meta = document.createElement('p'); meta.className = 'tf-meta';
   const dif = document.createElement('span'); dif.className = `insignia-dif dif-${principal.dificultad}`; dif.textContent = NOMBRE_DIFICULTAD[principal.dificultad];
-  const pts = document.createElement('span'); pts.className = 'tf-puntos'; pts.textContent = `Calidad del monte: ${principal.puntuacion} de 100`;
-  pts.title = 'Puntuación del sitio para ese día: calidad del monte, semáforo y fiabilidad del mapa';
+  const pts = document.createElement('span'); pts.className = 'tf-puntos'; pts.textContent = `Puntuación del día: ${principal.puntuacion} de 100`;
+  pts.title = EXPLICACION_PUNTUACION;
   meta.append(dif, pts, textoLejania(s));
   li.append(cab, meta);
+  // Titularidad: monte público o «probablemente privado» (sin dato del pipeline cuenta como privado).
+  const tl = s.titularidad ?? { clase: 'privado' as const };
+  const ti = document.createElement('p'); ti.className = 'chip-titularidad tf-titularidad'; ti.dataset.clase = tl.clase;
+  ti.textContent = textoTitularidad(tl);
+  ti.title = [...detallesTitularidad(tl), NORMA_TITULARIDAD].join(' ');
+  li.dataset.titularidad = tl.clase;
+  li.append(ti);
   if (s.restringido) {
     const r = document.createElement('p'); r.className = 'chip-restriccion tf-restr';
     r.textContent = 'Recoger aquí exige autorización';

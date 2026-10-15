@@ -278,7 +278,7 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .hoja-asa { position: relative; display: flex; align-items: flex-start; gap: 4px; padding: 12px 8px 0 20px; cursor: grab; touch-action: none; flex: none; }
 .asa { position: absolute; left: 50%; top: 6px; width: 40px; height: 5px; margin-left: -20px; border-radius: 3px; background: oklch(20% 0.02 160 / 0.32); }
 .hoja-asa h2 { margin: 6px 0 0; font-size: 22px; line-height: 1.15; font-weight: 800; letter-spacing: -0.01em; flex: 1; }
-.hoja-cuerpo { padding: 2px 20px 16px; display: grid; gap: 10px; overflow-y: auto; overscroll-behavior: contain; }
+.hoja-cuerpo { padding: 2px 20px 16px; display: grid; gap: 10px; overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
 .ta-cab { flex: 1; min-width: 0; display: grid; gap: 0; padding-top: 6px; }
 .ta-cab h2 { margin: 0; font-size: 22px; line-height: 1.15; font-weight: 800; letter-spacing: -0.01em; }
 .ta-coord { font-family: var(--cifras); font-size: 14px; color: var(--tinta-2); overflow-wrap: anywhere; }
@@ -873,3 +873,39 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .cuando-leyenda [data-estado=verde] .ico { color: var(--bosque-tx); }
 .cuando-leyenda [data-estado=amarillo] .ico { color: var(--ambar-tx); }
 .cuando .nota { font-size: 13px; }
+
+/* titularidad del monte (2026-10-15) */
+.muestra-titularidad { display: inline-block; flex: none; width: 22px; height: 12px; border: 2px solid #2e7d32; background: linear-gradient(90deg, #2e7d3226 0 50%, #1565c026 50%); border-right-color: #1565c0; }
+.muestra-velo { display: inline-block; flex: none; width: 22px; height: 12px; border-radius: 2px; background: linear-gradient(90deg, #f3efe6 0 60%, #2e7d3240 60%); border: 1px solid #bbb; }
+.muestra-citas { display: inline-flex; flex: none; width: 22px; height: 12px; background: radial-gradient(circle at 25% 50%, #d84315 0 3px, transparent 3.5px), radial-gradient(circle at 60% 50%, #2e7d32 0 3px, transparent 3.5px), radial-gradient(circle at 92% 50%, #1565c0 0 3px, transparent 3.5px); }
+.interruptores label.sub-opcion { min-height: 44px; padding-left: 28px; font-weight: 500; font-size: 14px; }
+.leyenda-titularidad, .leyenda-citas { display: grid; gap: 4px; font-size: 14px; }
+.leyenda-titularidad summary, .leyenda-citas summary { cursor: pointer; font-weight: 700; font-size: 15px; min-height: 32px; display: flex; align-items: center; }
+.leyenda-titularidad p, .leyenda-citas li { margin: 0; display: flex; align-items: center; gap: 8px; }
+.leyenda-citas ul { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; }
+.muestra-monte { display: inline-block; flex: none; width: 22px; height: 12px; border: 2px solid var(--c); background: color-mix(in srgb, var(--c) 15%, transparent); }
+.muestra-monte[data-clase=monte_junta] { --c: #2e7d32; }
+.muestra-monte[data-clase=monte_municipal] { --c: #1565c0; }
+.muestra-paso { display: inline-block; flex: none; width: 22px; height: 0; border-top: 3px dotted #8d5524; }
+.muestra-privado { display: inline-block; flex: none; width: 22px; height: 12px; border: 1px dashed var(--tinta-2); }
+.muestra-origen { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--c); margin-right: 6px; vertical-align: 0; }
+.chip-titularidad { margin: 0; display: grid; gap: 2px; font-size: 14px; color: var(--tinta); background: var(--panel); border: 1px solid oklch(62% 0.017 158 / 0.35); border-left: 4px solid #8a6d3b; border-radius: 12px; padding: 8px 10px; }
+.chip-titularidad[data-clase=monte_junta] { border-left-color: #2e7d32; }
+.chip-titularidad[data-clase=monte_municipal] { border-left-color: #1565c0; }
+.chip-titularidad b { font-weight: 800; font-size: 15px; color: var(--tinta); display: block; }
+.chip-titularidad b .ico { width: 18px; height: 18px; vertical-align: -3px; margin-right: 6px; }
+.chip-titularidad span { color: var(--tinta-2); }
+.chip-titularidad small { font-size: 12px; color: var(--tinta-2); }
+.tz-titularidad { margin-top: 6px; }
+.tf-titularidad { font-size: 14px; font-weight: 700; padding: 6px 10px; }
+.interruptor-hoy { display: flex; align-items: center; gap: 10px; font-weight: 700; grid-column: 1 / -1; }
+.interruptor-hoy input { width: 22px; height: 22px; accent-color: var(--bosque); }
+.explicacion-puntos { margin-top: -4px; }
+.se-lugar { font-size: 13px; color: var(--tinta-2); }
+.popup-monte, .popup-paso, .popup-cita { font-size: 15px; display: grid; gap: 4px; }
+.popup-monte .aviso, .popup-paso .aviso, .popup-cita .aviso { font-size: 13px; color: var(--tinta-2); }
+.popup-monte .pm-clase { font-weight: 800; font-size: 14px; color: #2e7d32; }
+.popup-monte .pm-clase[data-clase=monte_municipal] { color: #1565c0; }
+.popup-cita dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; }
+.popup-cita dt { font-weight: 700; color: var(--tinta-2); font-size: 13px; }
+.popup-cita dd { margin: 0; overflow-wrap: anywhere; }

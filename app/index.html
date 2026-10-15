@@ -95,7 +95,20 @@
             <label><input type="checkbox" data-capa="sombreado" checked /><span>Sombreado del relieve</span></label>
             <label><input type="checkbox" data-capa="curvas" checked /><span>Curvas de nivel (20 m)</span></label>
           </div>
-          <p class="nota">Zonas estimadas con reglas de terreno y bosque. No indican que haya setas ni qué setas son.</p>
+          <details id="leyenda-titularidad" class="leyenda-titularidad" hidden>
+            <summary>Leyenda: quién es el dueño del monte</summary>
+            <p><span class="muestra-monte" data-clase="monte_junta" aria-hidden="true"></span>Monte público (Junta)</p>
+            <p><span class="muestra-monte" data-clase="monte_municipal" aria-hidden="true"></span>Monte público municipal: consulta al ayuntamiento</p>
+            <p><span class="muestra-paso" aria-hidden="true"></span>Vía pecuaria o sendero de uso público: paso público, no recoger fuera</p>
+            <p><span class="muestra-privado" aria-hidden="true"></span>Lo demás: probablemente privado, necesitas permiso del dueño para recoger</p>
+            <p id="leyenda-titularidad-nota" class="nota"></p>
+          </details>
+          <details id="leyenda-citas" class="leyenda-citas" hidden>
+            <summary>Leyenda: citas por origen</summary>
+            <ul id="leyenda-citas-lista"></ul>
+            <p id="leyenda-citas-nota" class="nota"></p>
+          </details>
+          <p class="nota">Zonas estimadas con reglas de terreno y bosque. No indican que haya setas ni qué setas son. No se pintan las zonas por debajo de 30 de 100.</p>
         </div>
       </div>
 
@@ -202,8 +215,10 @@
             </select>
           </label>
           <label class="campo"><span class="etq">Otro día (hasta +15)</span><input id="hoy-fecha" type="date" /></label>
+          <label id="hoy-solo-publicos-campo" class="campo interruptor-hoy"><input id="hoy-solo-publicos" type="checkbox" /><span>Solo montes públicos</span></label>
         </div>
         <h2 id="tit-top-general">Mejores sitios</h2>
+        <p id="hoy-explicacion-puntos" class="nota explicacion-puntos"><b>Puntuación del día</b>: hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa.</p>
         <ol id="top-general" class="tops"></ol>
         <p id="hoy-general-nota" class="nota"></p>
         <nav class="saltos" aria-label="Secciones de Hoy">

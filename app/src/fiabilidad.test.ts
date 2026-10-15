@@ -22,3 +22,14 @@ describe('fiabilidad por especie', () => {
     expect(EXPLICACION_FIABILIDAD).not.toMatch(/[—–]/);
   });
 });
+
+describe('citas que faltan', () => {
+  it('«Mapa sin comprobar (N citas, hacen falta 10)»', () => {
+    expect(textoFiabilidad('sin_validar', 3)).toBe('Mapa sin comprobar (3 citas, hacen falta 10)');
+    expect(textoFiabilidad('sin_validar', 1)).toBe('Mapa sin comprobar (1 cita, hacen falta 10)');
+    expect(textoFiabilidad('sin_validar', 0)).toBe('Mapa sin comprobar (0 citas, hacen falta 10)');
+    expect(textoFiabilidad('sin_validar')).toBe('Mapa sin comprobar');
+    expect(textoFiabilidad('buena', 40)).toBe('Mapa comprobado: acierta bien');
+    expect(insigniaFiabilidad('sin_validar', 2).textContent).toBe('Mapa sin comprobar (2 citas, hacen falta 10)');
+  });
+});

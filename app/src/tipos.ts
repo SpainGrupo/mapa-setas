@@ -16,7 +16,9 @@ export interface AccesoSitio { lat: number; lon: number; via: string; tiempo_min
 import type { Reglas } from './semaforo';
 import type { Fiabilidad } from './fiabilidad';
 
-export interface Especie { id: string; nombre: string; tiempo?: Reglas; fiabilidad?: Fiabilidad }
+export interface Especie { id: string; nombre: string; tiempo?: Reglas; fiabilidad?: Fiabilidad;
+  /** Citas de la zona con precisión ≤ 1 km que usó la calibración (calibracion.json → exportar.especies). */
+  n_citas?: number | null }
 
 export interface Manifest {
   generado: string;

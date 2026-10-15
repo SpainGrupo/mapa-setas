@@ -203,11 +203,15 @@ try {
     && /Boletus edulis/.test(await p.locator('#btn-especie').textContent()), 'tocar una fila cambia la capa de idoneidad');
   await captura('selector-boton.png');
 
-  // Fiabilidad por especie (manifest → hoja de especies y leyenda): P. eryngii no se sostiene en la validación por bloques.
+  // Fiabilidad por especie (manifest → hoja de especies y leyenda). Calibración con citas.geojson (2026-10-15):
+  // P. eryngii (n=11) se sostiene en la validación por bloques; B. edulis no llega a 10 citas y dice cuántas tiene.
+  const manF = await p.evaluate(async () => (await fetch('data/manifest.json')).json());
+  const nEdulis = manF.especies.find((e) => e.id === 'boletus_edulis').n_citas;
   await p.locator('#btn-especie').click();
   await p.locator('#dlg-especie[open]').waitFor();
   const fiabFila = await p.locator('#lista-especies [data-especie=pleurotus_eryngii] .insignia-fiabilidad')
     .evaluate((s) => ({ t: s.textContent, title: s.title }));
+  const fiabEdulis = await p.locator('#lista-especies [data-especie=boletus_edulis] .insignia-fiabilidad').textContent();
   await p.locator('#dlg-especie').evaluate((d) => d.close());
   await elegirEspecie('pleurotus_eryngii');
   await p.locator('#btn-capas').click();
@@ -215,9 +219,10 @@ try {
   const fiabLeyenda = await p.evaluate(() => ({ t: document.querySelector('#txt-fiabilidad').textContent,
     expl: document.querySelector('#txt-fiabilidad-expl').textContent,
     vis: document.querySelector('#txt-fiabilidad-expl').checkVisibility() }));
-  comprobar(fiabFila.t === 'Mapa comprobado: acierta poco' && /GBIF/.test(fiabFila.title) && fiabLeyenda.t === 'Mapa comprobado: acierta poco'
-    && fiabLeyenda.vis && /no se usaron para ajustarlo/.test(fiabLeyenda.expl),
-    `fiabilidad de P. eryngii «baja» en la hoja de especies y en la leyenda, con la explicación al desplegar`);
+  comprobar(fiabFila.t === 'Mapa comprobado: acierta bien' && /GBIF/.test(fiabFila.title) && fiabLeyenda.t === 'Mapa comprobado: acierta bien'
+    && fiabLeyenda.vis && /no se usaron para ajustarlo/.test(fiabLeyenda.expl)
+    && Number.isInteger(nEdulis) && nEdulis < 10 && fiabEdulis === `Mapa sin comprobar (${nEdulis} ${nEdulis === 1 ? 'cita' : 'citas'}, hacen falta 10)`,
+    `fiabilidad de P. eryngii «buena» en la hoja de especies y en la leyenda; B. edulis «${fiabEdulis}»`);
   await p.locator('details.fiabilidad summary').click();
   await p.locator('#btn-capas').click();
   await elegirEspecie('boletus_edulis');
@@ -573,7 +578,7 @@ try {
     && selHoy.orden.activas.every((id) => esperadoAct.includes(id))
     && selHoy.orden.activas.every((id, i, a) => !i || rangoEst(a[i - 1]) <= rangoEst(id))
     && selHoy.dom.join(',') === [...selHoy.orden.activas, '|', ...selHoy.orden.inactivas.map((x) => x.id)].join(',')
-    && selHoy.inact.length === 1 && selHoy.inact[0].id === 'amanita_caesarea' && selHoy.inact[0].et === 'seco'
+    && selHoy.inact.length === 1 && selHoy.inact[0].id === 'amanita_caesarea' && /^seco( \(mirado cerca de \S.*\))?$/.test(selHoy.inact[0].et)
     && selHoy.inact[0].op < 1 && /grayscale/.test(selHoy.inact[0].gris),
     `selector: ${selHoy.orden.activas.length} activas hoy (verde → amarillo), «No activas ahora» y A. caesarea atenuada «seco»: ${selHoy.dom.join(' ')}`);
   await p.locator('#lista-especies .se-divisor').scrollIntoViewIfNeeded();
@@ -621,6 +626,9 @@ try {
   const fila0 = p.locator('#top-general .top-fila').first();
   const f0 = await fila0.evaluate((li) => ({ t: li.innerText, botones: [...li.querySelectorAll('button:not(.tf-especie)')].map((b) => b.textContent || b.getAttribute('aria-label')),
     menuOculto: li.querySelector('.tf-menu').hidden, img: li.querySelector('.miniatura-especie img')?.getAttribute('src') ?? '' }));
+  comprobar(/Puntuación del día: \d+ de 100/.test(f0.t) && !/Calidad del monte/.test(f0.t)
+    && /hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa/.test(await p.locator('#hoy-explicacion-puntos').textContent())
+    && /(Monte público|Probablemente privado)/.test(f0.t), '«Puntuación del día» (antes «Calidad del monte») con su explicación y la titularidad en la fila');
   comprobar(/de 100/.test(f0.t) && /a pie/.test(f0.t) && /km de (Marbella|ti)/.test(f0.t) && /(Fácil|Moderada|Difícil|Muy difícil)/.test(f0.t) && /Buen momento|Esperar|Sin datos/.test(f0.t)
     && f0.botones.join('|') === 'Ruta a pie|Más acciones|Ver en mapa|Cómo llegar en coche|Guardar' && f0.menuOculto && f0.img.includes('miniaturas/'),
     'cada fila: miniatura, puntuación, estado, tiempo a pie, subida, dificultad, distancia, «Ruta a pie» y el resto en «Más acciones»');

@@ -203,3 +203,32 @@ def test_sitios_en_manifest_solo_si_existe(tmp_path):
         {"version": 1, "generado": "x", "especies": {"a": [{}, {}], "b": []}}))
     assert sitios_manifest(tmp_path) == {"archivo": "sitios.json", "version": 1,
                                          "n_por_especie": {"a": 2, "b": 0}}
+
+
+def test_umbral_no_pinta_menos_de_30():
+    idon = np.array([[29, 30, 1, 100]], dtype=np.uint8)
+    dist = np.full((1, 4), 500.0, dtype=np.float32)
+    assert aplicar_umbral(idon, dist, 0).tolist() == [[0, 30, 0, 100]]
+    assert aplicar_umbral(idon, dist, 0, minimo=0).tolist() == [[29, 30, 1, 100]]
+
+
+def test_citas_capa_filtra_bbox_y_mapea_especie():
+    from setas_pipeline.exportar import citas_capa
+    f = lambda esp, lon, lat, **k: {"type": "Feature", "geometry": {"type": "Point", "coordinates": [lon, lat]},
+                                    "properties": {"especie": esp, "lon": lon, "lat": lat, "origen": "inat",
+                                                   "fecha": "2020-11-15T10:00", "url": "u", "licencia": "CC-BY",
+                                                   "precision_m": 10, **k}}
+    c = {"features": [f("boletus_reticulatus", -4.9, 36.5), f("amanita_caesarea", -1.0, 36.5)]}
+    out = citas_capa(c, (-5.5, 36.0, -4.0, 37.0))
+    assert len(out) == 1
+    p = out[0]["properties"]
+    assert p["especie_mapa"] == "boletus_aestivalis" and p["especie"] == "boletus_reticulatus"
+    assert p["fecha"] == "2020-11-15" and p["origen"] == "inat" and p["url"] == "u"
+
+
+def test_lugar_cercano():
+    from setas_pipeline.exportar import lugar_cercano
+    lug = [("Ojén", 36.565, -4.856), ("Ronda", 36.742, -5.166)]
+    assert lugar_cercano(36.58, -4.79, lug) == "Ojén"
+    assert lugar_cercano(36.70, -5.10, lug) == "Ronda"
+    assert lugar_cercano(36.7, -5.1, []) is None

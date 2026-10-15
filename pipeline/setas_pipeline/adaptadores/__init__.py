@@ -25,6 +25,11 @@ CONTRATO: dict[str, tuple[str, ...]] = {
     "montes_publicos": ("clase", "nombre", "detalle", "codigo"),
     "cotos_caza": ("clase", "nombre", "detalle", "codigo"),
     "pasos_publicos": ("clase", "tipo", "nombre", "detalle", "codigo"),
+    # Multi-región, fase C. ccaa: comunidad autónoma (id de la lista cerrada de la app, nombre).
+    # mfe: vegetación normalizada por recinto, con los códigos de malla.py (ARBOL, ESTADO, CUBIERTA); fcc 0–100,
+    # anio_incendio 0 = no consta, artificial = recinto urbano/artificial (edificado.py).
+    "ccaa": ("id", "nombre"),
+    "mfe": ("id", "arbol", "fcc", "estado", "cubierta", "anio_incendio", "artificial"),
 }
 
 
@@ -97,4 +102,4 @@ def contexto_region(region, malla=None, zona=None, desde_anio: int | None = None
                     capas=region.capas, osm_pbf=lambda: pbf_region(region, malla), desde_anio=desde_anio)
 
 
-from . import rediam, effis, derivados, osm  # noqa: E402,F401  (registran sus adaptadores)
+from . import rediam, effis, derivados, osm, generico, mfe  # noqa: E402,F401  (registran sus adaptadores)

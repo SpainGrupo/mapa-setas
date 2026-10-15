@@ -709,6 +709,13 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .grupo-ajustes h2 { margin: 0 !important; font-size: 18px !important; }
 .normativa p { margin: 0; }
 .normativa-tipos { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.normativa-ccaa { display: grid; gap: 12px; }
+.normativa-ccaa:empty { display: none; }
+.normativa-entrada h3 { margin: 0 0 4px; font-size: 17px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.normativa-entrada p { margin: 0 0 4px; }
+.normativa-entrada a { font-weight: 700; color: var(--bosque-tx); }
+.insignia-pendiente { font-size: 13px; font-weight: 800; padding: 2px 8px; border-radius: 999px; color: var(--ambar-tx); background: var(--ambar-t); }
+.avisos-datos ul { margin: 4px 0 0; padding-left: 20px; color: var(--tinta-2); font-size: 15px; }
 .aviso-normativa { margin: 0; font-weight: 800; color: var(--ambar-tx); }
 .credito-especie { display: grid; gap: 2px; margin-top: 8px; font-size: 14px; }
 .credito-especie ol { margin: 0; padding-left: 20px; }

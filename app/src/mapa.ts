@@ -9,7 +9,8 @@ import { FuenteOpfsHttp } from './fuente';
 import { archivoOpfs } from './opfs';
 import { baseDatos } from './datos';
 import type { Manifest } from './tipos';
-import { nombreFuente, normasNota, type ManifestApp } from './manifest-region';
+import { nombreFuente, normasNota, type IdCcaa, type ManifestApp } from './manifest-region';
+import { ccaaEnPunto } from './normativa';
 import { NOMBRE_TIPO_RESTRICCION, orientativo, aRestriccion, restriccionesEn, teselaDe, type Restriccion } from './restricciones';
 import { etiquetaTitularidad, TEXTO_TITULARIDAD, type Titularidad } from './titularidad';
 import { AVISO_CITAS, COLOR_ORIGEN, expresionColorOrigen, filasCita, filtroCitas } from './citas';
@@ -78,6 +79,13 @@ export async function restriccionEn(m: Manifest, lat: number, lon: number): Prom
   if (!m.restricciones) return null;
   const fs = await entidadesTesela(m.restricciones.capa, 'restricciones', lat, lon);
   return fs && restriccionesEn(fs, lat, lon, m.restricciones.tipos);
+}
+
+/** Comunidades autónomas (ccaa.pmtiles, capa 'ccaa') que contienen el punto; null sin capa o sin poder leerla. */
+export async function ccaaEn(m: ManifestApp, lat: number, lon: number): Promise<IdCcaa[] | null> {
+  if (!m.ccaa) return null;
+  const fs = await entidadesTesela(m.ccaa, 'ccaa', lat, lon);
+  return fs && ccaaEnPunto(fs, lat, lon);
 }
 
 // Tras cambiar los archivos de OPFS (actualización o borrado) la app recarga la página (ver main.ts,

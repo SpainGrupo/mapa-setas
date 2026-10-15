@@ -5,11 +5,12 @@ import type { Map as MapaML, GeoJSONSource, LngLat } from 'maplibre-gl';
 import { baseDatos, cargarJson, cargarManifest, mb } from './datos';
 import { cargarRegiones, claveRegion, establecerActiva, hayRegionActiva, regionActiva, resolverRegion, type RegionIndice } from './region';
 import { migrarARegiones } from './migracion';
-import { normasNota, type ManifestApp } from './manifest-region';
+import type { EntradaLegal, ManifestApp } from './manifest-region';
+import { PENDIENTE, textoCupo, vistaNormativa } from './normativa';
 import type { Base } from './mapa';
 // MapLibre (≈1 MB) va en su propio trozo y se carga al arrancar el mapa: el resto de la app se pinta antes.
 let M: typeof import('./mapa') | null = null;
-import { orientativo, textoChip, type Restriccion } from './restricciones';
+import { textoChip, type Restriccion } from './restricciones';
 import { altitudes, aparcamiento, centroCelda, consultar, nombreVia, simplificar, textoSubida, textoTiempo, trazar, urlGoogleCoche, type Celda } from './acceso';
 import { dificultad, NOMBRE_DIFICULTAD, perfil, seguir, textoDistancia, type Dificultad, type Perfil, type Seguimiento } from './ruta';
 import { pintarPerfil } from './perfil-grafico';
@@ -1174,17 +1175,56 @@ async function pintarAjustes() {
   const q = await navigator.storage?.estimate?.().catch(() => undefined);
   $('#estado-almacen').textContent = `Almacenamiento persistente: ${persist ? 'sí' : 'no'}`
     + (q?.usage != null ? ` · en uso ${mb(q.usage)}${q.quota ? ` de ${mb(q.quota)}` : ''}` : '');
-  const nr = manifest?.restricciones;
-  $('#normativa').hidden = !nr;
-  if (nr) {
-    $('#normativa-aviso').textContent = nr.aviso;
-    const ul = $('#normativa-tipos');
-    ul.replaceChildren(...Object.values(nr.tipos).map((t) => { const li = document.createElement('li'); li.textContent = t; return li; }));
-    $('#normativa-orientativo').textContent = orientativo(normasNota(manifest!));
-  }
+  pintarNormativa();
   $('#info-datos').textContent = manifest
     ? `Total de datos offline: ${mb(total)} (${manifest.archivos.length} archivos). Generados el ${new Date(manifest.generado).toLocaleDateString('es-ES')}. Mapa base: ${manifest.base ?? '—'}.`
     : 'Sin datos de mapas.';
+}
+
+/** Normativa en Ajustes: por la CCAA del último punto consultado (o del GPS); sin punto, todas las de la región. */
+let normativaN = 0;
+async function pintarNormativa() {
+  const m = manifest;
+  const nr = m?.restricciones;
+  $('#normativa').hidden = !m || (!nr && !m.legal.length);
+  if (!m) return;
+  const n = ++normativaN;
+  const p = ultimoAcceso?.punto ?? gps?.ultima ?? null;
+  const ids = p && M ? await M.ccaaEn(m, p.lat, p.lon) : null;
+  if (n !== normativaN) return;
+  const v = vistaNormativa(m.legal, ids, m.normas_legado);
+  const amb = $('#normativa-ambito');
+  amb.textContent = v.ambito === 'punto' ? `En el punto elegido: ${v.entradas.map((e) => e.nombre).join(', ')}`
+    : m.legal.length > 1 ? 'Todas las comunidades de la región. Toca un punto del mapa para ver solo la suya.' : '';
+  amb.hidden = !amb.textContent;
+  $('#normativa-ccaa').replaceChildren(...v.entradas.map(entradaLegal));
+  $('#normativa-aviso').hidden = !!m.legal.length || !nr;   // con legal por CCAA, el aviso general sobra
+  $('#normativa-aviso').textContent = nr?.aviso ?? '';
+  $('#normativa-tipos-intro').hidden = !nr;
+  $('#normativa-tipos').replaceChildren(...Object.values(nr?.tipos ?? {}).map((t) => { const li = document.createElement('li'); li.textContent = t; return li; }));
+  $('#normativa-orientativo').textContent = v.nota;
+  $('#avisos-datos').hidden = !m.avisos.length;
+  $('#avisos-datos-lista').replaceChildren(...m.avisos.map((a) => { const li = document.createElement('li'); li.textContent = a; return li; }));
+}
+
+function entradaLegal(e: EntradaLegal): HTMLElement {
+  const art = document.createElement('article'); art.className = 'normativa-entrada'; art.dataset.ccaa = e.id;
+  const h = document.createElement('h3'); h.textContent = e.nombre;
+  art.append(h);
+  if (!e.verificado) {
+    const b = document.createElement('span'); b.className = 'insignia-pendiente'; b.textContent = PENDIENTE;
+    h.append(' ', b);
+  }
+  const t = document.createElement('p'); t.textContent = e.texto;
+  art.append(t);
+  // Spec §1.5: el cupo solo se enseña verificado (prepararManifest ya lo anula si no lo está).
+  if (e.verificado && e.cupo_kg_dia !== null) { const c = document.createElement('p'); c.className = 'nota'; c.textContent = textoCupo(e.cupo_kg_dia); art.append(c); }
+  if (e.fuente_url) {
+    const a = document.createElement('a'); a.href = e.fuente_url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.textContent = `Texto oficial${e.sigla ? ` (${e.sigla})` : ''}`;
+    art.append(a);
+  }
+  return art;
 }
 
 $('#btn-descargar').addEventListener('click', async () => {

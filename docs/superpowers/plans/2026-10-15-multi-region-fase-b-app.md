@@ -1599,7 +1599,7 @@ export async function entidadesEn(archivo: string, capa: string, lat: number, lo
 export async function ccaaEn(m: ManifestApp, lat: number, lon: number): Promise<string[] | null>;  // null: sin capa o sin poder leerla
 ```
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `app/src/normativa.test.ts`:
 ```ts
@@ -1649,12 +1649,12 @@ describe('textos', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd app && npx vitest run src/normativa.test.ts`
 Expected: FAIL, «Failed to resolve import "./normativa"».
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `app/src/normativa.ts`:
 ```ts
@@ -1809,12 +1809,12 @@ Imports: `import { PENDIENTE, textoCupo, vistaNormativa } from './normativa';` y
 .avisos-datos ul { margin: 4px 0 0; padding-left: 20px; color: var(--tinta-2); font-size: 15px; }
 ```
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 Run: `cd app && npx vitest run && npx tsc --noEmit`
 Expected: PASS. Con los datos de legado (sin `legal`), Ajustes enseña lo mismo que hoy: `#normativa-aviso` visible, `#normativa-ambito` oculto y la nota «(BOJA)». Lo cubre el e2e de la tarea 13.
 
-- [ ] **Step 5: Humanizer y commit**
+- [x] **Step 5: Humanizer y commit**
 
 Pasa por la skill `humanizer` las cadenas nuevas: «En el punto elegido: …», «Todas las comunidades de esta región. Elige un punto en el mapa para ver solo la suya.», «Pendiente de verificar», «Cupo: hasta N kg por persona y día.», «Texto oficial (…)», «Avisos de estos datos». Si cambia alguna, actualiza el test que la cita.
 ```bash
@@ -2594,3 +2594,4 @@ El código cambió desde que se escribió el plan: la fase A (pipeline multi-reg
 5. **Marbella ya trae `legal`** con `verificado: false` (pendiente de Alexander) y `cupo_kg_dia: 3`. Por eso Ajustes de Marbella pasa a enseñar la entrada por CCAA («Andalucía · Pendiente de verificar», el mismo texto del aviso y el enlace al BOJA) en lugar del aviso suelto; el cupo no se pinta aparte (no está verificado), pero el texto del aviso ya lo cita. `normas_legado` solo se usa si no hay ninguna entrada válida.
 6. **Atribuciones (cambio mínimo en el pipeline).** El manifest de la fase A no traía `atribuciones`. `exportar.py` ahora emite `atribuciones = region.atribuciones` (el bloque del yaml: idoneidad, protegidos, restricciones, rutas, titularidad…; `mapa` y `fuentes` son opcionales) y `dorado.py` añade `atribuciones` a `MANIFEST_NUEVAS` (con su test). La app: `atribuciones.mapa` si viene; si no, el texto de legado en Marbella o `idoneidad + « · Protomaps»` en otra región; `atribuciones.capas` guarda las de cada capa y la de titularidad se cita en los popups de montes y pasos. El manifest de Marbella se regeneró (`exportar manifest regiones`). **Fase C:** `alicante.yaml` puede declarar `atribuciones.mapa` y `atribuciones.fuentes` (valor de `fuente` de rutas.pmtiles → nombre).
 7. **Titularidad (llegó con la fusión de `main`).** `titularidad.ts` deja de llevar «Junta» y «BOJA 196»: `ponerTextosTitularidad(manifest.titularidad)` carga textos, aviso y norma del manifest (yaml `legal.titularidad`); sin ellos quedan textos neutros (monte «autonómico», solo la Ley 43/2003). La leyenda de `index.html` rellena los dos textos de monte desde el manifest. La nota de «Puntuación del día» y el comentario de `ranking.ts` dicen «autonómico o municipal». El popup de pasos deja «Fuente: REDIAM» por la atribución de titularidad y dice que el trazado «puede ser» aproximado.
+8. **Tarea 9.** `mapa.ts` ya tenía `entidadesTesela` (genérico, de la fusión de `main`): `restriccionEn` y `ccaaEn` lo usan en lugar de crear `entidadesEn`. `ccaaEnPunto` devuelve ids canónicos (acepta los códigos cortos del pipeline). Humanizer: «Todas las comunidades de la región. Toca un punto del mapa para ver solo la suya.»; el resto de cadenas queda como en el plan.

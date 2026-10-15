@@ -3,19 +3,29 @@
 Plan: `docs/superpowers/plans/2026-10-15-multi-region-fase-a-pipeline.md`, Task 11 Step 4.
 Se hace al fusionar `region-alicante` en `main`, en `/Users/alexanderkrupnov/Documents/Claude/setas`.
 
-## Antes de fusionar: `main` se ha movido
+## `main` ya está fusionado en esta rama (2026-10-15, hasta `ea16d66`)
 
-Al cerrar la fase A (2026-10-15), `main` lleva 3 commits que esta rama no tiene y que tocan el pipeline:
-`b201e6c` (app), `6aa89c1` (citas GBIF+iNat+foros) y `6503042` (máscara de edificado y calibración con citas:
-`calibracion.py`, `citas.py`, `edificado.py`, `ejecutar.py`, `idoneidad.py`, `fuentes.yaml`). El checkout
-principal tiene además trabajo sin versionar (`titularidad.py`, `titularidad.pmtiles`).
+Los commits de `main` posteriores a la fase A (`b201e6c` … `ea16d66`: máscara de edificado, calibración con citas,
+capa de titularidad, capa de citas, selector por vista del mapa, «Puntuación del día») están fusionados y portados:
 
-Esos módulos usan todavía rutas fijas (`data/raw`, `data/out`) y el `ejecutar.PASOS` antiguo. Al fusionar hay que
-pasarlos a la API de región (`region.raw/out/app`, `pasos_de(region)`, `--region`) y, si traen fuentes regionales,
-a `regiones/marbella.yaml`. `tests/test_sin_valores_fijos.py` lo vigila. El dorado de esta rama
-(`tests/dorado/marbella.json`) se generó con el código previo a esos commits: tras la fusión no vale y hay que
-regenerarlo con `scripts/regresion_marbella.sh antes` sobre el código de `main` **antes** de portar nada, y
-comparar con `despues` al terminar.
+- `edificado.py`: provincias del Catastro en `regiones/<id>.yaml` → `edificado.catastro_provincias`; feed ATOM
+  nacional en `fuentes.yaml` → `catastro_bu.atom`; landuse OSM del `raw/zona.osm.pbf` de la región.
+- `titularidad.py`: fuentes en `capas.montes_publicos | cotos_caza | pasos_publicos` (adaptadores REDIAM en
+  `adaptadores/rediam.py`), textos, aviso y norma en `legal.titularidad`, atribución en `atribuciones.titularidad`;
+  vallas OSM del `raw/zona.osm.pbf`.
+- `citas.py`: centro, radio y CSV de sitios en `citas` (`--region`); caché en `data/<region>/raw/citas/`.
+- `exportar.py`: `titularidad`, `citas` y `lugares` con `--region`.
+- El dorado `tests/dorado/marbella.json` se regeneró con el código de `main` en `ea16d66` (sin red, sobre un clon
+  de los datos del checkout principal) y la regresión `despues` da `OK: 212 archivos, 0 diferencias`. Única
+  salvedad: `calibracion.md` cita ahora `data/marbella/out/citas.geojson` en vez de `data/out/citas.geojson`; su
+  huella en el dorado es la del informe de `main` con esa ruta cambiada (comprobado: el resto es idéntico byte a byte).
+
+Cachés nuevas que `migrar_datos.sh` mueve con el resto de `raw/` a `marbella/raw/` (no hay que tocarlo):
+`catastro_bu/`, `citas/`, `montes_publicos/`, `cotos_caza/`, `vias_pecuarias/`. Salidas nuevas en `out/` que pasan
+a `marbella/out/`: `edificado.tif`, `citas.geojson` (entrada de la calibración; solo se rehace con red),
+`citas_capa.json`, `titularidad.geojson`, `titularidad_resumen.json`, `app/titularidad.pmtiles`, `app/citas.pmtiles`.
+PENDIENTE: el CSV de sitios de foros (`citas.sitios_csv` en `regiones/marbella.yaml`) sigue en un scratchpad de una
+sesión anterior; si se quiere conservar, copiarlo a `data/marbella/raw/citas/` y apuntar ahí la clave.
 
 ## Pasos
 
@@ -28,5 +38,7 @@ comparar con `despues` al terminar.
 5. `npm --prefix app run datos` (rehace el enlace `app/public/data` → `pipeline/data/marbella/out/app`).
 6. Comprobación sin red:
    `cd pipeline && HTTPS_PROXY=http://127.0.0.1:9 uv run python -m setas_pipeline.exportar manifest --region marbella && uv run python -m setas_pipeline.exportar regiones`
-7. El primer `ejecutar accesos` o `exportar acceso|rutas` crea `data/marbella/raw/zona.osm.pbf` (osmium, unos segundos).
+   (el manifest debe traer `titularidad` y `citas` si existen `app/titularidad.pmtiles` y `app/citas.pmtiles`).
+7. El primer `ejecutar accesos|edificado` o `exportar acceso|rutas|titularidad|meteo` crea
+   `data/marbella/raw/zona.osm.pbf` (osmium, unos segundos).
 8. Quitar el worktree solo cuando la fase B (app) lo diga (spec §8).

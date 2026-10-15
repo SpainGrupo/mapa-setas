@@ -211,3 +211,13 @@ hidrologia:
   decision: "Cauces derivados de la acumulación de flujo en vez de la red hidrográfica IGN/REDIAM: misma fuente que el relieve, sin descarga nueva, e incluye barrancos y canutos que la red oficial omite."
   licencia: "Derivado de IGN/CNIG MDT25, CC BY 4.0 scne.es"
   salidas: [twi.tif, dist_cauce.tif, humedad.tif]
+
+# ---------------------------------------------------------------- Edificado (2026-10-15, edificado.py)
+# Nacional (Catastro INSPIRE cubre todo el territorio de régimen común). Las provincias de cada región van en
+# regiones/<id>.yaml → edificado.catastro_provincias. Montes públicos, vías pecuarias y cotos (titularidad.py) son
+# regionales: regiones/<id>.yaml → capas.montes | capas.pasos_publicos | capas.cotos.
+catastro_bu:
+  nombre: "Catastro INSPIRE — Edificios (BU), descarga ATOM por municipio"
+  atom: "https://www.catastro.hacienda.gob.es/INSPIRE/buildings/{prov}/ES.SDGC.bu.atom_{prov}.xml"
+  verificacion: "2026-10-15: curl falla por la cadena TLS (CA desconocida); requests (certifi) descarga bien. Feeds provinciales en UTF-8 (Málaga) o ISO-8859-1 (resto)."
+  licencia: "Uso libre citando a la D. G. del Catastro como autora y propietaria; solo se publica información transformada (máscara de edificado), no los edificios."

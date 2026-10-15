@@ -2,7 +2,7 @@
 // Datos meteorológicos: Open-Meteo.com (CC BY 4.0).
 import { createStore, get, set } from 'idb-keyval';
 
-export interface PuntoMeteo { id: number; lat: number; lon: number; alt_media: number }
+export interface PuntoMeteo { id: number; lat: number; lon: number; alt_media: number; /** Pueblo más cercano (OSM, exportar.anotar_lugares). */ lugar?: string | null }
 export interface Dia {
   fecha: string; lluvia: number; tmin: number; tmax: number;
   et0?: number;                        // evapotranspiración de referencia FAO (mm/día)

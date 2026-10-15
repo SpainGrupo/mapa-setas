@@ -1,10 +1,12 @@
 """Configuración por región (spec multi-región §3.1): pipeline/regiones/<id>.yaml → Region.
+Opcionales: edificado (catastro_provincias), citas (centro, radio_km, sitios_csv) y, con capas de titularidad,
+legal.titularidad y atribuciones.titularidad.
 
 Rutas: pipeline/data/<region>/raw, pipeline/data/<region>/out (con out/app) y pipeline/data/_comun (GBIF).
 """
 from __future__ import annotations
 import argparse, copy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 import yaml
 
@@ -20,6 +22,7 @@ OBLIGATORIAS = ("id", "nombre", "etiqueta_origen", "origen", "zona", "osm_extrac
 CLAVES_ZONA = ("radio_m", "paso_m", "max_s", "max_snap_m", "cierre_m", "osrm")
 CLAVES_CCAA = ("id", "nombre", "norma", "cupo_kg_dia", "texto", "verificado", "fuente_url")
 CLAVES_ATRIBUCION = ("idoneidad", "protegidos", "restricciones", "rutas", "respaldo_protegidos")
+CAPAS_TITULARIDAD = ("montes_publicos", "cotos_caza", "pasos_publicos")
 
 
 class RegionInvalida(ValueError):
@@ -50,6 +53,8 @@ class Region:
     legal: dict
     atribuciones: dict
     config: Path
+    edificado: dict = field(default_factory=dict)       # edificado.py: catastro_provincias
+    citas: dict = field(default_factory=dict)           # citas.py: centro, radio_km, sitios_csv
     datos: Path = DATOS
 
     @property
@@ -161,6 +166,32 @@ def validar(d: dict, ruta: Path, catalogo: dict) -> list[str]:
         if isinstance(f, dict) and "tipo" in f and f["tipo"] not in textos:
             e.append(f"capas.restricciones: tipo '{f['tipo']}' sin texto en legal.tipos_restriccion")
     e += [f"falta atribuciones.{k}" for k in CLAVES_ATRIBUCION if k not in d["atribuciones"]]
+    # Titularidad (titularidad.py): con alguna de sus capas, hacen falta sus textos, aviso, norma y atribución.
+    if any(t in d["capas"] for t in CAPAS_TITULARIDAD):
+        from .titularidad import CLASES
+        t = legal.get("titularidad")
+        if not isinstance(t, dict):
+            e.append("falta legal.titularidad (textos, aviso, norma)")
+        else:
+            e += [f"falta legal.titularidad.{k}" for k in ("textos", "aviso", "norma") if k not in t]
+            textos = t.get("textos") if isinstance(t.get("textos"), dict) else {}
+            e += [f"falta legal.titularidad.textos.{c}" for c in CLASES if c not in textos]
+        if "titularidad" not in d["atribuciones"]:
+            e.append("falta atribuciones.titularidad")
+    for k in ("edificado", "citas"):
+        if k in d and not isinstance(d[k], dict):
+            e.append(f"'{k}' debe ser un mapa")
+    ed = d.get("edificado") if isinstance(d.get("edificado"), dict) else {}
+    prov = ed.get("catastro_provincias", [])
+    if not (isinstance(prov, list) and all(isinstance(p, str) and len(p) == 2 and p.isdigit() for p in prov)):
+        e.append("edificado.catastro_provincias debe ser una lista de códigos INE de provincia ('29', …)")
+    ci = d.get("citas") if isinstance(d.get("citas"), dict) else {}
+    if ci:
+        c = ci.get("centro")
+        if not (isinstance(c, dict) and _numero(c.get("lon")) and _numero(c.get("lat"))):
+            e.append("citas.centro debe ser {lon, lat} en grados")
+        if not (_numero(ci.get("radio_km")) and ci["radio_km"] > 0):
+            e.append("citas.radio_km debe ser un número > 0")
     return e
 
 
@@ -178,7 +209,8 @@ def cargar_region(id: str = POR_DEFECTO, regiones: Path = REGIONES, datos: Path 
                   especies_activas=tuple(d["especies"]["activas"]),
                   especies_sin_habitat=tuple(d["especies"].get("sin_habitat") or ()),
                   overrides_especies=d.get("overrides_especies") or {}, legal=d["legal"],
-                  atribuciones=d["atribuciones"], config=ruta, datos=Path(datos))
+                  atribuciones=d["atribuciones"], config=ruta, datos=Path(datos),
+                  edificado=d.get("edificado") or {}, citas=d.get("citas") or {})
 
 
 def listar_regiones(regiones: Path = REGIONES) -> list[str]:

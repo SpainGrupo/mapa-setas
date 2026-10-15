@@ -4,7 +4,9 @@ import pytest
 
 CODIGO = Path(__file__).resolve().parent.parent / "setas_pipeline"
 PROHIBIDO = ["-4.8825", "andalucia.osm.pbf", "data/out", "data/raw", "BOJA", "Sierra de las Nieves",
-             "juntadeandalucia.es", "router.project-osrm.org", '"Marbella"']
+             "juntadeandalucia.es", "router.project-osrm.org", '"Marbella"',
+             # fusión de main 2026-10-15 (titularidad, citas, edificado)
+             "Comunidad Autónoma de Andalucía", "(36.51, -4.88)", '("11", "14", "18", "29", "41")']
 
 
 @pytest.mark.parametrize("texto", PROHIBIDO)
@@ -17,7 +19,7 @@ def test_sin_valores_fijos(texto):
 def test_fuentes_yaml_sin_lo_regional():
     import yaml
     f = yaml.safe_load((CODIGO.parent / "fuentes.yaml").read_text())
-    assert not {"enp", "rediam_senderos", "zonificacion_porn"} & set(f)
+    assert not {"enp", "rediam_senderos", "zonificacion_porn", "montes_publicos", "vias_pecuarias", "cotos_caza"} & set(f)
     assert "url" not in f["osm"] and "provincias" not in f["mfe"]
     assert not [k for k in f["incendios"] if k.startswith("rediam")]
     assert "effis_url" in f["incendios"]

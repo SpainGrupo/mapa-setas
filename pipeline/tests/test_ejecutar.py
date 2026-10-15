@@ -28,8 +28,11 @@ def test_pasos_de_usan_las_rutas_de_la_region(tmp_path):
     r = dataclasses.replace(cargar_region("marbella"), datos=tmp_path)
     p = ejecutar.pasos_de(r)
     assert set(p) == {"zona", "relieve", "vegetacion", "suelo", "estructura", "cubierta", "incendios", "humedad",
-                      "protegidos", "accesos", "idoneidad", "calibracion", "vista"}
+                      "protegidos", "accesos", "edificado", "idoneidad", "calibracion", "vista"}
+    assert set(p) == set(ejecutar.NOMBRES)
     assert all(s.parent == r.out for s in p["relieve"][1]())
+    assert p["edificado"][1]() == [r.out / "edificado.tif"]
+    assert r.out / "citas.geojson" in p["calibracion"][2]()
     assert r.config in p["relieve"][2]()              # cambiar la config de la región rehace los pasos
     assert len(p["idoneidad"][1]()) == 12
 

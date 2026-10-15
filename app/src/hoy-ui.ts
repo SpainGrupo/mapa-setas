@@ -11,6 +11,10 @@ import { NOMBRE_DIFICULTAD, type Dificultad } from './ruta';
 import { textoSubida, textoTiempo } from './acceso';
 import { NOMBRE_ESTADO } from './zona';
 import { datosEspecie } from './selector-especie';
+import { detallesTitularidad, esPublico, NORMA_TITULARIDAD, textoTitularidad } from './titularidad';
+
+/** Explicación de la cifra del Top (2026-10-15: antes «Calidad del monte», que no decía que entra el tiempo). */
+export const EXPLICACION_PUNTUACION = 'Hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa.';
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 
@@ -29,6 +33,8 @@ export interface ContextoHoy {
   hayFicha: (especie: string) => Promise<boolean>;
   verFicha: (especie: string) => void;
   irZona: () => void;
+  /** Interruptor «solo montes públicos» (compartido con el mapa). */
+  soloPublicos: () => boolean;
 }
 
 const CLAVE_DIF = 'setas:dificultad-max';
@@ -97,8 +103,17 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIEleme
   const minis = document.createElement('span'); minis.className = 'tf-minis';
   for (const e of entradas.slice(0, 2)) minis.append(miniatura(e.especie));
   const tit = document.createElement('div'); tit.className = 'tf-tit';
-  const b = document.createElement('b'); b.textContent = entradas.map((e) => nombre(e.especie)).join(' · ');
-  tit.append(b);
+  // Tocar el nombre de la seta abre su ficha (misma función que el calendario); sin ficha, no hace nada más.
+  const nombres = document.createElement('div'); nombres.className = 'tf-nombres';
+  entradas.forEach((e, i) => {
+    if (i) nombres.append(' · ');
+    const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'tf-especie'; bt.dataset.especie = e.especie;
+    bt.setAttribute('aria-label', `Ver la ficha de ${nombre(e.especie)}`);
+    const b = document.createElement('b'); b.textContent = nombre(e.especie); bt.append(b);
+    bt.onclick = async () => { if (await ctx.hayFicha(e.especie)) ctx.verFicha(e.especie); };
+    nombres.append(bt);
+  });
+  tit.append(nombres);
   const estados = entradas.length > 1 ? [...new Set(entradas.map((e) => e.estado))] : [principal.estado];
   for (const e of estados) {
     const est = document.createElement('span'); est.className = 'tf-estado chip-estado'; est.dataset.estado = e;
@@ -120,10 +135,17 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIEleme
   cab.append(num, minis, tit, cif);
   const meta = document.createElement('p'); meta.className = 'tf-meta';
   const dif = document.createElement('span'); dif.className = `insignia-dif dif-${principal.dificultad}`; dif.textContent = NOMBRE_DIFICULTAD[principal.dificultad];
-  const pts = document.createElement('span'); pts.className = 'tf-puntos'; pts.textContent = `Calidad del monte: ${principal.puntuacion} de 100`;
-  pts.title = 'Puntuación del sitio para ese día: calidad del monte, semáforo y fiabilidad del mapa';
+  const pts = document.createElement('span'); pts.className = 'tf-puntos'; pts.textContent = `Puntuación del día: ${principal.puntuacion} de 100`;
+  pts.title = EXPLICACION_PUNTUACION;
   meta.append(dif, pts, textoLejania(s));
   li.append(cab, meta);
+  // Titularidad: monte público o «probablemente privado» (sin dato del pipeline cuenta como privado).
+  const tl = s.titularidad ?? { clase: 'privado' as const };
+  const ti = document.createElement('p'); ti.className = 'chip-titularidad tf-titularidad'; ti.dataset.clase = tl.clase;
+  ti.textContent = textoTitularidad(tl);
+  ti.title = [...detallesTitularidad(tl), NORMA_TITULARIDAD].join(' ');
+  li.dataset.titularidad = tl.clase;
+  li.append(ti);
   if (s.restringido) {
     const r = document.createElement('p'); r.className = 'chip-restriccion tf-restr';
     r.textContent = 'Recoger aquí exige autorización';
@@ -186,6 +208,7 @@ function opciones(fecha: string): Opciones {
     },
     fiabilidad: fiab,
     maxDificultad: maxDificultad(),
+    soloPublicos: ctx.soloPublicos(),
   };
 }
 
@@ -196,7 +219,9 @@ async function pintarTopEspecie(datos: SitiosJson | null, o: Opciones) {
   const id = sel.value;
   const top = datos ? topEspecie(datos, id, o, 10) : [];
   if (!datos) vacio(ul, 'Esta versión de los mapas no trae sitios candidatos.');
-  else if (!top.length) vacio(ul, (datos.especies[id]?.length ?? 0) ? 'Ningún sitio con esa dificultad. Prueba a subir el máximo.' : 'Sin sitios candidatos para esta seta.');
+  else if (!top.length) vacio(ul, !(datos.especies[id]?.length ?? 0) ? 'Sin sitios candidatos para esta seta.'
+    : o.soloPublicos && !datos.especies[id].some((s) => esPublico(s.titularidad)) ? 'Ningún sitio de esta seta cae en monte público.'
+      : 'Ningún sitio con esa dificultad. Prueba a subir el máximo.');
   top.forEach((e, i) => ul.append(fila(e, [e], i + 1)));
   if (ultimo) { ultimo.especie = id; ultimo.top = top; }
   $('#hoy-ver-ficha').hidden = !(await ctx.hayFicha(id));
@@ -280,9 +305,11 @@ export async function pintarHoy() {
   const general = datos && m ? topGeneral(datos, m.especies.map((e) => e.id), o, n) : [];
   const ul = $('#top-general');
   ul.replaceChildren();
-  $('#hoy-general-nota').textContent = `Los ${n} mejores sitios de cada seta que no esté en rojo ese día, de mejor a peor y hasta 20. Si dos setas quedan a menos de 300 m, comparten fila.`;
+  $('#hoy-general-nota').textContent = `Los ${n} mejores sitios de cada seta que no esté en rojo ese día, de mejor a peor y hasta 20. Si dos setas quedan a menos de 300 m, comparten fila.`
+    + (o.soloPublicos ? ' Solo sitios en monte público (Junta o municipal).' : '');
   if (!datos) vacio(ul, 'Esta versión de los mapas no trae sitios candidatos.');
-  else if (!general.length) vacio(ul, 'Ese día todas las setas están en rojo o ningún sitio cumple la dificultad elegida.');
+  else if (!general.length) vacio(ul, o.soloPublicos ? 'Ese día ningún sitio en monte público cumple los filtros.'
+    : 'Ese día todas las setas están en rojo o ningún sitio cumple la dificultad elegida.');
   general.forEach((f, i) => ul.append(fila(f.principal, f.entradas, i + 1)));
   ultimo = { fecha, confianza: confianza(hoy, fecha), general, especie: sel.value, top: [], calendario: [], sinSitios: !datos };
   await pintarTopEspecie(datos, o);
@@ -293,7 +320,8 @@ export async function pintarHoy() {
 /** Resumen para el e2e (window.__setas.tops()). */
 export function resumenHoy() {
   if (!ultimo) return null;
-  const e = (x: Entrada) => ({ especie: x.especie, id: x.sitio.id, puntuacion: x.puntuacion, estado: x.estado, dificultad: x.dificultad, score: x.score });
+  const e = (x: Entrada) => ({ especie: x.especie, id: x.sitio.id, puntuacion: x.puntuacion, estado: x.estado, dificultad: x.dificultad, score: x.score,
+    titularidad: x.sitio.titularidad?.clase ?? 'privado' });
   return { fecha: ultimo.fecha, confianza: ultimo.confianza, sinSitios: ultimo.sinSitios,
     general: ultimo.general.map((f) => ({ ...e(f.principal), especies: f.especies })), especie: ultimo.especie, top: ultimo.top.map(e),
     calendario: ultimo.calendario.map((f) => ({ id: f.id, clase: f.estado.clase, texto: f.estado.texto })) };

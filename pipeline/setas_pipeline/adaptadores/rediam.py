@@ -1,6 +1,7 @@
-"""Fuentes REDIAM (Junta de Andalucía): RENPA, zonificación PORN, perímetros de incendios por año y senderos.
-Código movido de protegidos.py, exportar.py (restricciones), incendios.py (_rediam) y rutas.py sin cambios de
-comportamiento: mismas URL, mismos nombres de caché."""
+"""Fuentes REDIAM (Junta de Andalucía): RENPA, zonificación PORN, perímetros de incendios por año, senderos y, para
+la titularidad (2026-10-15), montes públicos, terrenos cinegéticos y vías pecuarias.
+Código movido de protegidos.py, exportar.py (restricciones), incendios.py (_rediam), rutas.py y titularidad.py sin
+cambios de comportamiento: mismas URL, mismos nombres de caché."""
 from __future__ import annotations
 import json
 from pathlib import Path
@@ -108,3 +109,65 @@ def rediam_senderos(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
         "ref": None, "name": g["nombre"].str.strip().str.title(), "network": None, "osmc": None,
         "tipo": [clasificar_ref(None, n) for n in g["nombre"]], "fuente": "rediam",
         "dificultad": g.get("t_dificult")}, geometry=g.geometry, crs=CRS)
+
+
+# ---------------------------------------------------------------- titularidad (titularidad.py)
+
+def clase_monte(tipo_titul: str | None, cfg: dict) -> str | None:
+    """tipo_titul del Catálogo de Montes Públicos → monte_junta | monte_municipal | None (p. ej. «Particular»:
+    consorciados, no es público). Los valores de cada clase los da la config (titular_autonomico,
+    titulares_municipales)."""
+    t = (tipo_titul or "").strip()
+    if t == cfg["titular_autonomico"]:
+        return "monte_junta"
+    if t in tuple(cfg["titulares_municipales"]):
+        return "monte_municipal"
+    return None
+
+
+def _teselas(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
+    return descargar_teselas(cfg["url_patron"], ctx.zona, cfg["tesela_m"], Path(ctx.raw) / cfg["cache"])
+
+
+@registrar("montes_publicos", "rediam_montes")
+def rediam_montes(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
+    g = _teselas(cfg, ctx)
+    if not len(g):
+        return vacio("montes_publicos")
+    g = g.drop_duplicates("codigo_ja")
+    g["clase"] = [clase_monte(t, cfg) for t in g["tipo_titul"]]
+    g = g[g["clase"].notna()]
+    return g.assign(nombre=g["nombre"].str.strip(), detalle=g["tipo_titul"].str.strip(), codigo=g["codigo_ja"])
+
+
+@registrar("cotos_caza", "rediam_cotos")
+def rediam_cotos(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
+    g = _teselas(cfg, ctx)
+    if not len(g):
+        return vacio("cotos_caza")
+    g = g.drop_duplicates("MATRICULA")
+    return g.assign(clase="coto", nombre=g["NOMBRE"].str.strip().str.title(),
+                    detalle=g["TIPO"].str.strip().str.capitalize(), codigo=g["MATRICULA"])
+
+
+@registrar("pasos_publicos", "rediam_vias_pecuarias")
+def rediam_vias_pecuarias(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
+    g = _teselas(cfg, ctx)
+    if not len(g):
+        return vacio("pasos_publicos")
+    g = g.drop_duplicates("CODIGOVIA")
+    return g.assign(clase="paso_publico", tipo="via_pecuaria", nombre=g["NOMBRE"].str.strip().str.capitalize(),
+                    detalle="Vía pecuaria", codigo=g["CODIGOVIA"])
+
+
+@registrar("pasos_publicos", "rediam_senderos")
+def rediam_senderos_paso(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
+    """Senderos de uso público como paso público. Sin url_patron propio, usa la fuente `rediam_senderos` de
+    capas.senderos de la región (misma caja y caché que rutas.py: zona + 2 km, raw/rediam_senderos)."""
+    fuente = cfg if "url_patron" in cfg else next(
+        f for f in ctx.capas.get("senderos", []) if f.get("adaptador") == "rediam_senderos")
+    g = solo_senderos(senderos_rediam(fuente, ctx.zona.bounds, Path(ctx.raw) / "rediam_senderos"))
+    if not len(g):
+        return vacio("pasos_publicos")
+    return g.assign(clase="paso_publico", tipo="sendero", nombre=g["nombre"].str.strip().str.title(),
+                    detalle="Sendero de uso público", codigo=g["fid_1"].astype(str))

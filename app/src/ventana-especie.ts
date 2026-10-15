@@ -5,6 +5,9 @@
 //  1. GPS: el punto meteo más cercano a la última posición, si está a ≤ maxKm (si no, el usuario está fuera de la zona).
 //  2. Si no hay GPS: el punto meteo del mejor sitio candidato de esa seta en sitios.json (el de más calidad del monte).
 //  3. Si la seta no tiene sitios: el punto meteo más cercano a la mediana (lat, lon) de todos los puntos de la zona.
+// Desde 2026-10-15 el selector y la ficha usan, sin GPS, la vista del mapa (referenciaVista): la seta cuenta como
+// activa si lo está en algún punto meteo de la vista (o a ≤ RADIO_VISTA_KM del centro si la vista es enorme).
+// Así un punto lejano (su mejor sitio a 50 km) ya no decide por la zona que se está mirando.
 import type { Dia, PuntoMeteo } from './meteo';
 import { ddmm, diasEntre, semaforo, sumarDias, type Estado, type Reglas, type ResultadoSemaforo } from './semaforo';
 import { confianza, DIAS_MAX, diasHastaTemporada, finTemporada, type Confianza } from './calendario';
@@ -18,7 +21,7 @@ export const MESES_LARGOS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'juni
 
 // ---------------------------------------------------------------- punto de referencia
 
-export type OrigenRef = 'gps' | 'sitio' | 'zona';
+export type OrigenRef = 'gps' | 'vista' | 'sitio' | 'zona';
 export interface PuntoRef { id: number; origen: OrigenRef }
 
 export function puntoReferencia(puntos: PuntoMeteo[], o: { gps?: { lat: number; lon: number } | null; sitios?: SitioCandidato[] | null; maxKm?: number } = {}): PuntoRef | null {
@@ -38,9 +41,45 @@ export function puntoReferencia(puntos: PuntoMeteo[], o: { gps?: { lat: number; 
 
 export const TEXTO_ORIGEN: Record<OrigenRef, string> = {
   gps: 'Con el tiempo de donde estás.',
+  vista: 'Con el tiempo de la zona que miras en el mapa.',
   sitio: 'Con el tiempo de su mejor sitio en el mapa.',
   zona: 'Con el tiempo del centro de la zona.',
 };
+
+// ---------------------------------------------------------------- vista del mapa (sin GPS)
+
+export interface Vista { centro: { lat: number; lon: number }; sw: { lat: number; lon: number }; ne: { lat: number; lon: number } }
+export const RADIO_VISTA_KM = 40;
+/** A partir de este ancho o alto la vista es «enorme» y se usa el radio alrededor del centro. */
+export const VISTA_ENORME_KM = 80;
+
+/** Puntos meteo que deciden en la vista: dentro de ella; si es enorme, a ≤ RADIO_VISTA_KM del centro; si no hay
+ * ninguno dentro (vista muy cerrada entre puntos), el más cercano al centro si está a ≤ RADIO_VISTA_KM. */
+export function puntosEnVista(puntos: PuntoMeteo[], v: Vista): PuntoMeteo[] {
+  const ancho = distanciaM({ lat: v.centro.lat, lon: v.sw.lon }, { lat: v.centro.lat, lon: v.ne.lon }) / 1000;
+  const alto = distanciaM({ lat: v.sw.lat, lon: v.centro.lon }, { lat: v.ne.lat, lon: v.centro.lon }) / 1000;
+  const cerca = (p: PuntoMeteo) => distanciaM(p, v.centro) / 1000 <= RADIO_VISTA_KM;
+  if (ancho > VISTA_ENORME_KM || alto > VISTA_ENORME_KM) return puntos.filter(cerca);
+  const dentro = puntos.filter((p) => p.lat >= v.sw.lat && p.lat <= v.ne.lat && p.lon >= v.sw.lon && p.lon <= v.ne.lon);
+  if (dentro.length) return dentro;
+  const p = puntoMasCercano(puntos, v.centro.lat, v.centro.lon);
+  return p && cerca(p) ? [p] : [];
+}
+
+const RANGO_ESTADO = (r: ResultadoSemaforo | null, fecha: string) =>
+  !r ? 4 : r.estado === 'verde' ? 0 : r.estado === 'amarillo' ? (esActivo(r, fecha) ? 1 : 2) : r.estado === 'rojo' ? 3 : 4;
+
+/** Mejor punto meteo de la vista para una seta (verde > amarillo abierto > amarillo «esperar» > rojo > gris; a
+ * igualdad, el más cercano al centro). null si no hay puntos en la vista. */
+export function referenciaVista(puntos: PuntoMeteo[], v: Vista, estado: (p: PuntoMeteo) => ResultadoSemaforo | null,
+  fecha: string): (PuntoRef & { resultado: ResultadoSemaforo | null }) | null {
+  let mejor: { p: PuntoMeteo; r: ResultadoSemaforo | null; k: number; d: number } | null = null;
+  for (const p of puntosEnVista(puntos, v)) {
+    const r = estado(p), k = RANGO_ESTADO(r, fecha), d = distanciaM(p, v.centro);
+    if (!mejor || k < mejor.k || (k === mejor.k && d < mejor.d)) mejor = { p, r, k, d };
+  }
+  return mejor ? { id: mejor.p.id, origen: 'vista', resultado: mejor.r } : null;
+}
 
 // ---------------------------------------------------------------- días
 

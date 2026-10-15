@@ -79,11 +79,30 @@ def _copia(tmp_path, cambio):
     (lambda d: d["legal"]["ccaa"][0].pop("verificado"), "verificado"),
     (lambda d: d["atribuciones"].pop("rutas"), "rutas"),
     (lambda d: d.__setitem__("id", "otra_cosa"), "id"),
+    (lambda d: d["legal"].pop("titularidad"), "legal.titularidad"),
+    (lambda d: d["legal"]["titularidad"]["textos"].pop("coto"), "textos.coto"),
+    (lambda d: d["atribuciones"].pop("titularidad"), "atribuciones.titularidad"),
+    (lambda d: d["capas"]["pasos_publicos"].append({"adaptador": "inventado"}), "inventado"),
+    (lambda d: d["edificado"].__setitem__("catastro_provincias", [29]), "catastro_provincias"),
+    (lambda d: d["citas"].__setitem__("radio_km", 0), "radio_km"),
+    (lambda d: d["citas"].pop("centro"), "citas.centro"),
 ])
 def test_validacion_rechaza_configs_rotas(tmp_path, cambio, mensaje):
     regiones = _copia(tmp_path, cambio)
     with pytest.raises(R.RegionInvalida, match=mensaje):
         R.cargar_region("marbella", regiones=regiones)
+
+
+def test_titularidad_edificado_y_citas_opcionales(tmp_path):
+    def sin(d):
+        for k in ("montes_publicos", "cotos_caza", "pasos_publicos"):
+            d["capas"].pop(k)
+        d["legal"].pop("titularidad"); d["atribuciones"].pop("titularidad"); d.pop("edificado"); d.pop("citas")
+    r = R.cargar_region("marbella", regiones=_copia(tmp_path, sin))
+    assert r.edificado == {} and r.citas == {}
+    m = R.cargar_region("marbella")
+    assert m.edificado["catastro_provincias"] == ["11", "14", "18", "29", "41"]
+    assert m.citas["centro"] == {"lon": -4.88, "lat": 36.51} and m.citas["radio_km"] == 200
 
 
 def test_listar_y_cli(tmp_path):

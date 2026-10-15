@@ -69,6 +69,12 @@ def pasos_de(region: Region) -> dict:
         malla = _malla()
         construir_accesos(malla, OUT, FUENTES, pbf_region(region, malla))
 
+    def _edificado():
+        from .edificado import construir_edificado
+        from .adaptadores.osm import pbf_region
+        malla = _malla()
+        construir_edificado(malla, region, FUENTES, ZONA, pbf_region(region, malla))
+
     def _idoneidad():
         from .idoneidad import construir_idoneidad
         construir_idoneidad(OUT, _perfiles())
@@ -105,14 +111,16 @@ def pasos_de(region: Region) -> dict:
                     lambda: [*_geo(), OUT / "altitud.tif"]),
         "protegidos": (_protegidos, lambda: [OUT / "protegido.tif"], _geo),
         "accesos": (_accesos, lambda: [OUT / "distancia_acceso.tif"], _geo),
+        "edificado": (_edificado, lambda: [OUT / "edificado.tif"], _geo),
         "idoneidad": (_idoneidad, _por_especie("idoneidad_{}.tif"), _entradas_idoneidad),
-        "calibracion": (_calibracion, lambda: [OUT / "calibracion.md"], _por_especie("idoneidad_{}.tif")),
+        "calibracion": (_calibracion, lambda: [OUT / "calibracion.md"],
+                        lambda: [*_por_especie("idoneidad_{}.tif")(), OUT / "citas.geojson"]),
         "vista": (_vista, _por_especie("vista_{}.png"), _por_especie("idoneidad_{}.tif")),
     }
 
 
 NOMBRES = ("zona", "relieve", "vegetacion", "suelo", "estructura", "cubierta", "incendios", "humedad",
-           "protegidos", "accesos", "idoneidad", "calibracion", "vista")
+           "protegidos", "accesos", "edificado", "idoneidad", "calibracion", "vista")
 
 
 def _al_dia(salidas: list[Path], entradas: list[Path]) -> bool:

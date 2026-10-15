@@ -9,7 +9,9 @@
 # Sin red: los proxies apuntan a un puerto cerrado y cualquier petición HTTP falla en el acto (prueba de que todo
 # sale de la caché). CON_RED=1 lo desactiva (solo para rellenar una caché incompleta; nunca para generar el dorado).
 # Fuera de la regresión (necesitan red sin caché): `ejecutar zona` (OSRM) y `exportar base` (Protomaps).
-# zona.geojson, malla.json y base.pmtiles se reutilizan tal cual (ver ENTRADAS y NO_REGENERADOS en dorado.py).
+# Ni `citas` (citas.py: GBIF species/match aunque haya caché): citas.geojson es una entrada.
+# zona.geojson, malla.json, citas.geojson y base.pmtiles se reutilizan tal cual (ENTRADAS y NO_REGENERADOS en dorado.py).
+# Desde la fusión de main (2026-10-15) el dorado sale del código de main en ea16d66 (edificado, titularidad, citas).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 MODO="${1:?uso: regresion_marbella.sh antes|despues}"
@@ -26,9 +28,9 @@ paso() { echo "[$(date +%H:%M:%S)] $*"; }
 T0=$(date +%s)
 paso "ejecutar (todo menos zona) --forzar"
 uv run python -m setas_pipeline.ejecutar relieve vegetacion suelo estructura cubierta incendios humedad \
-  protegidos accesos idoneidad calibracion vista --forzar ${R[@]+"${R[@]}"}
-paso "exportar capas meteo acceso sitios rutas (+ manifest)"
-uv run python -m setas_pipeline.exportar capas meteo acceso sitios rutas ${R[@]+"${R[@]}"}
+  protegidos accesos edificado idoneidad calibracion vista --forzar ${R[@]+"${R[@]}"}
+paso "exportar capas (+ citas) titularidad meteo (+ lugares) acceso sitios rutas (+ manifest)"
+uv run python -m setas_pipeline.exportar capas titularidad meteo acceso sitios rutas ${R[@]+"${R[@]}"}
 paso "exportar respaldo"
 uv run python -m setas_pipeline.exportar respaldo ${R[@]+"${R[@]}"}
 paso "dorado $ACCION"

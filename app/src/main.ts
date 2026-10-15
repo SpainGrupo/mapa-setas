@@ -11,7 +11,9 @@ import { altitudes, aparcamiento, centroCelda, consultar, nombreVia, simplificar
 import { dificultad, NOMBRE_DIFICULTAD, perfil, seguir, textoDistancia, type Dificultad, type Perfil, type Seguimiento } from './ruta';
 import { pintarPerfil } from './perfil-grafico';
 import { iniciarHoy, pintarHoy, resumenHoy, sitiosCandidatos } from './hoy-ui';
-import { diasEspecie, puntoReferencia, ventanaEspecie } from './ventana-especie';
+import { diasEspecie, puntoReferencia, referenciaVista, ventanaEspecie, type PuntoRef, type Vista } from './ventana-especie';
+import { AVISO_TITULARIDAD, detallesTitularidad, esPublico, NORMA_TITULARIDAD, textoTitularidad, type Titularidad } from './titularidad';
+import { AVISO_CITAS, COLOR_ORIGEN, NOMBRE_ORIGEN, ORIGENES_CITA } from './citas';
 import { bloqueCuando } from './ventana-ui';
 import type { SitiosJson } from './ranking';
 import { datosAcceso } from './acceso-datos';
@@ -117,6 +119,7 @@ function aplicarIdoneidad() {
   pintarTarjeta();
   pintarBotonFicha();
   pintarSelectorEspecie();
+  aplicarFiltroCitas();
 }
 
 /** «Ver ficha» junto al selector de especie, solo si la especie del mapa tiene ficha en la guía. */
@@ -133,7 +136,23 @@ const CAPAS = (): Record<string, string[]> => ({
   sombreado: ['sombreado'], curvas: ['curvas', 'curvas-cota'],
   protegidos: ['protegidos-relleno', 'protegidos-linea'], idoneidad: ['idoneidad'], semaforo: ['semaforo'],
   rutas: M!.CAPAS_RUTAS, restricciones: M!.CAPAS_RESTRICCIONES,
+  titularidad: M!.CAPAS_TITULARIDAD, solo_publicos: M!.CAPAS_SOLO_PUBLICOS, citas: M!.CAPAS_CITAS,
 });
+
+// «Solo montes públicos»: un interruptor en el mapa (velo sobre lo demás) y otro en el Top del día; comparten preferencia.
+const CLAVE_SOLO_PUBLICOS = 'setas:solo-publicos';
+function soloPublicos(): boolean { try { return localStorage.getItem(CLAVE_SOLO_PUBLICOS) === '1'; } catch { return false; } }
+function ponerSoloPublicos(v: boolean) {
+  try { localStorage.setItem(CLAVE_SOLO_PUBLICOS, v ? '1' : '0'); } catch { /* solo esta sesión */ }
+  for (const c of document.querySelectorAll<HTMLInputElement>('[data-capa=solo_publicos], #hoy-solo-publicos')) c.checked = v;
+  if (mapa) M!.verCapa(mapa, M!.CAPAS_SOLO_PUBLICOS, v);
+}
+
+/** Citas: solo la seta del mapa salvo «todas las especies». */
+function aplicarFiltroCitas() {
+  if (!mapa || !M) return;
+  M.filtrarCitas(mapa, $<HTMLInputElement>('#citas-todas').checked ? null : $<HTMLSelectElement>('#sel-especie').value);
+}
 
 function pintarSitiosMapa(lista: Sitio[]) {
   const src = mapa?.getSource('sitios') as GeoJSONSource | undefined;
@@ -146,14 +165,27 @@ async function iniciarMapa() {
   manifest = await cargarManifest();
   if (!manifest) { $('#sin-datos').hidden = false; return; }
   for (const e of manifest.especies) nombres[e.id] = e.nombre;
-  iniciarSelectorEspecie(() => manifest?.especies ?? [], { estadoHoy: estadoHoyRef, hoy: hoyZona });
+  iniciarSelectorEspecie(() => manifest?.especies ?? [], { estadoHoy: estadoHoyRef, hoy: hoyZona, lugar: lugarRef });
   cargarGuia().then((ok) => { if (ok) for (const f of fichasGuia()) nombres[f.id] ??= binomio(f); pintarSelectorEspecie(); });
   rellenarEspecies($<HTMLSelectElement>('#sel-especie'));
   rellenarEspecies($<HTMLSelectElement>('#filtro-especie'), ['', 'Todas']);
   rellenarEspecies($<HTMLSelectElement>('#sitio-especie'), ['', 'Sin especificar']);
   $('#capa-rutas').hidden = !manifest.rutas;
   $('#capa-restricciones').hidden = !manifest.restricciones;
+  for (const s of ['#capa-titularidad', '#capa-solo-publicos', '#leyenda-titularidad']) $(s).hidden = !manifest.titularidad;
+  for (const s of ['#capa-citas', '#leyenda-citas']) $(s).hidden = !manifest.citas;
+  $('#hoy-solo-publicos-campo').hidden = !manifest.titularidad;
+  $('#leyenda-titularidad-nota').textContent = `${AVISO_TITULARIDAD} ${NORMA_TITULARIDAD}`;
+  $('#leyenda-citas-nota').textContent = AVISO_CITAS;
+  $('#leyenda-citas-lista').replaceChildren(...ORIGENES_CITA.map((o) => {
+    const li = document.createElement('li'); li.dataset.origen = o;
+    const m = document.createElement('span'); m.className = 'muestra-origen'; m.setAttribute('aria-hidden', 'true'); m.style.setProperty('--c', COLOR_ORIGEN[o]);
+    const n = manifest!.citas?.por_origen?.[o];
+    li.append(m, `${NOMBRE_ORIGEN[o]}${n != null ? ` (${n})` : ''}`);
+    return li;
+  }));
   M = await import('./mapa');
+  M.ponerNombresEspecie((id) => nombres[id] ?? id);
   $('#rampa').style.background = `linear-gradient(90deg, ${M.COLORES_IDONEIDAD.join(',')})`;
   try {
     const g = JSON.parse(localStorage.getItem('setas:capa') ?? 'null');
@@ -170,6 +202,9 @@ async function iniciarMapa() {
     acceso: () => ultimoAcceso, trazaAcceso: () => trazaAcceso, hoy: hoyZona, tops: resumenHoy, selector: ordenSelector, puntoRef: refPunto,
     ruta: () => rutaActual && { ...rutaActual, perfil: { ...rutaActual.perfil } }, seguimiento: () => seguimiento,
     restriccionEn: (lat: number, lon: number) => manifest && M!.restriccionEn(manifest, lat, lon),
+    titularidadEn: (lat: number, lon: number) => manifest && M!.titularidadEn(manifest, lat, lon),
+    olvidarGps: () => { if (gps) gps.ultima = null; }, vista: vistaMapa,
+    lugarHoy: (id: string) => lugarRef(id),
     sitioEditando: () => editando && { ...editando, foto: undefined }, accesoSitio: () => accesoSitio,
     resumenSemaforo: () => Object.fromEntries((manifest?.especies ?? []).map((e) => {
       const n: Record<string, number> = { verde: 0, amarillo: 0, rojo: 0, gris: 0 };
@@ -198,12 +233,19 @@ async function iniciarMapa() {
     });
     pintarSemaforoMapa();
     pintarPuntoMapa();
+    ponerSoloPublicos(soloPublicos());
+    aplicarFiltroCitas();
     document.body.dataset.mapa = 'listo';
   });
   $('#sel-especie').addEventListener('change', aplicarIdoneidad);
   $('#rng-umbral').addEventListener('input', aplicarIdoneidad);
   document.querySelectorAll<HTMLInputElement>('[data-capa]').forEach((c) =>
-    c.addEventListener('change', () => mapa && M!.verCapa(mapa, CAPAS()[c.dataset.capa!], c.checked)));
+    c.addEventListener('change', () => {
+      if (c.dataset.capa === 'solo_publicos') { ponerSoloPublicos(c.checked); return; }
+      if (mapa) M!.verCapa(mapa, CAPAS()[c.dataset.capa!], c.checked);
+      if (c.dataset.capa === 'citas') $('#citas-opciones').hidden = !c.checked;
+    }));
+  $('#citas-todas').addEventListener('change', aplicarFiltroCitas);
   document.querySelectorAll<HTMLInputElement>('input[name=base]').forEach((r) => r.addEventListener('change', () => {
     try { localStorage.setItem(CLAVE_BASE, r.value); } catch { /* sin almacenamiento: solo esta sesión */ }
     aplicarBase(true);
@@ -328,6 +370,7 @@ interface UltimoAcceso {
   ms?: { consulta: number; traza: number; total: number };
   lector?: unknown;
   restricciones?: Restriccion[] | null;
+  titularidad?: Titularidad | null;
 }
 let ultimoAcceso: UltimoAcceso | null = null;
 let consultaAcceso = 0;
@@ -431,6 +474,23 @@ async function pintarRestriccion(el: HTMLElement, lat: number, lon: number, vige
   return rs;
 }
 
+/** Etiqueta de titularidad del punto (monte público o «probablemente privado», con refuerzos y paso público). */
+async function pintarTitularidad(el: HTMLElement, lat: number, lon: number, vigente: () => boolean, conNorma = true): Promise<Titularidad | null> {
+  el.hidden = true;
+  el.replaceChildren();
+  const t = manifest && M ? await M.titularidadEn(manifest, lat, lon) : null;
+  if (!vigente() || !t) return t;
+  el.dataset.clase = t.clase;
+  const b = document.createElement('b'); b.textContent = textoTitularidad(t);
+  b.insertAdjacentHTML('afterbegin', `<svg class="ico" aria-hidden="true"><use href="#${esPublico(t) ? 'i-pin' : 'i-alerta'}"/></svg>`);
+  el.append(b);
+  for (const d of detallesTitularidad(t)) { const s = document.createElement('span'); s.textContent = d; el.append(s); }
+  if (conNorma) { const n = document.createElement('small'); n.textContent = NORMA_TITULARIDAD; el.append(n); }
+  el.title = NORMA_TITULARIDAD;
+  el.hidden = false;
+  return t;
+}
+
 /** Ficha «Acceso» del punto: aparcamiento, tiempo y subida a pie y trazado aproximado (todo con los datos locales). */
 async function mostrarAcceso(lat: number, lon: number) {
   if (!$('#tarjeta-ruta').hidden) cerrarRuta();
@@ -446,10 +506,12 @@ async function mostrarAcceso(lat: number, lon: number) {
   estadoAcceso('Calculando el acceso…', false);
   pintarTrazaAcceso([{ type: 'Feature', properties: { tipo: 'destino' }, geometry: { type: 'Point', coordinates: [lon, lat] } }]);
   const restr = pintarRestriccion($('#ta-restriccion'), lat, lon, () => n === consultaAcceso);
+  const tit = pintarTitularidad($('#ta-titularidad'), lat, lon, () => n === consultaAcceso);
   const c = await calcularAcceso(lat, lon);
   const rs = await restr;
+  const ti = await tit;
   if (n !== consultaAcceso) return;
-  ultimoAcceso = { punto: { lat, lon }, estado: c.estado, acceso: c.acceso, traza: c.traza, ms: c.ms, lector: c.lector, restricciones: rs };
+  ultimoAcceso = { punto: { lat, lon }, estado: c.estado, acceso: c.acceso, traza: c.traza, ms: c.ms, lector: c.lector, restricciones: rs, titularidad: ti };
   $('#tarjeta-acceso').dataset.estado = c.estado;
   if (c.estado !== 'ok' || !c.acceso || !c.linea) { estadoAcceso(c.texto, false); return; }
   const { acceso, linea } = c;
@@ -835,8 +897,32 @@ function estadoPunto(id: number, especie: string, fecha: string): ResultadoSemaf
 // Punto de referencia del tiempo de cada seta (ficha y selector del mapa): GPS cercano → mejor sitio → centro de la zona
 // (ventana-especie.ts, puntoReferencia).
 let sitiosRef: SitiosJson | null = null;
-function refPunto(especie: string) {
-  return puntoReferencia(puntosMeteo, { gps: gps?.ultima ?? null, sitios: sitiosRef?.especies[especie] ?? null, maxKm: DISTANCIA_MAX_KM });
+/** Vista actual del mapa (centro y esquinas), o null si el mapa no está listo. */
+function vistaMapa(): Vista | null {
+  if (!mapa || document.body.dataset.mapa !== 'listo') return null;
+  const b = mapa.getBounds(), c = mapa.getCenter();
+  return { centro: { lat: c.lat, lon: c.lng }, sw: { lat: b.getSouth(), lon: b.getWest() }, ne: { lat: b.getNorth(), lon: b.getEast() } };
+}
+/** Punto meteo de referencia de una seta: GPS a ≤ 12 km → la vista del mapa (el mejor punto de la vista) → su mejor
+ * sitio → centro de la zona (ventana-especie.ts). */
+function refPunto(especie: string): PuntoRef | null {
+  const g = gps?.ultima ?? null;
+  if (g) {
+    const r = puntoReferencia(puntosMeteo, { gps: g, maxKm: DISTANCIA_MAX_KM });
+    if (r?.origen === 'gps') return r;
+  }
+  const v = vistaMapa();
+  if (v && meteo) {
+    const hoy = hoyZona();
+    const r = referenciaVista(puntosMeteo, v, (p) => estadoPunto(p.id, especie, hoy), hoy);
+    if (r) return { id: r.id, origen: r.origen };
+  }
+  return puntoReferencia(puntosMeteo, { sitios: sitiosRef?.especies[especie] ?? null, maxKm: DISTANCIA_MAX_KM });
+}
+/** Pueblo del punto de referencia de una seta («activa cerca de Ojén»). */
+function lugarRef(especie: string): string | null {
+  const r = refPunto(especie);
+  return (r && puntosMeteo.find((p) => p.id === r.id)?.lugar) || null;
 }
 /** Semáforo de hoy de una especie en su punto de referencia (selector del mapa: siempre hoy, no el día elegido en Hoy). */
 function estadoHoyRef(especie: string): ResultadoSemaforo | null {
@@ -887,11 +973,14 @@ function pintarPuntoMapa() {
     geometry: { type: 'Point', coordinates: [puntoSel.lon, puntoSel.lat] } }] : [] });
 }
 
+let consultaZona = 0;
 function elegirPunto(lat: number, lon: number, conTarjeta: boolean) {
   const p = puntoMasCercano(puntosMeteo, lat, lon);
   if (!p) return;
   const km = Math.hypot(p.lat - lat, (p.lon - lon) * Math.cos((lat * Math.PI) / 180)) * 111.2;
   if (km > DISTANCIA_MAX_KM) return;
+  const n = ++consultaZona;
+  pintarTitularidad($('#tz-titularidad'), lat, lon, () => n === consultaZona, false);
   puntoSel = p;
   localStorage.setItem(CLAVE_PUNTO, String(p.id));
   pintarPuntoMapa();
@@ -1145,6 +1234,12 @@ iniciarHoy({
   hayFicha: async (especie) => !!(await cargarGuia()) && hayFicha(fichaDeEspecieMapa(especie)),
   verFicha: (especie) => { irA('p-guia'); abrirFicha(fichaDeEspecieMapa(especie)); },
   irZona: () => irA('p-zona'),
+  soloPublicos,
+});
+$<HTMLInputElement>('#hoy-solo-publicos').checked = soloPublicos();
+$<HTMLInputElement>('#hoy-solo-publicos').addEventListener('change', (ev) => {
+  ponerSoloPublicos((ev.target as HTMLInputElement).checked);
+  pintarHoy();
 });
 
 iniciarReconocer({

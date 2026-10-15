@@ -20,6 +20,11 @@ CONTRATO: dict[str, tuple[str, ...]] = {
     "restricciones": ("tipo", "nombre", "zona"),
     "incendios": ("anio", "fuente"),
     "senderos": ("ref", "name", "network", "osmc", "tipo", "fuente", "dificultad"),
+    # titularidad.py (2026-10-15). clase: monte_junta | monte_municipal (montes_publicos), coto (cotos_caza),
+    # paso_publico (pasos_publicos, líneas; tipo via_pecuaria | sendero).
+    "montes_publicos": ("clase", "nombre", "detalle", "codigo"),
+    "cotos_caza": ("clase", "nombre", "detalle", "codigo"),
+    "pasos_publicos": ("clase", "tipo", "nombre", "detalle", "codigo"),
 }
 
 

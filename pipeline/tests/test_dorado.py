@@ -113,15 +113,23 @@ def test_pmtiles_real(tmp_path):
     assert h["zoom"] == [8, 8] and h["atribucion"] == "IGN" and h["nombre"] == "x" and h["bytes"] > 0
 
 
-def test_salidas_ajenas_a_la_rama_no_entran_en_la_huella(tmp_path):
+def test_edificado_y_titularidad_se_exigen_regenerados_y_citas_es_entrada(tmp_path):
+    """Tras fusionar main (2026-10-15) edificado y titularidad salen de pasos de la rama: deben regenerarse.
+    citas.geojson (citas.py, necesita GBIF) es una entrada: se huella sin exigir que sea nueva."""
     out = _out(tmp_path)
     viejo = time.time() - 3600
     for rel in ("edificado.tif", "titularidad_resumen.json", "app/titularidad.pmtiles"):
         (out / rel).write_bytes(b"x")
         os.utime(out / rel, (viejo, viejo))
-    h = D.huella(out, desde=time.time() - 60)   # no exige regenerarlas
-    assert "edificado.tif" not in h["tif"] and "titularidad_resumen.json" not in h["json"]
-    assert "app/titularidad.pmtiles" not in h["pmtiles"]
+    with pytest.raises(D.NoRegenerado) as e:
+        D.huella(out, desde=time.time() - 60)
+    assert set(e.value.rutas) >= {"edificado.tif", "titularidad_resumen.json", "app/titularidad.pmtiles"}
+    for rel in ("edificado.tif", "titularidad_resumen.json", "app/titularidad.pmtiles"):
+        (out / rel).unlink()
+    (out / "citas.geojson").write_text('{"type": "FeatureCollection", "features": []}')
+    os.utime(out / "citas.geojson", (viejo, viejo))
+    h = D.huella(out, desde=time.time() - 60)
+    assert "citas.geojson" in h["json"]
 
 
 def test_nombre_pmtiles_con_ruta_absoluta_se_guarda_relativo_a_out(tmp_path):

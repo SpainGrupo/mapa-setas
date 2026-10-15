@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { sumarDias, type Reglas, type ResultadoSemaforo } from './semaforo';
+import { semaforo, sumarDias, type Reglas, type ResultadoSemaforo } from './semaforo';
 import type { Dia, PuntoMeteo } from './meteo';
 import type { SitioCandidato } from './ranking';
-import { DIAS_VENTANA, diasEspecie, esActivo, etiquetaInactiva, ordenarSelector, puntoReferencia, ventanaEspecie,
+import { DIAS_VENTANA, diasEspecie, esActivo, etiquetaInactiva, ordenarSelector, puntoReferencia, puntosEnVista, referenciaVista, ventanaEspecie,
   type DiaVentana, type OpcionSelector } from './ventana-especie';
 
 const HOY = '2026-10-14';
 const AEREUS: Reglas = { episodio_mm: 25, ventana_dias: [8, 20], tmin_media: [8, 18], tmax_media: [15, 27], meses: [9, 10, 11, 12] };
+
+const semaforoDe = (s: Dia[]) => semaforo(s, AEREUS, HOY);
 
 /** 30 días pasados + hoy + 15 de previsión; `lluvia` = {díasRelativosAHoy: mm}. */
 function serie(lluvia: Record<number, number> = {}, tmin = 12, tmax = 22): Dia[] {
@@ -124,5 +126,37 @@ describe('selector: activas primero', () => {
   });
   it('empates: orden del manifest', () => {
     expect(ordenarSelector([o('p', 'verde'), o('q', 'verde'), o('r', 'verde')], HOY).activas.map((x) => x.id)).toEqual(['p', 'q', 'r']);
+  });
+});
+
+describe('referencia por la vista del mapa (sin GPS)', () => {
+  // Marbella/Ojén con lluvia; Genal (su «mejor sitio», a ~50 km) seco: la vista sobre Marbella manda.
+  const P: PuntoMeteo[] = [
+    { id: 32, lat: 36.588, lon: -4.789, alt_media: 400, lugar: 'Ojén' },
+    { id: 20, lat: 36.47, lon: -5.32, alt_media: 600, lugar: 'Jubrique' },
+    { id: 5, lat: 37.3, lon: -4.0, alt_media: 700, lugar: 'Lejos' },
+  ];
+  const seco = serie(), mojado = serie({ [-12]: 30 });
+  const estado = (p: PuntoMeteo) => semaforoDe(p.id === 32 ? mojado : seco);
+  const vista = (lat: number, lon: number, dLat: number, dLon: number) =>
+    ({ centro: { lat, lon }, sw: { lat: lat - dLat, lon: lon - dLon }, ne: { lat: lat + dLat, lon: lon + dLon } });
+  it('vista sobre Marbella: el punto de Ojén, verde', () => {
+    const r = referenciaVista(P, vista(36.55, -4.85, 0.12, 0.15), estado, HOY);
+    expect(r).toMatchObject({ id: 32, origen: 'vista' });
+    expect(r!.resultado!.estado).toBe('verde');
+  });
+  it('vista enorme: puntos a ≤ 40 km del centro', () => {
+    expect(puntosEnVista(P, vista(36.55, -4.85, 1.5, 2)).map((p) => p.id)).toEqual([32]);
+  });
+  it('vista cerrada sin puntos dentro: el más cercano si está a ≤ 40 km', () => {
+    expect(puntosEnVista(P, vista(36.52, -4.88, 0.01, 0.01)).map((p) => p.id)).toEqual([32]);
+    expect(puntosEnVista(P, vista(35.5, -6.5, 0.01, 0.01))).toEqual([]);
+  });
+  it('el antiguo «mejor sitio» lejano decidía rojo (regresión)', () => {
+    const sitios = [{ id: 1, lat: 36.47, lon: -5.32, area_ha: 50, punt_media: 90, punt_max: 99, t_pie_min: 10, subida_m: 10,
+      dist_camino_m: 400, aparcamiento_id: 1, restringido: false, meteo_id: 20 }] as SitioCandidato[];
+    const viejo = puntoReferencia(P, { sitios });
+    expect(viejo).toEqual({ id: 20, origen: 'sitio' });
+    expect(estado(P[1])!.estado).toBe('rojo');
   });
 });

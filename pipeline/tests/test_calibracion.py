@@ -76,3 +76,30 @@ def test_validacion_bloques_lift_en_bloques_retenidos():
     assert v["lifts"] == [2.0, 1.0] and v["lift_medio"] == 1.5 and v["pliegues"] == 2
     vacio = validacion_bloques(m, r, tierra, [], pl, k=2)
     assert vacio["lift_medio"] is None and vacio["pliegues"] == 0
+
+
+def test_citas_especie_y_precision():
+    from setas_pipeline.calibracion import citas_especie, filtrar_precision
+    f = lambda esp, prec, origen="inat": {"properties": {"especie": esp, "lon": -4.9, "lat": 36.5, "precision_m": prec,
+                                                         "origen": origen}}
+    c = {"features": [f("boletus_reticulatus", 50), f("boletus_reticulatus", None), f("boletus_reticulatus", 5000),
+                      f("boletus_reticulatus", 100, "foro"), f("boletus_reticulatus", 1000, "foro"),
+                      f("boletus_reticulatus", 5000, "literatura"), f("boletus_reticulatus", None, "literatura"),
+                      f("amanita_caesarea", 10)]}
+    pts = citas_especie(c, "boletus_aestivalis")          # clave del pipeline → id de la guía
+    assert len(pts) == 7
+    ok, sin, descartadas = filtrar_precision(pts)
+    # sin incertidumbre declarada se conserva (criterio de filtrar_incertidumbre); > 1 km fuera;
+    # foros/literatura solo con precisión «punto» (≤ 100 m)
+    assert [p[2:] for p in ok] == [(50, "inat"), (None, "inat"), (100, "foro")]
+    assert sin == 1 and descartadas == 4
+
+
+def test_decidir_borde_urbano():
+    from setas_pipeline.calibracion import decidir_borde_urbano
+    v = lambda e, b: {"exclusion": {"val": {"lift_medio": e}}, "exclusion_borde": {"val": {"lift_medio": b}}}
+    res = {"a": {"celda": {"n": 20}, "variantes": v(2.0, 2.5)},
+           "b": {"celda": {"n": 5}, "variantes": v(2.0, 1.0)}}          # n < 10: no cuenta
+    assert decidir_borde_urbano(res) == (True, [])
+    res["c"] = {"celda": {"n": 12}, "variantes": v(3.0, 2.9)}
+    assert decidir_borde_urbano(res) == (False, ["c"])

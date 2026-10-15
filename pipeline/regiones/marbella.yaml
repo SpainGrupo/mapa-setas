@@ -71,12 +71,56 @@ capas:
       url_patron: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_Equipamientos_Uso_Publico_Andalucia?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:senderos&outputFormat=application/json;%20subtype=geojson&srsName=EPSG:25830&bbox={xmin},{ymin},{xmax},{ymax},urn:ogc:def:crs:EPSG::25830"
       tesela_m: 50000
 
+  # Titularidad (2026-10-15, titularidad.py; antes fuentes.yaml montes_publicos | vias_pecuarias | cotos_caza)
+  montes_publicos:
+    - adaptador: rediam_montes
+      nombre: "REDIAM — Catálogo (Registro) de Montes Públicos de Andalucía, WFS, capa ms:Catalogo_Montes_Públicos_Andalucia"
+      url_patron: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_Catalogo_Montes_Publicos_Andalucia?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:Catalogo_Montes_P%C3%BAblicos_Andalucia&outputFormat=application/json;%20subtype=geojson&srsName=EPSG:25830&bbox={xmin},{ymin},{xmax},{ymax},urn:ogc:def:crs:EPSG::25830"
+      verificacion: "2026-10-15: caja x 320000-340000, y 4040000-4060000 → 12 montes (5 Comunidad Autónoma de Andalucía, 6 Ayuntamiento, 1 Otras Entidades Públicas). Campos: id, codigo_ja, nombre, provincias, tipo_titul, acceso_inf, sup_ha."
+      ficha: "portalrediam.cica.es/geonetwork, c3f9579d16afd3aabd4c0d180f135cf678384aa6 (actualizada 07-10-2026)"
+      limitacion: "No distingue los montes de ayuntamiento gestionados por la Junta de los que no (PENDIENTE)."
+      licencia: "Uso libre y gratuito mencionando a autores y propietarios (AccessConstraints del WFS); el repo trata REDIAM como CC BY 4.0."
+      atribucion: "REDIAM, Junta de Andalucía"
+      tesela_m: 25000                       # titularidad.py TESELA_M
+      cache: montes_publicos
+      titular_autonomico: "Comunidad Autónoma de Andalucía"          # tipo_titul → monte_junta
+      titulares_municipales: ["Ayuntamiento", "Otras Entidades Públicas"]   # tipo_titul → monte_municipal
+  cotos_caza:
+    - adaptador: rediam_cotos
+      nombre: "REDIAM — Terrenos cinegéticos vigentes (temporada 2025-26), capa ms:Terrenos_cinegeticos_vigentes"
+      url_patron: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_terrenos_cinegeticos_vigentes?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:Terrenos_cinegeticos_vigentes&outputFormat=application/json;%20subtype=geojson&srsName=EPSG:25830&bbox={xmin},{ymin},{xmax},{ymax},urn:ogc:def:crs:EPSG::25830"
+      verificacion: "2026-10-15: caja x 320000-340000, y 4040000-4060000 → 20 recintos (11 cotos privados, 8 deportivos, 1 reserva andaluza). Sin campo de cercado."
+      uso: "Solo refuerza el aviso de finca privada; nunca lo quita."
+      atribucion: "REDIAM, Junta de Andalucía"
+      tesela_m: 25000
+      cache: cotos_caza
+  pasos_publicos:                           # orden = el de la capa «pasos»: vías pecuarias y luego senderos
+    - adaptador: rediam_vias_pecuarias
+      nombre: "REDIAM — Inventario de vías pecuarias (dic. 2025), WFS Patrimonio Natural, capa ms:inventario_vvpp"
+      url_patron: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_WFS_Patrimonio_Natural?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:inventario_vvpp&outputFormat=application/json;%20subtype=geojson&srsName=EPSG:25830&bbox={xmin},{ymin},{xmax},{ymax},urn:ogc:def:crs:EPSG::25830"
+      verificacion: "2026-10-15: caja x 320000-340000, y 4040000-4060000 → 15 tramos (p. ej. CORDEL DE BENAHAVIS A OJEN). El servicio REDIAM_Inventario_VVPP da 504 con cajas de 20 km; este no."
+      aviso: "El trazado de las vías pecuarias no deslindadas es aproximado (metadatos REDIAM)."
+      atribucion: "REDIAM, Junta de Andalucía"
+      tesela_m: 25000
+      cache: vias_pecuarias
+    - adaptador: rediam_senderos            # sin url_patron: usa la fuente rediam_senderos de capas.senderos
+
 especies:                                       # orden = el de especies.yaml (el manifest sigue el catálogo)
   activas: [boletus_aereus, boletus_aestivalis, boletus_edulis, boletus_pinophilus, amanita_caesarea,
             lactarius_deliciosus, lactarius_sanguifluus, cantharellus_cibarius, amanita_ponderosa,
             macrolepiota_procera, pleurotus_eryngii, terfezia_arenaria]
   sin_habitat: []
 overrides_especies: {}
+
+edificado:                                      # edificado.py (2026-10-15); ATOM nacional en fuentes.yaml catastro_bu
+  catastro_provincias: ["11", "14", "18", "29", "41"]   # Cádiz, Córdoba, Granada, Málaga, Sevilla (antes PROVINCIAS)
+
+citas:                                          # citas.py (2026-10-15)
+  centro: {lon: -4.88, lat: 36.51}              # antes CENTRO (redondeado; no es el origen exacto)
+  radio_km: 200
+  # CSV de sitios de foros/literatura (lugar, lat, lon, precision, especies, fecha, fuente_url, confianza, cita).
+  # PENDIENTE: vive en un scratchpad de una sesión anterior; si desaparece, citas.py lo omite. Moverlo a raw/citas/.
+  sitios_csv: "/private/tmp/claude-501/-Users-alexanderkrupnov-Documents-Claude-setas/7214647d-a696-4dc3-ada4-f359ab46a9c4/scratchpad/sitios-conocidos.csv"
 
 legal:
   aviso: &aviso "Málaga (Res. 23-09-2026, BOJA 196, vigente hasta 31-05-2027): autoconsumo ≤3 kg por persona y día sin autorización en montes públicos, salvo Zonas de Reserva; de día, sin rastrillos ni remover el mantillo. Fincas privadas: permiso del propietario. Cádiz: la última resolución encontrada es de 2019, sin confirmar su vigencia."
@@ -93,6 +137,16 @@ legal:
       # PENDIENTE: cotejar con el PDF del BOJA y decidir con Alexander si pasa a true (el texto incluye Cádiz sin confirmar).
       verificado: false
       fuente_url: "https://www.juntadeandalucia.es/boja/2026/196/BOJA26-196-00003-13150-01_00344382.pdf"
+  titularidad:                                  # titularidad.py (antes TEXTOS, AVISO, NORMA)
+    textos:
+      monte_junta: "Monte público (Junta)"
+      monte_municipal: "Monte público municipal: consulta al ayuntamiento"
+      privado: "Probablemente privado: necesitas permiso del dueño para recoger"
+      paso_publico: "Paso público, no recoger fuera"
+      coto: "Coto de caza"
+      senal_privado: "Valla, cancela o paso privado cerca"
+    norma: "Ley 43/2003 de Montes, art. 36.1: el titular del monte es el propietario de sus frutos espontáneos. Resolución de 23-09-2026 (BOJA 196), punto 8: en terrenos particulares hace falta la autorización del propietario para recoger setas."
+    aviso: "No hay datos abiertos fiables de vallas ni de quién es dueño de cada finca. Fuera de los montes públicos marcados, asume que es privado y pide permiso. Ley 43/2003 de Montes, art. 36.1: el titular del monte es el propietario de sus frutos espontáneos. Resolución de 23-09-2026 (BOJA 196), punto 8: en terrenos particulares hace falta la autorización del propietario para recoger setas."
 
 atribuciones:
   idoneidad: "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL"   # exportar.py:353, respaldo.py:40
@@ -100,6 +154,7 @@ atribuciones:
   restricciones: "REDIAM CC BY 4.0 (zonificación PORN, RENPA)"                                # exportar.py:488
   rutas: "© OpenStreetMap (ODbL); REDIAM, Junta de Andalucía (CC BY 4.0)"                     # rutas.py:141
   respaldo_protegidos: "Espacios protegidos: REDIAM (Junta de Andalucía), CC BY 4.0"          # respaldo.py:346
+  titularidad: "REDIAM, Junta de Andalucía (montes públicos, vías pecuarias, senderos, cotos) · © OpenStreetMap ODbL"  # titularidad.py ATRIBUCION
 
 notas_fuentes:
   mfe_provincias: [Malaga, Cadiz, Sevilla, Granada, Cordoba]   # antes fuentes.yaml mfe.provincias (solo documentación)

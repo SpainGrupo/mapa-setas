@@ -7,6 +7,9 @@
     uv run python -m setas_pipeline.exportar rutas      [--region …]          # Fase 8: rutas.pmtiles
     uv run python -m setas_pipeline.exportar sitios     [--region …]          # Fase 9: sitios.json
     uv run python -m setas_pipeline.exportar altitud    [--region …]          # Fase 9: añade la capa altitud a acceso.bin
+    uv run python -m setas_pipeline.exportar titularidad [--region …]         # montes públicos, cotos, vallas OSM, pasos públicos
+    uv run python -m setas_pipeline.exportar citas      [--region …]          # citas.pmtiles (citas y sitios conocidos)
+    uv run python -m setas_pipeline.exportar lugares    [--region …]          # pueblo más cercano en meteo_puntos.json
     uv run python -m setas_pipeline.exportar manifest   [--region …]
     uv run python -m setas_pipeline.exportar todo       [--region …]
     uv run python -m setas_pipeline.exportar respaldo   [--region …]          # Fase 7: OsmAnd/Locus (out/respaldo/)
@@ -59,9 +62,14 @@ def colormap() -> np.ndarray:
     return lut
 
 
-def aplicar_umbral(idon: np.ndarray, dist: np.ndarray, umbral: float) -> np.ndarray:
-    """Deja a 0 (transparente) las celdas a menos de `umbral` m del acceso o sin distancia."""
+MIN_PINTAR = 30            # por debajo no se pinta en el mapa (el 50 % de las celdas coloreadas estaba en 1–29)
+
+
+def aplicar_umbral(idon: np.ndarray, dist: np.ndarray, umbral: float, minimo: int = MIN_PINTAR) -> np.ndarray:
+    """Deja a 0 (transparente) las celdas a menos de `umbral` m del acceso, sin distancia o con
+    idoneidad < `minimo`."""
     out = idon.copy()
+    out[out < minimo] = 0
     out[~(dist >= umbral)] = 0
     out[dist < 0] = 0
     return out
@@ -204,6 +212,46 @@ def voronoi_zonas(puntos, zona) -> list:
     return res
 
 
+LUGARES_OSM = ("city", "town", "village")
+
+
+def lugares_osm(pbf: Path) -> list[tuple[str, float, float]]:
+    """(nombre, lat, lon) de los nodos OSM place=city|town|village con nombre."""
+    import osmium
+    res = []
+    for n in osmium.FileProcessor(str(pbf), osmium.osm.NODE).with_filter(
+            osmium.filter.TagFilter(*(("place", v) for v in LUGARES_OSM))):
+        nombre = n.tags.get("name")
+        if nombre:
+            res.append((nombre, n.location.lat, n.location.lon))
+    return res
+
+
+def lugar_cercano(lat: float, lon: float, lugares: list[tuple[str, float, float]]) -> str | None:
+    """Nombre del lugar más cercano (equirectangular; sobra a esta escala)."""
+    if not lugares:
+        return None
+    k = math.cos(math.radians(lat))
+    return min(lugares, key=lambda x: (x[1] - lat) ** 2 + ((x[2] - lon) * k) ** 2)[0]
+
+
+def anotar_lugares(region: Region, out: Path | None = None, pbf: Path | None = None) -> list[dict]:
+    """Añade `lugar` (pueblo más cercano, OSM) a meteo_puntos.json sin tocar ids ni coordenadas: el selector
+    de especie lo enseña como «activa cerca de Ojén». pbf: el OSM recortado de la región (raw/zona.osm.pbf)."""
+    out = out or region.app
+    if pbf is None:
+        from .adaptadores.osm import pbf_region
+        pbf = pbf_region(region, Malla.cargar(region.out / "malla.json"))
+    ruta = out / "meteo_puntos.json"
+    lista = json.loads(ruta.read_text())
+    lug = lugares_osm(pbf)
+    for p in lista:
+        p["lugar"] = lugar_cercano(p["lat"], p["lon"], lug)
+    ruta.write_text(json.dumps(lista, ensure_ascii=False))
+    print(f"  lugares: {len(lista)} puntos meteo con nombre ({len(lug)} lugares OSM)", flush=True)
+    return lista
+
+
 def exportar_meteo(region: Region, out: Path | None = None):
     """meteo_puntos.json ({id, lat, lon, alt_media}) y meteo_zonas.pmtiles (Voronoi, capa 'meteo_zonas')."""
     import geopandas as gpd
@@ -234,7 +282,7 @@ def exportar_meteo(region: Region, out: Path | None = None):
                     ["--no-tile-size-limit", "--detect-shared-borders", "--no-simplification-of-shared-nodes",
                      "--attribution=Open-Meteo.com CC BY 4.0"])
     print(f"  meteo: {len(puntos)} puntos de {len(todos)} en la rejilla", flush=True)
-    return lista
+    return anotar_lugares(region, out)
 
 
 # ---------------------------------------------------------------- PMTiles
@@ -311,6 +359,7 @@ def especies(region: Region) -> list[dict]:
     perfiles = region.perfiles(cargar_perfiles(ESPECIES), incluir_sin_habitat=True)
     return [{"id": k, "nombre": v["nombre"], **({"tiempo": v["tiempo"]} if "tiempo" in v else {}),
              "fiabilidad": fiabilidad(cal.get(k, {}).get("n"), cal.get(k, {}).get("lift_validacion")),
+             "n_citas": cal.get(k, {}).get("n"),
              "sin_habitat": k in region.especies_sin_habitat}
             for k, v in perfiles.items()]
 
@@ -457,6 +506,49 @@ def exportar_restricciones(region: Region, out: Path | None = None):
     return gdf
 
 
+# Capa «Citas y sitios conocidos» (2026-10-15): puntos de citas.geojson dentro del mapa base.
+ORIGENES_CITAS = ("foro", "literatura", "inat", "observation", "gbif", "imba")
+ID_CITAS_A_PIPELINE = {"boletus_reticulatus": "boletus_aestivalis"}     # id de la guía → clave de especies.yaml
+
+
+def citas_capa(citas: dict, bbox) -> list[dict]:
+    """Features de la capa de citas dentro de bbox=(oeste, sur, este, norte), con la especie del mapa
+    (`especie_mapa`, clave de especies.yaml) además del id de la guía."""
+    out = []
+    for f in citas.get("features", []):
+        p = f["properties"]
+        if not (bbox[0] <= p["lon"] <= bbox[2] and bbox[1] <= p["lat"] <= bbox[3]):
+            continue
+        q = {k: p.get(k) for k in ("especie", "fecha", "precision_m", "origen", "fuente", "url", "licencia",
+                                   "atribucion", "confianza")}
+        q["especie_mapa"] = ID_CITAS_A_PIPELINE.get(p["especie"], p["especie"])
+        q["fecha"] = (q["fecha"] or "")[:10] or None
+        out.append({"type": "Feature", "geometry": f["geometry"], "properties": {k: v for k, v in q.items()
+                                                                                 if v is not None}})
+    return out
+
+
+def exportar_citas(region: Region, out: Path | None = None) -> dict:
+    from collections import Counter
+    out = out or region.app
+    ruta = region.out / "citas.geojson"
+    if not ruta.exists():
+        print(f"  WARNING: falta {ruta} (uv run python -m setas_pipeline.citas --region {region.id})", flush=True)
+        return {}
+    bbox, _ = _bbox_zona(region)
+    feats = citas_capa(json.loads(ruta.read_text()), bbox)
+    with tempfile.TemporaryDirectory() as tmp:
+        gj = Path(tmp) / "citas.geojson"
+        gj.write_text(json.dumps({"type": "FeatureCollection", "features": feats}, ensure_ascii=False))
+        _tippecanoe(gj, out / "citas.pmtiles", "citas", 6, 14,
+                    ["-r1", "--no-feature-limit", "--no-tile-size-limit",
+                     "--attribution=GBIF.org · iNaturalist · Observation.org · foros y literatura (cada cita con su licencia)"])
+    res = {"n": len(feats), "por_origen": dict(Counter(f["properties"]["origen"] for f in feats))}
+    (region.out / "citas_capa.json").write_text(json.dumps(res, ensure_ascii=False))
+    print(f"  citas: {res}", flush=True)
+    return res
+
+
 def exportar_base(region: Region, out: Path | None = None, maxzoom: int = ZOOM_BASE_MAX, build: str | None = None):
     """Extracto del build diario de Protomaps recortado a la zona (+ margen)."""
     import requests
@@ -504,6 +596,10 @@ def escribir_manifest(region: Region, out: Path | None = None) -> dict:
         "restricciones": ({"capa": "restricciones.pmtiles", "tipos": region.legal["tipos_restriccion"],
                            "aviso": region.legal["aviso"]}
                           if (out / "restricciones.pmtiles").exists() else None),
+        # 2026-10-15: titularidad (montes públicos, cotos, señales OSM, pasos públicos) y citas conocidas.
+        "titularidad": (titularidad_manifest(region) if (out / "titularidad.pmtiles").exists() else None),
+        "citas": ({"capa": "citas.pmtiles", **_leer_json(region.out / "citas_capa.json")}
+                  if (out / "citas.pmtiles").exists() else None),
         # Fase 9: sitios candidatos por especie (también en la descarga offline, vía `archivos`).
         "sitios": sitios_manifest(out),
         "archivos": archivos,
@@ -532,6 +628,16 @@ def escribir_regiones(datos: Path = DATOS, regiones: Path = REGIONES) -> list[di
     Path(datos).mkdir(parents=True, exist_ok=True)
     (Path(datos) / "regiones.json").write_text(json.dumps(lista, ensure_ascii=False, indent=1))
     return lista
+
+
+def _leer_json(ruta: Path) -> dict:
+    return json.loads(ruta.read_text()) if ruta.exists() else {}
+
+
+def titularidad_manifest(region: Region) -> dict:
+    t = region.legal["titularidad"]
+    return {"capa": "titularidad.pmtiles", "textos": t["textos"], "aviso": t["aviso"], "norma": t["norma"],
+            **_leer_json(region.out / "titularidad_resumen.json")}
 
 
 def sitios_manifest(out: Path) -> dict | None:
@@ -566,8 +672,9 @@ def modelo_disponible(out: Path) -> dict | None:
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("pasos", nargs="+", choices=["capas", "restricciones", "base", "meteo", "acceso", "altitud", "rutas",
-                                                 "sitios", "manifest", "respaldo", "regiones", "todo"])
+    ap.add_argument("pasos", nargs="+", choices=["capas", "restricciones", "titularidad", "citas", "lugares", "base",
+                                                 "meteo", "acceso", "altitud", "rutas", "sitios", "manifest",
+                                                 "respaldo", "regiones", "todo"])
     ap.add_argument("--maxzoom", type=int, default=ZOOM_BASE_MAX)
     argumento_region(ap)
     a = ap.parse_args(argv)
@@ -585,10 +692,20 @@ def main(argv=None):
         print("restricciones…", flush=True); exportar_restricciones(region)
     if pasos == {"restricciones"}:
         print("restricciones…", flush=True); exportar_restricciones(region)
+    if pasos & {"titularidad", "todo"}:
+        from .titularidad import construir as construir_titularidad, tiene_titularidad
+        if tiene_titularidad(region):
+            print("titularidad…", flush=True); construir_titularidad(region)
+        else:
+            print(f"titularidad: la región {region.id} no declara capas de titularidad; se omite", flush=True)
+    if pasos & {"citas", "capas", "todo"}:
+        print("citas…", flush=True); exportar_citas(region)
     if pasos & {"base", "todo"}:
         exportar_base(region, maxzoom=a.maxzoom)
     if pasos & {"meteo", "todo"}:
         print("meteo…", flush=True); exportar_meteo(region)
+    elif "lugares" in pasos:
+        print("lugares…", flush=True); anotar_lugares(region)
     if pasos & {"acceso", "todo"}:
         from .acceso import calcular
         print("acceso…", flush=True); calcular(region)

@@ -1,0 +1,49 @@
+from setas_pipeline import citas
+
+
+def _r(esp="boletus_edulis", fecha="2020-10-10", lat=36.5, lon=-4.9, origen="gbif", prec=None, url="u"):
+    return {"especie": esp, "fecha": fecha, "lat": lat, "lon": lon, "precision_m": prec, "origen": origen, "url": url}
+
+
+def test_radio_200km():
+    from setas_pipeline.region import cargar_region
+    centro, radio = citas.ambito(cargar_region("marbella"))
+    assert centro == (36.51, -4.88) and radio == 200.0
+    assert citas.dentro_radio(36.51, -4.88, centro, radio) and citas.dentro_radio(36.37, -5.62, centro, radio)
+    assert not citas.dentro_radio(37.99, -3.47, centro, radio)          # Jaén, > 200 km
+
+
+def test_dedupe_misma_especie_fecha_y_100m():
+    a = _r(origen="inat", url="a"); b = _r(lat=36.5004, url="b")        # ~44 m
+    c = _r(lat=36.502, url="c")                                          # ~220 m: se queda
+    d = _r(esp="amanita_caesarea", url="d"); e = _r(fecha="2020-10-11", url="e")
+    out = citas.deduplicar([b, a, c, d, e])
+    assert sorted(r["url"] for r in out) == ["a", "c", "d", "e"]
+    assert [r for r in out if r["url"] == "a"][0]["tambien_en"] == ["b"]
+
+
+def test_sin_fecha_no_se_deduplica():
+    assert len(citas.deduplicar([_r(fecha=None, url="a"), _r(fecha=None, url="b")])) == 2
+
+
+def test_normaliza_gbif_licencia_y_origen():
+    x = {"key": 1, "decimalLatitude": 36.5, "decimalLongitude": -4.9, "eventDate": "2020-10-10T00:00",
+         "license": "http://creativecommons.org/licenses/by-nc/4.0/legalcode", "datasetKey": citas.DS_INAT,
+         "basisOfRecord": "HUMAN_OBSERVATION", "recordedBy": "ana"}
+    r = citas.normaliza_gbif("boletus_edulis", x)
+    assert r["licencia"] == "CC-BY-NC-4.0" and r["origen"] == "inat" and r["atribucion"] == "ana"
+
+
+def test_inat_oscurecida_exige_precision():
+    o = {"id": 1, "geojson": {"coordinates": ["-4.9", "36.5"]}, "obscured": True, "positional_accuracy": None,
+         "public_positional_accuracy": None, "license_code": "cc-by-nc", "quality_grade": "research"}
+    assert citas.normaliza_inat("boletus_edulis", o) is None
+    o["public_positional_accuracy"] = 25000
+    r = citas.normaliza_inat("boletus_edulis", o)
+    assert r["precision_m"] == 25000 and r["licencia"] == "CC-BY-NC" and r["confianza"] == "alta"
+
+
+def test_origen_csv():
+    assert citas.origen_csv("https://www.gbif.org/occurrence/1") is None
+    assert citas.origen_csv("https://pmc.ncbi.nlm.nih.gov/articles/x/") == "literatura"
+    assert citas.origen_csv("https://www.malagahoy.es/x") == "foro"

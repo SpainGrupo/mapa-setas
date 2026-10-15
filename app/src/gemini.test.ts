@@ -87,6 +87,20 @@ describe('pedirSegundaOpinion', () => {
     await expect(pedirSegundaOpinion('u', pet, con(503))).rejects.toThrow(/saturado/);
     await expect(pedirSegundaOpinion('u', pet, (async () => { throw new TypeError('x'); }) as typeof fetch)).rejects.toThrow(/conectar/);
   });
+  it('Worker anterior (400 con contexto.ccaa): repite una vez sin ccaa', async () => {
+    const cuerpos: { contexto: Record<string, unknown> }[] = [];
+    const f = (async (_u: string, i: RequestInit) => {
+      const c = JSON.parse(String(i.body)); cuerpos.push(c);
+      if (c.contexto.ccaa) return new Response('{"error":{"codigo":"solicitud_invalida"}}', { status: 400 });
+      return new Response(JSON.stringify({ candidatos: [], peligrosas_posibles: [], fotos_recomendadas: [] }));
+    }) as typeof fetch;
+    await pedirSegundaOpinion('u', { ...pet, contexto: { ...pet.contexto, ccaa: 'comunitat_valenciana' } }, f);
+    expect(cuerpos.map((c) => c.contexto.ccaa)).toEqual(['comunitat_valenciana', undefined]);
+    // Sin ccaa, un 400 no se repite.
+    let n = 0;
+    await expect(pedirSegundaOpinion('u', pet, (async () => { n++; return new Response('', { status: 400 }); }) as unknown as typeof fetch)).rejects.toThrow();
+    expect(n).toBe(1);
+  });
 });
 
 it('fechaHoy en Madrid', () => expect(fechaHoy(new Date('2026-10-13T23:30:00Z'))).toBe('2026-10-14'));

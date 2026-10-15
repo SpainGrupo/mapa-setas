@@ -2,7 +2,7 @@
 // La CCAA del punto sale de ccaa.pmtiles (capa 'ccaa', propiedades id y nombre; consulta en mapa.ts, ccaaEn). Sin DOM.
 import type { Geometry } from 'geojson';
 import { dentroDe, orientativo } from './restricciones';
-import { idCcaa, type EntradaLegal, type IdCcaa } from './manifest-region';
+import { idCcaa, normasNota, type EntradaLegal, type IdCcaa } from './manifest-region';
 
 export const PENDIENTE = 'Pendiente de verificar';
 
@@ -23,7 +23,7 @@ export function vistaNormativa(legal: EntradaLegal[], idsPunto: string[] | null,
   const delPunto = idsPunto?.length ? legal.filter((e) => idsPunto.includes(e.id)) : [];
   const entradas = delPunto.length ? delPunto : legal;
   return { ambito: delPunto.length ? 'punto' : 'todas', entradas,
-    nota: orientativo(legal.length ? entradas.map((e) => e.sigla) : normasLegado) };
+    nota: orientativo(normasNota({ legal, normas_legado: normasLegado }, entradas)) };
 }
 
 export const textoCupo = (kg: number) => `Cupo: hasta ${kg.toLocaleString('es-ES')} kg por persona y día.`;

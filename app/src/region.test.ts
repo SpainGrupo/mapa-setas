@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { baseDatos, CLAVE_REGION, CLAVE_REGIONES, cargarRegiones, claveRegion, establecerActiva, parsearRegiones, regionMasCercana,
+import { baseDatos, CLAVE_REGION, regionesDeRespaldo, CLAVE_REGIONES, cargarRegiones, claveRegion, establecerActiva, parsearRegiones, regionMasCercana,
   resolverRegion, textoEstadoRegion, type Almacen, type RegionIndice } from './region';
 
 class Memoria implements Almacen {
@@ -79,8 +79,10 @@ describe('resolverRegion', () => {
   it('sin GPS pregunta; si la respuesta no vale, la primera', async () => {
     const a = new Memoria();
     expect(await resolverRegion([MARBELLA, ALICANTE], { almacen: a, posicion: async () => null, preguntar: async () => 'alicante' })).toBe('alicante');
+    expect(a.getItem(CLAVE_REGION)).toBe('alicante');
     const b = new Memoria();
     expect(await resolverRegion([MARBELLA, ALICANTE], { almacen: b, posicion: async () => null, preguntar: async () => null })).toBe('marbella');
+    expect(b.getItem(CLAVE_REGION)).toBeNull();   // hoja cerrada sin elegir: se vuelve a preguntar la próxima vez
   });
   it('sin regiones: null', async () => {
     expect(await resolverRegion([], { almacen: new Memoria(), posicion: async () => null, preguntar: nunca })).toBeNull();
@@ -92,5 +94,17 @@ describe('textoEstadoRegion', () => {
     expect(textoEstadoRegion(MARBELLA, { bytes: 184e6 }, true)).toBe('Descargada · 184 MB');
     expect(textoEstadoRegion(MARBELLA, null, true)).toBe('Sin descargar · 185 MB');
     expect(textoEstadoRegion(MARBELLA, null, false)).toBe('Sin descargar · necesita conexión');
+  });
+});
+
+describe('regionesDeRespaldo', () => {
+  it('sin índice: la región guardada si tiene mapas descargados', () => {
+    const a = new Memoria();
+    expect(regionesDeRespaldo(a, () => true)).toEqual([]);
+    a.setItem(CLAVE_REGION, 'marbella');
+    expect(regionesDeRespaldo(a, () => false)).toEqual([]);
+    expect(regionesDeRespaldo(a, (id) => id === 'marbella').map((r) => r.id)).toEqual(['marbella']);
+    a.setItem(CLAVE_REGION, '../x');
+    expect(regionesDeRespaldo(a, () => true)).toEqual([]);
   });
 });

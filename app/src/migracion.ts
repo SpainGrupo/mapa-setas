@@ -7,6 +7,7 @@ export const CLAVE_MIGRACION = 'setas:migracion-regiones';
 export interface DepsMigracion {
   almacen: Almacen;
   raiz: () => Promise<FileSystemDirectoryHandle | null>;
+  /** Mueve archivos sin borrar los que ya haya en el destino (migración reanudable). */
   moverArchivos: (desde: string, hacia: string, nombres: string[]) => Promise<void>;
   renombrarMeteo: (de: string, a: string) => Promise<void>;
 }

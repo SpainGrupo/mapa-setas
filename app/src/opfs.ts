@@ -45,9 +45,10 @@ export async function conReintentos<T>(fn: (intento: number) => Promise<T>, inte
   }
 }
 
-/** Orden 'mover' del worker de descarga (también la usa la migración a regiones). */
+/** Orden 'mover' del worker de descarga sin limpiar el destino (la migración a regiones: si se cortó a medias,
+ * lo ya movido se queda y en el siguiente arranque se mueve el resto). */
 export const moverEnOpfs = (desde: string, hacia: string, nombres: string[]) =>
-  trabajador({ tipo: 'mover', desde, hacia, nombres }).then(() => {});
+  trabajador({ tipo: 'mover', desde, hacia, nombres, limpiar: false }).then(() => {});
 
 function trabajador(orden: object, alAvanzar: (b: number) => void = () => {}): Promise<number> {
   return new Promise((ok, mal) => {

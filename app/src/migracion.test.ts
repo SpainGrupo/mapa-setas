@@ -50,6 +50,17 @@ describe('migrarARegiones', () => {
     expect(meteo).toHaveBeenCalledWith('datos', 'datos:marbella');
   });
 
+  it('reanuda una migración cortada: lo ya movido a mapas/marbella se conserva', async () => {
+    const raiz = raizFalsa();
+    await raiz.escribir('mapas/marbella/manifest.json', '{}');   // movido en el arranque anterior
+    await raiz.escribir('mapas/base.pmtiles', 'x');              // pendiente
+    const { d, almacen } = deps(raiz);
+    almacen.setItem('setas:mapas-descargados', ESTADO);
+    expect(await migrarARegiones(d)).toBe('migrada');
+    expect(raiz.arbol()).toEqual(['mapas/marbella/base.pmtiles', 'mapas/marbella/manifest.json']);
+    expect(almacen.getItem('setas:mapas-descargados:marbella')).toBe(ESTADO);
+  });
+
   it('es idempotente: la segunda vez no toca nada', async () => {
     const raiz = raizFalsa();
     const { d, almacen } = deps(raiz);

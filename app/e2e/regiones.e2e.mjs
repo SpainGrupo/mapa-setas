@@ -39,7 +39,8 @@ async function contexto(gps) {
   await ctx.route('**/data/prueba/**', async (r) => {
     const u = r.request().url();
     if (/\/data\/prueba\/manifest\.json/.test(u)) return r.fulfill({ json: PRUEBA });
-    return r.fulfill({ response: await r.fetch({ url: u.replace('/data/prueba/', '/data/marbella/') }) });
+    // Al cerrar el contexto puede quedar alguna petición en vuelo: se ignora.
+    try { return await r.fulfill({ response: await r.fetch({ url: u.replace('/data/prueba/', '/data/marbella/') }) }); } catch { /* contexto cerrado */ }
   });
   return ctx;
 }
@@ -127,7 +128,7 @@ try {
   await p.evaluate(() => localStorage.setItem('setas:region', 'desaparecida'));
   await p.reload(); await mapaListo(p);
   comprobar(await p.evaluate(() => localStorage.getItem('setas:region')) === 'marbella', 'región desaparecida: se vuelve a elegir (la más cercana)');
-  await ctx.close();
+  await ctx.unrouteAll({ behavior: 'ignoreErrors' }); await ctx.close();
 
   // ---- G. Primera vez sin GPS: se pregunta
   const ctx2 = await contexto(null);
@@ -140,7 +141,7 @@ try {
   await q.locator('#lista-regiones [data-region=prueba]').click();
   await mapaListo(q);
   comprobar(await q.evaluate(() => window.__setas.region().activa) === 'prueba', 'primera elección guardada');
-  await ctx2.close();
+  await ctx2.unrouteAll({ behavior: 'ignoreErrors' }); await ctx2.close();
   console.log('e2e de regiones: OK');
 } finally {
   await nav.close();

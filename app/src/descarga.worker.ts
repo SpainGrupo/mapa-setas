@@ -8,7 +8,7 @@ const ambito = self as unknown as DedicatedWorkerGlobalScope;
 
 type Orden =
   | { tipo: 'descargar'; url: string; nombre: string; dir: string }
-  | { tipo: 'mover'; desde: string; hacia: string; nombres: string[] };
+  | { tipo: 'mover'; desde: string; hacia: string; nombres: string[]; limpiar?: boolean };
 
 async function descargar(url: string, nombre: string, dirNombre: string) {
   const raiz = await navigator.storage.getDirectory();
@@ -53,7 +53,8 @@ async function copiar(origen: FileSystemFileHandle, destino: FileSystemDirectory
   }
 }
 
-async function mover(desde: string, hacia: string, nombres: string[]) {
+/** Con `limpiar` (por defecto) quita del destino los archivos que no están en `nombres`. */
+async function mover(desde: string, hacia: string, nombres: string[], limpiar = true) {
   const raiz = await navigator.storage.getDirectory();
   const origen = await dirDe(raiz, desde);
   const destino = await dirDe(raiz, hacia, true);
@@ -63,6 +64,7 @@ async function mover(desde: string, hacia: string, nombres: string[]) {
     if (typeof (fh as any).move === 'function') await (fh as any).move(destino, n);
     else { await copiar(fh, destino, n); await origen.removeEntry(n); }
   }
+  if (!limpiar) return;
   const quedan = new Set(nombres);
   const sobran: string[] = [];
   // Solo archivos: las subcarpetas (otras regiones bajo mapas/) no se tocan.
@@ -74,7 +76,7 @@ ambito.onmessage = async (e: MessageEvent<Orden>) => {
   const o = e.data;
   try {
     if (o.tipo === 'descargar') ambito.postMessage({ tipo: 'hecho', bytes: await descargar(o.url, o.nombre, o.dir) });
-    else { await mover(o.desde, o.hacia, o.nombres); ambito.postMessage({ tipo: 'hecho', bytes: 0 }); }
+    else { await mover(o.desde, o.hacia, o.nombres, o.limpiar ?? true); ambito.postMessage({ tipo: 'hecho', bytes: 0 }); }
   } catch (err) {
     ambito.postMessage({ tipo: 'error', mensaje: String((err as Error)?.message ?? err) });
   }

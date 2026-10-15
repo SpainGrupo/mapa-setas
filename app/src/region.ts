@@ -64,6 +64,16 @@ export async function cargarRegiones(o: { fetchFn?: typeof fetch; almacen?: Alma
   try { return parsearRegiones(JSON.parse(leer(almacen, CLAVE_REGIONES) ?? 'null')); } catch { return []; }
 }
 
+/**
+ * Sin índice (primer arranque de esta versión sin conexión y sin copia guardada): si la región guardada tiene mapas
+ * descargados, una entrada mínima para poder abrirlos. Solo se usa para arrancar (con una región no hay chip ni lista).
+ */
+export function regionesDeRespaldo(almacen: Almacen, descargada: (id: string) => boolean): RegionIndice[] {
+  const id = leer(almacen, CLAVE_REGION);
+  if (!idValido(id) || !descargada(id)) return [];
+  return [{ id, nombre: id, origen: { lat: 0, lon: 0 }, bbox: [0, 0, 0, 0], total_bytes: 0, generado: '' }];
+}
+
 /** Región con la que arrancar: la guardada si sigue en el índice; si no, la única, la más cercana por GPS o la que se elija. */
 export async function resolverRegion(rs: RegionIndice[], o: {
   almacen: Almacen; posicion: () => Promise<Punto | null>; preguntar: (rs: RegionIndice[]) => Promise<string | null>;
@@ -77,7 +87,8 @@ export async function resolverRegion(rs: RegionIndice[], o: {
     const p = await o.posicion().catch(() => null);
     id = p ? regionMasCercana(rs, p).id : await o.preguntar(rs);
   }
-  if (!id || !rs.some((r) => r.id === id)) id = rs[0].id;
+  // Sin respuesta válida (hoja cerrada sin elegir): la primera solo para esta sesión; en el próximo arranque se vuelve a preguntar.
+  if (!id || !rs.some((r) => r.id === id)) return rs[0].id;
   escribir(o.almacen, CLAVE_REGION, id);
   return id;
 }

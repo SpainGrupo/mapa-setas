@@ -1,6 +1,7 @@
 // Selector de región (spec §4.2): chip en la cabecera del mapa y hoja #dlg-region; lista con descargas en Ajustes.
 // Con una sola región en regiones.json no se enseña nada. Cambiar de región recarga la página (main.ts, cambiar).
 import { textoEstadoRegion, type Punto, type RegionIndice } from './region';
+import { mb } from './unidades';
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 
@@ -88,6 +89,7 @@ export function iniciarSelectorRegion(o: OpcionesRegionUi) {
 
 export function pintarAjustesRegion(o: OpcionesRegionUi & {
   descargar: (id: string, boton: HTMLButtonElement) => Promise<void>; borrar: (id: string) => Promise<void>;
+  descargando?: (id: string) => boolean;
 }) {
   const rs = o.regiones();
   $('#ajustes-region').hidden = rs.length < 2;
@@ -112,8 +114,9 @@ export function pintarAjustesRegion(o: OpcionesRegionUi & {
       acc.append(usar);
       if (est) acc.append(boton('Borrar', 'borrar', 'btn btn-peligro', () => o.borrar(r.id)));
       else {
-        const d = boton(`Descargar (${Math.round(r.total_bytes / 1e6)} MB)`, 'descargar', 'btn', (bt) => o.descargar(r.id, bt));
-        d.disabled = !navigator.onLine;
+        const enCurso = o.descargando?.(r.id) ?? false;
+        const d = boton(enCurso ? 'Descargando…' : `Descargar (${mb(r.total_bytes)})`, 'descargar', 'btn', (bt) => o.descargar(r.id, bt));
+        d.disabled = enCurso || !navigator.onLine;
         acc.append(d);
       }
     }

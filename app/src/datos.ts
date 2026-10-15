@@ -18,5 +18,10 @@ export async function cargarJson<T>(nombre: string, region = regionActiva()): Pr
 
 export async function cargarManifest(region = regionActiva()): Promise<ManifestApp | null> {
   const m = await cargarJson<Manifest>('manifest.json', region);
-  return m ? prepararManifest(m, region) : null;
+  try {
+    return m ? prepararManifest(m, region) : null;
+  } catch (e) {   // índice y manifest desalineados: la app enseña «sin datos» en lugar de quedarse en blanco
+    console.error(e);
+    return null;
+  }
 }

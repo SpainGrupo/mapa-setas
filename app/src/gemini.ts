@@ -121,6 +121,11 @@ export async function pedirSegundaOpinion(url: string, peticion: PeticionGemini,
   if (!r.ok) {
     let codigo: string | undefined;
     try { codigo = (await r.json())?.error?.codigo; } catch { /* sin cuerpo JSON */ }
+    // Worker anterior a la multi-región: rechaza contexto.ccaa con 400. Se repite una vez sin ella (prompt por defecto).
+    if (r.status === 400 && peticion.contexto.ccaa) {
+      const { ccaa: _, ...contexto } = peticion.contexto;
+      return pedirSegundaOpinion(url, { ...peticion, contexto }, fetcher);
+    }
     throw new Error(mensajeError(r.status, codigo));
   }
   return limpiarRespuesta(await r.json());

@@ -3,7 +3,7 @@ import './estilos.css';
 import { registerSW } from 'virtual:pwa-register';
 import type { Map as MapaML, GeoJSONSource, LngLat } from 'maplibre-gl';
 import { baseDatos, cargarJson, cargarManifest, mb } from './datos';
-import { CLAVE_REGION, cargarRegiones, claveRegion, establecerActiva, hayRegionActiva, regionActiva, resolverRegion, type RegionIndice } from './region';
+import { CLAVE_REGION, cargarRegiones, claveRegion, establecerActiva, hayRegionActiva, regionActiva, regionesDeRespaldo, resolverRegion, type RegionIndice } from './region';
 import { iniciarSelectorRegion, pintarAjustesRegion, posicionRapida, preguntarRegion, type OpcionesRegionUi } from './region-ui';
 import { migrarARegiones } from './migracion';
 import type { EntradaLegal, ManifestApp } from './manifest-region';
@@ -1159,15 +1159,22 @@ $('#creditos-fotos').addEventListener('toggle', () => pintarCreditos());
 async function pintarAjustes() {
   if (!hayRegionActiva()) return;
   // Otras regiones: se descargan y borran aquí sin recargar (el mapa no las está leyendo). La activa usa «Mapas sin conexión».
-  pintarAjustesRegion({ ...opcionesRegion,
+  pintarAjustesRegion({ ...opcionesRegion, descargando: (id) => descargandoRegiones.has(id),
     descargar: async (id, b) => {
+      if (descargandoRegiones.has(id)) return;
+      descargandoRegiones.add(id);
       b.disabled = true;
       try {
         const m = await cargarJson<Manifest>('manifest.json', id);
         if (!m) throw new Error('No se pudo leer el manifest de la región');
-        await descargarMapas(m, id, baseDatos(id), (h, t) => { b.textContent = `Descargando… ${mb(h)} de ${mb(t)}`; });
+        await descargarMapas(m, id, baseDatos(id), (h, t) => {
+          // Ajustes puede repintarse a mitad: el progreso va al botón que esté en la lista ahora.
+          const actual = document.querySelector<HTMLButtonElement>(`#ajustes-lista-regiones [data-region="${id}"] [data-accion=descargar]`) ?? b;
+          actual.textContent = `Descargando… ${mb(h)} de ${mb(t)}`;
+        });
         avisar(`${nombreRegion(id)} ya funciona sin conexión`);
       } catch (err) { avisar(`Error en la descarga: ${(err as Error).message}`, 6000); }
+      descargandoRegiones.delete(id);
       pintarAjustes();
     },
     borrar: async (id) => {
@@ -1240,7 +1247,7 @@ function entradaLegal(e: EntradaLegal): HTMLElement {
   if (e.verificado && e.cupo_kg_dia !== null) { const c = document.createElement('p'); c.className = 'nota'; c.textContent = textoCupo(e.cupo_kg_dia); art.append(c); }
   if (e.fuente_url) {
     const a = document.createElement('a'); a.href = e.fuente_url; a.target = '_blank'; a.rel = 'noopener noreferrer';
-    a.textContent = `Texto oficial${e.sigla ? ` (${e.sigla})` : ''}`;
+    a.textContent = 'Texto oficial';   // sin sigla: el enlace puede ser de otro boletín que el citado en `norma`
     art.append(a);
   }
   return art;
@@ -1331,6 +1338,8 @@ iniciarReconocer({
     { especie: especieGuia ? especieMapaDeFicha(especieGuia, (manifest?.especies ?? []).map((e) => e.id)) : '', foto }),
 });
 
+/** Regiones (no activas) que se están descargando desde Ajustes: el repintado no debe ofrecer otra descarga. */
+const descargandoRegiones = new Set<string>();
 const nombreRegion = (id: string) => regiones.find((r) => r.id === id)?.nombre ?? id;
 /** Cambiar de región guarda la elección y recarga: ninguna caché de módulo (PMTiles, acceso, sitios) arrastra la anterior. */
 const opcionesRegion: OpcionesRegionUi = {
@@ -1352,6 +1361,7 @@ async function arrancar() {
     renombrarMeteo: renombrarCache,
   }).catch((e) => console.warn('migración a regiones', e));
   regiones = await cargarRegiones();
+  if (!regiones.length) regiones = regionesDeRespaldo(localStorage, (r) => !!estadoDescarga(r));
   const id = await resolverRegion(regiones, { almacen: localStorage, posicion: posicionRapida, preguntar: preguntarRegion });
   if (!id) { $('#sin-datos').hidden = false; return; }
   establecerActiva(id);

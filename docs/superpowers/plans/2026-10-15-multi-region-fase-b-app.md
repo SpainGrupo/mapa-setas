@@ -300,13 +300,13 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Consumes: CLI `node app/scripts/disposicion-datos.mjs --json <raiz>` (tarea 1).
 - Produces: `$SALIDA/data/regiones.json`, `$SALIDA/data/<id>/…` y `$SALIDA/data/modelo/…`. Variables `SETAS_DATOS` (raíz de datos) y `PRESUPUESTO_MB` (por defecto 950).
 
-- [ ] **Step 1: Write the failing check**
+- [x] **Step 1: Write the failing check**
 
 Antes de cambiar nada, comprueba que el script actual no conoce el presupuesto:
 Run: `grep -c PRESUPUESTO_MB app/scripts/publicar.sh`
 Expected: `0`.
 
-- [ ] **Step 2: Implement**
+- [x] **Step 2: Implement**
 
 Sustituye en `app/scripts/publicar.sh` las líneas desde `DATOS="$RAIZ/pipeline/data/out/app"` hasta el final del bloque `PY` (incluido) por:
 ```bash
@@ -358,7 +358,7 @@ total=$(python3 -c 'import os,sys; print(sum(os.path.getsize(os.path.join(r,f)) 
 ```
 Actualiza el comentario de cabecera: «copia regiones.json, cada data/<id>/ (manifest y archivos) y el modelo una sola vez; comprueba 95 MB por archivo y 950 MB en total».
 
-- [ ] **Step 3: Verify**
+- [x] **Step 3: Verify**
 
 Run: `SETAS_DATOS=/Users/alexanderkrupnov/Documents/Claude/setas/pipeline/data SALIDA=/private/tmp/setas-pub/gh-pages app/scripts/publicar.sh --local`
 Expected: «data/: N archivos copiados (1 región/es, legado plano)» y «Preparado en …». `ls /private/tmp/setas-pub/gh-pages/data` muestra `marbella modelo regiones.json`.
@@ -366,7 +366,7 @@ Expected: «data/: N archivos copiados (1 región/es, legado plano)» y «Prepar
 Run: `PRESUPUESTO_MB=1 SETAS_DATOS=/Users/alexanderkrupnov/Documents/Claude/setas/pipeline/data SALIDA=/private/tmp/setas-pub/gh-pages app/scripts/publicar.sh --local; echo "salida=$?"`
 Expected: «El sitio ocupa … MB y el presupuesto es 1 MB …» y `salida=1`.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add app/scripts/publicar.sh

@@ -353,3 +353,14 @@ def test_exportar_ccaa_recorta_a_la_zona_con_id_y_nombre(tmp_path, monkeypatch):
     assert props == [{"id": "andalucia", "nombre": "Andalucía"}]
     x0, y0, x1, y1 = gpd.GeoDataFrame.from_features(escrito["fc"]["features"]).total_bounds
     assert -4.95 < x0 and x1 < -4.75 and 36.45 < y0 and y1 < 36.65      # recortada a la zona + 2 km
+
+
+def test_salida_sin_teselas_escribe_una_transparente(tmp_path):
+    import setas_pipeline.exportar as ex
+    from pmtiles.tile import TileType
+    from pmtiles.reader import Reader, MmapSource
+    s = ex._Salida(tmp_path / "v.pmtiles", TileType.PNG, "v", "vacía")
+    assert s.cerrar((-1.0, 38.0, 0.0, 39.0), 8, 13, "x") == 1
+    with open(tmp_path / "v.pmtiles", "rb") as f:
+        h = Reader(MmapSource(f)).header()
+    assert h["min_zoom"] == 8

@@ -47,6 +47,15 @@ def wkt_zona(zona) -> str:
     return orient(z, 1.0).wkt
 
 
+def wkt_redondeado(wkt: str, precision: float = 0.001) -> str:
+    from shapely import set_precision, wkt as W
+    from shapely.geometry.polygon import orient
+    g = set_precision(W.loads(wkt), precision)
+    if isinstance(g, MultiPolygon):
+        return MultiPolygon([orient(p, 1.0) for p in g.geoms]).wkt
+    return orient(g, 1.0).wkt
+
+
 def clave_taxon(nombre: str) -> int | None:
     """Clave GBIF aceptada (un sinónimo, p. ej. B. aestivalis → B. reticulatus, da la del aceptado).
     None si GBIF no reconoce el nombre (matchType NONE)."""
@@ -86,7 +95,14 @@ def ocurrencias(perfil: dict, zona, raw_dir: Path) -> list:
     claves = {clave_taxon(n) for n in nombres_cientificos(perfil["nombre"])}   # sin duplicar sinónimos
     completo = None not in claves
     for c in claves - {None}:
-        pts += descargar_ocurrencias(perfil["nombre"], wkt, clave=c)
+        try:
+            pts += descargar_ocurrencias(perfil["nombre"], wkt, clave=c)
+        except requests.HTTPError as e:
+            # GBIF rechaza (400) algunos polígonos largos a precisión completa (zona de Alicante, 2026-10-15); con
+            # las coordenadas redondeadas a 0,001° sí responde. La caché sigue con la clave del WKT original.
+            if e.response is None or e.response.status_code != 400:
+                raise
+            pts += descargar_ocurrencias(perfil["nombre"], wkt_redondeado(wkt), clave=c)
     if completo:                          # no se cachea un resultado con nombres sin resolver
         cache.parent.mkdir(parents=True, exist_ok=True)
         cache.write_text(json.dumps(pts))

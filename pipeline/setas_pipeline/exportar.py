@@ -303,6 +303,11 @@ class _Salida:
 
     def cerrar(self, bbox, zmin, zmax, atribucion):
         from pmtiles.tile import Compression
+        if not self.teselas:
+            # Capa sin ninguna celda pintable (p. ej. una especie sin idoneidad ≥ MIN_PINTAR en la región): una
+            # tesela transparente en zmin para que el archivo exista y sea válido (pmtiles no admite 0 teselas).
+            x, y = (int(v) for v in _lonlat_a_xy((bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2, zmin))
+            self.poner(zmin, x, y, png_idoneidad(np.zeros((256, 256), np.uint8)))
         self.teselas.sort(key=lambda t: t[0])
         for tid, d in self.teselas:
             self.w.write_tile(tid, d)

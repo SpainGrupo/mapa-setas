@@ -7,7 +7,19 @@ def test_filtrar_alcanzables_descarta_lejos_y_mal_ajustados():
            {"duracion": 8000, "snap_m": 10},
            {"duracion": 100, "snap_m": 9000},
            {"duracion": None, "snap_m": None}]
-    assert filtrar_alcanzables(pts, res) == [(0, 0)]
+    assert filtrar_alcanzables(pts, res, max_s=7200, max_snap_m=5000) == [(0, 0)]
+
+
+def test_puntos_de_marbella_iguales_que_antes_del_refactor():
+    import hashlib, json
+    from pathlib import Path
+    from setas_pipeline.region import cargar_region
+    from setas_pipeline.zona import puntos_muestreo
+    r = cargar_region("marbella")
+    p = puntos_muestreo(r.origen, r.zona["paso_m"], r.zona["radio_m"])
+    esperado = json.loads((Path(__file__).parent / "dorado" / "zona_puntos.json").read_text())
+    assert len(p) == esperado["n"]
+    assert hashlib.sha256(json.dumps(p).encode()).hexdigest() == esperado["sha256"]
 
 def test_poligono_zona_une_cuadrados():
     # dos puntos UTM contiguos a 5 km → un rectángulo de 10×5 km

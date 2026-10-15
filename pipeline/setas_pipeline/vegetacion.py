@@ -136,7 +136,6 @@ def construir_cubierta(malla: Malla, raw_dir: Path, out_dir: Path, fuentes: Path
 
 
 if __name__ == "__main__":
-    base = Path(__file__).resolve().parent.parent
-    out = base / "data/out"
-    construir_vegetacion(Malla.cargar(out / "malla.json"), base / "data/raw", out,
-                         base / "fuentes.yaml", out / "zona.geojson")
+    from .region import region_cli, FUENTES
+    r = region_cli()
+    construir_vegetacion(Malla.cargar(r.out / "malla.json"), r.raw, r.out, FUENTES, r.out / "zona.geojson")

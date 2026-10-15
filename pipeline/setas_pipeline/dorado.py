@@ -80,7 +80,7 @@ def huella_tif(p: Path) -> dict:
 
 def _nombre_relativo(nombre, out: Path | None):
     """tippecanoe pone como `name` la ruta absoluta de salida (-o): se guarda relativa a out/ ("<out>/app/x.pmtiles")
-    para que la huella no dependa de dónde estén los datos (data/out frente a data/<region>/out, otra máquina)."""
+    para que la huella no dependa de dónde estén los datos (esquema plano frente a <region>/out, otra máquina)."""
     if out is None or not isinstance(nombre, str) or not Path(nombre).is_absolute():
         return nombre
     try:

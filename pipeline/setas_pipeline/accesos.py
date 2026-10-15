@@ -1,7 +1,7 @@
 """Accesos: distancia de cada celda a la vía (OSM) más cercana."""
 from __future__ import annotations
 from pathlib import Path
-import numpy as np, geopandas as gpd, osmium, requests, yaml
+import numpy as np, geopandas as gpd, osmium, yaml
 from scipy.ndimage import distance_transform_edt
 from shapely import wkb
 from rasterio.features import rasterize
@@ -24,20 +24,12 @@ def extraer_vias(pbf: Path, tipos: list[str]) -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(geometry=geoms, crs="EPSG:4326")
 
 
-def construir_accesos(malla: Malla, raw_dir: Path, out_dir: Path, fuentes: Path):
+def construir_accesos(malla: Malla, out_dir: Path, fuentes: Path, pbf: Path):
+    """pbf: el OSM recortado a la zona de la región (adaptadores.osm.pbf_zona)."""
     cfg = yaml.safe_load(Path(fuentes).read_text())["osm"]
-    pbf = raw_dir / "andalucia.osm.pbf"
-    if not pbf.exists():
-        parcial = pbf.with_name(pbf.name + ".part")
-        with requests.get(cfg["url"], stream=True, timeout=600) as r:
-            r.raise_for_status()
-            with open(parcial, "wb") as f:
-                for trozo in r.iter_content(1 << 20):
-                    f.write(trozo)
-        parcial.rename(pbf)
     vias = extraer_vias(pbf, cfg["tags_acceso"]["highway"]).to_crs(CRS)
     if vias.empty:
         raise ValueError("0 vías extraídas: revisa osm.tags_acceso en fuentes.yaml o el pbf")
     mascara = rasterize(((g, 1) for g in vias.geometry), out_shape=(malla.alto, malla.ancho),
                         transform=malla.transform, fill=0, all_touched=True, dtype="uint8").astype(bool)
-    escribir_tif(malla, out_dir / "distancia_acceso.tif", distancia_a_lineas(mascara, malla.celda), NODATA_F)
+    escribir_tif(malla, Path(out_dir) / "distancia_acceso.tif", distancia_a_lineas(mascara, malla.celda), NODATA_F)

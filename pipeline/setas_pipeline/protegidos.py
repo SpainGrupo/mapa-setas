@@ -1,14 +1,10 @@
-"""Espacios protegidos: REDIAM RENPA (ms:eennpp) → 1 dentro de un ENP, 0 fuera de él,
+"""Espacios protegidos (capa `protegidos` de la región) → 1 dentro de un espacio, 0 fuera,
 255 (NODATA) fuera de la zona isócrona, igual que arbol.tif y suelo.tif."""
 from __future__ import annotations
-from pathlib import Path
-import yaml
 from .malla import Malla, escribir_tif
-from .descargas import descargar_teselas, cargar_zona
+from .descargas import cargar_zona
 from .vegetacion import rasterizar_clases, mascara_zona
 
-TESELA_ENP = 50000
-PAGINA_ENP = 10**9    # sin paginar: pocos espacios por tesela
 NODATA = 255
 
 
@@ -20,17 +16,16 @@ def rasterizar_protegidos(gdf, zona, malla: Malla):
     return a
 
 
-def construir_protegidos(malla: Malla, raw_dir: Path, out_dir: Path, fuentes: Path, zona_path: Path):
-    cfg = yaml.safe_load(Path(fuentes).read_text())["enp"]
-    zona = cargar_zona(zona_path)
-    gdf = descargar_teselas(cfg["url"], zona, TESELA_ENP, Path(raw_dir) / "enp", pagina=PAGINA_ENP)
+def construir_protegidos(malla: Malla, region):
+    from .adaptadores import Contexto, cargar_capa
+    zona = cargar_zona(region.out / "zona.geojson")
+    gdf = cargar_capa("protegidos", region.capas, Contexto(raw=region.raw, zona=zona, malla=malla, capas=region.capas))
     a = rasterizar_protegidos(gdf, zona, malla)
-    escribir_tif(malla, Path(out_dir) / "protegido.tif", a, NODATA)
+    escribir_tif(malla, region.out / "protegido.tif", a, NODATA)
     return a
 
 
 if __name__ == "__main__":
-    base = Path(__file__).resolve().parent.parent
-    out = base / "data/out"
-    construir_protegidos(Malla.cargar(out / "malla.json"), base / "data/raw", out,
-                         base / "fuentes.yaml", out / "zona.geojson")
+    from .region import region_cli
+    r = region_cli()
+    construir_protegidos(Malla.cargar(r.out / "malla.json"), r)

@@ -1762,7 +1762,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - `vista_previa.vista_especie(out_dir, raw_dir, clave, perfil, zona, origen, etiqueta)`, `vista_previa.vistas(out_dir, raw_dir, perfiles, origen, etiqueta)`
   - `pipeline/scripts/migrar_datos.sh <pipeline/data>`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # pipeline/tests/test_zona.py — sustituye test_filtrar_alcanzables_… y añade el de la huella
@@ -1875,12 +1875,12 @@ def test_falla_sin_datos(tmp_path):
     assert r.returncode == 1
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `cd pipeline && uv run pytest tests/test_zona.py tests/test_ejecutar.py tests/test_incendios.py tests/test_migrar_datos.py -v`
 Expected: FAIL (firmas viejas, `pasos_de` y script inexistentes).
 
-- [ ] **Step 3: `zona.py`**
+- [x] **Step 3: `zona.py`**
 
 ```python
 """Zona de trabajo: puntos alcanzables en ≤ zona.max_s en coche desde el origen de la región (OSRM)."""
@@ -1955,7 +1955,7 @@ def construir_zona(region) -> Malla:
 ```
 (`poligono_zona(puntos, paso_m=5000, crs_entrada=…)` se deja con su firma; `construir_zona` le pasa `paso_m` explícito.)
 
-- [ ] **Step 4: `ejecutar.py`**
+- [x] **Step 4: `ejecutar.py`**
 
 ```python
 """Orquestador de la Fase 1 por región.
@@ -2112,7 +2112,7 @@ if __name__ == "__main__":
 ```
 Ojo: el test `test_pasos_de_usan_las_rutas_de_la_region` comprueba que `set(p) == set(NOMBRES)`; mantén los dos en el mismo orden. Quita el `import yaml` si no se usa.
 
-- [ ] **Step 5: `protegidos.py`, `accesos.py`, `incendios.py`, `vista_previa.py`, `__main__` de `vegetacion.py`/`suelo.py`**
+- [x] **Step 5: `protegidos.py`, `accesos.py`, `incendios.py`, `vista_previa.py`, `__main__` de `vegetacion.py`/`suelo.py`**
 
 `protegidos.py` (sustituye `construir_protegidos` y el `__main__`; quita `TESELA_ENP`, `PAGINA_ENP`, `import yaml` y `descargar_teselas`):
 ```python
@@ -2203,7 +2203,7 @@ if __name__ == "__main__":
 ```
 (en `suelo.py`, `construir_suelo(...)` con los mismos argumentos).
 
-- [ ] **Step 6: `pipeline/scripts/migrar_datos.sh`**
+- [x] **Step 6: `pipeline/scripts/migrar_datos.sh`**
 
 ```bash
 #!/usr/bin/env bash
@@ -2229,7 +2229,7 @@ echo "Migrado $D → marbella/{raw,out}, _comun/gbif, marbella/raw/osm/"
 ```
 `chmod +x pipeline/scripts/migrar_datos.sh`.
 
-- [ ] **Step 7: Arreglar el resto de llamadas y correr la suite**
+- [x] **Step 7: Arreglar el resto de llamadas y correr la suite**
 
 ```bash
 cd pipeline
@@ -2238,7 +2238,7 @@ uv run pytest -q
 ```
 Expected: cada llamada usa la firma nueva; `pytest` en verde. (`exportar.py`, `acceso.py`, `rutas.py`, `sitios.py`, `respaldo.py` aún usan `data/out`: se cambian en la Task 9. Sus tests no tocan disco real.)
 
-- [ ] **Step 8: Migrar los datos clonados del worktree y comprobar tres capas sin red**
+- [x] **Step 8: Migrar los datos clonados del worktree y comprobar tres capas sin red**
 
 ```bash
 cd /Users/alexanderkrupnov/Documents/Claude/setas-alicante/pipeline
@@ -2251,7 +2251,7 @@ uv run python -m setas_pipeline.dorado comparar --out data/marbella/out --dorado
 ```
 Expected: se crea `data/marbella/raw/zona.osm.pbf` (osmium) y `OK: … 0 diferencias` (el `comparar` con `--solo` sin `--desde`). Si `distancia_acceso.tif` difiere, el recorte OSM no es equivalente: usa superpowers:systematic-debugging (compara `extraer_vias` sobre `osm/andalucia.osm.pbf` y sobre `zona.osm.pbf` limitadas a la malla) antes de tocar el margen o la estrategia.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add pipeline/setas_pipeline pipeline/scripts/migrar_datos.sh pipeline/tests

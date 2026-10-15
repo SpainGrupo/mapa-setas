@@ -1,21 +1,18 @@
-"""Zona de trabajo: puntos alcanzables en ≤2 h en coche desde Marbella (OSRM)."""
+"""Zona de trabajo: puntos alcanzables en ≤ zona.max_s en coche desde el origen de la región (OSRM)."""
 from __future__ import annotations
 import json, time
-from pathlib import Path
 import requests
 from pyproj import Transformer
 from shapely.geometry import box, mapping, Polygon
 from shapely.ops import unary_union
 from .malla import Malla, CRS
 
-ORIGEN = (-4.8825, 36.5101)  # lon, lat
-OSRM = "https://router.project-osrm.org/table/v1/driving/"
 _a_utm = Transformer.from_crs("EPSG:4326", CRS, always_xy=True)
 _a_geo = Transformer.from_crs(CRS, "EPSG:4326", always_xy=True)
 
 
-def puntos_muestreo(paso_m=5000, radio_m=220_000):
-    cx, cy = _a_utm.transform(*ORIGEN)
+def puntos_muestreo(origen, paso_m, radio_m):
+    cx, cy = _a_utm.transform(*origen)
     pts = []
     n = int(radio_m // paso_m)
     for i in range(-n, n + 1):
@@ -26,12 +23,12 @@ def puntos_muestreo(paso_m=5000, radio_m=220_000):
     return pts
 
 
-def consultar_osrm(origen, destinos, lote=99, pausa_s=1.0):
+def consultar_osrm(origen, destinos, url, lote=99, pausa_s=1.0):
     salida = []
     for k in range(0, len(destinos), lote):
         trozo = destinos[k:k + lote]
         coords = ";".join(f"{lon:.5f},{lat:.5f}" for lon, lat in [origen, *trozo])
-        r = requests.get(OSRM + coords, params={"sources": "0", "annotations": "duration"}, timeout=60)
+        r = requests.get(url + coords, params={"sources": "0", "annotations": "duration"}, timeout=60)
         r.raise_for_status()
         j = r.json()
         dur = j["durations"][0][1:]
@@ -41,7 +38,7 @@ def consultar_osrm(origen, destinos, lote=99, pausa_s=1.0):
     return salida
 
 
-def filtrar_alcanzables(puntos, resultados, max_s=7200, max_snap_m=5000):
+def filtrar_alcanzables(puntos, resultados, max_s, max_snap_m):
     return [p for p, r in zip(puntos, resultados)
             if r["duracion"] is not None and r["snap_m"] is not None
             and r["duracion"] <= max_s and r["snap_m"] <= max_snap_m]
@@ -54,7 +51,7 @@ def poligono_zona(puntos, paso_m=5000, crs_entrada="EPSG:4326"):
     return unary_union([box(x - h, y - h, x + h, y + h) for x, y in puntos])
 
 
-def cerrar_zona(pol, distancia_m=5000):
+def cerrar_zona(pol, distancia_m):
     """Cierre morfológico + relleno de agujeros: la rejilla de muestreo deja huecos
     en la sierra (puntos que OSRM ajusta a una carretera lejana) aunque los pueblos
     de dentro estén a <2 h (p. ej. Grazalema)."""
@@ -63,10 +60,13 @@ def cerrar_zona(pol, distancia_m=5000):
     return unary_union([Polygon(p.exterior) for p in partes])
 
 
-def construir_zona(out_dir: Path) -> Malla:
-    pts = puntos_muestreo()
-    res = consultar_osrm(ORIGEN, pts)
-    pol = cerrar_zona(poligono_zona(filtrar_alcanzables(pts, res)))
+def construir_zona(region) -> Malla:
+    z = region.zona
+    pts = puntos_muestreo(region.origen, z["paso_m"], z["radio_m"])
+    res = consultar_osrm(region.origen, pts, z["osrm"])
+    pol = cerrar_zona(poligono_zona(filtrar_alcanzables(pts, res, z["max_s"], z["max_snap_m"]), paso_m=z["paso_m"]),
+                      z["cierre_m"])
+    out_dir = region.out
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "zona.geojson").write_text(json.dumps(
         {"type": "FeatureCollection", "crs": {"type": "name", "properties": {"name": CRS}},

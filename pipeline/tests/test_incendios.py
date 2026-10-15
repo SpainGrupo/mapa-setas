@@ -33,13 +33,11 @@ def test_caja_wgs84_contiene_todo_el_contorno():
             assert lon0 - 1e-9 <= lo <= lon1 + 1e-9 and lat0 - 1e-9 <= la <= lat1 + 1e-9
 
 
-def test_construir_fuego_sin_poligonos(tmp_path, monkeypatch):
-    import yaml
+def test_construir_fuego_sin_poligonos(tmp_path):
+    import dataclasses
     from setas_pipeline import incendios as I
-    monkeypatch.setattr(I, "_rediam", lambda *a, **k: [])
-    monkeypatch.setattr(I, "_effis", lambda *a, **k: [])
-    f = tmp_path / "fuentes.yaml"
-    f.write_text(yaml.safe_dump({"incendios": {"rediam_desde": 2015, "rediam_hasta": 2024}}))
+    from setas_pipeline.region import cargar_region
+    r = dataclasses.replace(cargar_region("marbella"), datos=tmp_path, capas={})
     m = Malla(x0=300000.0, y1=4100000.0, ancho=4, alto=3, celda=100.0)
-    a = I.construir_fuego(m, tmp_path, tmp_path, f, ref=2026)
-    assert (a == SIN_FUEGO).all()
+    a = I.construir_fuego(m, r, ref=2026)
+    assert (a == SIN_FUEGO).all() and (r.out / "fuego.tif").exists() and (r.out / "fuego_resumen.json").exists()

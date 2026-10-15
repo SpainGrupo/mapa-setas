@@ -1,0 +1,156 @@
+"""Configuración por región (spec multi-región §3.1): pipeline/regiones/<id>.yaml → Region.
+
+Rutas: pipeline/data/<region>/raw, pipeline/data/<region>/out (con out/app) y pipeline/data/_comun (GBIF).
+"""
+from __future__ import annotations
+import argparse, copy
+from dataclasses import dataclass
+from pathlib import Path
+import yaml
+
+BASE = Path(__file__).resolve().parent.parent        # pipeline/
+REGIONES = BASE / "regiones"
+DATOS = BASE / "data"
+FUENTES = BASE / "fuentes.yaml"
+ESPECIES = BASE / "especies.yaml"
+POR_DEFECTO = "marbella"
+
+OBLIGATORIAS = ("id", "nombre", "etiqueta_origen", "origen", "zona", "osm_extractos", "capas", "especies",
+                "legal", "atribuciones")
+CLAVES_ZONA = ("radio_m", "paso_m", "max_s", "max_snap_m", "cierre_m", "osrm")
+CLAVES_CCAA = ("id", "nombre", "norma", "cupo_kg_dia", "texto", "verificado", "fuente_url")
+CLAVES_ATRIBUCION = ("idoneidad", "protegidos", "restricciones", "rutas", "respaldo_protegidos")
+
+
+class RegionInvalida(ValueError):
+    def __init__(self, ruta: Path, errores: list[str]):
+        super().__init__(f"{ruta}: " + "; ".join(errores))
+        self.errores = errores
+
+
+def fusionar(base: dict, cambios: dict) -> dict:
+    out = copy.deepcopy(base)
+    for k, v in cambios.items():
+        out[k] = fusionar(out[k], v) if isinstance(v, dict) and isinstance(out.get(k), dict) else copy.deepcopy(v)
+    return out
+
+
+@dataclass(frozen=True)
+class Region:
+    id: str
+    nombre: str
+    etiqueta_origen: str
+    origen: tuple[float, float]          # lon, lat
+    zona: dict
+    osm_extractos: tuple[str, ...]
+    capas: dict
+    especies_activas: tuple[str, ...]
+    especies_sin_habitat: tuple[str, ...]
+    overrides_especies: dict
+    legal: dict
+    atribuciones: dict
+    config: Path
+    datos: Path = DATOS
+
+    @property
+    def raw(self) -> Path:
+        return self.datos / self.id / "raw"
+
+    @property
+    def out(self) -> Path:
+        return self.datos / self.id / "out"
+
+    @property
+    def app(self) -> Path:
+        return self.out / "app"
+
+    @property
+    def respaldo(self) -> Path:
+        return self.out / "respaldo"
+
+    @property
+    def comun(self) -> Path:
+        return self.datos / "_comun"
+
+    def perfiles(self, catalogo: dict, incluir_sin_habitat: bool = False) -> dict:
+        """Perfiles de la región en el orden del catálogo (especies.yaml), con overrides_especies fusionados."""
+        validas = set(self.especies_activas) | (set(self.especies_sin_habitat) if incluir_sin_habitat else set())
+        return {k: fusionar(v, self.overrides_especies.get(k, {})) for k, v in catalogo.items() if k in validas}
+
+
+def validar(d: dict, ruta: Path, catalogo: dict) -> list[str]:
+    from .adaptadores import REGISTRO
+    e = [f"falta la clave '{k}'" for k in OBLIGATORIAS if k not in d]
+    if e:
+        return e
+    if d["id"] != Path(ruta).stem:
+        e.append(f"id '{d['id']}' no coincide con el archivo '{Path(ruta).stem}'")
+    o = d["origen"]
+    if not (isinstance(o, dict) and -180 <= o.get("lon", 999) <= 180 and -90 <= o.get("lat", 999) <= 90):
+        e.append("origen debe ser {lon, lat} en grados")
+    e += [f"falta zona.{k}" for k in CLAVES_ZONA if k not in d["zona"]]
+    x = d["osm_extractos"]
+    if not (isinstance(x, list) and x and all(isinstance(u, str) and u.startswith("https://") for u in x)):
+        e.append("osm_extractos debe ser una lista no vacía de URL https")
+    for tipo, fuentes in d["capas"].items():
+        if tipo not in REGISTRO:
+            e.append(f"capa desconocida '{tipo}' (conocidas: {sorted(REGISTRO)})")
+            continue
+        for f in fuentes:
+            if f.get("adaptador") not in REGISTRO[tipo]:
+                e.append(f"capas.{tipo}: adaptador desconocido '{f.get('adaptador')}' (conocidos: {sorted(REGISTRO[tipo])})")
+    act, sin = d["especies"].get("activas", []), d["especies"].get("sin_habitat", [])
+    if not act:
+        e.append("especies.activas está vacía")
+    for k in [*act, *sin]:
+        if k not in catalogo:
+            e.append(f"especie '{k}' no está en especies.yaml")
+    for k in set(act) & set(sin):
+        e.append(f"especie '{k}' a la vez en activas y sin_habitat")
+    for k in d.get("overrides_especies", {}) or {}:
+        if k not in set(act) | set(sin):
+            e.append(f"overrides_especies.{k}: la especie no está en la región")
+    legal = d["legal"]
+    for k in ("aviso", "tipos_restriccion", "ccaa"):
+        if k not in legal:
+            e.append(f"falta legal.{k}")
+    for i, c in enumerate(legal.get("ccaa") or []):
+        e += [f"legal.ccaa[{i}]: falta {k}" for k in CLAVES_CCAA if k not in c]
+        if "verificado" in c and not isinstance(c["verificado"], bool):
+            e.append(f"legal.ccaa[{i}].verificado debe ser true/false")
+    if not legal.get("ccaa"):
+        e.append("legal.ccaa está vacía")
+    e += [f"falta atribuciones.{k}" for k in CLAVES_ATRIBUCION if k not in d["atribuciones"]]
+    return e
+
+
+def cargar_region(id: str = POR_DEFECTO, regiones: Path = REGIONES, datos: Path = DATOS,
+                  especies: Path = ESPECIES) -> Region:
+    from .idoneidad import cargar_perfiles
+    ruta = Path(regiones) / f"{id}.yaml"
+    d = yaml.safe_load(ruta.read_text())
+    errores = validar(d, ruta, cargar_perfiles(especies))
+    if errores:
+        raise RegionInvalida(ruta, errores)
+    return Region(id=d["id"], nombre=d["nombre"], etiqueta_origen=d["etiqueta_origen"],
+                  origen=(float(d["origen"]["lon"]), float(d["origen"]["lat"])), zona=d["zona"],
+                  osm_extractos=tuple(d["osm_extractos"]), capas=d["capas"],
+                  especies_activas=tuple(d["especies"]["activas"]),
+                  especies_sin_habitat=tuple(d["especies"].get("sin_habitat") or ()),
+                  overrides_especies=d.get("overrides_especies") or {}, legal=d["legal"],
+                  atribuciones=d["atribuciones"], config=ruta, datos=Path(datos))
+
+
+def listar_regiones(regiones: Path = REGIONES) -> list[str]:
+    return sorted(p.stem for p in Path(regiones).glob("*.yaml"))
+
+
+def argumento_region(ap: argparse.ArgumentParser) -> None:
+    ap.add_argument("--region", default=POR_DEFECTO, choices=listar_regiones(),
+                    help=f"región (pipeline/regiones/<id>.yaml); por defecto {POR_DEFECTO}")
+
+
+def region_cli(argv=None) -> Region:
+    ap = argparse.ArgumentParser()
+    argumento_region(ap)
+    return cargar_region(ap.parse_args(argv).region)

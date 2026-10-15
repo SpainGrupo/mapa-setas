@@ -1369,7 +1369,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - `argumento_region(ap: argparse.ArgumentParser) -> None` (añade `--region`, default `marbella`, choices = `listar_regiones()`)
   - `region_cli(argv=None) -> Region` (para los bloques `__main__`)
 
-- [ ] **Step 1: Write `pipeline/regiones/marbella.yaml`**
+- [x] **Step 1: Write `pipeline/regiones/marbella.yaml`**
 
 Contenido exacto (los textos se copian carácter a carácter de `exportar.py:427-438`, `rutas.py:141`, `exportar.py:353,423,488`, `respaldo.py:40,346`, `zona.py:11-12,17,44,57` y de los bloques de `fuentes.yaml` indicados; las claves de documentación —`nombre`, `licencia`, `verificacion`, `catalogo`…— se mueven tal cual desde `fuentes.yaml` dentro de cada entrada):
 
@@ -1462,7 +1462,7 @@ notas_fuentes:
 
 Los comentarios `(mover aquí …)` se sustituyen por las claves reales copiadas de `fuentes.yaml` (líneas 148-157, 245-253, 224-230, 179-188). `fuentes.yaml` todavía no se toca (lo hace la Task 9, cuando ya nadie lee esas claves).
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 ```python
 # pipeline/tests/test_region.py
@@ -1561,12 +1561,12 @@ def test_listar_y_cli(tmp_path):
         R.region_cli(["--region", "no_existe"])
 ```
 
-- [ ] **Step 3: Run tests to verify they fail**
+- [x] **Step 3: Run tests to verify they fail**
 
 Run: `cd pipeline && uv run pytest tests/test_region.py -v`
 Expected: FAIL (`cannot import name 'region'`).
 
-- [ ] **Step 4: Implementation**
+- [x] **Step 4: Implementation**
 
 ```python
 # pipeline/setas_pipeline/region.py
@@ -1728,12 +1728,12 @@ def region_cli(argv=None) -> Region:
     return cargar_region(ap.parse_args(argv).region)
 ```
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `cd pipeline && uv run pytest tests/test_region.py -v && uv run pytest -q`
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add pipeline/regiones/marbella.yaml pipeline/setas_pipeline/region.py pipeline/tests/test_region.py

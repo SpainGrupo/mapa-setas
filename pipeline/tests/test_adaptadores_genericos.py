@@ -255,3 +255,23 @@ def test_caja_de_la_fuente_recorta_las_teselas(tmp_path, monkeypatch):
     A.cargar_capa("protegidos", {"protegidos": [cfg]}, _ctx(tmp_path))
     bboxes = [parse_qs(urlparse(u).query)["bbox"][0] for u in pedidas]
     assert bboxes and all(float(b.split(",")[2]) <= 712000 for b in bboxes)
+
+
+def test_iepnb_mfe_mapeo_extra_de_la_region(tmp_path, monkeypatch):
+    import yaml
+    from setas_pipeline.region import FUENTES
+    arb = gpd.GeoDataFrame({"id_ff21": [1, 2], "id_sp1": [237, 24], "nm_fccarb": [40, 60], "nom_e1": ["Fustal", "Latizal"],
+                            "id_evento": [0, 1], "fc_evento": [0, 2019], "nb_tipestr": ["Bosque", "Msc arb/artificial"]},
+                           geometry=[box(0, 0, 1, 1), box(1, 0, 2, 1)], crs=A.CRS)
+    des = gpd.GeoDataFrame({"id_ff21": [3], "id_tipestr": [21]}, geometry=[box(2, 0, 3, 1)], crs=A.CRS)
+    monkeypatch.setattr(M, "comprobar_wfs", lambda url, intentos=3: None)
+    monkeypatch.setattr(descargas, "descargar_teselas", lambda plantilla, zona, tam, cache, pagina=1000:
+                        des if "id_clamfe" in plantilla else arb)
+    fuentes = yaml.safe_load(FUENTES.read_text())
+    ctx = _ctx(tmp_path, fuentes=fuentes)
+    g = M.iepnb_mfe({"adaptador": "iepnb_mfe"}, ctx)
+    assert g["arbol"].tolist() == [ARBOL["otro"], ARBOL["pino"], ARBOL["sin_arbolado"]]     # nacional: Juniperus = otro
+    g = M.iepnb_mfe({"adaptador": "iepnb_mfe", "mapeo_arbol_extra": {"237": "sabina"}}, ctx)
+    assert g["arbol"].tolist() == [ARBOL["sabina"], ARBOL["pino"], ARBOL["sin_arbolado"]]
+    assert g["anio_incendio"].tolist() == [0, 2019, 0] and g["artificial"].tolist() == [False, True, False]
+    assert g["cubierta"].tolist()[2] == CUBIERTA["matorral"]

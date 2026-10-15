@@ -105,7 +105,10 @@ def iepnb_mfe(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
     des = des.drop_duplicates("id_ff21") if len(des) else des
     trozos = []
     if len(arb):
-        trozos.append(_gdf(arb["id_ff21"], clasificar(arb[m["campo_especie_dominante"]], m["mapeo_arbol"]),
+        # mapeo_arbol_extra (config de la región): p. ej. Juniperus → sabina sin cambiar el mapeo nacional de
+        # fuentes.yaml, que en Marbella deja Juniperus como «otro» (su arbol.tif no cambia).
+        mapeo = {**m["mapeo_arbol"], **{str(k): v for k, v in (cfg.get("mapeo_arbol_extra") or {}).items()}}
+        trozos.append(_gdf(arb["id_ff21"], clasificar(arb[m["campo_especie_dominante"]], mapeo),
                            arb["nm_fccarb"].fillna(0), clasificar_estado(arb["nom_e1"]), [0] * len(arb),
                            anio_incendio_mfe(arb).astype(int),
                            arb["nb_tipestr"].fillna("").str.lower().str.contains(TIPESTR_ARTIFICIAL), arb.geometry))

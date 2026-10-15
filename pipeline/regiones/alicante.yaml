@@ -43,6 +43,9 @@ capas:
       nombre: "Mapa Forestal de España (WFS del IEPNB, MITECO)"
       ambito: zona
       intentos: 3
+      # id_sp1 del MFE vistos en la caché (2026-10-15): 37 J. communis, 38 J. thurifera, 39 J. phoenicea,
+      # 237 J. oxycedrus → sabina (spec §3.4). Solo en esta región.
+      mapeo_arbol_extra: {"37": sabina, "38": sabina, "39": sabina, "237": sabina}
     - adaptador: arcgis_mfe
       nombre: "MFE50 de la Comunitat Valenciana (ICV, capa 41)"
       respaldo: true

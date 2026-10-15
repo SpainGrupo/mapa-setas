@@ -4,6 +4,8 @@ filtro FES) y GeoJSON dentro de un zip. Lo propio de cada fuente (URL, capas, ca
     campos:  {columna_del_contrato: columna_de_la_fuente}
     valores: {columna_del_contrato: constante}
     filtro:  {columna_de_la_fuente: [valores que se conservan]}
+    excluir: {columna_de_la_fuente: [valores que se quitan]}
+    prefijo_codigo: texto que se antepone a `codigo` (códigos únicos entre capas)
     clase:   {campo, valores: {valor_fuente: clase}, defecto}   # columna `clase`; sin clase → la fila se quita
     clase_id: igual que `clase`, pero rellena `id` (capa ccaa)
     dedup:   columna_de_la_fuente
@@ -48,6 +50,8 @@ def mapear(gdf: gpd.GeoDataFrame, cfg: dict, tipo: str) -> gpd.GeoDataFrame:
     g = gdf
     for campo, permitidos in (cfg.get("filtro") or {}).items():
         g = g[g[campo].map(_texto).isin(list(permitidos))]
+    for campo, fuera in (cfg.get("excluir") or {}).items():
+        g = g[~g[campo].map(_texto).isin(list(fuera))]
     if cfg.get("dedup"):
         g = g.drop_duplicates(cfg["dedup"])
     datos = {}
@@ -58,6 +62,8 @@ def mapear(gdf: gpd.GeoDataFrame, cfg: dict, tipo: str) -> gpd.GeoDataFrame:
         datos[col] = [_texto(v) for v in g[campo]]
     for col, v in (cfg.get("valores") or {}).items():
         datos[col] = [v] * len(g)
+    if cfg.get("prefijo_codigo") and "codigo" in datos:      # códigos únicos entre capas (p. ej. objectid)
+        datos["codigo"] = [None if c is None else f"{cfg['prefijo_codigo']}{c}" for c in datos["codigo"]]
     if tipo == "senderos" and "tipo" not in datos:
         from ..rutas import clasificar_ref
         datos["tipo"] = [clasificar_ref(r, n) for r, n in zip(datos.get("ref", [None] * len(g)),

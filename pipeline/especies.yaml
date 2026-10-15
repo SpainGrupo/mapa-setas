@@ -138,3 +138,84 @@ terfezia_arenaria:
   suelo: {acido: 1.0, otro: 0.6, basico: 0.2, ultrabasico: 0.2, desconocido: 0.6}
   humedad: -0.1            # prefiere suelo drenado
   tiempo: {episodio_mm: 20, ventana_dias: [20, 45], tmin_media: [6, 14], tmax_media: [16, 26], balance_30d_min_mm: -40, dias_lluvia_30d_min: 3, humedad_suelo_min: 0.12, meses: [3, 4, 5]}   # cosecha mar–may; dependen de la lluvia de sep–oct y de finales de marzo [E14, E24] (el antecedente de otoño no cabe en este esquema)
+
+# ---------------------------------------------------------------- multi-región, fase C (2026-10-15): Alicante
+# Perfiles nuevos de docs/investigacion/2026-10-14-region-alicante.md §2 («INV»), HEURÍSTICOS y sin calibrar (GBIF
+# tiene pocos registros en la zona). Solo los usa la región que los activa (regiones/<id>.yaml → especies.activas):
+# Marbella no cambia. Fuentes de INV: [S6] MITECO IECT Lactarius · [S7] Mycocharentes · [S8] La Rioja, llenegas ·
+# [S12] Univ. de Murcia, turmas. tricholoma_terreum no tiene perfil: decisión de Alexander del 15-10 (ficha tóxica
+# sin capa). Las claves de tiempo que INV no da (balance, días de lluvia, humedad del suelo) copian las de la especie
+# de la cabecera más parecida; tmin/tmax donde INV no las da, ídem.
+hygrophorus_latitabundus:
+  nombre: Hygrophorus latitabundus
+  # Llenega negra: pinar de P. halepensis y P. nigra sobre caliza, tardía [S8; INV §2]
+  arboles: {pino: 1.0}
+  altitud: {min: 400, opt_min: 700, opt_max: 1400, max: 1700}
+  orientacion: umbria
+  suelo: {basico: 1.0, otro: 0.7, acido: 0.3, ultrabasico: 0.3, desconocido: 0.6}
+  dosel: {opt: [40, 75]}   # como L. sanguifluus (mismo pinar)
+  humedad: 0.1
+  tiempo: {episodio_mm: 25, ventana_dias: [20, 40], tmin_media: [2, 12], tmax_media: [8, 18], balance_30d_min_mm: -30, dias_lluvia_30d_min: 4, humedad_suelo_min: 0.15, meses: [11, 12, 1]}   # INV §2; balance/días/suelo como L. sanguifluus
+suillus_collinitus:
+  nombre: Suillus collinitus
+  # Pinar (P. halepensis sobre todo), indiferente al sustrato con preferencia básica [INV §2]
+  arboles: {pino: 1.0}
+  altitud: {min: 0, opt_min: 100, opt_max: 1200, max: 1600}
+  orientacion: indiferente
+  suelo: {basico: 1.0, otro: 0.8, acido: 0.6, ultrabasico: 0.5, desconocido: 0.7}
+  humedad: 0.05
+  tiempo: {episodio_mm: 15, ventana_dias: [7, 18], tmin_media: [6, 16], tmax_media: [14, 24], balance_30d_min_mm: -30, dias_lluvia_30d_min: 3, humedad_suelo_min: 0.15, meses: [10, 11, 12]}   # INV §2: brota pronto tras la lluvia
+lepista_nuda:
+  nombre: Lepista nuda
+  # Pie azul: saprófita de hojarasca en pinar y encinar, tardía y resistente al frío (sin cifra de estudio local)
+  arboles: {pino: 1.0, encina: 1.0, quejigo: 1.0, alcornoque: 1.0, castano: 1.0, sabina: 0.6}
+  micorrizica: false       # saprófita: sin penalización por incendio
+  altitud: {min: 0, opt_min: 300, opt_max: 1400, max: 1700}
+  orientacion: indiferente
+  suelo: {basico: 1.0, otro: 0.9, acido: 0.8, ultrabasico: 0.6, desconocido: 0.8}
+  humedad: 0.1
+  tiempo: {episodio_mm: 20, ventana_dias: [15, 35], tmin_media: [2, 12], tmax_media: [10, 20], balance_30d_min_mm: -30, dias_lluvia_30d_min: 4, humedad_suelo_min: 0.15, meses: [10, 11, 12, 1]}   # valores de partida (patrón de meses GBIF oct–dic, INV §2)
+agaricus_campestris:
+  nombre: Agaricus campestris
+  # Champiñón silvestre: pastizal y prado (INV §2 «perfil nuevo (pastizal)»); sin árbol, como P. eryngii
+  arboles: {}
+  cubierta: {pastizal: 1.0, pastizal_matorral: 0.7, matorral: 0.2}
+  micorrizica: false
+  altitud: {min: 0, opt_min: 100, opt_max: 1200, max: 1600}
+  orientacion: indiferente
+  suelo: {basico: 1.0, otro: 1.0, acido: 0.8, ultrabasico: 0.5, desconocido: 0.8}
+  humedad: 0.1
+  tiempo: {episodio_mm: 20, ventana_dias: [5, 15], tmin_media: [8, 16], tmax_media: [16, 26], balance_30d_min_mm: -30, dias_lluvia_30d_min: 3, humedad_suelo_min: 0.15, meses: [9, 10, 11]}   # valores de partida
+hydnum_repandum:
+  nombre: Hydnum repandum
+  # Lengua de vaca: micorrícica de carrascal y otras frondosas, también pinar; umbrías (INV §2 «perfil nuevo (carrascal)»)
+  arboles: {encina: 1.0, quejigo: 0.8, alcornoque: 0.8, castano: 0.8, pino: 0.7}
+  altitud: {min: 200, opt_min: 500, opt_max: 1400, max: 1700}
+  orientacion: umbria
+  suelo: {basico: 1.0, otro: 0.9, acido: 0.9, ultrabasico: 0.5, desconocido: 0.7}
+  dosel: {opt: [50, 90]}
+  humedad: 0.15
+  tiempo: {episodio_mm: 25, ventana_dias: [15, 35], tmin_media: [4, 14], tmax_media: [10, 22], balance_30d_min_mm: -30, dias_lluvia_30d_min: 4, humedad_suelo_min: 0.15, meses: [10, 11, 12, 1]}   # valores de partida
+morchella_spp:
+  nombre: Morchella spp.
+  # Colmenillas: riberas, pinar/encinar y quemados de 1–2 años [INV §2]. Sin bonus por quemado en esta entrega
+  # (PENDIENTE de diseño, spec §3.5): penaliza_fuego false para no castigar justo donde salen.
+  arboles: {pino: 0.6, encina: 0.5}
+  micorrizica: false
+  penaliza_fuego: false
+  altitud: {min: 400, opt_min: 700, opt_max: 1400, max: 1800}
+  orientacion: indiferente
+  suelo: {basico: 1.0, otro: 0.8, acido: 0.6, ultrabasico: 0.5, desconocido: 0.7}
+  humedad: 0.2             # riberas y fondos frescos
+  tiempo: {episodio_mm: 15, ventana_dias: [10, 25], tmin_media: [3, 10], tmax_media: [14, 22], balance_30d_min_mm: -40, dias_lluvia_30d_min: 3, humedad_suelo_min: 0.12, meses: [3, 4, 5]}   # INV §2; balance/suelo como T. arenaria (primavera)
+terfezia_claveryi:
+  nombre: Terfezia claveryi
+  # Turma: tomillar/jaral de Helianthemum sobre caliza o yeso, al revés que T. arenaria (ácida) [S12; INV §2].
+  # GBIF 0 en la zona: perfil por literatura. El MFE no ve Helianthemum: matorral/pastizal es la aproximación.
+  arboles: {}
+  cubierta: {matorral: 1.0, pastizal_matorral: 1.0, pastizal: 0.6}
+  altitud: {min: 200, opt_min: 400, opt_max: 1000, max: 1200}
+  orientacion: indiferente
+  suelo: {basico: 1.0, otro: 0.8, acido: 0.3, ultrabasico: 0.3, desconocido: 0.6}
+  humedad: -0.1            # suelo drenado
+  tiempo: {episodio_mm: 20, ventana_dias: [20, 45], tmin_media: [6, 14], tmax_media: [16, 26], balance_30d_min_mm: -40, dias_lluvia_30d_min: 3, humedad_suelo_min: 0.12, meses: [2, 3, 4, 5]}   # INV §2; resto como T. arenaria

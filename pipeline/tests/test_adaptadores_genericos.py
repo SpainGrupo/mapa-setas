@@ -74,6 +74,26 @@ def test_mapear_campos_valores_filtro_y_dedup():
                                                                  ["B", "Dos", "Parque Natural"]]
 
 
+def test_mapear_excluir_y_prefijo_de_codigo():
+    g = gpd.GeoDataFrame({"oid": [1, 2], "fig": ["Natura 2000", "RN"], "nom": ["a", "b"]},
+                         geometry=[box(0, 0, 1, 1)] * 2, crs=A.CRS)
+    n = G.mapear(g, {"campos": {"codigo": "oid", "nombre": "nom", "figura": "fig"}, "excluir": {"fig": ["Natura 2000"]},
+                     "prefijo_codigo": "icv11-"}, "protegidos")
+    assert n[["codigo", "figura"]].values.tolist() == [["icv11-2", "RN"]]
+
+
+def test_protegidos_por_figura_todas_menos_excluidas(monkeypatch, tmp_path):
+    from setas_pipeline.adaptadores import derivados
+    enp = gpd.GeoDataFrame({"codigo": ["1", "2", "3"], "nombre": ["Mariola", "Font Roja", "Espuña"],
+                            "figura": ["PN", "PN", "Parque Regional"]}, geometry=[box(0, 0, 1, 1)] * 3, crs=A.CRS)
+    monkeypatch.setattr(A, "cargar_capa", lambda tipo, capas, ctx: enp)
+    g = derivados.protegidos_por_figura({"tipo": "espacio_protegido", "zona": "Espacio protegido",
+                                         "excluir_nombres": ["Mariola"]}, _ctx(tmp_path))
+    assert g["nombre"].tolist() == ["Font Roja", "Espuña"] and (g["tipo"] == "espacio_protegido").all()
+    g = derivados.protegidos_por_figura({"tipo": "t", "zona": "z", "figura": ["Parque Regional"]}, _ctx(tmp_path))
+    assert g["nombre"].tolist() == ["Espuña"]
+
+
 def test_mapear_clase_por_valor_quita_las_filas_sin_clase():
     g = gpd.GeoDataFrame({"tipo": ["CUP_GV", "CUP_AYTO", "PART_CONS"], "den": ["a", "b", "c"]},
                          geometry=[box(0, 0, 1, 1)] * 3, crs=A.CRS)

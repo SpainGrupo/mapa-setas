@@ -1,0 +1,249 @@
+# Región Alicante (≤2 h en coche). Fase C del multi-región (2026-10-15).
+# Fuentes: docs/investigacion/2026-10-14-region-alicante.md («INV») y docs/investigacion/2026-10-15-sondeo-fuentes-alicante.md
+# («SONDEO»), con peticiones reales. Lo nacional y compartido (DEM, IGME, MFE IEPNB, EFFIS, GBIF) sigue en fuentes.yaml.
+id: alicante
+nombre: "Alicante"
+etiqueta_origen: "de Alicante"
+origen: {lon: -0.4810, lat: 38.3452}            # INV §1 (centro de Alicante)
+
+zona:                                           # mismo método y cierre morfológico que Marbella (zona.py)
+  radio_m: 230000                               # INV §1: lo alcanzable en 2 h cabe en 230 km
+  paso_m: 5000
+  max_s: 7200
+  max_snap_m: 5000
+  cierre_m: 5000
+  osrm: "https://router.project-osrm.org/table/v1/driving/"
+
+osm_extractos:                                  # INV §3: 307 → 200 (2026-10-14); se recortan a la malla y se fusionan
+  - "https://download.geofabrik.de/europe/spain/valencia-latest.osm.pbf"
+  - "https://download.geofabrik.de/europe/spain/murcia-latest.osm.pbf"
+  - "https://download.geofabrik.de/europe/spain/castilla-la-mancha-latest.osm.pbf"
+
+capas:
+  # Comunidades autónomas (normativa del punto y ámbito de las fuentes regionales). SONDEO: el WFS solo sirve GML;
+  # filtro FES por au:nationalCode (CV 34100000000, MU 34140000000, CM 34080000000). Ids de la lista cerrada de la app.
+  ccaa:
+    - adaptador: wfs
+      nombre: "IGN — WFS INSPIRE Unidades administrativas (au:AdministrativeUnit)"
+      formato: gml
+      url: "https://www.ign.es/wfs-inspire/unidades-administrativas"
+      capa: "au:AdministrativeUnit"
+      cache: ccaa
+      fes: {campo: "au:nationalCode", valores: ["34100000000", "34140000000", "34080000000"],
+            prefijo: au, espacio: "http://inspire.ec.europa.eu/schemas/au/4.0"}
+      campos: {nombre: text}
+      clase_id: {campo: nationalCode, valores: {"34100000000": comunitat_valenciana, "34140000000": region_murcia,
+                                                "34080000000": castilla_la_mancha}}
+      licencia: "CC BY 4.0 scne.es"
+
+  # Vegetación. SONDEO: el WFS del IEPNB da 503 (dos días seguidos); se reintenta en cada ejecución. Si sigue caído,
+  # la CV sale del MFE50 del ICV y Murcia/Albacete quedan NODATA con aviso (spec §3.4; IDERM USOS_VEGETACION no sirve).
+  mfe:
+    - adaptador: iepnb_mfe
+      nombre: "Mapa Forestal de España (WFS del IEPNB, MITECO)"
+      ambito: zona
+      intentos: 3
+    - adaptador: arcgis_mfe
+      nombre: "MFE50 de la Comunitat Valenciana (ICV, capa 41)"
+      respaldo: true
+      ambito: comunitat_valenciana
+      url: "https://carto.icv.gva.es/arcgis/rest/services/tm_medio_ambiente/forestal/MapServer/41"
+      cache: icv_mfe41
+      pagina: 1000
+      tesela_m: 25000
+      verificacion: "SONDEO 2026-10-15: 200, 52 091 recintos; 36 valores de sp1_nom_ifn (entre ellos Juniperus)."
+      licencia: "CC BY 4.0 (dadesobertes.gva.es)"
+      # sp1_nom_ifn por prefijo (el más largo gana); el resto de especies → otro; sin especie → sin_arbolado
+      mapeo_arbol: {"Pinus": pino, "Quercus ilex": encina, "Quercus suber": alcornoque, "Quercus faginea": quejigo,
+                    "Castanea": castano, "Juniperus": sabina}
+      # tipestr_definicion (MFE50) → cubierta desarbolada; equivalentes de mfe_desarbolado.mapeo_cubierta (MFE25)
+      mapeo_cubierta:
+        matorral: ["Matorral"]
+        pastizal_matorral: ["Pastizal-matorral"]
+        pastizal: ["Herbazal", "Prado", "Prado con setos"]
+      artificial: ["Artificial"]
+
+  protegidos:
+    - adaptador: arcgis                          # ICV: Parques Naturales (capa 10)
+      url: "https://carto.icv.gva.es/arcgis/rest/services/tm_medio_ambiente/espacios_protegidos/MapServer"
+      capas: [10]
+      cache: icv_enp
+      campos: {codigo: site_code, nombre: nombre}
+      valores: {figura: "Parque Natural"}
+      licencia: "CC BY 4.0"
+    - adaptador: arcgis                          # ICV: Reservas Naturales (11)
+      url: "https://carto.icv.gva.es/arcgis/rest/services/tm_medio_ambiente/espacios_protegidos/MapServer"
+      capas: [11]
+      cache: icv_enp
+      campos: {codigo: objectid, nombre: nombre, figura: figura}
+      prefijo_codigo: "icv11-"
+    - adaptador: arcgis                          # ICV: Parajes Naturales Municipales (18)
+      url: "https://carto.icv.gva.es/arcgis/rest/services/tm_medio_ambiente/espacios_protegidos/MapServer"
+      capas: [18]
+      cache: icv_enp
+      campos: {codigo: objectid, nombre: nombre}
+      valores: {figura: "Paraje Natural Municipal"}
+      prefijo_codigo: "icv18-"
+    - adaptador: wfs                             # IDERM: ENP de la Región de Murcia (29)
+      url: "https://mapas-gis-inter.carm.es/geoserver/wfs"
+      capa: "SIG_LUP_SITES_CARM:ENP"
+      cache: iderm_enp
+      campos: {codigo: codigoenp, nombre: nombre, figura: figura}
+      licencia: "AccessConstraints/Fees NONE; licencia formal PENDIENTE"
+    - adaptador: zip_geojson                     # MITECO BDN: ENP de Castilla-La Mancha (NUT2 42); sin Natura 2000
+      url: "https://www.miteco.gob.es/content/dam/miteco/es/biodiversidad/servicios/banco-datos-naturaleza/enp/Enp2025_geojson.zip"
+      miembro: "Enp2025_p.json"
+      cache: miteco_enp
+      filtro: {NUT2: [42]}
+      excluir: {ODESIGNATE: ["Espacio Protegido Red Natura 2000"]}
+      campos: {codigo: SITE_CODE_, nombre: SITE_NAME, figura: ODESIGNATE}
+      licencia: "MITECO BDN; licencia PENDIENTE de leer en metadatos"
+
+  # Restricciones: las zonificaciones PRUG del ICV no se pueden obtener (SONDEO: 500/400). Solo el PRUG de Mariola
+  # está leído (Decreto 79/2007); el resto de espacios protegidos sale como «espacio_protegido» (spec §3.6).
+  restricciones:
+    - adaptador: arcgis
+      url: "https://carto.icv.gva.es/arcgis/rest/services/tm_medio_ambiente/espacios_protegidos/MapServer"
+      capas: [10]
+      cache: icv_enp
+      filtro: {nombre: ["Parc Natural de la Serra de Mariola"]}
+      campos: {nombre: nombre}
+      valores: {tipo: parque_mariola, zona: "Parque Natural (PRUG, Decreto 79/2007)"}
+    - adaptador: protegidos_por_figura
+      tipo: espacio_protegido
+      zona: "Espacio natural protegido"
+      excluir_nombres: ["Parc Natural de la Serra de Mariola"]
+
+  incendios:
+    - adaptador: arcgis_por_anio                 # SONDEO: capas 1–28 = 1993–2020; 101, 102, 120, 121 = 2021–2024
+      url: "https://carto.icv.gva.es/arcgis/rest/services/tm_medio_ambiente/prevencion_de_incendios/MapServer"
+      capas_anio: {2014: 22, 2015: 23, 2016: 24, 2017: 25, 2018: 26, 2019: 27, 2020: 28, 2021: 101, 2022: 102,
+                   2023: 120, 2024: 121}
+      fuente: ICV
+      cache: icv_incendios
+      licencia: "CC BY 4.0"
+    - adaptador: effis                           # 2025 en adelante y Murcia/Albacete (sin fuente regional)
+
+  senderos:
+    - adaptador: osm_relaciones
+    - adaptador: arcgis                          # red homologada GR / PR-CV / SL-CV (SONDEO: 44 / 249 / 65)
+      url: "https://carto.icv.gva.es/arcgis/rest/services/tm_medio_ambiente/forestal/MapServer"
+      capas: [50, 51, 52]
+      cache: icv_senderos
+      campos: {ref: denominaci, name: nombre, dificultad: dificultad}
+      valores: {fuente: icv}
+      licencia: "CC BY 4.0"
+
+  # Titularidad (titularidad.py). Sin cotos ni vías pecuarias con fuente verificada en esta región.
+  montes_publicos:
+    - adaptador: arcgis                          # ICV: montes gestionados por la Conselleria (SONDEO: 10 733)
+      url: "https://carto.icv.gva.es/arcgis/rest/services/tm_medio_ambiente/forestal/MapServer"
+      capas: [25]
+      cache: icv_montes
+      campos: {nombre: denominacion, detalle: pertenencia, codigo: objectid}
+      prefijo_codigo: "icv-"
+      # tipo: CUP_* = Catálogo de Utilidad Pública; *_CONS/_CONV = consorcio/convenio; PART_* = particular (fuera)
+      clase: {campo: tipo, valores: {CUP_GV: monte_junta, DP_GV: monte_junta, CUP_AYTO: monte_municipal,
+                                     CUP_AYTO_CONS: monte_municipal, AYTO_CONS: monte_municipal,
+                                     AYTO_CONV: monte_municipal, COMUNAL_CONS: monte_municipal, CUP_DIP: monte_municipal,
+                                     DIP_CONS: monte_municipal, CUP_CH: monte_municipal, CH_CONS: monte_municipal,
+                                     ESTADO_CONS: monte_municipal}}
+      limitacion: "Solo los montes que gestiona la Conselleria; los consorciados (_CONS) pueden tener aprovechamientos cedidos (PENDIENTE)."
+      licencia: "CC BY 4.0"
+    - adaptador: wfs                             # IDERM: montes públicos de Murcia (239: propiedad, clas_art11)
+      url: "https://mapas-gis-inter.carm.es/geoserver/wfs"
+      capa: "PFO_ZOR_DMVP_CARM:MONTES"
+      cache: iderm_montes
+      filtro: {clas_art11: ["Público"]}
+      campos: {nombre: nombremont, detalle: propiedad, codigo: id_monte}
+      clase: {campo: propiedad, valores: {"Comunidad Autónoma": monte_junta, "Ayuntamiento": monte_municipal,
+                                          "Estado": monte_municipal}}
+  pasos_publicos:
+    - adaptador: arcgis                          # senderos homologados del ICV como paso público
+      url: "https://carto.icv.gva.es/arcgis/rest/services/tm_medio_ambiente/forestal/MapServer"
+      capas: [50, 51, 52]
+      cache: icv_senderos
+      campos: {nombre: nombre, codigo: denominaci}
+      valores: {clase: paso_publico, tipo: sendero, detalle: "Sendero homologado (GR / PR-CV / SL-CV)"}
+
+especies:                                       # orden = el de especies.yaml (el manifest sigue el catálogo)
+  # spec §1.3 y §3.5 (sin tricholoma_terreum); INV §2. boletus_aereus: relicto de Corbera/El Surar (6 registros).
+  activas: [boletus_aereus, lactarius_deliciosus, lactarius_sanguifluus, pleurotus_eryngii,
+            hygrophorus_latitabundus, suillus_collinitus, lepista_nuda, agaricus_campestris, hydnum_repandum,
+            morchella_spp, terfezia_claveryi]
+  # INV §2: 0–1 registros GBIF en la zona y hábitat de alcornocal/castañar o suelo ácido
+  sin_habitat: [boletus_aestivalis, boletus_edulis, boletus_pinophilus, amanita_caesarea, cantharellus_cibarius,
+                amanita_ponderosa]
+
+overrides_especies:
+  lactarius_sanguifluus:                        # INV §2: P. halepensis y P. nigra salzmannii, calcícola [S6]
+    altitud: {min: 300, opt_min: 600, opt_max: 1300, max: 1600}
+    suelo: {basico: 1.0, otro: 0.7, acido: 0.4, ultrabasico: 0.5, desconocido: 0.6}
+    tiempo: {meses: [10, 11, 12]}
+
+edificado:
+  catastro_provincias: ["03", "46", "30", "02"]   # Alicante, Valencia, Murcia, Albacete
+
+citas:
+  centro: {lon: -0.48, lat: 38.35}
+  radio_km: 200                                 # cubre la zona (punto más lejano a ~180 km: oeste de Murcia)
+  taxa:                                         # taxones de las especies nuevas (citas.py TAXA tiene el resto)
+    hygrophorus_latitabundus: ["Hygrophorus latitabundus"]
+    suillus_collinitus: ["Suillus collinitus"]
+    morchella_spp: ["Morchella esculenta", "Morchella elata", "Morchella conica"]
+    terfezia_claveryi: ["Terfezia claveryi"]
+    terfezia_arenaria: ["Terfezia arenaria"]    # sin T. claveryi: aquí tiene especie propia
+
+legal:
+  aviso: "Normativa orientativa por comunidad autónoma: compruébala en el boletín oficial y en las ordenanzas municipales. En fincas privadas hace falta el permiso del propietario."
+  texto_protegido: "Espacio natural protegido: puede tener limitaciones propias para recoger setas. Consulta su plan (PRUG o normas del espacio)."
+  chip_sitio_restringido: "Espacio protegido: consulta sus limitaciones"
+  tipos_restriccion:
+    espacio_protegido: "Espacio natural protegido: puede haber limitaciones propias; consulta su PRUG."
+    parque_mariola: "Parque Natural de la Serra de Mariola: máximo 4 kg por persona y día, solo en fincas públicas, sin herramientas que remuevan el suelo y con cesto (PRUG, Decreto 79/2007)."
+  ccaa:
+    - id: comunitat_valenciana
+      nombre: "Comunitat Valenciana"
+      norma: "Orden de 16 de septiembre de 1996 (DOGV 2870, 15-11-1996)"
+      cupo_kg_dia: 6
+      # SONDEO: el PDF de la Orden no se encontró; los 6 kg solo constan en el tríptico de la Conselleria. PENDIENTE.
+      verificado: false
+      texto: "Autoconsumo sin autorización hasta 6 kg por persona y día, según el tríptico de la Conselleria (2018); el texto de la Orden de 1996 está pendiente de verificar. Solo navaja, cesta y de día, sin remover el mantillo. Lo recogido no se puede vender. En la Serra de Mariola el límite es de 4 kg y solo en fincas públicas (PRUG, Decreto 79/2007). En la Font Roja el cupo propio está pendiente de verificar."
+      fuente_url: "https://mediambient.gva.es/documents/20551003/164641274/Recolecci%C3%B3n+de+setas+y+trufas+en+terrenos+forestales+(tr%C3%ADptico).pdf/241479dc-3615-4ae8-8790-c27e665735bf"
+    - id: region_murcia
+      nombre: "Región de Murcia"
+      norma: "Sin norma autonómica de setas (BORM)"
+      cupo_kg_dia: null
+      # SONDEO / INV §4: no se encontró norma autonómica; la ausencia no está confirmada en fuente oficial.
+      verificado: false
+      texto: "No se ha encontrado una norma autonómica sobre la recogida de setas (pendiente de verificar). Las setas son del titular del monte (Ley 43/2003 de Montes): en fincas privadas pide permiso, respeta los cotos micológicos señalizados y las ordenanzas municipales. Los espacios protegidos pueden tener normas propias."
+      fuente_url: "https://www.boe.es/buscar/act.php?id=BOE-A-2003-21339"
+    - id: castilla_la_mancha
+      nombre: "Castilla-La Mancha"
+      norma: "Orden de 15/11/2016 (DOCM 226, 21-11-2016)"
+      cupo_kg_dia: 5
+      # SONDEO: el cupo («5 kg de setas, o un volumen aparente de 10 litros») está leído en la página ELI del DOCM;
+      # la vigencia consolidada y el resto de condiciones siguen PENDIENTES.
+      verificado: true
+      texto: "Recogida ocasional para autoconsumo: hasta 5 kg de setas o 10 litros por persona y día (Orden de 15/11/2016, DOCM). Su vigencia actual y el resto de condiciones (herramientas, horario, días de caza) están pendientes de verificar. Las setas son del propietario del monte."
+      fuente_url: "https://docm.jccm.es/docm/eli/es-cm/o/2016/11/15"
+  titularidad:
+    textos:
+      monte_junta: "Monte público (Generalitat o Comunidad Autónoma)"
+      monte_municipal: "Monte público de ayuntamiento u otra entidad: consulta a su titular"
+      privado: "Probablemente privado: necesitas permiso del dueño para recoger"
+      paso_publico: "Sendero homologado, no recoger fuera"
+      coto: "Coto de caza"
+      senal_privado: "Valla, cancela o paso privado cerca"
+    norma: "Ley 43/2003 de Montes, art. 36.1: el titular del monte es el propietario de sus frutos espontáneos."
+    aviso: "No hay datos abiertos fiables de vallas ni de quién es dueño de cada finca. Fuera de los montes públicos marcados, asume que es privado y pide permiso. Ley 43/2003 de Montes, art. 36.1: el titular del monte es el propietario de sus frutos espontáneos."
+
+atribuciones:
+  idoneidad: "IGN CC BY 4.0 · ICV CC BY 4.0 (MFE50) · © MITECO MFE · IGME · © OpenStreetMap ODbL"
+  protegidos: "ICV CC BY 4.0 · IDERM (Región de Murcia) · MITECO BDN"
+  restricciones: "ICV CC BY 4.0 (espacios protegidos) · IDERM · MITECO BDN"
+  rutas: "© OpenStreetMap (ODbL); ICV, Generalitat Valenciana (CC BY 4.0)"
+  respaldo_protegidos: "Espacios protegidos: ICV (Generalitat Valenciana) CC BY 4.0, IDERM (Región de Murcia), MITECO BDN"
+  titularidad: "ICV CC BY 4.0 (montes gestionados por la Conselleria, senderos) · IDERM (montes públicos de Murcia) · © OpenStreetMap ODbL"
+  ccaa: "IGN CC BY 4.0"
+  fuentes: {icv: "ICV (Generalitat Valenciana)"}

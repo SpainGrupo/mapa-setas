@@ -41,7 +41,24 @@ def test_marbella_activa_las_12_especies_en_el_orden_del_catalogo():
     from setas_pipeline.idoneidad import cargar_perfiles
     cat = cargar_perfiles(R.ESPECIES)
     r = R.cargar_region("marbella")
-    assert list(r.perfiles(cat)) == list(cat) and r.especies_sin_habitat == ()
+    # las 12 primeras del catálogo (las de Alicante van detrás y Marbella no las activa)
+    assert list(r.perfiles(cat)) == list(cat)[:12] and r.especies_sin_habitat == ()
+
+
+def test_alicante_carga_y_cumple_lo_decidido():
+    from setas_pipeline.idoneidad import cargar_perfiles
+    cat = cargar_perfiles(R.ESPECIES)
+    r = R.cargar_region("alicante")
+    assert r.origen == (-0.481, 38.3452) and r.etiqueta_origen == "de Alicante"
+    assert "tricholoma_terreum" not in cat and "tricholoma_terreum" not in r.especies_activas
+    assert {"boletus_edulis", "amanita_caesarea", "cantharellus_cibarius"} <= set(r.especies_sin_habitat)
+    assert [c["id"] for c in r.legal["ccaa"]] == ["comunitat_valenciana", "region_murcia", "castilla_la_mancha"]
+    v = {c["id"]: (c["cupo_kg_dia"], c["verificado"]) for c in r.legal["ccaa"]}
+    assert v == {"comunitat_valenciana": (6, False), "region_murcia": (None, False), "castilla_la_mancha": (5, True)}
+    assert [f["adaptador"] for f in r.capas["mfe"]] == ["iepnb_mfe", "arcgis_mfe"] and r.capas["mfe"][1]["respaldo"]
+    # el ajuste de L. sanguifluus va por override: el perfil base (Marbella) no cambia
+    assert cat["lactarius_sanguifluus"]["altitud"]["min"] == 200
+    assert r.perfiles(cat)["lactarius_sanguifluus"]["altitud"]["min"] == 300
 
 
 def test_fusionar_es_profunda_y_no_muta():

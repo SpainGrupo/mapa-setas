@@ -47,6 +47,9 @@ export const maxDificultad = (): Dificultad | null => {
 };
 export const topN = () => (leer(CLAVE_N) === '3' ? 3 : 2);
 
+/** Sitios candidatos (sitios.json), cargados una vez; null si esta versión de los mapas no los trae. */
+export const sitiosCandidatos = (): Promise<SitiosJson | null> => cargarSitios();
+
 function cargarSitios(): Promise<SitiosJson | null> {
   const m = ctx.manifest();
   if (!m?.sitios?.archivo) return Promise.resolve(null);
@@ -233,13 +236,24 @@ function pintarCalendario(datos: SitiosJson | null, fecha: string): FilaCalendar
       tira.append(x);
     }
     b.append(txt, tira);
-    b.onclick = () => {
+    const verSitios = () => {
       const sel = $<HTMLSelectElement>('#hoy-especie');
       sel.value = f.id;
       sel.dispatchEvent(new Event('change'));
       $('#tit-top-especie').scrollIntoView({ block: 'start' });
     };
-    li.append(b); ol.append(li);
+    // Tocar la seta abre su ficha (con «Cuándo está activa»); sin ficha, sus mejores sitios como antes.
+    b.onclick = async () => { if (await ctx.hayFicha(f.id)) ctx.verFicha(f.id); else verSitios(); };
+    li.className = 'cal-item';
+    li.append(b);
+    if (datos?.especies[f.id]?.length) {
+      const s = boton('Sitios', verSitios, 'cal-sitios');
+      s.dataset.especie = f.id;
+      s.setAttribute('aria-label', `Ver los mejores sitios de ${nombre(f.id)}`);
+      s.insertAdjacentHTML('afterbegin', '<svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>');
+      li.append(s);
+    } else li.append(document.createElement('span'));
+    ol.append(li);
   }
   caja.append(cab, ol);
   return filas;

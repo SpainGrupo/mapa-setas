@@ -145,6 +145,25 @@ if (quiere('hoy')) {
   await cap('13-zona');
 }
 
+if (quiere('ventana')) {
+  // Ficha con «Cuándo está activa» (desde el calendario de Hoy) y selector con las activas hoy arriba.
+  await p.waitForSelector('body[data-meteo]', { state: 'attached', timeout: 30000 });
+  await tab('p-hoy');
+  await p.waitForSelector('#top-general .top-fila', { timeout: 30000 });
+  await p.locator('#calendario .cal-fila[data-especie=boletus_aereus]').click();
+  await p.locator('#guia-ficha[data-id=boletus_aereus] .cuando').waitFor();
+  await p.evaluate(() => { const s = document.querySelector('#guia-ficha .cuando'), pan = s.closest('.pantalla');
+    pan.scrollTo(0, s.getBoundingClientRect().top + pan.scrollTop - 230); });
+  await cap('ficha-calendario');
+  await p.locator('#guia-ficha .btn-volver').click();
+  await tab('p-mapa');
+  await p.locator('#btn-especie').click();
+  await p.locator('#dlg-especie[open]').waitFor();
+  await p.locator('#lista-especies .se-divisor').scrollIntoViewIfNeeded();
+  await cap('selector-activas');
+  await p.keyboard.press('Escape');
+}
+
 if (quiere('sitios')) {
   await tab('p-mapa');
   await p.getByRole('button', { name: 'Guardar sitio aquí' }).click();

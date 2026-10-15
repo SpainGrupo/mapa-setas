@@ -6,9 +6,18 @@ import { binomio, DESCRITA_EN_OTRA_FICHA, fichaDeEspecieMapa, miniaturaEspecie, 
 import { fichaGuia, indiceGuia } from './guia-ui';
 import type { Especie } from './tipos';
 import { EXPLICACION_FIABILIDAD, insigniaFiabilidad, nivelFiabilidad, textoFiabilidad } from './fiabilidad';
+import type { ResultadoSemaforo } from './semaforo';
+import { ordenarSelector, type EtiquetaInactiva } from './ventana-especie';
+import { NOMBRE_ESTADO } from './zona';
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 let especies: () => Especie[] = () => [];
+/** Semáforo de hoy de cada especie en su punto de referencia (main.ts); null sin datos del tiempo. */
+let estadoHoy: (id: string) => ResultadoSemaforo | null = () => null;
+let hoy: () => string = () => new Date().toISOString().slice(0, 10);
+let ultimoOrden: { activas: string[]; inactivas: { id: string; etiqueta: EtiquetaInactiva }[] } = { activas: [], inactivas: [] };
+/** Orden de la última lista pintada (e2e: window.__setas.selector()). */
+export const ordenSelector = () => ultimoOrden;
 
 /** Nombre común (de la guía, si hay ficha), científico y URL de la miniatura de una especie del mapa. */
 export function datosEspecie(e: Especie): { comun: string; cientifico: string; miniatura: string | null } {
@@ -61,7 +70,20 @@ export function pintarSelectorEspecie() {
   }
   const ul = $('#lista-especies');
   ul.replaceChildren();
-  for (const e of lista) {
+  // Arriba las especies activas hoy (verde/amarillo en su punto de referencia); debajo, atenuadas pero elegibles, el resto.
+  const orden = ordenarSelector(lista.map((e) => ({ id: e.id, especie: e, fiabilidad: nivelFiabilidad(e.fiabilidad),
+    resultado: estadoHoy(e.id), meses: e.tiempo?.meses ?? [] })), hoy());
+  ultimoOrden = { activas: orden.activas.map((x) => x.id), inactivas: orden.inactivas.map((x) => ({ id: x.item.id, etiqueta: x.etiqueta })) };
+  const filas: { e: Especie; estado: ResultadoSemaforo | null; etiqueta: EtiquetaInactiva | null }[] = [
+    ...orden.activas.map((x) => ({ e: x.especie, estado: x.resultado, etiqueta: null })),
+    ...orden.inactivas.map((x) => ({ e: x.item.especie, estado: x.item.resultado, etiqueta: x.etiqueta })),
+  ];
+  for (const { e, estado, etiqueta } of filas) {
+    if (etiqueta && e.id === orden.inactivas[0].item.id) {
+      const sep = document.createElement('li');
+      sep.className = 'se-divisor'; sep.setAttribute('role', 'presentation'); sep.textContent = 'No activas ahora';
+      ul.append(sep);
+    }
     const d = datosEspecie(e);
     const li = document.createElement('li');
     li.setAttribute('role', 'option');
@@ -75,7 +97,18 @@ export function pintarSelectorEspecie() {
     const txt = document.createElement('span'); txt.className = 'se-texto';
     const b = document.createElement('b'); b.textContent = d.comun;
     const i = document.createElement('i'); i.textContent = d.cientifico;
-    txt.append(b, i, insigniaFiabilidad(e.fiabilidad));
+    txt.append(b, i);
+    const pie = document.createElement('span'); pie.className = 'se-pie';
+    if (etiqueta) {
+      li.classList.add('inactiva');
+      const x = document.createElement('span'); x.className = 'se-inactiva'; x.textContent = etiqueta === 'sin datos' ? 'sin datos del tiempo' : etiqueta;
+      pie.append(x);
+    } else if (estado) {
+      const x = document.createElement('span'); x.className = 'chip-estado se-estado'; x.dataset.estado = estado.estado; x.textContent = NOMBRE_ESTADO[estado.estado];
+      pie.append(x);
+    }
+    pie.append(insigniaFiabilidad(e.fiabilidad));
+    txt.append(pie);
     const marca = document.createElement('span'); marca.className = 'se-marca'; marca.setAttribute('aria-hidden', 'true');
     if (elegida) marca.innerHTML = '<svg class="ico"><use href="#i-check"/></svg>';
     li.append(caja, txt, marca);
@@ -91,8 +124,10 @@ function elegir(id: string) {
   pintarSelectorEspecie();
 }
 
-export function iniciarSelectorEspecie(deManifest: () => Especie[]) {
+export function iniciarSelectorEspecie(deManifest: () => Especie[], o: { estadoHoy?: (id: string) => ResultadoSemaforo | null; hoy?: () => string } = {}) {
   especies = deManifest;
+  if (o.estadoHoy) estadoHoy = o.estadoHoy;
+  if (o.hoy) hoy = o.hoy;
   const btn = $('#btn-especie');
   const dlg = $<HTMLDialogElement>('#dlg-especie');
   const ul = $('#lista-especies');

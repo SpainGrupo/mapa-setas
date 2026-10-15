@@ -25,6 +25,9 @@ let grupoSel: Grupo | '' = '';
 let avisoReconocer: (() => string[]) | null = null;
 /** La ficha se abrió desde un resultado del reconocedor: «atrás» vuelve al resultado. */
 let desdeReconocer = false;
+/** Bloque «Cuándo está activa» de una ficha (main.ts lo construye con el manifest y el tiempo); null: sin bloque. */
+let bloqueTiempo: ((idFicha: string) => HTMLElement | null) | null = null;
+export const ponerBloqueTiempo = (f: (idFicha: string) => HTMLElement | null) => { bloqueTiempo = f; };
 
 async function json<T>(ruta: string): Promise<T | null> {
   try {
@@ -241,7 +244,11 @@ function pintarFicha(id: string) {
   cab.append(h, el('p', 'cientifico', f.nombre_cientifico));
   if (!peligroAbierto) cab.append(insignia(f.grupo));   // sin «Apreciada» mientras una mortal siga sin descartar
   if (f.nombres_comunes.length > 1) cab.append(el('p', 'otros-nombres', `También: ${f.nombres_comunes.slice(1).join(', ')}`));
-  cuerpo.append(cab, carrusel(f));
+  cuerpo.append(cab);
+  // Sin el bloque de temporada mientras una mortal del resultado siga sin descartar (no animar a salir a por ella).
+  const cuando = peligroAbierto ? null : bloqueTiempo?.(f.id);
+  if (cuando) cuerpo.append(cuando);
+  cuerpo.append(carrusel(f));
   if (COMESTIBLES.has(f.grupo) && !peligroAbierto) cuerpo.append(caja('caja-nota', 'Precaución', f.toxicidad_nota));
 
   const rasgos = el('section', 'rasgos');

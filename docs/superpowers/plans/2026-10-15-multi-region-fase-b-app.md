@@ -893,7 +893,7 @@ export class DirFalso { … } ; export class ArchivoFalso { … }; export functi
 ```
 Claves y carpetas: `setas:mapas-descargados:<r>`, `setas:mapas-nuevo-generado:<r>`, `mapas/<r>`, `mapas-nuevo/<r>`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `app/src/opfs-falso.ts`:
 ```ts
@@ -984,12 +984,12 @@ describe('opfs-rutas', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd app && npx vitest run src/opfs-rutas.test.ts`
 Expected: FAIL, «Failed to resolve import "./opfs-rutas"».
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 `app/src/opfs-rutas.ts`:
 ```ts
@@ -1061,12 +1061,12 @@ describe('paqueteMapas', () => {
 ```
 (junta el import con el existente de `./opfs`).
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd app && npx vitest run src/opfs-rutas.test.ts src/opfs.test.ts`
 Expected: PASS. `npx tsc --noEmit` todavía falla en `main.ts`, `mapa.ts`, `datos.ts`, `acceso-datos.ts` y `reconocer-ui.ts` (firmas nuevas). Lo arregla la tarea 7, que va inmediatamente después de la 6. Las tareas 5, 6 y 7 se revisan juntas antes de seguir.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add app/src/opfs-rutas.ts app/src/opfs-rutas.test.ts app/src/opfs-falso.ts app/src/descarga.worker.ts app/src/opfs.ts app/src/opfs.test.ts

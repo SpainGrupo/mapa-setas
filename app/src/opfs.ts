@@ -1,8 +1,14 @@
 import type { Manifest, PaqueteModelo } from './tipos';
+import { regionActiva } from './region';
+import { dirDe, quitarRuta } from './opfs-rutas';
 
-// Dos paquetes con el mismo mecanismo (staging + intercambio): los mapas y, aparte y opcional, el reconocedor.
+// Dos paquetes con el mismo mecanismo (staging + intercambio): los mapas de cada región y, aparte y opcional, el reconocedor.
 interface Paquete { clave: string; claveStaging: string; dir: string; dirNuevo: string }
-const MAPAS: Paquete = { clave: 'setas:mapas-descargados', claveStaging: 'setas:mapas-nuevo-generado', dir: 'mapas', dirNuevo: 'mapas-nuevo' };
+/** Mapas de una región: staging en mapas-nuevo/<region>, definitivos en mapas/<region>. */
+export const paqueteMapas = (region: string): Paquete => ({
+  clave: `setas:mapas-descargados:${region}`, claveStaging: `setas:mapas-nuevo-generado:${region}`,
+  dir: `mapas/${region}`, dirNuevo: `mapas-nuevo/${region}`,
+});
 const MODELO: Paquete = { clave: 'setas:modelo-descargado', claveStaging: 'setas:modelo-nuevo-version', dir: 'modelo', dirNuevo: 'modelo-nuevo' };
 /** `generado` = versión del paquete (manifest.generado en los mapas, paquete.version en el modelo). */
 export interface EstadoDescarga { fecha: string; bytes: number; generado: string; archivos: Record<string, number> }
@@ -10,7 +16,7 @@ export interface EstadoDescarga { fecha: string; bytes: number; generado: string
 function estadoDe(p: Paquete): EstadoDescarga | null {
   try { return JSON.parse(localStorage.getItem(p.clave) ?? 'null'); } catch { return null; }
 }
-export const estadoDescarga = () => estadoDe(MAPAS);
+export const estadoDescarga = (region = regionActiva()) => estadoDe(paqueteMapas(region));
 export const estadoModelo = () => estadoDe(MODELO);
 
 /** El archivo descargado, solo si la descarga terminó y el tamaño cuadra. */
@@ -19,11 +25,11 @@ async function archivoDe(p: Paquete, nombre: string): Promise<File | null> {
   if (!est || !(nombre in est.archivos) || !navigator.storage?.getDirectory) return null;
   try {
     const raiz = await navigator.storage.getDirectory();
-    const f = await (await (await raiz.getDirectoryHandle(p.dir)).getFileHandle(nombre)).getFile();
+    const f = await (await (await dirDe(raiz, p.dir)).getFileHandle(nombre)).getFile();
     return f.size === est.archivos[nombre] ? f : null;
   } catch { return null; }
 }
-export const archivoOpfs = (nombre: string) => archivoDe(MAPAS, nombre);
+export const archivoOpfs = (nombre: string, region = regionActiva()) => archivoDe(paqueteMapas(region), nombre);
 export const archivoModelo = (nombre: string) => archivoDe(MODELO, nombre);
 
 const dormir = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
@@ -38,6 +44,10 @@ export async function conReintentos<T>(fn: (intento: number) => Promise<T>, inte
     }
   }
 }
+
+/** Orden 'mover' del worker de descarga (también la usa la migración a regiones). */
+export const moverEnOpfs = (desde: string, hacia: string, nombres: string[]) =>
+  trabajador({ tipo: 'mover', desde, hacia, nombres }).then(() => {});
 
 function trabajador(orden: object, alAvanzar: (b: number) => void = () => {}): Promise<number> {
   return new Promise((ok, mal) => {
@@ -67,12 +77,12 @@ async function descargarPaquete(p: Paquete, version: string, lista: { nombre: st
   const persistente = await navigator.storage.persist?.().catch(() => false) ?? false;
   const raiz = await navigator.storage.getDirectory();
   const borrarStaging = async () => {
-    await raiz.removeEntry(p.dirNuevo, { recursive: true }).catch(() => {});
+    await quitarRuta(raiz, p.dirNuevo);
     localStorage.removeItem(p.claveStaging);
   };
   if (localStorage.getItem(p.claveStaging) !== version) await borrarStaging();
   localStorage.setItem(p.claveStaging, version);
-  const nuevo = await raiz.getDirectoryHandle(p.dirNuevo, { create: true });
+  const nuevo = await dirDe(raiz, p.dirNuevo, true);
 
   let hecho = 0;
   const archivos: Record<string, number> = {};
@@ -105,8 +115,8 @@ async function descargarPaquete(p: Paquete, version: string, lista: { nombre: st
   return { estado: est, persistente };
 }
 
-export const descargarMapas = (m: Manifest, base: string, alAvanzar: (hecho: number, total: number) => void) =>
-  descargarPaquete(MAPAS, m.generado, [...m.archivos, { nombre: 'manifest.json', bytes: 0 }], m.total_bytes, base, alAvanzar);
+export const descargarMapas = (m: Manifest, region: string, base: string, alAvanzar: (hecho: number, total: number) => void) =>
+  descargarPaquete(paqueteMapas(region), m.generado, [...m.archivos, { nombre: 'manifest.json', bytes: 0 }], m.total_bytes, base, alAvanzar);
 
 /** Reconocedor: descarga aparte y opcional (≈100 MB), en data/<dir> (p. ej. data/modelo/). */
 export const descargarModelo = (m: PaqueteModelo, base: string, alAvanzar: (hecho: number, total: number) => void) =>
@@ -116,8 +126,8 @@ async function borrarPaquete(p: Paquete) {
   localStorage.removeItem(p.clave);
   localStorage.removeItem(p.claveStaging);
   const raiz = await navigator.storage.getDirectory();
-  await raiz.removeEntry(p.dir, { recursive: true }).catch(() => {});
-  await raiz.removeEntry(p.dirNuevo, { recursive: true }).catch(() => {});
+  await quitarRuta(raiz, p.dir);
+  await quitarRuta(raiz, p.dirNuevo);
 }
-export const borrarMapas = () => borrarPaquete(MAPAS);
+export const borrarMapas = (region = regionActiva()) => borrarPaquete(paqueteMapas(region));
 export const borrarModelo = () => borrarPaquete(MODELO);

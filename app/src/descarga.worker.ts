@@ -1,7 +1,9 @@
 /// <reference lib="webworker" />
+import { dirDe } from './opfs-rutas';
 // Operaciones de OPFS con SyncAccessHandle (Chrome, Safari 15.2+, Firefox 111+):
 // - descargar: baja un archivo a un directorio (el de staging en las actualizaciones).
 // - mover: pasa los archivos del staging al directorio definitivo y quita los que sobran.
+// dir/desde/hacia admiten rutas 'mapas/<region>'.
 const ambito = self as unknown as DedicatedWorkerGlobalScope;
 
 type Orden =
@@ -10,7 +12,7 @@ type Orden =
 
 async function descargar(url: string, nombre: string, dirNombre: string) {
   const raiz = await navigator.storage.getDirectory();
-  const dir = await raiz.getDirectoryHandle(dirNombre, { create: true });
+  const dir = await dirDe(raiz, dirNombre, true);
   const fh = await dir.getFileHandle(nombre, { create: true });
   const h = await (fh as any).createSyncAccessHandle();
   try {
@@ -53,8 +55,8 @@ async function copiar(origen: FileSystemFileHandle, destino: FileSystemDirectory
 
 async function mover(desde: string, hacia: string, nombres: string[]) {
   const raiz = await navigator.storage.getDirectory();
-  const origen = await raiz.getDirectoryHandle(desde);
-  const destino = await raiz.getDirectoryHandle(hacia, { create: true });
+  const origen = await dirDe(raiz, desde);
+  const destino = await dirDe(raiz, hacia, true);
   for (const n of nombres) {
     const fh = await origen.getFileHandle(n);
     await destino.removeEntry(n).catch(() => {});
@@ -63,8 +65,9 @@ async function mover(desde: string, hacia: string, nombres: string[]) {
   }
   const quedan = new Set(nombres);
   const sobran: string[] = [];
-  for await (const n of (destino as any).keys() as AsyncIterable<string>) if (!quedan.has(n)) sobran.push(n);
-  for (const n of sobran) await destino.removeEntry(n, { recursive: true }).catch(() => {});
+  // Solo archivos: las subcarpetas (otras regiones bajo mapas/) no se tocan.
+  for await (const [n, h] of (destino as any).entries() as AsyncIterable<[string, FileSystemHandle]>) if (h.kind === 'file' && !quedan.has(n)) sobran.push(n);
+  for (const n of sobran) await destino.removeEntry(n).catch(() => {});
 }
 
 ambito.onmessage = async (e: MessageEvent<Orden>) => {

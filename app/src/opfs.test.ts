@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { conReintentos } from './opfs';
+import { conReintentos, paqueteMapas } from './opfs';
 
 describe('conReintentos', () => {
   it('reintenta con backoff y devuelve el primer éxito', async () => {
@@ -14,5 +14,12 @@ describe('conReintentos', () => {
     const fn = vi.fn(async (i: number) => { throw new Error('falla ' + i); });
     await expect(conReintentos(fn, 3, () => 0, async () => {})).rejects.toThrow('falla 2');
     expect(fn).toHaveBeenCalledTimes(3);
+  });
+});
+
+describe('paqueteMapas', () => {
+  it('claves y carpetas por región', () => {
+    expect(paqueteMapas('alicante')).toEqual({ clave: 'setas:mapas-descargados:alicante', claveStaging: 'setas:mapas-nuevo-generado:alicante',
+      dir: 'mapas/alicante', dirNuevo: 'mapas-nuevo/alicante' });
   });
 });

@@ -832,7 +832,7 @@ Los módulos viejos (`protegidos.py`, `incendios.py`, `exportar.py`, `rutas.py`)
   - `restricciones/protegidos_por_figura` — cfg `{figura, tipo, zona}`.
   - funciones puras: `rediam.clasificar_restriccion(codigo_zona, descripcion, tipos_zona_reserva) -> str | None`, `rediam.solo_senderos(g)`, `rediam.senderos_rediam(cfg, bbox25830, cache) -> GeoDataFrame`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # añadir a pipeline/tests/test_adaptadores.py
@@ -944,12 +944,12 @@ def test_rediam_senderos_normaliza(tmp_path, monkeypatch):
     assert list(g["name"]) == ["Sendero Gr 7", "Ruta X"] and set(g["fuente"]) == {"rediam"}
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `cd pipeline && uv run pytest tests/test_adaptadores.py -v`
 Expected: FAIL (`No module named 'setas_pipeline.adaptadores.rediam'`).
 
-- [ ] **Step 3: Implementation**
+- [x] **Step 3: Implementation**
 
 ```python
 # pipeline/setas_pipeline/adaptadores/rediam.py
@@ -1118,12 +1118,12 @@ from . import rediam, effis, derivados  # noqa: E402,F401  (registran sus adapta
 
 Nota: en `test_rediam_por_anio_respeta_la_ventana` el monkeypatch de `obtener` debe aceptar `timeout` como keyword (ya lo hace).
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `cd pipeline && uv run pytest tests/test_adaptadores.py -v && uv run pytest -q`
 Expected: PASS todo (los módulos viejos siguen intactos).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add pipeline/setas_pipeline/adaptadores pipeline/tests/test_adaptadores.py

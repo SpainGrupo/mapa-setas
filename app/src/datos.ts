@@ -15,4 +15,4 @@ export async function cargarJson<T>(nombre: string): Promise<T | null> {
 
 export const cargarManifest = () => cargarJson<Manifest>('manifest.json');
 
-export const mb = (b: number) => `${Math.round(b / 1e6)} MB`;
+export { mb } from './unidades';

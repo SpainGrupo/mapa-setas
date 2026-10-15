@@ -646,7 +646,7 @@ export function textoEstadoRegion(r: RegionIndice, est: { bytes: number } | null
 ```
 `app/src/unidades.ts`: `export const mb = (b: number) => \`${Math.round(b / 1e6)} MB\`;`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `app/src/region.test.ts`:
 ```ts
@@ -745,12 +745,12 @@ describe('textoEstadoRegion', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd app && npx vitest run src/region.test.ts`
 Expected: FAIL, «Failed to resolve import "./region"».
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 `app/src/unidades.ts`:
 ```ts
@@ -848,12 +848,12 @@ export function textoEstadoRegion(r: RegionIndice, est: { bytes: number } | null
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd app && npx vitest run src/region.test.ts && npx tsc --noEmit`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add app/src/region.ts app/src/region.test.ts app/src/unidades.ts app/src/datos.ts

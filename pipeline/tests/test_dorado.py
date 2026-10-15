@@ -122,3 +122,18 @@ def test_salidas_ajenas_a_la_rama_no_entran_en_la_huella(tmp_path):
     h = D.huella(out, desde=time.time() - 60)   # no exige regenerarlas
     assert "edificado.tif" not in h["tif"] and "titularidad_resumen.json" not in h["json"]
     assert "app/titularidad.pmtiles" not in h["pmtiles"]
+
+
+def test_nombre_pmtiles_con_ruta_absoluta_se_guarda_relativo_a_out(tmp_path):
+    from pmtiles.tile import TileType
+    from setas_pipeline.exportar import _Salida
+    hs = []
+    for sub in ("a/out", "b/marbella/out"):
+        out = tmp_path / sub; (out / "app").mkdir(parents=True)
+        destino = out / "app" / "x.pmtiles"
+        s = _Salida(destino, TileType.PNG, str(destino), "d")      # como tippecanoe: name = ruta de -o
+        s.poner(8, 120, 100, b"png")
+        s.cerrar((-5.0, 36.0, -4.0, 37.0), 8, 8, "IGN")
+        hs.append(D.huella(out))
+    assert hs[0]["pmtiles"]["app/x.pmtiles"]["nombre"] == "<out>/app/x.pmtiles"
+    assert hs[1]["pmtiles"]["app/x.pmtiles"]["nombre"] == "<out>/app/x.pmtiles"   # (el tamaño cambia con la ruta)

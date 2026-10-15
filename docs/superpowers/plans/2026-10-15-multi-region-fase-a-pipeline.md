@@ -435,7 +435,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Consumes: `setas_pipeline.dorado` (Task 1); CLIs actuales `ejecutar`/`exportar` (sin `--region`).
 - Produces: `pipeline/scripts/regresion_marbella.sh antes|despues` (usado en Task 10); `tests/dorado/marbella.json` (huella); `tests/dorado/zona_puntos.json` con `{"n": int, "sha256": str}` (usado en Task 8).
 
-- [ ] **Step 1: Clonar la caché y las salidas (clon APFS, solo lectura del checkout principal)**
+- [x] **Step 1: Clonar la caché y las salidas (clon APFS, solo lectura del checkout principal)**
 
 ```bash
 SRC=/Users/alexanderkrupnov/Documents/Claude/setas/pipeline/data
@@ -449,7 +449,7 @@ du -sh "$DST/raw" "$DST/out"
 ```
 Expected: mismo número de archivos en los dos lados; ~1,0 GB y ~559 MB. `-p` conserva los mtimes (no afecta: la regresión usa `--forzar`). Si `cp -c` falla por volumen distinto, para y avisa (no copiar 1,5 GB sin clon sin preguntar).
 
-- [ ] **Step 2: Huella informativa de lo publicado hoy (antes de regenerar)**
+- [x] **Step 2: Huella informativa de lo publicado hoy (antes de regenerar)**
 
 ```bash
 cd /Users/alexanderkrupnov/Documents/Claude/setas-alicante/pipeline
@@ -457,7 +457,7 @@ uv run python -m setas_pipeline.dorado generar --out data/out --dorado "$SCRATCH
 ```
 Expected: `dorado: N archivos`. Sirve en el Step 6 para saber si lo publicado coincide con el código actual (informativo; no bloquea).
 
-- [ ] **Step 3: Escribir el script de regresión**
+- [x] **Step 3: Escribir el script de regresión**
 
 ```bash
 #!/usr/bin/env bash
@@ -503,7 +503,7 @@ chmod +x pipeline/scripts/regresion_marbella.sh
 bash -n pipeline/scripts/regresion_marbella.sh && echo sintaxis-ok
 ```
 
-- [ ] **Step 4: Lanzar la regresión `antes` y esperar en primer plano**
+- [x] **Step 4: Lanzar la regresión `antes` y esperar en primer plano**
 
 ```bash
 cd /Users/alexanderkrupnov/Documents/Claude/setas-alicante
@@ -522,7 +522,7 @@ Si falla con un error de conexión al proxy `127.0.0.1:9`, es un paso que aún p
 
 Si falla con `NoRegenerado` (archivos de `out/` que ningún paso reescribe): para cada ruta, comprueba con `grep -rn "<nombre>" pipeline/setas_pipeline` si algún paso la produce. Si ninguno la produce, añádela a `NO_REGENERADOS` en `dorado.py` con un comentario, añade el caso a `test_dorado.py`, haz commit y relanza solo el paso del dorado: `cd pipeline && uv run python -m setas_pipeline.dorado generar --out data/out --dorado tests/dorado/marbella.json --desde <T0 del log>` (T0 = epoch de la primera marca; usa `date -j -f "%H:%M:%S" …` o relanza el script completo).
 
-- [ ] **Step 5: Huella de los puntos de muestreo de la zona (zona no se re-ejecuta)**
+- [x] **Step 5: Huella de los puntos de muestreo de la zona (zona no se re-ejecuta)**
 
 ```bash
 cd /Users/alexanderkrupnov/Documents/Claude/setas-alicante/pipeline
@@ -536,14 +536,14 @@ cat tests/dorado/zona_puntos.json
 ```
 Expected: `{"n": <~6000>, "sha256": "<64 hex>"}`.
 
-- [ ] **Step 6: Comparar lo publicado con lo regenerado (informativo)**
+- [x] **Step 6: Comparar lo publicado con lo regenerado (informativo)**
 
 ```bash
 cd pipeline && uv run python -m setas_pipeline.dorado comparar --out data/out --dorado "$SCRATCH/dorado_publicado.json" | tail -20
 ```
 Expected: cualquier resultado. Copia el resumen al informe («lo publicado hoy coincide / difiere en X con el código actual»). No se corrige nada aquí.
 
-- [ ] **Step 7: Suite completa y commit**
+- [x] **Step 7: Suite completa y commit**
 
 ```bash
 cd pipeline && uv run pytest -q 2>&1 | tail -2

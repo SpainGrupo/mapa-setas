@@ -78,7 +78,18 @@ def huella_tif(p: Path) -> dict:
                 "nodata": s.nodata, "transform": [round(v, 6) for v in tuple(s.transform)[:6]], "crs": str(s.crs)}
 
 
-def huella_pmtiles(p: Path) -> dict:
+def _nombre_relativo(nombre, out: Path | None):
+    """tippecanoe pone como `name` la ruta absoluta de salida (-o): se guarda relativa a out/ ("<out>/app/x.pmtiles")
+    para que la huella no dependa de dónde estén los datos (data/out frente a data/<region>/out, otra máquina)."""
+    if out is None or not isinstance(nombre, str) or not Path(nombre).is_absolute():
+        return nombre
+    try:
+        return "<out>/" + Path(nombre).resolve().relative_to(Path(out).resolve()).as_posix()
+    except ValueError:
+        return nombre
+
+
+def huella_pmtiles(p: Path, out: Path | None = None) -> dict:
     from pmtiles.reader import Reader, MmapSource
     with open(p, "rb") as f:
         r = Reader(MmapSource(f))
@@ -86,7 +97,7 @@ def huella_pmtiles(p: Path) -> dict:
     return {"bytes": p.stat().st_size, "zoom": [h["min_zoom"], h["max_zoom"]],
             "teselas": h.get("addressed_tiles_count"),
             "bbox_e7": [h["min_lon_e7"], h["min_lat_e7"], h["max_lon_e7"], h["max_lat_e7"]],
-            "atribucion": md.get("attribution"), "nombre": md.get("name")}
+            "atribucion": md.get("attribution"), "nombre": _nombre_relativo(md.get("name"), out)}
 
 
 def huella(out: Path, desde: float | None = None) -> dict:
@@ -106,7 +117,7 @@ def huella(out: Path, desde: float | None = None) -> dict:
         if suf == ".tif":
             res["tif"][rel] = huella_tif(p)
         elif suf == ".pmtiles":
-            res["pmtiles"][rel] = huella_pmtiles(p)
+            res["pmtiles"][rel] = huella_pmtiles(p, out)
         elif rel == MANIFEST:
             m = json.loads(p.read_text())
             res["manifest"] = normalizar_manifest(m)

@@ -1,0 +1,2692 @@
+{
+ "json": {
+  "app/acceso.json": "1ccd742e3d610a5999713c14194a5dc45e6011a63ed7818f1af625e5c6bd5a15",
+  "app/aparcamientos.json": "c052a7f800cbff3e09f58aa63e68e5a7b926c6f830d6e6523a335b585f03d18a",
+  "app/meteo_puntos.json": "e5d99f9a43654b810f6ac05ad4d4d3c0c86229234aa081ad6d864e6f35a38ae2",
+  "app/sitios.json": "55f9fa3c39670d7035db525dfa0b24c366c465865e40c67ac722c1b9f156d9ff",
+  "calibracion.json": "26b39ee71c462e0af76a8831e60a556333c518516275219b4248b20271524fdb",
+  "fuego_resumen.json": "1c60c68a83bbd73e65444d31046b197a7b3723c6d40e73da6c86f6c64254359d",
+  "malla.json": "17f755f4c0e3b62271eec9afd16b8c209db908a34292de11314b3cce0ec90089",
+  "respaldo/setas_amanita_caesarea_zonas_buenas.geojson": "64e5b8930ebcd6f2e47e552f0349720d6673e110d45cd0b6275e27beb45e97a7",
+  "respaldo/setas_amanita_ponderosa_zonas_buenas.geojson": "e7c63a106c9f7bd9c93ca4aab82f5749d0f47d89294794a478420bbee572bfef",
+  "respaldo/setas_boletus_aereus_zonas_buenas.geojson": "8dca99f56c9ddae9a8f83ae74b99bea4153a51f80f0ffb18431ec6e95101a92a",
+  "respaldo/setas_boletus_aestivalis_zonas_buenas.geojson": "4722d400540d1486b4a4d7b0db54c5826bf5b24825a9db8524ccfe4b29d4de6a",
+  "respaldo/setas_boletus_edulis_zonas_buenas.geojson": "d53e50ac7a9aaee6763edf3c24358077900894425f19b2f87da6747968f8383c",
+  "respaldo/setas_boletus_pinophilus_zonas_buenas.geojson": "e61ec7307b407e39850c3542ea735edd94612cd24ec7f446eecff8301e9268ec",
+  "respaldo/setas_cantharellus_cibarius_zonas_buenas.geojson": "e9d9b20dc3f43264ad6914fbebd1efc9bbd59b6c1852f8abad8377529fbffd9b",
+  "respaldo/setas_lactarius_deliciosus_zonas_buenas.geojson": "904092b7bc01d75de30c730f292336b86e7442313c7286909b46bdfbafc59211",
+  "respaldo/setas_lactarius_sanguifluus_zonas_buenas.geojson": "f9b5a25d956f02665c8584ff87af92de6aa033248058dad622d25091cd92a301",
+  "respaldo/setas_macrolepiota_procera_zonas_buenas.geojson": "1bcce630b46b3ddd14250dc8093546bbce0927e802589723f25d2ef29d62dd5f",
+  "respaldo/setas_pleurotus_eryngii_zonas_buenas.geojson": "f3dec84a3e36c1e475089a2346e72330a585b96d4d629cf67fb5801cda64a9b4",
+  "respaldo/setas_terfezia_arenaria_zonas_buenas.geojson": "274e85c2dd4d5c927e77dfd1a0cef843771383ca85ce7d0038f27807afa4c556",
+  "rutas.geojson": "109c10a0ba5b2058dd6477c2341d239ae6ca9150da4d60df1131c087d9a918c0",
+  "zona.geojson": "9c141af8a7617fc8e4524c710498c8266f659619e2b360e9fa62a083ef6d3966"
+ },
+ "manifest": {
+  "acceso": {
+   "aparcamientos": "aparcamientos.json",
+   "cabecera": "acceso.json",
+   "datos": "acceso.bin.gz"
+  },
+  "archivos": [
+   {
+    "bytes": null,
+    "nombre": "base.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "curvas.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_amanita_caesarea_0.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_amanita_caesarea_1000.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_amanita_caesarea_200.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_amanita_caesarea_400.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_amanita_caesarea_600.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_amanita_caesarea_800.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_amanita_ponderosa_0.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_amanita_ponderosa_1000.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_amanita_ponderosa_200.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_amanita_ponderosa_400.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_amanita_ponderosa_600.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_amanita_ponderosa_800.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_aereus_0.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_aereus_1000.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_aereus_200.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_aereus_400.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_aereus_600.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_aereus_800.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_aestivalis_0.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_aestivalis_1000.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_aestivalis_200.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_aestivalis_400.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_aestivalis_600.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_aestivalis_800.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_edulis_0.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_edulis_1000.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_edulis_200.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_edulis_400.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_edulis_600.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_edulis_800.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_pinophilus_0.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_pinophilus_1000.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_pinophilus_200.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_pinophilus_400.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_pinophilus_600.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_boletus_pinophilus_800.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_cantharellus_cibarius_0.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_cantharellus_cibarius_1000.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_cantharellus_cibarius_200.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_cantharellus_cibarius_400.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_cantharellus_cibarius_600.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_cantharellus_cibarius_800.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_lactarius_deliciosus_0.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_lactarius_deliciosus_1000.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_lactarius_deliciosus_200.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_lactarius_deliciosus_400.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_lactarius_deliciosus_600.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_lactarius_deliciosus_800.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_lactarius_sanguifluus_0.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_lactarius_sanguifluus_1000.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_lactarius_sanguifluus_200.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_lactarius_sanguifluus_400.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_lactarius_sanguifluus_600.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_lactarius_sanguifluus_800.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_macrolepiota_procera_0.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_macrolepiota_procera_1000.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_macrolepiota_procera_200.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_macrolepiota_procera_400.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_macrolepiota_procera_600.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_macrolepiota_procera_800.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_pleurotus_eryngii_0.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_pleurotus_eryngii_1000.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_pleurotus_eryngii_200.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_pleurotus_eryngii_400.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_pleurotus_eryngii_600.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_pleurotus_eryngii_800.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_terfezia_arenaria_0.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_terfezia_arenaria_1000.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_terfezia_arenaria_200.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_terfezia_arenaria_400.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_terfezia_arenaria_600.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_terfezia_arenaria_800.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "meteo_zonas.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "protegidos.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "restricciones.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "rutas.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "sombreado.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "titularidad.pmtiles"
+   },
+   {
+    "bytes": 6839,
+    "nombre": "meteo_puntos.json"
+   },
+   {
+    "bytes": 1450,
+    "nombre": "acceso.json"
+   },
+   {
+    "bytes": 7007405,
+    "nombre": "acceso.bin.gz"
+   },
+   {
+    "bytes": 3478650,
+    "nombre": "aparcamientos.json"
+   },
+   {
+    "bytes": 369368,
+    "nombre": "sitios.json"
+   }
+  ],
+  "base": "20261013.pmtiles maxzoom=15",
+  "bbox": [
+   -6.19595,
+   35.97676,
+   -3.45946,
+   37.57618
+  ],
+  "especies": [
+   {
+    "fiabilidad": "buena",
+    "id": "boletus_aereus",
+    "nombre": "Boletus aereus",
+    "tiempo": {
+     "balance_30d_min_mm": -30,
+     "dias_lluvia_30d_min": 3,
+     "episodio_mm": 25,
+     "humedad_suelo_min": 0.15,
+     "meses": [
+      5,
+      6,
+      9,
+      10,
+      11,
+      12
+     ],
+     "tmax_media": [
+      15,
+      27
+     ],
+     "tmin_media": [
+      8,
+      18
+     ],
+     "ventana_dias": [
+      8,
+      20
+     ]
+    }
+   },
+   {
+    "fiabilidad": "sin_validar",
+    "id": "boletus_aestivalis",
+    "nombre": "Boletus aestivalis / reticulatus",
+    "tiempo": {
+     "balance_30d_min_mm": -30,
+     "dias_lluvia_30d_min": 3,
+     "episodio_mm": 20,
+     "humedad_suelo_min": 0.15,
+     "meses": [
+      5,
+      6,
+      9,
+      10,
+      11
+     ],
+     "tmax_media": [
+      18,
+      30
+     ],
+     "tmin_media": [
+      10,
+      20
+     ],
+     "ventana_dias": [
+      7,
+      18
+     ]
+    }
+   },
+   {
+    "fiabilidad": "sin_validar",
+    "id": "boletus_edulis",
+    "nombre": "Boletus edulis",
+    "tiempo": {
+     "balance_30d_min_mm": -20,
+     "dias_lluvia_30d_min": 4,
+     "episodio_mm": 25,
+     "humedad_suelo_min": 0.15,
+     "meses": [
+      9,
+      10,
+      11,
+      12
+     ],
+     "tmax_media": [
+      12,
+      24
+     ],
+     "tmin_media": [
+      5,
+      15
+     ],
+     "ventana_dias": [
+      8,
+      21
+     ]
+    }
+   },
+   {
+    "fiabilidad": "sin_validar",
+    "id": "boletus_pinophilus",
+    "nombre": "Boletus pinophilus",
+    "tiempo": {
+     "balance_30d_min_mm": -20,
+     "dias_lluvia_30d_min": 4,
+     "episodio_mm": 25,
+     "humedad_suelo_min": 0.15,
+     "meses": [
+      9,
+      10,
+      11,
+      12
+     ],
+     "tmax_media": [
+      10,
+      22
+     ],
+     "tmin_media": [
+      4,
+      14
+     ],
+     "ventana_dias": [
+      8,
+      21
+     ]
+    }
+   },
+   {
+    "fiabilidad": "buena",
+    "id": "amanita_caesarea",
+    "nombre": "Amanita caesarea",
+    "tiempo": {
+     "balance_30d_min_mm": -30,
+     "dias_lluvia_30d_min": 3,
+     "episodio_mm": 20,
+     "humedad_suelo_min": 0.15,
+     "meses": [
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "tmax_media": [
+      20,
+      30
+     ],
+     "tmin_media": [
+      12,
+      20
+     ],
+     "ventana_dias": [
+      7,
+      16
+     ]
+    }
+   },
+   {
+    "fiabilidad": "buena",
+    "id": "lactarius_deliciosus",
+    "nombre": "Lactarius deliciosus",
+    "tiempo": {
+     "balance_30d_min_mm": -30,
+     "dias_lluvia_30d_min": 4,
+     "episodio_mm": 25,
+     "humedad_suelo_min": 0.15,
+     "meses": [
+      10,
+      11,
+      12,
+      1
+     ],
+     "tmax_media": [
+      10,
+      22
+     ],
+     "tmin_media": [
+      3,
+      14
+     ],
+     "ventana_dias": [
+      20,
+      40
+     ]
+    }
+   },
+   {
+    "fiabilidad": "sin_validar",
+    "id": "lactarius_sanguifluus",
+    "nombre": "Lactarius sanguifluus",
+    "tiempo": {
+     "balance_30d_min_mm": -30,
+     "dias_lluvia_30d_min": 4,
+     "episodio_mm": 25,
+     "humedad_suelo_min": 0.15,
+     "meses": [
+      10,
+      11,
+      12,
+      1
+     ],
+     "tmax_media": [
+      10,
+      22
+     ],
+     "tmin_media": [
+      3,
+      14
+     ],
+     "ventana_dias": [
+      20,
+      40
+     ]
+    }
+   },
+   {
+    "fiabilidad": "sin_validar",
+    "id": "cantharellus_cibarius",
+    "nombre": "Cantharellus cibarius",
+    "tiempo": {
+     "balance_30d_min_mm": -20,
+     "dias_lluvia_30d_min": 4,
+     "episodio_mm": 20,
+     "humedad_suelo_min": 0.16,
+     "meses": [
+      10,
+      11,
+      12
+     ],
+     "tmax_media": [
+      14,
+      25
+     ],
+     "tmin_media": [
+      7,
+      16
+     ],
+     "ventana_dias": [
+      10,
+      25
+     ]
+    }
+   },
+   {
+    "fiabilidad": "sin_validar",
+    "id": "amanita_ponderosa",
+    "nombre": "Amanita ponderosa",
+    "tiempo": {
+     "balance_30d_min_mm": -40,
+     "dias_lluvia_30d_min": 3,
+     "episodio_mm": 15,
+     "humedad_suelo_min": 0.12,
+     "meses": [
+      2,
+      3,
+      4
+     ],
+     "tmax_media": [
+      12,
+      22
+     ],
+     "tmin_media": [
+      3,
+      12
+     ],
+     "ventana_dias": [
+      7,
+      21
+     ]
+    }
+   },
+   {
+    "fiabilidad": "media",
+    "id": "macrolepiota_procera",
+    "nombre": "Macrolepiota procera",
+    "tiempo": {
+     "balance_30d_min_mm": -30,
+     "dias_lluvia_30d_min": 3,
+     "episodio_mm": 20,
+     "humedad_suelo_min": 0.15,
+     "meses": [
+      9,
+      10,
+      11,
+      12
+     ],
+     "tmax_media": [
+      16,
+      28
+     ],
+     "tmin_media": [
+      8,
+      18
+     ],
+     "ventana_dias": [
+      8,
+      20
+     ]
+    }
+   },
+   {
+    "fiabilidad": "baja",
+    "id": "pleurotus_eryngii",
+    "nombre": "Pleurotus eryngii",
+    "tiempo": {
+     "balance_30d_min_mm": -30,
+     "dias_lluvia_30d_min": 3,
+     "episodio_mm": 20,
+     "humedad_suelo_min": 0.15,
+     "meses": [
+      10,
+      11,
+      12
+     ],
+     "tmax_media": [
+      14,
+      26
+     ],
+     "tmin_media": [
+      6,
+      16
+     ],
+     "ventana_dias": [
+      10,
+      20
+     ]
+    }
+   },
+   {
+    "fiabilidad": "sin_validar",
+    "id": "terfezia_arenaria",
+    "nombre": "Terfezia arenaria",
+    "tiempo": {
+     "balance_30d_min_mm": -40,
+     "dias_lluvia_30d_min": 3,
+     "episodio_mm": 20,
+     "humedad_suelo_min": 0.12,
+     "meses": [
+      3,
+      4,
+      5
+     ],
+     "tmax_media": [
+      16,
+      26
+     ],
+     "tmin_media": [
+      6,
+      14
+     ],
+     "ventana_dias": [
+      20,
+      45
+     ]
+    }
+   }
+  ],
+  "meteo": {
+   "puntos": "meteo_puntos.json",
+   "zonas": "meteo_zonas.pmtiles"
+  },
+  "modelo": {
+   "archivos": [
+    {
+     "bytes": 89569625,
+     "nombre": "vision_int8.onnx"
+    },
+    {
+     "bytes": 1641472,
+     "nombre": "texto_f16.bin"
+    },
+    {
+     "bytes": 47216,
+     "nombre": "etiquetas.json"
+    },
+    {
+     "bytes": 11246032,
+     "nombre": "ort-wasm-simd-threaded.wasm"
+    }
+   ],
+   "dir": "modelo/",
+   "etiquetas": 1603,
+   "ort_version": "1.20.1",
+   "total_bytes": 102504345,
+   "version": "14d878b1f4d32bcc"
+  },
+  "restricciones": {
+   "aviso": "Málaga (Res. 23-09-2026, BOJA 196, vigente hasta 31-05-2027): autoconsumo ≤3 kg por persona y día sin autorización en montes públicos, salvo Zonas de Reserva; de día, sin rastrillos ni remover el mantillo. Fincas privadas: permiso del propietario. Cádiz: la última resolución encontrada es de 2019, sin confirmar su vigencia.",
+   "capa": "restricciones.pmtiles",
+   "tipos": {
+    "parque_nacional": "Parque Nacional Sierra de las Nieves: trátalo como recolección con autorización (Ley 9/2021); no recolectes sin permiso.",
+    "reserva_natural": "Reserva Natural: recolectar setas exige autorización previa.",
+    "zona_reserva": "Zona de Reserva del espacio protegido: recolectar setas exige autorización previa."
+   }
+  },
+  "rutas": "rutas.pmtiles",
+  "sitios": {
+   "archivo": "sitios.json",
+   "n_por_especie": {
+    "amanita_caesarea": 150,
+    "amanita_ponderosa": 150,
+    "boletus_aereus": 150,
+    "boletus_aestivalis": 150,
+    "boletus_edulis": 20,
+    "boletus_pinophilus": 13,
+    "cantharellus_cibarius": 150,
+    "lactarius_deliciosus": 148,
+    "lactarius_sanguifluus": 150,
+    "macrolepiota_procera": 150,
+    "pleurotus_eryngii": 150,
+    "terfezia_arenaria": 150
+   },
+   "version": 1
+  },
+  "umbrales": [
+   0,
+   200,
+   400,
+   600,
+   800,
+   1000
+  ],
+  "zoom": {
+   "base_max": 15,
+   "idoneidad": [
+    8,
+    13
+   ],
+   "sombreado": [
+    8,
+    12
+   ]
+  }
+ },
+ "manifest_total_bytes": 200628630,
+ "pmtiles": {
+  "app/curvas.pmtiles": {
+   "atribucion": "IGN CC BY 4.0",
+   "bbox_e7": [
+    -61760460,
+    360118880,
+    -34595500,
+    375761290
+   ],
+   "bytes": 12420158,
+   "nombre": "<out>/app/curvas.pmtiles",
+   "teselas": 5886,
+   "zoom": [
+    10,
+    14
+   ]
+  },
+  "app/idoneidad_amanita_caesarea_0.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 2882772,
+   "nombre": "idoneidad_amanita_caesarea_0",
+   "teselas": 1283,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_amanita_caesarea_1000.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 328523,
+   "nombre": "idoneidad_amanita_caesarea_1000",
+   "teselas": 303,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_amanita_caesarea_200.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1804027,
+   "nombre": "idoneidad_amanita_caesarea_200",
+   "teselas": 1177,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_amanita_caesarea_400.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1097665,
+   "nombre": "idoneidad_amanita_caesarea_400",
+   "teselas": 905,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_amanita_caesarea_600.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 713452,
+   "nombre": "idoneidad_amanita_caesarea_600",
+   "teselas": 650,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_amanita_caesarea_800.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 479831,
+   "nombre": "idoneidad_amanita_caesarea_800",
+   "teselas": 441,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_amanita_ponderosa_0.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 2028727,
+   "nombre": "idoneidad_amanita_ponderosa_0",
+   "teselas": 1107,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_amanita_ponderosa_1000.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 285395,
+   "nombre": "idoneidad_amanita_ponderosa_1000",
+   "teselas": 273,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_amanita_ponderosa_200.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1372182,
+   "nombre": "idoneidad_amanita_ponderosa_200",
+   "teselas": 1012,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_amanita_ponderosa_400.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 862602,
+   "nombre": "idoneidad_amanita_ponderosa_400",
+   "teselas": 751,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_amanita_ponderosa_600.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 570833,
+   "nombre": "idoneidad_amanita_ponderosa_600",
+   "teselas": 529,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_amanita_ponderosa_800.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 396529,
+   "nombre": "idoneidad_amanita_ponderosa_800",
+   "teselas": 370,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_aereus_0.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 2239453,
+   "nombre": "idoneidad_boletus_aereus_0",
+   "teselas": 1112,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_aereus_1000.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 306179,
+   "nombre": "idoneidad_boletus_aereus_1000",
+   "teselas": 281,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_aereus_200.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1491519,
+   "nombre": "idoneidad_boletus_aereus_200",
+   "teselas": 1019,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_aereus_400.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 936804,
+   "nombre": "idoneidad_boletus_aereus_400",
+   "teselas": 770,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_aereus_600.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 624768,
+   "nombre": "idoneidad_boletus_aereus_600",
+   "teselas": 558,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_aereus_800.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 429844,
+   "nombre": "idoneidad_boletus_aereus_800",
+   "teselas": 386,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_aestivalis_0.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1695518,
+   "nombre": "idoneidad_boletus_aestivalis_0",
+   "teselas": 934,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_aestivalis_1000.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 200949,
+   "nombre": "idoneidad_boletus_aestivalis_1000",
+   "teselas": 229,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_aestivalis_200.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1091652,
+   "nombre": "idoneidad_boletus_aestivalis_200",
+   "teselas": 850,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_aestivalis_400.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 668549,
+   "nombre": "idoneidad_boletus_aestivalis_400",
+   "teselas": 650,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_aestivalis_600.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 431947,
+   "nombre": "idoneidad_boletus_aestivalis_600",
+   "teselas": 459,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_aestivalis_800.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 284268,
+   "nombre": "idoneidad_boletus_aestivalis_800",
+   "teselas": 305,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_edulis_0.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 686599,
+   "nombre": "idoneidad_boletus_edulis_0",
+   "teselas": 528,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_edulis_1000.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 39813,
+   "nombre": "idoneidad_boletus_edulis_1000",
+   "teselas": 59,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_edulis_200.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 407062,
+   "nombre": "idoneidad_boletus_edulis_200",
+   "teselas": 428,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_edulis_400.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 226945,
+   "nombre": "idoneidad_boletus_edulis_400",
+   "teselas": 293,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_edulis_600.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 118967,
+   "nombre": "idoneidad_boletus_edulis_600",
+   "teselas": 165,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_edulis_800.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 66993,
+   "nombre": "idoneidad_boletus_edulis_800",
+   "teselas": 96,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_pinophilus_0.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 499293,
+   "nombre": "idoneidad_boletus_pinophilus_0",
+   "teselas": 407,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_pinophilus_1000.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 23978,
+   "nombre": "idoneidad_boletus_pinophilus_1000",
+   "teselas": 35,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_pinophilus_200.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 301793,
+   "nombre": "idoneidad_boletus_pinophilus_200",
+   "teselas": 327,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_pinophilus_400.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 159164,
+   "nombre": "idoneidad_boletus_pinophilus_400",
+   "teselas": 207,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_pinophilus_600.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 90912,
+   "nombre": "idoneidad_boletus_pinophilus_600",
+   "teselas": 131,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_boletus_pinophilus_800.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 46803,
+   "nombre": "idoneidad_boletus_pinophilus_800",
+   "teselas": 68,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_cantharellus_cibarius_0.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 2945239,
+   "nombre": "idoneidad_cantharellus_cibarius_0",
+   "teselas": 1289,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_cantharellus_cibarius_1000.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 330293,
+   "nombre": "idoneidad_cantharellus_cibarius_1000",
+   "teselas": 305,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_cantharellus_cibarius_200.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1828015,
+   "nombre": "idoneidad_cantharellus_cibarius_200",
+   "teselas": 1183,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_cantharellus_cibarius_400.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1107944,
+   "nombre": "idoneidad_cantharellus_cibarius_400",
+   "teselas": 911,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_cantharellus_cibarius_600.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 720643,
+   "nombre": "idoneidad_cantharellus_cibarius_600",
+   "teselas": 657,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_cantharellus_cibarius_800.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 484839,
+   "nombre": "idoneidad_cantharellus_cibarius_800",
+   "teselas": 447,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_lactarius_deliciosus_0.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1105646,
+   "nombre": "idoneidad_lactarius_deliciosus_0",
+   "teselas": 763,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_lactarius_deliciosus_1000.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 53263,
+   "nombre": "idoneidad_lactarius_deliciosus_1000",
+   "teselas": 78,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_lactarius_deliciosus_200.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 609102,
+   "nombre": "idoneidad_lactarius_deliciosus_200",
+   "teselas": 606,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_lactarius_deliciosus_400.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 319306,
+   "nombre": "idoneidad_lactarius_deliciosus_400",
+   "teselas": 397,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_lactarius_deliciosus_600.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 167085,
+   "nombre": "idoneidad_lactarius_deliciosus_600",
+   "teselas": 229,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_lactarius_deliciosus_800.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 90488,
+   "nombre": "idoneidad_lactarius_deliciosus_800",
+   "teselas": 129,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_lactarius_sanguifluus_0.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1149973,
+   "nombre": "idoneidad_lactarius_sanguifluus_0",
+   "teselas": 763,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_lactarius_sanguifluus_1000.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 53276,
+   "nombre": "idoneidad_lactarius_sanguifluus_1000",
+   "teselas": 78,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_lactarius_sanguifluus_200.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 626891,
+   "nombre": "idoneidad_lactarius_sanguifluus_200",
+   "teselas": 606,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_lactarius_sanguifluus_400.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 324877,
+   "nombre": "idoneidad_lactarius_sanguifluus_400",
+   "teselas": 397,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_lactarius_sanguifluus_600.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 168655,
+   "nombre": "idoneidad_lactarius_sanguifluus_600",
+   "teselas": 229,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_lactarius_sanguifluus_800.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 90948,
+   "nombre": "idoneidad_lactarius_sanguifluus_800",
+   "teselas": 129,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_macrolepiota_procera_0.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 4404374,
+   "nombre": "idoneidad_macrolepiota_procera_0",
+   "teselas": 1454,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_macrolepiota_procera_1000.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 430418,
+   "nombre": "idoneidad_macrolepiota_procera_1000",
+   "teselas": 397,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_macrolepiota_procera_200.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 2638305,
+   "nombre": "idoneidad_macrolepiota_procera_200",
+   "teselas": 1371,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_macrolepiota_procera_400.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1564015,
+   "nombre": "idoneidad_macrolepiota_procera_400",
+   "teselas": 1117,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_macrolepiota_procera_600.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 981536,
+   "nombre": "idoneidad_macrolepiota_procera_600",
+   "teselas": 818,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_macrolepiota_procera_800.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 655114,
+   "nombre": "idoneidad_macrolepiota_procera_800",
+   "teselas": 586,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_pleurotus_eryngii_0.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 2570722,
+   "nombre": "idoneidad_pleurotus_eryngii_0",
+   "teselas": 1414,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_pleurotus_eryngii_1000.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 268694,
+   "nombre": "idoneidad_pleurotus_eryngii_1000",
+   "teselas": 324,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_pleurotus_eryngii_200.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1618151,
+   "nombre": "idoneidad_pleurotus_eryngii_200",
+   "teselas": 1274,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_pleurotus_eryngii_400.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1000750,
+   "nombre": "idoneidad_pleurotus_eryngii_400",
+   "teselas": 965,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_pleurotus_eryngii_600.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 618524,
+   "nombre": "idoneidad_pleurotus_eryngii_600",
+   "teselas": 658,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_pleurotus_eryngii_800.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 409937,
+   "nombre": "idoneidad_pleurotus_eryngii_800",
+   "teselas": 468,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_terfezia_arenaria_0.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 3540317,
+   "nombre": "idoneidad_terfezia_arenaria_0",
+   "teselas": 1434,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_terfezia_arenaria_1000.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 372367,
+   "nombre": "idoneidad_terfezia_arenaria_1000",
+   "teselas": 358,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_terfezia_arenaria_200.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 2150378,
+   "nombre": "idoneidad_terfezia_arenaria_200",
+   "teselas": 1344,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_terfezia_arenaria_400.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1303946,
+   "nombre": "idoneidad_terfezia_arenaria_400",
+   "teselas": 1071,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_terfezia_arenaria_600.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 822926,
+   "nombre": "idoneidad_terfezia_arenaria_600",
+   "teselas": 748,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_terfezia_arenaria_800.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 557473,
+   "nombre": "idoneidad_terfezia_arenaria_800",
+   "teselas": 528,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/meteo_zonas.pmtiles": {
+   "atribucion": "Open-Meteo.com CC BY 4.0",
+   "bbox_e7": [
+    -61959530,
+    359767579,
+    -34594610,
+    375761790
+   ],
+   "bytes": 79384,
+   "nombre": "<out>/app/meteo_zonas.pmtiles",
+   "teselas": 485,
+   "zoom": [
+    6,
+    12
+   ]
+  },
+  "app/protegidos.pmtiles": {
+   "atribucion": "REDIAM CC BY 4.0",
+   "bbox_e7": [
+    -62569800,
+    359828959,
+    -35386960,
+    375669960
+   ],
+   "bytes": 422988,
+   "nombre": "<out>/app/protegidos.pmtiles",
+   "teselas": 859,
+   "zoom": [
+    6,
+    13
+   ]
+  },
+  "app/restricciones.pmtiles": {
+   "atribucion": "REDIAM CC BY 4.0 (zonificación PORN, RENPA)",
+   "bbox_e7": [
+    -60757009,
+    360001419,
+    -37637690,
+    375439020
+   ],
+   "bytes": 386468,
+   "nombre": "<out>/app/restricciones.pmtiles",
+   "teselas": 683,
+   "zoom": [
+    6,
+    14
+   ]
+  },
+  "app/rutas.pmtiles": {
+   "atribucion": "© OpenStreetMap (ODbL); REDIAM, Junta de Andalucía (CC BY 4.0)",
+   "bbox_e7": [
+    -62180030,
+    360052779,
+    -34377090,
+    375669820
+   ],
+   "bytes": 1528319,
+   "nombre": "<out>/app/rutas.pmtiles",
+   "teselas": 2468,
+   "zoom": [
+    8,
+    14
+   ]
+  },
+  "app/sombreado.pmtiles": {
+   "atribucion": "IGN CC BY 4.0",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 8030890,
+   "nombre": "sombreado",
+   "teselas": 472,
+   "zoom": [
+    8,
+    12
+   ]
+  }
+ },
+ "sha": {
+  "app/acceso.bin": "a09b1cd27ee686c3b45e8df01d506430d794d69ef9bb21dd21d7b274dbc6ad51",
+  "app/acceso.bin.gz": "a9f6b2935d3dc163fc1e3da71721cbd5e18e03fb8c848abcc1cdd4b6ac81b39f",
+  "calibracion.md": "ece01a679ceb3ff6250ca00efa563b15271269a5546941617e390efa1f747f17",
+  "respaldo/README_respaldo.md": "04313fe0b75e36e2e3bda8b75230ad3547807944f9e0641d5b827f9a2fa4ede8",
+  "respaldo/setas_amanita_caesarea_zonas_buenas.kml": "045bfd86dcdce602444e5efa3467ce2e60ea16a84f0417e574835f3b96af802b",
+  "respaldo/setas_amanita_ponderosa_zonas_buenas.kml": "8d3bf1d1421ed17ec7bda50cb757e7ee48054cd8cc8722ff6eb15cee49856f4a",
+  "respaldo/setas_boletus_aereus_zonas_buenas.kml": "740b1738b88053e26dd89d67e72b301f62e582e0b750a7cc79c166fad690b1a7",
+  "respaldo/setas_boletus_aestivalis_zonas_buenas.kml": "eff28cf829eecd21de90a769ea703a8e11cd1ea6c7875ac8b04a1635e1f692b6",
+  "respaldo/setas_boletus_edulis_zonas_buenas.kml": "87d7a705200a6e044d0f34e9e46472ab6b0dd4e7c5bee0c844bdba412aae2fd9",
+  "respaldo/setas_boletus_pinophilus_zonas_buenas.kml": "c8e65cac4248b3290f1dbc0d432f226baa65ac22e11ad509b12f17da6df08489",
+  "respaldo/setas_cantharellus_cibarius_zonas_buenas.kml": "976d8c08c2d976d436bfe7e35e9b1fc6c63a2c74d89a5f57cc5ad268e9e5b936",
+  "respaldo/setas_lactarius_deliciosus_zonas_buenas.kml": "0135a52f4e08cb20d2630d6bb4a88003f6b4754054c838d6992bc78247a8ef2e",
+  "respaldo/setas_lactarius_sanguifluus_zonas_buenas.kml": "c28d9ac9accb02e5273efa5c88f16c883e1ba6767cecedcc1de118addd513b6f",
+  "respaldo/setas_macrolepiota_procera_zonas_buenas.kml": "0fc425a08d1e499f5fa3ccf4e3929f8d72dc2835f4116a0b445b891201a6cf8a",
+  "respaldo/setas_pleurotus_eryngii_zonas_buenas.kml": "91708b4025f4a9ecc62f6e171a88340174fc30132f254fc28f26f829e083a4c8",
+  "respaldo/setas_terfezia_arenaria_zonas_buenas.kml": "5b8003f19122850f052b6a3b849e1c91ec7e20cf5fced664093ca2e1a181f7ed",
+  "vista_amanita_caesarea.png": "938da74f3b1da2f273bb35818b295af1b0203bf423c391997601bace54efbda3",
+  "vista_amanita_ponderosa.png": "7cffc427484fe03d0c9580f76bc3d2454b247fc88a975302f94fa349f4f09fec",
+  "vista_boletus_aereus.png": "000b0a8f755af7dc07193a611f18ab62ed259a70e908cc0404c42cef8ab2ce45",
+  "vista_boletus_aestivalis.png": "a2eb2de406383c82cd905e22384bb98d396f586069a56a1f11c7cc6f7bbd92d0",
+  "vista_boletus_edulis.png": "182dc9c314172b51672c73af4a1e69d68b926b58a5f3c82a6df727d47cd66e88",
+  "vista_boletus_pinophilus.png": "8a94d1c3085e90a2fe86bfe6a9c255dea7be5883a579911d34e8263541494b24",
+  "vista_cantharellus_cibarius.png": "b4feccf109f2c46e60a06ec50ddf14459e59910ca3fade1e322cc21f47d88d93",
+  "vista_lactarius_deliciosus.png": "b06a0d21f72ef356307a72d6da69417ad293da4f10473e0b772a10fe3316608b",
+  "vista_lactarius_sanguifluus.png": "b653523c7061b79a3b8c6e34a4d88d602ab7a9d3949fff58d33007db5c7b47a2",
+  "vista_macrolepiota_procera.png": "b164a205024be16a03f587c65efd9365c6a376e51a004012396ad14daf4bdb94",
+  "vista_pleurotus_eryngii.png": "60d844df4f6180e5bbe14afdc06ead645a03276008b795758ada2feb13752b9c",
+  "vista_terfezia_arenaria.png": "673e075af8fef731478ad27a0fad90250c5ff9bcb6b2116a6781fcf77a7b5422"
+ },
+ "tamano": {
+  "respaldo/setas_amanita_caesarea_0m.mbtiles": 7180288,
+  "respaldo/setas_amanita_caesarea_0m.sqlitedb": 7274496,
+  "respaldo/setas_amanita_caesarea_400m.mbtiles": 2752512,
+  "respaldo/setas_amanita_caesarea_400m.sqlitedb": 2809856,
+  "respaldo/setas_amanita_ponderosa_0m.mbtiles": 5046272,
+  "respaldo/setas_amanita_ponderosa_0m.sqlitedb": 5124096,
+  "respaldo/setas_amanita_ponderosa_400m.mbtiles": 2113536,
+  "respaldo/setas_amanita_ponderosa_400m.sqlitedb": 2158592,
+  "respaldo/setas_boletus_aereus_0m.mbtiles": 5529600,
+  "respaldo/setas_boletus_aereus_0m.sqlitedb": 5599232,
+  "respaldo/setas_boletus_aereus_400m.mbtiles": 2297856,
+  "respaldo/setas_boletus_aereus_400m.sqlitedb": 2338816,
+  "respaldo/setas_boletus_aestivalis_0m.mbtiles": 4263936,
+  "respaldo/setas_boletus_aestivalis_0m.sqlitedb": 4325376,
+  "respaldo/setas_boletus_aestivalis_400m.mbtiles": 1646592,
+  "respaldo/setas_boletus_aestivalis_400m.sqlitedb": 1687552,
+  "respaldo/setas_boletus_edulis_0m.mbtiles": 1617920,
+  "respaldo/setas_boletus_edulis_0m.sqlitedb": 1650688,
+  "respaldo/setas_boletus_edulis_400m.mbtiles": 512000,
+  "respaldo/setas_boletus_edulis_400m.sqlitedb": 532480,
+  "respaldo/setas_boletus_pinophilus_0m.mbtiles": 1171456,
+  "respaldo/setas_boletus_pinophilus_0m.sqlitedb": 1196032,
+  "respaldo/setas_boletus_pinophilus_400m.mbtiles": 356352,
+  "respaldo/setas_boletus_pinophilus_400m.sqlitedb": 372736,
+  "respaldo/setas_cantharellus_cibarius_0m.mbtiles": 7360512,
+  "respaldo/setas_cantharellus_cibarius_0m.sqlitedb": 7462912,
+  "respaldo/setas_cantharellus_cibarius_400m.mbtiles": 2781184,
+  "respaldo/setas_cantharellus_cibarius_400m.sqlitedb": 2830336,
+  "respaldo/setas_lactarius_deliciosus_0m.mbtiles": 2650112,
+  "respaldo/setas_lactarius_deliciosus_0m.sqlitedb": 2691072,
+  "respaldo/setas_lactarius_deliciosus_400m.mbtiles": 729088,
+  "respaldo/setas_lactarius_deliciosus_400m.sqlitedb": 761856,
+  "respaldo/setas_lactarius_sanguifluus_0m.mbtiles": 2760704,
+  "respaldo/setas_lactarius_sanguifluus_0m.sqlitedb": 2801664,
+  "respaldo/setas_lactarius_sanguifluus_400m.mbtiles": 733184,
+  "respaldo/setas_lactarius_sanguifluus_400m.sqlitedb": 761856,
+  "respaldo/setas_macrolepiota_procera_0m.mbtiles": 10797056,
+  "respaldo/setas_macrolepiota_procera_0m.sqlitedb": 10919936,
+  "respaldo/setas_macrolepiota_procera_400m.mbtiles": 4046848,
+  "respaldo/setas_macrolepiota_procera_400m.sqlitedb": 4124672,
+  "respaldo/setas_pleurotus_eryngii_0m.mbtiles": 6787072,
+  "respaldo/setas_pleurotus_eryngii_0m.sqlitedb": 6881280,
+  "respaldo/setas_pleurotus_eryngii_400m.mbtiles": 2572288,
+  "respaldo/setas_pleurotus_eryngii_400m.sqlitedb": 2633728,
+  "respaldo/setas_terfezia_arenaria_0m.mbtiles": 8945664,
+  "respaldo/setas_terfezia_arenaria_0m.sqlitedb": 9043968,
+  "respaldo/setas_terfezia_arenaria_400m.mbtiles": 3387392,
+  "respaldo/setas_terfezia_arenaria_400m.sqlitedb": 3461120
+ },
+ "tif": {
+  "altitud.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "float32",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": -9999.0,
+   "sha256": "f9ddd0788829cfcec72190703ece4607fb4a2368c43db3d0b1fd1322439ff9d8",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "arbol.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 255.0,
+   "sha256": "e640cc7cbf503f31ec179f954de151457f315383358440a426cc7ebb1c7f8f57",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "cubierta.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 255.0,
+   "sha256": "ada3258d6d5de68312205a69b87def7e2d95189e02de4e8d529323a125ff3631",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "dist_cauce.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "float32",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": -9999.0,
+   "sha256": "5a457b8e6796580fc507e0539f15d7cd0493dcc66b43cb129e64ca9fcc7be622",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "dist_matorral.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "float32",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": -1.0,
+   "sha256": "d32c4dbcdfa2f1b6a08760a5aa5b78250a9a88259978c9151ae7c537535e671a",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "distancia_acceso.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "float32",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": -9999.0,
+   "sha256": "db04a55bcb6975ad8dad0a3b32a4b54a8ad72ed56c1bb74445b803164eb13d10",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "estado.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 255.0,
+   "sha256": "85cfe7caf4ccc14df0d3cc5c6d4f10dfbb07effbc73963ae963bdb764f92d67b",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "fcc.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 255.0,
+   "sha256": "810fa7bd08cbbb4ff400f482c5fc4b74b2e5b175a66e55616a849890a8e5bb9d",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "fuego.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": null,
+   "sha256": "3ff386da0bfe2a4584556bb05d508c0536ba56a5ae2e8bf2201694606e119f1d",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "humedad.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 255.0,
+   "sha256": "74002b34082861655c0a908934e0044bf6783a038725797e6fc45f5b3a03b12f",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "idoneidad_amanita_caesarea.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 0.0,
+   "sha256": "e690c07426f500de801d45f7762de89db4a94d497c92d3be1db8803e8f2c6f59",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "idoneidad_amanita_ponderosa.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 0.0,
+   "sha256": "6ef7b41447053463f0eacf8b30d0d74a045c88b282006c1c5f01b3de73566730",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "idoneidad_boletus_aereus.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 0.0,
+   "sha256": "da486ceecc2317739715f9f51a2ab499ac03ae25964c7f49f954b3ef42dc4406",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "idoneidad_boletus_aestivalis.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 0.0,
+   "sha256": "103aedc4bab4adddd2561e252b008b0568b9ba5ca7bc9fca62e8f42ec5df4769",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "idoneidad_boletus_edulis.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 0.0,
+   "sha256": "c5475139eca58296d9fe4327c23ef122685f1082e1bc6fe263b55c904ae0a20e",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "idoneidad_boletus_pinophilus.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 0.0,
+   "sha256": "c7e6ea91b9d900156643a348ad554ec5344adaef58c94c7ad91f9fa16aad30a2",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "idoneidad_cantharellus_cibarius.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 0.0,
+   "sha256": "0b175018898f53cb6488a40b2a050bf2e8c7c2a3ce82ed39e65dc409ec321fe8",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "idoneidad_lactarius_deliciosus.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 0.0,
+   "sha256": "3d39511b442cda08f2f709ec524355863a5850acb8e3abae21afff0411ff103b",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "idoneidad_lactarius_sanguifluus.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 0.0,
+   "sha256": "92c4bc489dbd1b5e93d3c928b19e35056880887d8b9ef307c9216f22d9556419",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "idoneidad_macrolepiota_procera.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 0.0,
+   "sha256": "fac01da846881f93dcbfeaa49388ff77325ad1c519424f8616602a2f5be3a6d8",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "idoneidad_pleurotus_eryngii.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 0.0,
+   "sha256": "eee89557b05e2c6a6de1a92467c048d5cd686fc018f3cd98951369a4c63a2696",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "idoneidad_terfezia_arenaria.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 0.0,
+   "sha256": "b5e53da17299f077c2fe069bd353b84b4c87f932168c757ac7f33ea006e6e546",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "orientacion.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "float32",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": -9999.0,
+   "sha256": "6d6efd9308777608ceab2f1c272abc66fdab8698ed5ed218545326632651d189",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "pendiente.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "float32",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": -9999.0,
+   "sha256": "d405abbc52bbcd81c8ba55a949fcb4b19afc86fd3c9d66d334bf55e30d5ed45d",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "protegido.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 255.0,
+   "sha256": "f84dac2a0dfe1635f73330745099b35f98d09406709c2384e8a3fb088f5c7e2e",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "subida_pie.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "float32",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": -9999.0,
+   "sha256": "aaed7162fa85d2876cfed8a60694feb00cef4adb428a29a8541edfe844901dc5",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "suelo.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 255.0,
+   "sha256": "71e786b725bebb052a532b6921698e78ea883cfe9f4635d2839079626738be73",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "tiempo_pie.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "float32",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": -9999.0,
+   "sha256": "7ad08379890a08c786cca5a5f945370e7154be9397a59ed8c2e9e10754800dec",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "twi.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "float32",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": -9999.0,
+   "sha256": "389f23e78d09e04120364ed682c032b5949eca97c065a7694fbeabb23dee5e51",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  }
+ },
+ "version": 1
+}

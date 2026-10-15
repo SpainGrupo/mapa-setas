@@ -1,6 +1,6 @@
 // Cliente de Open-Meteo (Forecast API, sin clave) con lotes, corrección por altitud y caché en IndexedDB.
 // Datos meteorológicos: Open-Meteo.com (CC BY 4.0).
-import { createStore, get, set } from 'idb-keyval';
+import { createStore, del, get, set } from 'idb-keyval';
 
 export interface PuntoMeteo { id: number; lat: number; lon: number; alt_media: number; /** Pueblo más cercano (OSM, exportar.anotar_lugares). */ lugar?: string | null }
 export interface Dia {
@@ -116,29 +116,40 @@ export function necesitaRefresco(d: DatosMeteo | null, ahora: Date, enLinea: boo
   return enLinea && (!d || edadHoras(d, ahora) > REFRESCO_H || (d.prevision_dias ?? 7) < PREVISION_DIAS);
 }
 
-// ---------------------------------------------------------------- caché (IndexedDB 'setas-meteo')
+// ---------------------------------------------------------------- caché (IndexedDB 'setas-meteo', una entrada por región)
 
 let almacen: ReturnType<typeof createStore> | null = null;
 const tienda = () => (almacen ??= createStore('setas-meteo', 'cache'));
-export const leerCache = async () => (await get<DatosMeteo>('datos', tienda())) ?? null;
-export const guardarCache = (d: DatosMeteo) => set('datos', d, tienda());
+export const claveMeteo = (region: string) => `datos:${region}`;
+export const leerCache = async (clave: string) => (await get<DatosMeteo>(clave, tienda())) ?? null;
+export const guardarCache = (d: DatosMeteo, clave: string) => set(clave, d, tienda());
+/** Migración: mueve la entrada `de` a `a` si `a` no existe todavía. */
+export async function renombrarCache(de: string, a: string) {
+  const d = await get<DatosMeteo>(de, tienda());
+  if (d === undefined) return;
+  if ((await get(a, tienda())) === undefined) await set(a, d, tienda());
+  await del(de, tienda());
+}
 
 export interface Resultado { datos: DatosMeteo | null; origen: 'red' | 'cache' | 'ninguno'; error?: string }
 
 /** Caché si está fresca (o no hay red); si no, consulta y guarda. Si la consulta falla, la caché que haya. */
 export async function obtener(puntos: PuntoMeteo[], o: {
   forzar?: boolean; fetchFn?: Fetch; leer?: () => Promise<DatosMeteo | null>; guardar?: (d: DatosMeteo) => Promise<unknown>;
-  ahora?: Date; enLinea?: boolean;
+  ahora?: Date; enLinea?: boolean; clave?: string;
 } = {}): Promise<Resultado> {
+  if ((!o.leer || !o.guardar) && !o.clave) throw new Error('obtener: falta la clave de la caché (claveMeteo(region))');
+  const leer = o.leer ?? (() => leerCache(o.clave!));
+  const guardar = o.guardar ?? ((d: DatosMeteo) => guardarCache(d, o.clave!));
   const ahora = o.ahora ?? new Date();
   const enLinea = o.enLinea ?? navigator.onLine;
-  const cache = await (o.leer ?? leerCache)().catch(() => null);
+  const cache = await leer().catch(() => null);
   if (!(enLinea && o.forzar) && !necesitaRefresco(cache, ahora, enLinea)) {
     return { datos: cache, origen: cache ? 'cache' : 'ninguno' };
   }
   try {
     const d = await consultar(puntos, o.fetchFn, ahora);
-    await (o.guardar ?? guardarCache)(d);
+    await guardar(d);
     return { datos: d, origen: 'red' };
   } catch (e) {
     return { datos: cache, origen: cache ? 'cache' : 'ninguno', error: String((e as Error)?.message ?? e) };

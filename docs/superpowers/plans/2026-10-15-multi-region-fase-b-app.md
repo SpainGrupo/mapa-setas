@@ -1115,7 +1115,7 @@ Comportamiento (spec §4.3), una sola vez (marca `setas:migracion-regiones = '1'
 5. Caché de meteo `datos` → `datos:marbella`.
 6. Si había cualquier rastro de uso (`setas:aviso-visto`, alguna de las claves antiguas o archivos) y no hay `setas:region`: `setas:region = 'marbella'`. Antes de esta versión solo existía Marbella, así que a quien ya usaba la app no se le pide GPS ni se le pregunta.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `app/src/migracion.test.ts`:
 ```ts
@@ -1224,12 +1224,12 @@ describe('caché por región', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd app && npx vitest run src/migracion.test.ts src/meteo.test.ts`
 Expected: FAIL («Failed to resolve import "./migracion"» y `claveMeteo` no exportada).
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 `app/src/meteo.ts`. Sustituye desde `// ---------------------------------------------------------------- caché` hasta el principio de `obtener`, y el arranque de `obtener`:
 ```ts
@@ -1333,12 +1333,12 @@ export async function migrarARegiones(d: DepsMigracion): Promise<ResultadoMigrac
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd app && npx vitest run src/migracion.test.ts src/meteo.test.ts`
 Expected: PASS (5 + los de meteo).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add app/src/migracion.ts app/src/migracion.test.ts app/src/meteo.ts app/src/meteo.test.ts

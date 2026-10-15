@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { consultar, corregirAltitud, edadHoras, fechaMadrid, lotes, MAX_URL, necesitaRefresco, obtener, urlOpenMeteo,
+import { claveMeteo, consultar, corregirAltitud, edadHoras, fechaMadrid, lotes, MAX_URL, necesitaRefresco, obtener, urlOpenMeteo,
   type DatosMeteo, type PuntoMeteo } from './meteo';
 
 const punto = (id: number, alt = 500): PuntoMeteo => ({ id, lat: 36 + id / 100, lon: -5 - id / 100, alt_media: alt });
@@ -129,5 +129,12 @@ describe('caché y caducidad', () => {
   });
   it('fecha de hoy en Madrid', () => {
     expect(fechaMadrid(new Date('2026-10-13T22:30:00Z'))).toBe('2026-10-14');
+  });
+});
+
+describe('caché por región', () => {
+  it('claveMeteo', () => expect(claveMeteo('alicante')).toBe('datos:alicante'));
+  it('obtener sin leer/guardar ni clave lanza (no hay caché global)', async () => {
+    await expect(obtener([], { enLinea: false })).rejects.toThrow(/clave/);
   });
 });

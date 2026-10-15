@@ -1,6 +1,7 @@
 # Fuentes de datos de la Fase 1, verificadas en el spike del 2026-10-13
 # (peticiones reales con muestra descargada; nada inventado).
 # Lo que no se pudo confirmar queda como PENDIENTE con su motivo.
+# Multi-región (2026-10-15): lo regional vive en pipeline/regiones/<id>.yaml; aquí solo lo nacional y compartido.
 
 dem:
   nombre: "MDT IGN/CNIG (PNOA-LiDAR) vía WCS INSPIRE, malla 25 m (Elevacion25830_25)"
@@ -59,9 +60,7 @@ dem:
     licencia: "Copernicus DEM GLO-30 Public: 'available on a free basis for the general public under the terms and conditions of the Licence' (readme del bucket, enlace a spacedata.copernicus.eu)"
 
 osm:
-  url: "https://download.geofabrik.de/europe/spain/andalucia-latest.osm.pbf"
-  # Verificado: 307 → andalucia-AAMMDD.osm.pbf, 200, 195 MB (2026-10-12), cabecera OSMHeader correcta.
-  # requests sigue la redirección por defecto. El extracto es de Andalucía: no incluye Gibraltar.
+  # Los extractos de Geofabrik (URL y verificación) van por región: regiones/<id>.yaml → osm_extractos.
   licencia: "ODbL 1.0"
   tags_acceso: {highway: [track, path, footway, bridleway, unclassified, tertiary, secondary, primary, trunk, residential, service]}
 
@@ -89,7 +88,6 @@ mfe:
     recinto, así que conviene trocear la zona en teselas de unos 25-50 km y deduplicar por id_ff21.
     Admite count/startIndex.
   cobertura: "Recintos con y sin arbolado (aparecen 'Desarbolado', id_sp1=0). Provincias vistas en la muestra: Málaga, Cádiz."
-  provincias: [Malaga, Cadiz, Sevilla, Granada, Cordoba]   # el WFS es nacional: se filtra por bbox, no por provincia
   url_por_provincia: "No aplica: el WFS es nacional y se consulta por bbox (ver url_patron)."
   campo_especie_dominante: id_sp1          # int; nombre en nom_sp1. Especie 1 = la de mayor ocupación (nm_o1)
   campo_nombre_especie: nom_sp1
@@ -145,17 +143,6 @@ geologia:
     - "Areniscas genéricas ('Areniscas', 'Areniscas y arcillas') quedan en 'otro' a propósito: hay muchas 'Areniscas calcáreas' y con la prioridad ácido > básico una palabra 'arenisca' las haría ácidas."
     - "Casos límite aceptados: 'Calcoesquistos…' y 'Calizas turbidíticas…, grauwacas y pelitas' salen ácidos por 'esquisto'/'grauwaca'; 'Rocas Básicas (Gabros…)', 'Diabasa', 'Ofitas' salen 'otro'."
 
-enp:
-  nombre: "REDIAM — WFS Red de Espacios Naturales Protegidos de Andalucía (RENPA), capa ms:eennpp"
-  metodo: wfs
-  wfs_url: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_RENPA"
-  capa: "ms:eennpp"
-  url: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_RENPA?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:eennpp&outputFormat=application/json;%20subtype=geojson&srsName=EPSG:25830&bbox={xmin},{ymin},{xmax},{ymax},urn:ogc:def:crs:EPSG::25830"
-  formato: "GeoJSON; CRS por defecto EPSG:3042 (pedir srsName=EPSG:25830, verificado). Campos: CODIGOESPA, FIGURA, NOMBRE, ZON_PRO, …"
-  verificacion: "Caja x 290000-330000, y 4030000-4070000 → 13 espacios (p. ej. PN Sierra de Grazalema)."
-  otras_capas: ["ms:red_natura_2000", "ms:reservas_biosfera", "ms:humedales_ramsar", "ms:geoparques"]
-  licencia: "CC BY 4.0 (metadatos REDIAM de la RENPA en portalrediam.cica.es/geonetwork); el GetCapabilities dice: uso libre y gratuito mencionando a autores y propietarios. Fees: Gratuito."
-
 gbif:
   api: "https://api.gbif.org/v1"
   # Verificado: species/match 'Boletus edulis' → usageKey 5954958; occurrence/search con geometry WKT responde.
@@ -175,17 +162,6 @@ rutas_osm:
   nombre: "OpenStreetMap — relaciones type=route, route=hiking|foot (ref, name, network, osmc:symbol)"
   metodo: "pyosmium, dos pasadas sobre el pbf de Geofabrik (relaciones → vías miembro con geometría)"
   licencia: "ODbL 1.0"
-
-rediam_senderos:
-  nombre: "REDIAM — WFS Mapa de Equipamientos y Senderos de Uso Público de Andalucía, capa ms:senderos (senderos señalizados y carriles cicloturistas)"
-  metodo: wfs
-  wfs_url: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_Equipamientos_Uso_Publico_Andalucia"
-  capa: "ms:senderos"
-  url_patron: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_Equipamientos_Uso_Publico_Andalucia?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:senderos&outputFormat=application/json;%20subtype=geojson&srsName=EPSG:25830&bbox={xmin},{ymin},{xmax},{ymax},urn:ogc:def:crs:EPSG::25830"
-  verificacion: "2026-10-14: caja x 290000-330000, y 4030000-4070000 → 19 senderos (p. ej. YUNQUERA-LOS SAUCES, Media, 8464 m). Campos: fid_1, codigoequi, nombre, t_dificult, modalidad, ofertado, FICHA_VV, longitud. Sin matrícula GR/PR/SL."
-  catalogo: "portalrediam.cica.es/geonetwork, ficha e6f9aac9-eadb-4cdf-888d-a04c68909f34 ('Equipamientos y senderos de Uso Público de Andalucía, información actualizada (septiembre 2026)')"
-  licencia: "CC BY 4.0 (ficha de metadatos REDIAM); el GetCapabilities del WFS: uso libre y gratuito mencionando a autores y propietarios. Fees: Gratuito."
-  atribucion: "REDIAM, Consejería de Sostenibilidad y Medio Ambiente, Junta de Andalucía (CC BY 4.0)"
 
 # ---------------------------------------------------------------- Modelo v2 (2026-10-14)
 mfe_estructura:
@@ -221,17 +197,11 @@ mfe_desarbolado:
   licencia: "© MITECO (ver mfe)"
 
 incendios:
-  nombre: "Perímetros de incendios: REDIAM/INFOCA 2008–2025 + EFFIS (MODIS burnt areas) + MFE con fecha"
-  rediam_url: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_perimetros_incendios_forestales?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:perim_incendios_{anio}&outputFormat=application/json;%20subtype=geojson&srsName=EPSG:25830&bbox={xmin},{ymin},{xmax},{ymax},urn:ogc:def:crs:EPSG::25830"
-  rediam_desde: 2008
-  rediam_hasta: 2025
-  rediam_catalogo: "portalrediam.cica.es/geonetwork, ficha 933fa6f2-1316-4e99-9baa-49c86d0cfc0c ('Perímetros de incendios forestales en Andalucía 2008-2025', incendios > 10 ha, Centro Operativo Regional del Infoca)"
-  rediam_licencia: "CC BY 4.0 (ficha de metadatos REDIAM: 'Creative Commons Attribution 4.0 International Public License'); GetCapabilities: uso libre y gratuito mencionando autores y propietarios"
-  rediam_verificacion: "2026-10-14: capas ms:perim_incendios_2008 … _2025. En la caja de la malla: 2021 → 25 perímetros (Genalguacil/Sierra Bermeja 8 401 ha), 2022 → 27 (Júzcar/Pujerra 4 866 ha), 2023 → 22, 2024 → 11, 2025 → 6. La de 2023 pesa 105 MB (geometría muy detallada)."
+  nombre: "Perímetros de incendios: capa 'incendios' de cada región (regiones/<id>.yaml) + EFFIS (MODIS burnt areas) + MFE con fecha"
   effis_url: "https://maps.effis.emergency.copernicus.eu/effis?service=WFS&request=getfeature&typename=ms:modis.ba.poly&version=1.1.0&outputformat=geojson&bbox={lat0},{lon0},{lat1},{lon1},EPSG:4326"
   effis_verificacion: "2026-10-14: 196 perímetros 2016–2026 en la caja; 39 de 2026 (p. ej. Igualeja 542 ha 27-09-2026, Benahavís 343 ha 13-09-2026). Enlace del WFS tomado de forest-fire.emergency.copernicus.eu/applications/data-and-services."
   effis_licencia: "CC BY 4.0 (forest-fire.emergency.copernicus.eu/about-effis/data-license)"
-  atribucion: "REDIAM/INFOCA, Junta de Andalucía (CC BY 4.0) · EFFIS, Copernicus Emergency Management Service (CC BY 4.0) · © MITECO MFE"
+  atribucion: "EFFIS, Copernicus Emergency Management Service (CC BY 4.0) · © MITECO MFE (más la fuente regional: ver regiones/<id>.yaml)"
   regla: "años = año en curso − año del último incendio: 0–2 → ×0,3; 3–5 → ×0,6 (solo especies micorrícicas)"
   salidas: [fuego.tif, fuego_resumen.json]
 
@@ -241,13 +211,3 @@ hidrologia:
   decision: "Cauces derivados de la acumulación de flujo en vez de la red hidrográfica IGN/REDIAM: misma fuente que el relieve, sin descarga nueva, e incluye barrancos y canutos que la red oficial omite."
   licencia: "Derivado de IGN/CNIG MDT25, CC BY 4.0 scne.es"
   salidas: [twi.tif, dist_cauce.tif, humedad.tif]
-
-zonificacion_porn:
-  nombre: "REDIAM — WFS Zonificación de los PORN vigentes (capa ms:porn_vigentes)"
-  metodo: wfs
-  url: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_zonificacion_PORN_vigentes?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:porn_vigentes&outputFormat=application/json;%20subtype=geojson&srsName=EPSG:25830&bbox={xmin},{ymin},{xmax},{ymax},urn:ogc:def:crs:EPSG::25830"
-  catalogo: "portalrediam.cica.es/geonetwork, ficha 4c51660f84b4b17a0f8b74d2ac70251ae2bfad4c (WMS/WFS Zonificación de los PORN vigentes)"
-  campos: "Codigo_espacio, Figura, Nombre, Fecha_publicacion_Plan, Normativa_declaracion_Plan, Codigo_zona, Descripcion_zona, Codigo_subzona, Descripcion_subzona"
-  verificacion: "2026-10-14: 118 recintos en la caja de la malla; Zonas de Reserva (A/ARE/R) en Grazalema, Sierra de las Nieves, Los Alcornocales, Tejeda-Almijara-Alhama, Del Estrecho, Maro-Cerro Gordo…; Reservas Naturales (RN) en lagunas."
-  licencia: "Uso libre y gratuito mencionando autores y propietarios (GetCapabilities: Fees 'Gratuito'); REDIAM publica sus datos con CC BY 4.0"
-  parque_nacional: "Parque Nacional Sierra de las Nieves: de la caché RENPA (enp, FIGURA = 'Parque Nacional')."

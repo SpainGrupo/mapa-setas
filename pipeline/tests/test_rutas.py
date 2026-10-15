@@ -19,7 +19,7 @@ def test_clasificar_ref(ref, nombre, tipo):
 def test_rediam_sin_carriles_cicloturistas():
     import geopandas as gpd
     from shapely.geometry import LineString
-    from setas_pipeline.rutas import solo_senderos
+    from setas_pipeline.adaptadores.rediam import solo_senderos
     g = gpd.GeoDataFrame({"nombre": ["a", "b", "c"],
                           "modalidad": ["Sendero señalizado", "Carril cicloturista", None]},
                          geometry=[LineString([(0, 0), (1, 1)])] * 3, crs="EPSG:25830")

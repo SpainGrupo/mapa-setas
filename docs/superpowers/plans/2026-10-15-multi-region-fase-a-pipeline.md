@@ -2281,7 +2281,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - `respaldo.exportar_respaldo(region, malla=None, out=None)`, `exportar_rasters_respaldo(region, malla, out, …)`, `exportar_zonas(region, malla, out)`, `escribir_readme(region, out)`, `MBTiles(ruta, nombre, descripcion, atribucion="")`, `geojson_zonas(zw, especie, nombre, atribucion="")`, `kml_zonas(zw, especie, nombre, atribucion="")`
   - `pipeline/data/regiones.json`: `[{id, nombre, origen, bbox, total_bytes, generado}]`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # pipeline/tests/test_exportar.py — sustituye test_especies_exporta_reglas_de_tiempo (primera línea),
@@ -2393,12 +2393,12 @@ def test_fuentes_yaml_sin_lo_regional():
     assert "effis_url" in f["incendios"]
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `cd pipeline && uv run pytest tests/test_exportar.py tests/test_rutas.py tests/test_sin_valores_fijos.py -v`
 Expected: FAIL (firmas viejas, `escribir_regiones` inexistente, valores fijos presentes).
 
-- [ ] **Step 3: `exportar.py`**
+- [x] **Step 3: `exportar.py`**
 
 Cabecera y constantes:
 ```python
@@ -2608,7 +2608,7 @@ def main(argv=None):
     print(f"manifest {region.id}: {len(m['archivos'])} archivos, {m['total_bytes'] / 1e6:.1f} MB")
 ```
 
-- [ ] **Step 4: `acceso.py`**
+- [x] **Step 4: `acceso.py`**
 
 Borra `BASE`, `OUT`, `APP`, `RAW`. Docstring de uso: `uv run python -m setas_pipeline.acceso [--region marbella]   # escribe data/<region>/out/app/acceso.*`.
 ```python
@@ -2665,7 +2665,7 @@ def main(argv=None):
 ```
 (Lee las líneas 482-516 antes de editar `anadir_altitud`/`leer_app`/`consultar` y sustituye cada `OUT`/`APP` por `region.out`/`out`.)
 
-- [ ] **Step 5: `sitios.py`, `rutas.py`, `respaldo.py`**
+- [x] **Step 5: `sitios.py`, `rutas.py`, `respaldo.py`**
 
 `sitios.py`: borra `BASE`, `OUT`, `APP`; docstring: `… → data/<region>/out/app/sitios.json` y `uv run python -m setas_pipeline.sitios [--region marbella]`.
 ```python
@@ -2737,7 +2737,7 @@ if __name__ == "__main__":
 - `exportar_respaldo(region, malla=None, out=None)`: `out = out or region.respaldo`; `malla = malla or Malla.cargar(region.out / "malla.json")`; pasa `region` a las tres funciones.
 - `__main__`: `from .region import region_cli; for p in exportar_respaldo(region_cli()): print(p.name, _tamano(p))`.
 
-- [ ] **Step 6: Limpiar `fuentes.yaml`**
+- [x] **Step 6: Limpiar `fuentes.yaml`**
 
 Cuando nada lo lee (`grep -rn '"enp"\|rediam_senderos\|zonificacion_porn\|rediam_url\|rediam_desde\|cfg\["url"\]' pipeline/setas_pipeline` solo da adaptadores con su `cfg` de región):
 - `osm`: borra `url:` y los dos comentarios de Geofabrik (ya están en `marbella.yaml`). Se quedan `licencia` y `tags_acceso`.
@@ -2747,7 +2747,7 @@ Cuando nada lo lee (`grep -rn '"enp"\|rediam_senderos\|zonificacion_porn\|rediam
 - Encabezado: añade debajo de la línea 3 `# Multi-región (2026-10-15): lo regional vive en pipeline/regiones/<id>.yaml; aquí solo lo nacional y compartido.`
 - La línea 23 (`mar: … verificado frente a Marbella`) se queda: es la nota de verificación del DEM, no un parámetro.
 
-- [ ] **Step 7: Run the whole suite**
+- [x] **Step 7: Run the whole suite**
 
 ```bash
 cd pipeline
@@ -2756,7 +2756,7 @@ uv run pytest -q
 ```
 Expected: el grep no da nada (salvo comentarios explicativos); `pytest` en verde, incluido `test_sin_valores_fijos.py`. Si `test_acceso.py` llama a `dem_50m`/`calcular` con valores por defecto, pásale rutas de `tmp_path` explícitas.
 
-- [ ] **Step 8: Prueba rápida sin red del manifest y del índice**
+- [x] **Step 8: Prueba rápida sin red del manifest y del índice**
 
 ```bash
 cd /Users/alexanderkrupnov/Documents/Claude/setas-alicante/pipeline
@@ -2766,7 +2766,7 @@ uv run python -m setas_pipeline.exportar regiones && cat data/regiones.json
 ```
 Expected: `OK … 0 diferencias` para el manifest (solo cambian `region`, `legal`, `sin_habitat` y `generado`, que se ignoran) y `regiones.json` con una entrada `marbella`.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add pipeline/setas_pipeline pipeline/fuentes.yaml pipeline/tests

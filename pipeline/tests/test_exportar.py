@@ -1,7 +1,9 @@
+import dataclasses, json
 import pytest
 import io
 import numpy as np
 from PIL import Image
+from setas_pipeline.region import cargar_region
 from setas_pipeline.exportar import (colormap, aplicar_umbral, png_idoneidad, sombreado,
                                      pixeles_tesela, teselas_bbox)
 
@@ -122,7 +124,7 @@ def test_alt_media_usa_las_celdas_con_bosque_del_radio():
 
 def test_especies_exporta_reglas_de_tiempo():
     from setas_pipeline.exportar import especies
-    es = {e["id"]: e for e in especies()}
+    es = {e["id"]: e for e in especies(cargar_region("marbella"))}
     assert es["boletus_aereus"]["tiempo"] == {"episodio_mm": 25, "ventana_dias": [8, 20],
                                               "tmin_media": [8, 18], "tmax_media": [15, 27],
                                               "balance_30d_min_mm": -30, "dias_lluvia_30d_min": 3,
@@ -136,18 +138,6 @@ def test_especies_exporta_reglas_de_tiempo():
         assert obligatorias <= set(t) <= obligatorias | opcionales, e["id"]
         assert t["ventana_dias"][0] < t["ventana_dias"][1]
         assert all(1 <= m <= 12 for m in t["meses"])
-
-
-def test_clasificar_restriccion_porn():
-    from setas_pipeline.exportar import clasificar_restriccion, TEXTO_RESTRICCION
-    assert clasificar_restriccion("A", "A. Zona de Reserva") == "zona_reserva"
-    assert clasificar_restriccion("ARE", "Área de Reserva") == "zona_reserva"
-    assert clasificar_restriccion("A", "A. Zona de Reserva. Ámbito marino") is None
-    assert clasificar_restriccion("RN", "Reserva Natural") == "reserva_natural"
-    assert clasificar_restriccion("B", "B. Zona de Regulación Especial") is None
-    assert clasificar_restriccion("ZPP", "Zona de protección de la Reserva Natural") is None
-    assert clasificar_restriccion("A", "A. Área de Regulación") is None
-    assert set(TEXTO_RESTRICCION) == {"zona_reserva", "reserva_natural", "parque_nacional"}
 
 
 def test_modelo_solo_si_existen_sus_archivos(tmp_path, capsys):
@@ -183,15 +173,15 @@ def test_fiabilidad_segun_n_y_lift_de_validacion():
     assert fiabilidad(15, None) == "sin_validar"    # ningún pliegue con observaciones
 
 
-def test_especies_lleva_fiabilidad(tmp_path, monkeypatch):
-    import json
+def test_especies_lleva_fiabilidad(tmp_path):
     import setas_pipeline.exportar as ex
-    (tmp_path / "calibracion.json").write_text(json.dumps(
+    r = _region(tmp_path)
+    r.out.mkdir(parents=True)
+    (r.out / "calibracion.json").write_text(json.dumps(
         {"pleurotus_eryngii": {"n": 13, "lift_ajuste": 1.53, "lift_validacion": 0.93, "pliegues": 4}}))
-    monkeypatch.setattr(ex, "OUT", tmp_path)
-    es = {e["id"]: e for e in ex.especies()}
+    es = {e["id"]: e for e in ex.especies(r)}
     assert es["pleurotus_eryngii"]["fiabilidad"] == "baja"
-    assert es["boletus_aereus"]["fiabilidad"] == "sin_validar"   # no está en el JSON
+    assert es["boletus_aereus"]["fiabilidad"] == "sin_validar"
     assert all(e["fiabilidad"] in {"buena", "media", "baja", "sin_validar"} for e in es.values())
 
 
@@ -203,3 +193,55 @@ def test_sitios_en_manifest_solo_si_existe(tmp_path):
         {"version": 1, "generado": "x", "especies": {"a": [{}, {}], "b": []}}))
     assert sitios_manifest(tmp_path) == {"archivo": "sitios.json", "version": 1,
                                          "n_por_especie": {"a": 2, "b": 0}}
+
+
+def _region(tmp_path, **kw):
+    return dataclasses.replace(cargar_region("marbella"), datos=tmp_path, **kw)
+
+
+def test_especies_sin_habitat_marcadas_y_fuera_de_activas(tmp_path):
+    import setas_pipeline.exportar as ex
+    activas = tuple(k for k in cargar_region("marbella").especies_activas if k != "boletus_edulis")
+    r = _region(tmp_path, especies_activas=activas, especies_sin_habitat=("boletus_edulis",))
+    es = ex.especies(r)
+    assert [e["id"] for e in es] == list(cargar_region("marbella").especies_activas)     # orden del catálogo
+    assert {e["id"]: e["sin_habitat"] for e in es}["boletus_edulis"] is True
+    assert "boletus_edulis" not in [e["id"] for e in ex.especies_activas(r)]
+
+
+def test_especies_aplica_overrides_de_la_region(tmp_path):
+    import setas_pipeline.exportar as ex
+    r = _region(tmp_path, overrides_especies={"boletus_aereus": {"tiempo": {"episodio_mm": 40}}})
+    t = {e["id"]: e for e in ex.especies(r)}["boletus_aereus"]["tiempo"]
+    assert t["episodio_mm"] == 40 and t["ventana_dias"] == [8, 20]
+
+
+def test_manifest_lleva_region_legal_y_sin_habitat(tmp_path):
+    import setas_pipeline.exportar as ex
+    r = _region(tmp_path)
+    r.app.mkdir(parents=True)
+    (r.out / "zona.geojson").write_text(json.dumps({"type": "FeatureCollection", "features": [{
+        "type": "Feature", "properties": {}, "geometry": {"type": "Polygon", "coordinates": [[
+            [-4.9, 36.5], [-4.8, 36.5], [-4.8, 36.6], [-4.9, 36.6], [-4.9, 36.5]]]}}]}))
+    m = ex.escribir_manifest(r)
+    assert m["region"] == {"id": "marbella", "nombre": "Marbella", "origen": [-4.8825, 36.5101],
+                           "etiqueta_origen": "de Marbella"}
+    assert [c["id"] for c in m["legal"]["ccaa"]] == ["AND"] and m["legal"]["ccaa"][0]["verificado"] is False
+    assert all(e["sin_habitat"] is False for e in m["especies"])
+    assert json.loads((r.app / "manifest.json").read_text())["region"]["id"] == "marbella"
+
+
+def test_regiones_json_indexa_las_que_tienen_manifest(tmp_path):
+    import shutil
+    import setas_pipeline.exportar as ex
+    from setas_pipeline.region import REGIONES
+    regs = tmp_path / "regiones"; regs.mkdir()
+    shutil.copy(REGIONES / "marbella.yaml", regs / "marbella.yaml")
+    datos = tmp_path / "data"
+    (datos / "marbella/out/app").mkdir(parents=True)
+    (datos / "marbella/out/app/manifest.json").write_text(json.dumps(
+        {"bbox": [-5.9, 36.0, -3.8, 37.5], "total_bytes": 123, "generado": "2026-10-15T10:00:00+00:00"}))
+    lista = ex.escribir_regiones(datos, regs)
+    assert lista == [{"id": "marbella", "nombre": "Marbella", "origen": [-4.8825, 36.5101],
+                      "bbox": [-5.9, 36.0, -3.8, 37.5], "total_bytes": 123, "generado": "2026-10-15T10:00:00+00:00"}]
+    assert json.loads((datos / "regiones.json").read_text()) == lista

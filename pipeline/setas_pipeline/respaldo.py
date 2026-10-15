@@ -1,9 +1,9 @@
 """Fase 7: respaldo de las capas de idoneidad para OsmAnd y Locus Map.
 
-    uv run python -m setas_pipeline.exportar respaldo
-    uv run python -m setas_pipeline.respaldo
+    uv run python -m setas_pipeline.exportar respaldo [--region marbella]
+    uv run python -m setas_pipeline.respaldo [--region marbella]
 
-Salida en data/out/respaldo/ (no se versiona):
+Salida en data/<region>/out/respaldo/ (no se versiona):
 - setas_<especie>_<umbral>m.sqlitedb  → OsmAnd (formato SQLiteDB documentado por OsmAnd, numeración BigPlanet)
 - setas_<especie>_<umbral>m.mbtiles   → Locus Map (MBTiles 1.3, PNG, esquema TMS)
 - setas_<especie>_zonas_buenas.geojson / .kml  → zonas con puntuación ≥ 60 tras el filtro de 400 m
@@ -29,7 +29,6 @@ from pyproj import Transformer
 from . import exportar as ex
 from .malla import Malla, leer_tif
 
-SALIDA = ex.OUT / "respaldo"
 UMBRALES_RESPALDO = (0, 400)
 ZOOM_RESPALDO = (8, 14)
 UMBRAL_ZONAS_M = 400        # filtro de distancia al acceso para las zonas buenas
@@ -37,7 +36,6 @@ PUNTUACION_MIN = 60         # idoneidad mínima de una zona buena
 AREA_MIN_HA = 1.0           # se descartan polígonos más pequeños
 SIMPLIFICAR_M = 20          # tolerancia de simplificación
 BIGPLANET_BASE = 17
-ATRIBUCION = "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL"
 SEGURIDAD = "No consumas ninguna seta sin la confirmación de un experto."
 
 
@@ -83,9 +81,10 @@ class SqliteDB:
 class MBTiles:
     """Escritor MBTiles 1.3 (PNG, filas en esquema TMS)."""
 
-    def __init__(self, ruta: Path, nombre: str, descripcion: str):
+    def __init__(self, ruta: Path, nombre: str, descripcion: str, atribucion: str = ""):
         ruta = Path(ruta)
         ruta.unlink(missing_ok=True)
+        self.atribucion = atribucion
         self.db = sqlite3.connect(ruta)
         self.db.executescript("""
             CREATE TABLE metadata (name TEXT, value TEXT);
@@ -108,7 +107,7 @@ class MBTiles:
         zmin, zmax = (min(self.zooms), max(self.zooms)) if self.zooms else ZOOM_RESPALDO
         meta = {
             "name": self.nombre, "format": "png", "type": "overlay", "version": "1.0",
-            "description": self.descripcion, "attribution": ATRIBUCION,
+            "description": self.descripcion, "attribution": self.atribucion,
             "bounds": ",".join(f"{v:.5f}" for v in bbox),
             "center": f"{(bbox[0] + bbox[2]) / 2:.5f},{(bbox[1] + bbox[3]) / 2:.5f},{zmin + 2}",
             "minzoom": str(zmin), "maxzoom": str(zmax),
@@ -124,23 +123,24 @@ def nombre_base(especie: str, umbral: int) -> str:
     return f"setas_{especie}_{umbral}m"
 
 
-def exportar_rasters_respaldo(malla: Malla, out: Path = SALIDA, zooms=ZOOM_RESPALDO,
+def exportar_rasters_respaldo(region, malla: Malla, out: Path, zooms=ZOOM_RESPALDO,
                               umbrales=UMBRALES_RESPALDO) -> list[Path]:
     from shapely import prepared
     from shapely.geometry import box
     out.mkdir(parents=True, exist_ok=True)
-    bbox, zona = ex._bbox_zona()
+    bbox, zona = ex._bbox_zona(region)
     zona_p = prepared.prep(zona)
     tr = Transformer.from_crs("EPSG:4326", "EPSG:25830", always_xy=True)
-    dist = leer_tif(ex.OUT / "distancia_acceso.tif")
+    dist = leer_tif(region.out / "distancia_acceso.tif")
     capas, salidas = {}, {}
-    for e in ex.especies():
-        idon = leer_tif(ex.OUT / f"idoneidad_{e['id']}.tif")
+    for e in ex.especies_activas(region):
+        idon = leer_tif(region.out / f"idoneidad_{e['id']}.tif")
         for u in umbrales:
             k = nombre_base(e["id"], u)
             capas[k] = ex.aplicar_umbral(idon, dist, u)
             desc = f"Idoneidad 0–100 (heurística) de {e['nombre']}, a ≥{u} m de accesos. {SEGURIDAD}"
-            salidas[k] = (SqliteDB(out / f"{k}.sqlitedb"), MBTiles(out / f"{k}.mbtiles", k, desc))
+            salidas[k] = (SqliteDB(out / f"{k}.sqlitedb"), MBTiles(out / f"{k}.mbtiles", k, desc,
+                                                                         region.atribuciones["idoneidad"]))
     for z in range(zooms[0], zooms[1] + 1):
         n = 0
         for _, x, y in ex.teselas_bbox(bbox, z):
@@ -204,7 +204,7 @@ def _a_wgs84(zonas: list[dict], crs: str = "EPSG:25830") -> list[dict]:
             for z in zonas]
 
 
-def geojson_zonas(zonas_wgs: list[dict], especie: str, nombre: str) -> dict:
+def geojson_zonas(zonas_wgs: list[dict], especie: str, nombre: str, atribucion: str = "") -> dict:
     from shapely.geometry import mapping
     def redondear(c):
         return [redondear(x) for x in c] if isinstance(c[0], (list, tuple)) else [round(c[0], 6), round(c[1], 6)]
@@ -216,7 +216,7 @@ def geojson_zonas(zonas_wgs: list[dict], especie: str, nombre: str) -> dict:
                                      "puntuacion_media": z["puntuacion_media"], "area_ha": z["area_ha"]},
                       "geometry": {"type": m["type"], "coordinates": redondear(m["coordinates"])}})
     return {"type": "FeatureCollection", "name": f"setas_{especie}_zonas_buenas",
-            "attribution": ATRIBUCION, "aviso": SEGURIDAD, "features": feats}
+            "attribution": atribucion, "aviso": SEGURIDAD, "features": feats}
 
 
 def _anillo_kml(coords) -> str:
@@ -232,7 +232,7 @@ def _poligono_kml(p) -> str:
     return s + "</Polygon>"
 
 
-def kml_zonas(zonas_wgs: list[dict], especie: str, nombre: str) -> str:
+def kml_zonas(zonas_wgs: list[dict], especie: str, nombre: str, atribucion: str = "") -> str:
     """KML 2.2 con estilo verde (relleno ~50 % opaco; colores KML en aabbggrr)."""
     marcas = []
     for i, z in enumerate(zonas_wgs, 1):
@@ -251,23 +251,24 @@ def kml_zonas(zonas_wgs: list[dict], especie: str, nombre: str) -> str:
     return ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
             "<kml xmlns=\"http://www.opengis.net/kml/2.2\"><Document>"
             f"<name>Zonas buenas · {escape(nombre)}</name>"
-            f"<description>{escape(f'Idoneidad ≥ {PUNTUACION_MIN}, a ≥ {UMBRAL_ZONAS_M} m de accesos. Heurística. {SEGURIDAD} Datos: {ATRIBUCION}')}</description>"
+            f"<description>{escape(f'Idoneidad ≥ {PUNTUACION_MIN}, a ≥ {UMBRAL_ZONAS_M} m de accesos. Heurística. {SEGURIDAD} Datos: {atribucion}')}</description>"
             "<Style id=\"zona_buena\"><LineStyle><color>ff438423</color><width>2</width></LineStyle>"
             "<PolyStyle><color>805dab41</color><fill>1</fill><outline>1</outline></PolyStyle></Style>"
             + "".join(marcas) + "</Document></kml>\n")
 
 
-def exportar_zonas(malla: Malla, out: Path = SALIDA) -> list[Path]:
+def exportar_zonas(region, malla: Malla, out: Path) -> list[Path]:
     out.mkdir(parents=True, exist_ok=True)
-    dist = leer_tif(ex.OUT / "distancia_acceso.tif")
+    dist = leer_tif(region.out / "distancia_acceso.tif")
+    atribucion = region.atribuciones["idoneidad"]
     rutas = []
-    for e in ex.especies():
-        idon = leer_tif(ex.OUT / f"idoneidad_{e['id']}.tif")
+    for e in ex.especies_activas(region):
+        idon = leer_tif(region.out / f"idoneidad_{e['id']}.tif")
         zw = _a_wgs84(zonas_buenas(idon, dist, malla.transform, malla.celda))
         gj = out / f"setas_{e['id']}_zonas_buenas.geojson"
-        gj.write_text(json.dumps(geojson_zonas(zw, e["id"], e["nombre"]), ensure_ascii=False))
+        gj.write_text(json.dumps(geojson_zonas(zw, e["id"], e["nombre"], atribucion), ensure_ascii=False))
         km = out / f"setas_{e['id']}_zonas_buenas.kml"
-        km.write_text(kml_zonas(zw, e["id"], e["nombre"]))
+        km.write_text(kml_zonas(zw, e["id"], e["nombre"], atribucion))
         print(f"  zonas {e['id']}: {len(zw)} polígonos, {sum(z['area_ha'] for z in zw):.0f} ha", flush=True)
         rutas += [gj, km]
     return rutas
@@ -280,10 +281,10 @@ def _tamano(p: Path) -> str:
     return f"{b / 1e6:.1f} MB" if b >= 1e5 else f"{b / 1e3:.0f} kB"
 
 
-def escribir_readme(out: Path = SALIDA) -> Path:
+def escribir_readme(region, out: Path) -> Path:
     filas = "\n".join(f"| `{p.name}` | {_tamano(p)} |" for p in sorted(out.iterdir())
                       if p.suffix in (".sqlitedb", ".mbtiles", ".geojson", ".kml"))
-    especies = "\n".join(f"- `{e['id']}`: {e['nombre']}" for e in ex.especies())
+    especies = "\n".join(f"- `{e['id']}`: {e['nombre']}" for e in ex.especies_activas(region))
     texto = f"""# Respaldo del mapa de setas para OsmAnd y Locus Map
 
 **{SEGURIDAD}**
@@ -343,7 +344,7 @@ Documentación: <https://docs.locusmap.app/doku.php/manual:user_guide:maps_exter
 - Modelo digital del terreno: IGN, CC BY 4.0
 - Mapa Forestal de España: © MITECO (MFE)
 - Litología: IGME
-- Espacios protegidos: REDIAM (Junta de Andalucía), CC BY 4.0
+- {region.atribuciones['respaldo_protegidos']}
 - Red de caminos y carreteras: © OpenStreetMap contributors, ODbL
 
 **{SEGURIDAD}**
@@ -353,15 +354,17 @@ Documentación: <https://docs.locusmap.app/doku.php/manual:user_guide:maps_exter
     return ruta
 
 
-def exportar_respaldo(malla: Malla | None = None, out: Path = SALIDA) -> list[Path]:
-    malla = malla or Malla.cargar(ex.OUT / "malla.json")
-    rutas = exportar_rasters_respaldo(malla, out)
-    rutas += exportar_zonas(malla, out)
-    rutas.append(escribir_readme(out))
+def exportar_respaldo(region, malla: Malla | None = None, out: Path | None = None) -> list[Path]:
+    out = out or region.respaldo
+    malla = malla or Malla.cargar(region.out / "malla.json")
+    rutas = exportar_rasters_respaldo(region, malla, out)
+    rutas += exportar_zonas(region, malla, out)
+    rutas.append(escribir_readme(region, out))
     return rutas
 
 
 if __name__ == "__main__":
-    for p in exportar_respaldo():
+    from .region import region_cli
+    for p in exportar_respaldo(region_cli()):
         print(p.name, _tamano(p))
     sys.exit(0)

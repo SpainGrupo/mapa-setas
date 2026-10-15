@@ -1,17 +1,18 @@
-"""Fase 2: genera los datos de la app (PMTiles + manifest.json) a partir de data/out/*.tif.
+"""Fase 2: genera los datos de la app (PMTiles + manifest.json) de una región a partir de data/<region>/out/*.tif.
 
-    uv run python -m setas_pipeline.exportar capas      # idoneidad×umbral, sombreado, curvas, protegidos
-    uv run python -m setas_pipeline.exportar base       # extracto de Protomaps (red)
-    uv run python -m setas_pipeline.exportar meteo      # Fase 3: puntos meteo + teselas de Voronoi
-    uv run python -m setas_pipeline.exportar acceso     # Fase 8: acceso.bin/json + aparcamientos.json
-    uv run python -m setas_pipeline.exportar rutas      # Fase 8: rutas.pmtiles (OSM + REDIAM)
-    uv run python -m setas_pipeline.exportar sitios     # Fase 9: sitios.json (manchas candidatas por especie)
-    uv run python -m setas_pipeline.exportar altitud    # Fase 9: añade la capa altitud a acceso.bin sin recalcular
-    uv run python -m setas_pipeline.exportar manifest
-    uv run python -m setas_pipeline.exportar todo
-    uv run python -m setas_pipeline.exportar respaldo  # Fase 7: OsmAnd/Locus (data/out/respaldo/)
+    uv run python -m setas_pipeline.exportar capas      [--region marbella]   # idoneidad×umbral, sombreado, curvas, protegidos
+    uv run python -m setas_pipeline.exportar base       [--region …]          # extracto de Protomaps (red)
+    uv run python -m setas_pipeline.exportar meteo      [--region …]          # Fase 3: puntos meteo + teselas de Voronoi
+    uv run python -m setas_pipeline.exportar acceso     [--region …]          # Fase 8: acceso.bin/json + aparcamientos.json
+    uv run python -m setas_pipeline.exportar rutas      [--region …]          # Fase 8: rutas.pmtiles
+    uv run python -m setas_pipeline.exportar sitios     [--region …]          # Fase 9: sitios.json
+    uv run python -m setas_pipeline.exportar altitud    [--region …]          # Fase 9: añade la capa altitud a acceso.bin
+    uv run python -m setas_pipeline.exportar manifest   [--region …]
+    uv run python -m setas_pipeline.exportar todo       [--region …]
+    uv run python -m setas_pipeline.exportar respaldo   [--region …]          # Fase 7: OsmAnd/Locus (out/respaldo/)
+    uv run python -m setas_pipeline.exportar regiones                         # índice pipeline/data/regiones.json
 
-Salida en data/out/app/ (no se versiona; la app la enlaza en app/public/data).
+Salida en data/<region>/out/app/ (no se versiona; la app la enlaza en app/public/data).
 """
 from __future__ import annotations
 import argparse, io, json, math, subprocess, tempfile
@@ -23,11 +24,8 @@ from PIL import Image
 from pyproj import Transformer
 
 from .malla import Malla, leer_tif
+from .region import Region, cargar_region, argumento_region, listar_regiones, DATOS, REGIONES, ESPECIES, FUENTES
 
-BASE = Path(__file__).resolve().parent.parent
-OUT = BASE / "data/out"
-APP = OUT / "app"
-ESPECIES = BASE / "especies.yaml"
 UMBRALES = (0, 200, 400, 600, 800, 1000)
 ZOOM_IDONEIDAD = (8, 13)
 ZOOM_SOMBREADO = (8, 12)
@@ -207,16 +205,17 @@ def voronoi_zonas(puntos, zona) -> list:
     return res
 
 
-def exportar_meteo(out: Path = APP):
+def exportar_meteo(region: Region, out: Path | None = None):
     """meteo_puntos.json ({id, lat, lon, alt_media}) y meteo_zonas.pmtiles (Voronoi, capa 'meteo_zonas')."""
     import geopandas as gpd
-    malla = Malla.cargar(OUT / "malla.json")
-    zona = gpd.read_file(OUT / "zona.geojson").to_crs("EPSG:25830").union_all()
+    out = out or region.app
+    malla = Malla.cargar(region.out / "malla.json")
+    zona = gpd.read_file(region.out / "zona.geojson").to_crs("EPSG:25830").union_all()
     mascara = None
-    for e in especies():
-        m = leer_tif(OUT / f"idoneidad_{e['id']}.tif") >= IDON_BOSQUE
+    for e in especies_activas(region):
+        m = leer_tif(region.out / f"idoneidad_{e['id']}.tif") >= IDON_BOSQUE
         mascara = m if mascara is None else (mascara | m)
-    altitud = leer_tif(OUT / "altitud.tif")
+    altitud = leer_tif(region.out / "altitud.tif")
     todos = rejilla_meteo(zona)
     puntos = [p for p, ok in zip(todos, con_bosque_cerca(todos, mascara, malla)) if ok]
     celdas = voronoi_zonas(puntos, zona)
@@ -279,9 +278,19 @@ def _indices(malla: Malla, lon, lat, tr):
     return fila.clip(0, malla.alto - 1), col.clip(0, malla.ancho - 1), ok
 
 
-def _bbox_zona(margen=MARGEN_M):
+def _contexto(region: Region, zona=None):
+    from .adaptadores import Contexto
+    from .adaptadores.osm import pbf_zona
+    from .descargas import cargar_zona
+    malla = Malla.cargar(region.out / "malla.json")
+    return Contexto(raw=region.raw, zona=zona if zona is not None else cargar_zona(region.out / "zona.geojson"),
+                    malla=malla, fuentes=yaml.safe_load(FUENTES.read_text()), capas=region.capas,
+                    osm_pbf=lambda: pbf_zona(region.raw, list(region.osm_extractos), malla.bounds))
+
+
+def _bbox_zona(region: Region, margen=MARGEN_M):
     import geopandas as gpd
-    z = gpd.read_file(OUT / "zona.geojson").to_crs("EPSG:25830")
+    z = gpd.read_file(region.out / "zona.geojson").to_crs("EPSG:25830")
     z = z.buffer(margen).to_crs("EPSG:4326")
     return tuple(float(v) for v in z.total_bounds), z.union_all()
 
@@ -296,37 +305,46 @@ def fiabilidad(n: int | None, lift_validacion: float | None) -> str:
     return "media" if lift_validacion >= 1.3 else "baja"
 
 
-def _calibracion() -> dict:
-    ruta = OUT / "calibracion.json"
+def _calibracion(region: Region) -> dict:
+    ruta = region.out / "calibracion.json"
     return json.loads(ruta.read_text()) if ruta.exists() else {}
 
 
-def especies() -> list[dict]:
-    d = yaml.safe_load(ESPECIES.read_text())
-    cal = _calibracion()
+def especies(region: Region) -> list[dict]:
+    """Especies de la región en el orden de especies.yaml (activas y sin hábitat), con overrides aplicados."""
+    from .idoneidad import cargar_perfiles
+    cal = _calibracion(region)
+    perfiles = region.perfiles(cargar_perfiles(ESPECIES), incluir_sin_habitat=True)
     return [{"id": k, "nombre": v["nombre"], **({"tiempo": v["tiempo"]} if "tiempo" in v else {}),
-             "fiabilidad": fiabilidad(cal.get(k, {}).get("n"), cal.get(k, {}).get("lift_validacion"))}
-            for k, v in d.items()]
+             "fiabilidad": fiabilidad(cal.get(k, {}).get("n"), cal.get(k, {}).get("lift_validacion")),
+             "sin_habitat": k in region.especies_sin_habitat}
+            for k, v in perfiles.items()]
 
 
-def exportar_rasters(malla: Malla, out: Path = APP):
+def especies_activas(region: Region) -> list[dict]:
+    """Las que tienen capas (las `sin_habitat` no exportan pmtiles, spec §3.5)."""
+    return [e for e in especies(region) if not e["sin_habitat"]]
+
+
+def exportar_rasters(region: Region, malla: Malla, out: Path | None = None):
     """Idoneidad (especie × umbral) y sombreado, como PMTiles PNG."""
     from pmtiles.tile import TileType
     from shapely import prepared
     from shapely.geometry import box
+    out = out or region.app
     out.mkdir(parents=True, exist_ok=True)
-    bbox, zona = _bbox_zona()
+    bbox, zona = _bbox_zona(region)
     zona_p = prepared.prep(zona)
     tr = Transformer.from_crs("EPSG:4326", "EPSG:25830", always_xy=True)
-    dist = leer_tif(OUT / "distancia_acceso.tif")
+    dist = leer_tif(region.out / "distancia_acceso.tif")
     capas = {}   # nombre → array uint8 0..100
-    for e in especies():
-        idon = leer_tif(OUT / f"idoneidad_{e['id']}.tif")
+    for e in especies_activas(region):
+        idon = leer_tif(region.out / f"idoneidad_{e['id']}.tif")
         for u in UMBRALES:
             capas[f"idoneidad_{e['id']}_{u}"] = aplicar_umbral(idon, dist, u)
     salidas = {k: _Salida(out / f"{k}.pmtiles", TileType.PNG, k, "Idoneidad 0–100 (heurística)")
                for k in capas}
-    s = sombreado(leer_tif(OUT / "altitud.tif"), malla.celda, -9999.0)
+    s = sombreado(leer_tif(region.out / "altitud.tif"), malla.celda, -9999.0)
     q = np.where(np.isnan(s), 255, np.round(np.nan_to_num(s) * 254)).astype(np.uint8)
     sal_s = _Salida(out / "sombreado.pmtiles", TileType.PNG, "sombreado", "Sombreado del relieve (IGN MDT, 100 m)")
     zmin = min(ZOOM_IDONEIDAD[0], ZOOM_SOMBREADO[0])
@@ -350,7 +368,7 @@ def exportar_rasters(malla: Malla, out: Path = APP):
                     sal_s.poner(z, x, y, png_sombreado(v))
             n += 1
         print(f"  z{z}: {n} teselas", flush=True)
-    atr_i = "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL"
+    atr_i = region.atribuciones["idoneidad"]
     for k, sal in salidas.items():
         sal.cerrar(bbox, *ZOOM_IDONEIDAD, atr_i)
     sal_s.cerrar(bbox, *ZOOM_SOMBREADO, "IGN CC BY 4.0")
@@ -362,14 +380,15 @@ def _tippecanoe(geojson: Path, destino: Path, capa: str, zmin: int, zmax: int, e
                     "-Z", str(zmin), "-z", str(zmax), *extra, str(geojson)], check=True)
 
 
-def exportar_curvas(malla: Malla, out: Path = APP):
+def exportar_curvas(region: Region, malla: Malla, out: Path | None = None):
     """Curvas de nivel cada 20 m (maestras cada 100 m) → curvas.pmtiles (capa 'curvas')."""
     import contourpy
     from shapely.geometry import LineString
     from rasterio.features import rasterize
     import geopandas as gpd
-    dem = leer_tif(OUT / "altitud.tif").astype(np.float64)
-    zona = gpd.read_file(OUT / "zona.geojson").to_crs("EPSG:25830").buffer(MARGEN_M).union_all()
+    out = out or region.app
+    dem = leer_tif(region.out / "altitud.tif").astype(np.float64)
+    zona = gpd.read_file(region.out / "zona.geojson").to_crs("EPSG:25830").buffer(MARGEN_M).union_all()
     dentro = rasterize([(zona, 1)], out_shape=dem.shape, transform=malla.transform, fill=0,
                        dtype="uint8").astype(bool)
     mask = (dem == -9999.0) | ~dentro
@@ -403,120 +422,80 @@ def exportar_curvas(malla: Malla, out: Path = APP):
                      "--attribution=IGN CC BY 4.0"])
 
 
-def exportar_protegidos(out: Path = APP):
-    """Espacios naturales protegidos (REDIAM RENPA, caché de la Fase 1) → protegidos.pmtiles."""
-    import geopandas as gpd
-    import pandas as pd
-    trozos = [gpd.read_file(p) for p in sorted((BASE / "data/raw/enp").glob("*_0.json"))]
-    gdf = pd.concat([t for t in trozos if len(t)], ignore_index=True)
-    gdf = gpd.GeoDataFrame(gdf, geometry="geometry", crs=trozos[0].crs).to_crs("EPSG:25830")
-    gdf = gdf.drop_duplicates(subset="CODIGOESPA")
-    zona = gpd.read_file(OUT / "zona.geojson").to_crs("EPSG:25830").union_all()
-    gdf = gdf[gdf.intersects(zona)]
-    gdf = gdf.assign(nombre=gdf["NOMBRE"].str.strip(), figura=gdf["FIGURA"].str.strip())
+def exportar_protegidos(region: Region, out: Path | None = None):
+    """Espacios naturales protegidos (capa `protegidos` de la región, caché de la Fase 1) → protegidos.pmtiles."""
+    from .adaptadores import cargar_capa
+    out = out or region.app
+    ctx = _contexto(region)
+    gdf = cargar_capa("protegidos", region.capas, ctx).drop_duplicates(subset="codigo")
+    gdf = gdf[gdf.intersects(ctx.zona)]
     gdf = gdf[["nombre", "figura", "geometry"]].to_crs("EPSG:4326")
     with tempfile.TemporaryDirectory() as tmp:
         gj = Path(tmp) / "protegidos.geojson"
         gj.write_text(gdf.to_json())
         _tippecanoe(gj, out / "protegidos.pmtiles", "protegidos", 6, 13,
                     ["--no-tile-size-limit", "--detect-shared-borders",
-                     "--attribution=REDIAM CC BY 4.0"])
+                     f"--attribution={region.atribuciones['protegidos']}"])
     print(f"  protegidos: {len(gdf)} espacios", flush=True)
 
 
-# Capa legal (docs/investigacion/2026-10-14-factores-y-trucos.md §4). Textos breves; no sustituyen a la norma.
-TEXTO_RESTRICCION = {
-    "zona_reserva": "Zona de Reserva del espacio protegido: recolectar setas exige autorización previa.",
-    "reserva_natural": "Reserva Natural: recolectar setas exige autorización previa.",
-    "parque_nacional": "Parque Nacional Sierra de las Nieves: trátalo como recolección con autorización "
-                       "(Ley 9/2021); no recolectes sin permiso.",
-}
-AVISO_LEGAL = ("Málaga (Res. 23-09-2026, BOJA 196, vigente hasta 31-05-2027): autoconsumo ≤3 kg por persona y día "
-               "sin autorización en montes públicos, salvo Zonas de Reserva; de día, sin rastrillos ni remover el "
-               "mantillo. Fincas privadas: permiso del propietario. Cádiz: la última resolución encontrada es de 2019, "
-               "sin confirmar su vigencia.")
-TIPOS_ZONA_RESERVA = ("A", "ARE", "R")      # Codigo_zona de los PORN con "Reserva" en la descripción
-
-
-def clasificar_restriccion(codigo_zona: str, descripcion: str) -> str | None:
-    """Zonificación PORN → tipo de restricción (o None si la zona no restringe la recolección)."""
-    c, d = (codigo_zona or "").strip(), (descripcion or "").strip().lower()
-    if "marino" in d:
-        return None
-    if c == "RN" or d == "reserva natural":
-        return "reserva_natural"
-    if c in TIPOS_ZONA_RESERVA and "reserva" in d:
-        return "zona_reserva"
-    return None
-
-
-def restricciones_gdf():
-    """Zonas de Reserva y Reservas Naturales (PORN REDIAM) + Parque Nacional (RENPA) en la zona, EPSG:4326."""
-    import geopandas as gpd
-    import pandas as pd
-    cfg = yaml.safe_load((BASE / "fuentes.yaml").read_text())["zonificacion_porn"]
-    malla = Malla.cargar(OUT / "malla.json")
-    xmin, ymin, xmax, ymax = (int(v) for v in malla.bounds)
-    from .descargas import obtener
-    datos = obtener(cfg["url"].format(xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax),
-                    BASE / f"data/raw/zonificacion/porn_vigentes_{xmin}_{ymin}_{xmax}_{ymax}.json", timeout=600)
-    porn = gpd.GeoDataFrame.from_features(datos["features"], crs="EPSG:25830")
-    porn["tipo"] = [clasificar_restriccion(c, d) for c, d in zip(porn["Codigo_zona"], porn["Descripcion_zona"])]
-    porn = porn[porn["tipo"].notna()].assign(nombre=lambda g: g["Nombre"].str.strip(),
-                                             zona=lambda g: g["Descripcion_zona"].str.strip())
-    trozos = [gpd.read_file(p) for p in sorted((BASE / "data/raw/enp").glob("*_0.json"))]
-    enp = pd.concat([t for t in trozos if len(t)], ignore_index=True)
-    enp = gpd.GeoDataFrame(enp, geometry="geometry", crs=trozos[0].crs).to_crs("EPSG:25830")
-    pn = enp[enp["FIGURA"].str.strip() == "Parque Nacional"].drop_duplicates(subset="CODIGOESPA")
-    pn = pn.assign(tipo="parque_nacional", nombre=pn["NOMBRE"].str.strip(), zona="Parque Nacional")
-    gdf = gpd.GeoDataFrame(pd.concat([porn[["tipo", "nombre", "zona", "geometry"]],
-                                      pn[["tipo", "nombre", "zona", "geometry"]]], ignore_index=True),
-                           crs="EPSG:25830")
-    zona = gpd.read_file(OUT / "zona.geojson").to_crs("EPSG:25830").union_all()
-    gdf = gdf[gdf.intersects(zona)].copy()
-    gdf["texto"] = gdf["tipo"].map(TEXTO_RESTRICCION)
+def restricciones_gdf(region: Region):
+    """Capa legal de la región (capa `restricciones`: p. ej. Zonas de Reserva PORN, Reservas Naturales,
+    Parque Nacional) recortada a la zona, con el texto de legal.tipos_restriccion. EPSG:4326."""
+    from .adaptadores import cargar_capa
+    ctx = _contexto(region)
+    gdf = cargar_capa("restricciones", region.capas, ctx)
+    gdf = gdf[gdf.intersects(ctx.zona)].copy()
+    gdf["texto"] = gdf["tipo"].map(region.legal["tipos_restriccion"])
     return gdf.to_crs("EPSG:4326")
 
 
-def exportar_restricciones(out: Path = APP):
-    gdf = restricciones_gdf()
+def exportar_restricciones(region: Region, out: Path | None = None):
+    out = out or region.app
+    gdf = restricciones_gdf(region)
     with tempfile.TemporaryDirectory() as tmp:
         gj = Path(tmp) / "restricciones.geojson"
         gj.write_text(gdf.to_json())
         _tippecanoe(gj, out / "restricciones.pmtiles", "restricciones", 6, 14,
                     ["--no-tile-size-limit", "--detect-shared-borders",
-                     "--attribution=REDIAM CC BY 4.0 (zonificación PORN, RENPA)"])
+                     f"--attribution={region.atribuciones['restricciones']}"])
     print(f"  restricciones: {len(gdf)} recintos {gdf['tipo'].value_counts().to_dict()}", flush=True)
     return gdf
 
 
-def exportar_base(out: Path = APP, maxzoom: int = ZOOM_BASE_MAX, build: str | None = None):
+def exportar_base(region: Region, out: Path | None = None, maxzoom: int = ZOOM_BASE_MAX, build: str | None = None):
     """Extracto del build diario de Protomaps recortado a la zona (+ margen)."""
     import requests
+    out = out or region.app
     out.mkdir(parents=True, exist_ok=True)
     if build is None:
         build = requests.get(PROTOMAPS_BUILDS, timeout=60).json()[-1]["key"]
-    _, zona = _bbox_zona()
-    region = out.parent / "region_base.geojson"
-    region.write_text(json.dumps({"type": "Feature", "properties": {},
-                                  "geometry": zona.simplify(0.005).__geo_interface__}))
+    _, zona = _bbox_zona(region)
+    contorno = out.parent / "region_base.geojson"
+    contorno.write_text(json.dumps({"type": "Feature", "properties": {},
+                                    "geometry": zona.simplify(0.005).__geo_interface__}))
     destino = out / "base.pmtiles"
     subprocess.run(["pmtiles", "extract", PROTOMAPS_URL.format(key=build), str(destino),
-                    f"--region={region}", f"--maxzoom={maxzoom}", "--download-threads=8"], check=True)
+                    f"--region={contorno}", f"--maxzoom={maxzoom}", "--download-threads=8"], check=True)
     (out.parent / "base_build.txt").write_text(f"{build} maxzoom={maxzoom}\n")
     return destino
 
 
-def escribir_manifest(out: Path = APP) -> dict:
+def escribir_manifest(region: Region, out: Path | None = None) -> dict:
+    out = out or region.app
     extra = ["meteo_puntos.json", *ACCESO_ARCHIVOS, "sitios.json"]
     rutas = sorted(out.glob("*.pmtiles")) + [out / n for n in extra if (out / n).exists()]
     archivos = [{"nombre": p.name, "bytes": p.stat().st_size} for p in rutas]
-    bbox, _ = _bbox_zona(0)
+    bbox, _ = _bbox_zona(region, 0)
     build = (out.parent / "base_build.txt")
     m = {
         "generado": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        # Multi-región (2026-10-15): de qué región es este manifest y su normativa por comunidad autónoma.
+        "region": {"id": region.id, "nombre": region.nombre, "origen": list(region.origen),
+                   "etiqueta_origen": region.etiqueta_origen},
+        "legal": {"ccaa": region.legal["ccaa"]},
         "bbox": [round(v, 5) for v in bbox],
-        "especies": especies(),
+        "especies": especies(region),
         "umbrales": list(UMBRALES),
         "zoom": {"idoneidad": list(ZOOM_IDONEIDAD), "sombreado": list(ZOOM_SOMBREADO),
                  "base_max": ZOOM_BASE_MAX},
@@ -528,7 +507,8 @@ def escribir_manifest(out: Path = APP) -> dict:
                    if all((out / n).exists() for n in ACCESO_ARCHIVOS) else None),
         "rutas": "rutas.pmtiles" if (out / "rutas.pmtiles").exists() else None,
         # Modelo v2: capa legal (Zonas de Reserva de los PORN, Reservas Naturales, Parque Nacional).
-        "restricciones": ({"capa": "restricciones.pmtiles", "tipos": TEXTO_RESTRICCION, "aviso": AVISO_LEGAL}
+        "restricciones": ({"capa": "restricciones.pmtiles", "tipos": region.legal["tipos_restriccion"],
+                           "aviso": region.legal["aviso"]}
                           if (out / "restricciones.pmtiles").exists() else None),
         # Fase 9: sitios candidatos por especie (también en la descarga offline, vía `archivos`).
         "sitios": sitios_manifest(out),
@@ -541,6 +521,23 @@ def escribir_manifest(out: Path = APP) -> dict:
         m["modelo"] = modelo
     (out / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=1))
     return m
+
+
+def escribir_regiones(datos: Path = DATOS, regiones: Path = REGIONES) -> list[dict]:
+    """Índice de regiones para la app (spec §3.7): data/regiones.json. Solo las que ya tienen manifest."""
+    lista = []
+    for rid in listar_regiones(regiones):
+        r = cargar_region(rid, regiones=regiones, datos=datos)
+        ruta = r.app / "manifest.json"
+        if not ruta.exists():
+            print(f"  regiones: {rid} sin manifest ({ruta}); no entra en el índice", flush=True)
+            continue
+        m = json.loads(ruta.read_text())
+        lista.append({"id": r.id, "nombre": r.nombre, "origen": list(r.origen), "bbox": m["bbox"],
+                      "total_bytes": m["total_bytes"], "generado": m["generado"]})
+    Path(datos).mkdir(parents=True, exist_ok=True)
+    (Path(datos) / "regiones.json").write_text(json.dumps(lista, ensure_ascii=False, indent=1))
+    return lista
 
 
 def sitios_manifest(out: Path) -> dict | None:
@@ -575,41 +572,47 @@ def modelo_disponible(out: Path) -> dict | None:
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("pasos", nargs="+", choices=["capas", "restricciones", "base", "meteo", "acceso", "altitud", "rutas", "sitios",
-                                         "manifest", "respaldo", "todo"])
+    ap.add_argument("pasos", nargs="+", choices=["capas", "restricciones", "base", "meteo", "acceso", "altitud", "rutas",
+                                                 "sitios", "manifest", "respaldo", "regiones", "todo"])
     ap.add_argument("--maxzoom", type=int, default=ZOOM_BASE_MAX)
+    argumento_region(ap)
     a = ap.parse_args(argv)
     pasos = set(a.pasos)
-    malla = Malla.cargar(OUT / "malla.json")
+    if pasos == {"regiones"}:
+        lista = escribir_regiones()
+        print(f"regiones.json: {[r['id'] for r in lista]}")
+        return
+    region = cargar_region(a.region)
+    malla = Malla.cargar(region.out / "malla.json")
     if pasos & {"capas", "todo"}:
-        print("rasters…", flush=True); exportar_rasters(malla)
-        print("curvas…", flush=True); exportar_curvas(malla)
-        print("protegidos…", flush=True); exportar_protegidos()
-        print("restricciones…", flush=True); exportar_restricciones()
+        print("rasters…", flush=True); exportar_rasters(region, malla)
+        print("curvas…", flush=True); exportar_curvas(region, malla)
+        print("protegidos…", flush=True); exportar_protegidos(region)
+        print("restricciones…", flush=True); exportar_restricciones(region)
     if pasos == {"restricciones"}:
-        print("restricciones…", flush=True); exportar_restricciones()
+        print("restricciones…", flush=True); exportar_restricciones(region)
     if pasos & {"base", "todo"}:
-        exportar_base(maxzoom=a.maxzoom)
+        exportar_base(region, maxzoom=a.maxzoom)
     if pasos & {"meteo", "todo"}:
-        print("meteo…", flush=True); exportar_meteo()
+        print("meteo…", flush=True); exportar_meteo(region)
     if pasos & {"acceso", "todo"}:
         from .acceso import calcular
-        print("acceso…", flush=True); calcular()
+        print("acceso…", flush=True); calcular(region)
     if "altitud" in pasos and not pasos & {"acceso", "todo"}:     # acceso ya escribe la altitud
         from .acceso import anadir_altitud
-        print("altitud en acceso…", flush=True); anadir_altitud()
+        print("altitud en acceso…", flush=True); anadir_altitud(region)
     if pasos & {"sitios", "todo"}:
         from .sitios import calcular as calcular_sitios
-        print("sitios…", flush=True); calcular_sitios()
+        print("sitios…", flush=True); calcular_sitios(region)
     if pasos & {"rutas", "todo"}:
         from .rutas import construir
-        print("rutas…", flush=True); construir()
+        print("rutas…", flush=True); construir(region)
     if pasos == {"respaldo"}:
         from .respaldo import exportar_respaldo
-        print("respaldo…", flush=True); exportar_respaldo(malla)
+        print("respaldo…", flush=True); exportar_respaldo(region, malla)
         return
-    m = escribir_manifest()
-    print(f"manifest: {len(m['archivos'])} archivos, {m['total_bytes'] / 1e6:.1f} MB")
+    m = escribir_manifest(region)
+    print(f"manifest {region.id}: {len(m['archivos'])} archivos, {m['total_bytes'] / 1e6:.1f} MB")
 
 
 if __name__ == "__main__":

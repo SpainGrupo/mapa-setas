@@ -4,7 +4,7 @@ Para cada celda: minutos a pie desde la vía transitable en coche más cercana *
 desnivel acumulado de subida por ese camino, aparcamiento de origen y puntero al paso anterior
 (para que la app dibuje el trazado sin red).
 
-    uv run python -m setas_pipeline.acceso            # calcula y escribe data/out/app/acceso.*
+    uv run python -m setas_pipeline.acceso [--region marbella]   # escribe data/<region>/out/app/acceso.*
 
 Modelo
 - Cálculo a 50 m (MDT25 IGN promediado 2×2); se exporta a 100 m (la malla del resto de capas).
@@ -19,11 +19,6 @@ from __future__ import annotations
 import argparse, json, math, warnings
 from pathlib import Path
 import numpy as np
-
-BASE = Path(__file__).resolve().parent.parent
-OUT = BASE / "data/out"
-APP = OUT / "app"
-RAW = BASE / "data/raw"
 
 CELDA = 50.0                 # m, resolución de cálculo
 FACTOR_EXPORT = 2            # 50 m → 100 m
@@ -248,14 +243,12 @@ def agrupar_aparcamientos(fuentes: np.ndarray, via: np.ndarray, celda: float, bl
 
 # ---------------------------------------------------------------- datos
 
-def dem_50m(raw: Path = RAW, malla=None) -> np.ndarray:
+def dem_50m(raw: Path, malla) -> np.ndarray:
     """Mosaico de las teselas MDT25 en caché, promediado 2×2 → malla de 50 m alineada con malla.json."""
     import rasterio
-    from .malla import Malla
-    malla = malla or Malla.cargar(OUT / "malla.json")
     W25, H25 = int(malla.ancho * malla.celda / 25), int(malla.alto * malla.celda / 25)
     z = np.zeros((H25, W25), np.float32)
-    for p in sorted((raw / "dem").glob("mdt25_*.tif")):
+    for p in sorted((Path(raw) / "dem").glob("mdt25_*.tif")):
         with rasterio.open(p) as r:
             a = r.read(1).astype(np.float32)
             c0 = int(round((r.bounds.left - malla.x0) / 25))
@@ -299,7 +292,7 @@ def extraer_osm(pbf: Path):
     return coche, caminos, agua
 
 
-def calcular(pbf: Path = RAW / "andalucia.osm.pbf", out: Path = APP, verbose=True):
+def calcular(region, pbf: Path | None = None, out: Path | None = None, verbose=True):
     import time
     import geopandas as gpd
     from rasterio.features import rasterize
@@ -308,8 +301,12 @@ def calcular(pbf: Path = RAW / "andalucia.osm.pbf", out: Path = APP, verbose=Tru
     from .malla import Malla, escribir_tif, NODATA_F
     t0 = time.time()
     log = (lambda *a: print(f"  [{time.time() - t0:5.0f} s]", *a, flush=True)) if verbose else (lambda *a: None)
-    malla = Malla.cargar(OUT / "malla.json")
-    z = dem_50m(malla=malla)
+    out = out or region.app
+    malla = Malla.cargar(region.out / "malla.json")
+    if pbf is None:
+        from .adaptadores.osm import pbf_zona
+        pbf = pbf_zona(region.raw, list(region.osm_extractos), malla.bounds)
+    z = dem_50m(region.raw, malla)
     H, W = z.shape
     tr50 = from_origin(malla.x0, malla.y1, CELDA, CELDA)
     log(f"MDT 50 m {W}×{H}")
@@ -344,7 +341,7 @@ def calcular(pbf: Path = RAW / "andalucia.osm.pbf", out: Path = APP, verbose=Tru
     aparc_celda = np.where(origen >= 0, ident.ravel()[np.where(origen >= 0, origen, 0)], -1)
     tg, sg, og, dg = reducir(tiempo, subida, aparc_celda, pred, fuentes)
     # Solo se exporta la zona (+500 m); fuera, sin dato.
-    zona = gpd.read_file(OUT / "zona.geojson").to_crs("EPSG:25830").buffer(500).union_all()
+    zona = gpd.read_file(region.out / "zona.geojson").to_crs("EPSG:25830").buffer(500).union_all()
     dentro = rasterize([(zona, 1)], out_shape=tg.shape, transform=malla.transform, fill=0,
                        dtype="uint8").astype(bool)
     ok = cerrar_mascara(dentro & np.isfinite(tg) & (og >= 0), dg)
@@ -368,9 +365,9 @@ def calcular(pbf: Path = RAW / "andalucia.osm.pbf", out: Path = APP, verbose=Tru
     d8 = np.where(ok, dg, DIR_SIN).astype(np.uint8)
     log(f"export 100 m: {int((t_min != SIN_TIEMPO).sum())} celdas, {len(aparcamientos)} aparcamientos")
     escribir_app(out, malla, t_min, s_m, o_id, d8, aparcamientos,
-                 alt=altitud_u16(leer_tif_malla(OUT / "altitud.tif")))
-    escribir_tif(malla, OUT / "tiempo_pie.tif", np.where(t_min == SIN_TIEMPO, NODATA_F, t_min).astype("float32"), NODATA_F)
-    escribir_tif(malla, OUT / "subida_pie.tif", np.where(s_m == SIN_TIEMPO, NODATA_F, s_m).astype("float32"), NODATA_F)
+                 alt=altitud_u16(leer_tif_malla(region.out / "altitud.tif")))
+    escribir_tif(malla, region.out / "tiempo_pie.tif", np.where(t_min == SIN_TIEMPO, NODATA_F, t_min).astype("float32"), NODATA_F)
+    escribir_tif(malla, region.out / "subida_pie.tif", np.where(s_m == SIN_TIEMPO, NODATA_F, s_m).astype("float32"), NODATA_F)
     log("escrito")
     return t_min, s_m, o_id, d8, aparcamientos
 
@@ -479,19 +476,20 @@ def aparcamiento(compacto: dict, i: int) -> dict:
     return {"id": i, "lat": lat, "lon": lon, "nombre": nombre, "ref": ref, "via": tipo}
 
 
-def anadir_altitud(out: Path = APP) -> dict:
+def anadir_altitud(region, out: Path | None = None) -> dict:
     """Reescribe acceso.* con la capa altitud a partir de las capas ya calculadas (sin rehacer Dijkstra)."""
     from .malla import Malla
-    malla = Malla.cargar(OUT / "malla.json")
+    out = out or region.app
+    malla = Malla.cargar(region.out / "malla.json")
     cab, r = leer_app(out)
     comp = json.loads((out / "aparcamientos.json").read_text())
     aps = [aparcamiento(comp, i) for i in range(len(comp["datos"]))]
     escribir_app(out, malla, r["tiempo_pie_min"].copy(), r["subida_m"].copy(), r["origen_id"].copy(),
-                 r["direccion"].copy(), aps, alt=altitud_u16(leer_tif_malla(OUT / "altitud.tif")))
+                 r["direccion"].copy(), aps, alt=altitud_u16(leer_tif_malla(region.out / "altitud.tif")))
     return json.loads((out / "acceso.json").read_text())
 
 
-def leer_app(out: Path = APP):
+def leer_app(out: Path):
     """Lee acceso.bin con su cabecera → dict de arrays (alto, ancho)."""
     cab = json.loads((out / "acceso.json").read_text())
     raw = (out / "acceso.bin").read_bytes()
@@ -502,7 +500,7 @@ def leer_app(out: Path = APP):
     return cab, res
 
 
-def consultar(lat: float, lon: float, out: Path = APP) -> dict:
+def consultar(lat: float, lon: float, out: Path) -> dict:
     """Valores en un punto (para la comprobación de cordura)."""
     from pyproj import Transformer
     cab, r = leer_app(out)
@@ -517,19 +515,22 @@ def consultar(lat: float, lon: float, out: Path = APP) -> dict:
 
 
 def main(argv=None):
+    from .region import argumento_region, cargar_region
     ap = argparse.ArgumentParser()
     ap.add_argument("--consultar", nargs=2, type=float, metavar=("LAT", "LON"), action="append")
     ap.add_argument("--solo-altitud", action="store_true",
                     help="añade/actualiza la capa altitud sobre el acceso ya calculado")
+    argumento_region(ap)
     a = ap.parse_args(argv)
+    region = cargar_region(a.region)
     if a.solo_altitud:
-        print(anadir_altitud()["capas"]["altitud"])
+        print(anadir_altitud(region)["capas"]["altitud"])
         return
     if a.consultar:
         for lat, lon in a.consultar:
-            print(lat, lon, consultar(lat, lon))
+            print(lat, lon, consultar(lat, lon, region.app))
         return
-    calcular()
+    calcular(region)
 
 
 if __name__ == "__main__":

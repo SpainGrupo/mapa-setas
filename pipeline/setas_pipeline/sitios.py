@@ -1,6 +1,6 @@
-"""Fase 9: sitios candidatos por especie (manchas de idoneidad alta) → data/out/app/sitios.json.
+"""Fase 9: sitios candidatos por especie (manchas de idoneidad alta) → data/<region>/out/app/sitios.json.
 
-    uv run python -m setas_pipeline.sitios          # o: uv run python -m setas_pipeline.exportar sitios
+    uv run python -m setas_pipeline.sitios [--region marbella]   # o: uv run python -m setas_pipeline.exportar sitios
 
 Mancha: conjunto conectado (8 vecinos) de celdas con idoneidad ≥ UMBRAL y área ≥ MIN_HA. Sin filtro
 de distancia al acceso (eso lo decide la app con su propio orden).
@@ -28,9 +28,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 import numpy as np
 
-BASE = Path(__file__).resolve().parent.parent
-OUT = BASE / "data/out"
-APP = OUT / "app"
 
 VERSION = 1
 UMBRAL = 60          # idoneidad mínima de una celda de mancha
@@ -170,20 +167,21 @@ def georreferenciar(lista: list[dict], malla, restricciones=None, meteo: list[di
 
 # ---------------------------------------------------------------- datos
 
-def calcular(out: Path = APP, verbose: bool = True) -> dict:
+def calcular(region, out: Path | None = None, verbose: bool = True) -> dict:
     from .acceso import leer_app
-    from .exportar import especies, restricciones_gdf
+    from .exportar import especies_activas, restricciones_gdf
     from .malla import Malla, leer_tif
-    malla = Malla.cargar(OUT / "malla.json")
+    out = out or region.app
+    malla = Malla.cargar(region.out / "malla.json")
     cab, acc = leer_app(out)
     assert (cab["ancho"], cab["alto"]) == (malla.ancho, malla.alto), "acceso.bin no está en la malla"
-    dist = leer_tif(OUT / "distancia_acceso.tif")
-    restr = list(restricciones_gdf().geometry)
+    dist = leer_tif(region.out / "distancia_acceso.tif")
+    restr = list(restricciones_gdf(region).geometry)
     meteo = json.loads((out / "meteo_puntos.json").read_text())
     datos = {"version": VERSION, "generado": datetime.now(timezone.utc).isoformat(timespec="seconds"),
              "especies": {}}
-    for e in especies():
-        idon = leer_tif(OUT / f"idoneidad_{e['id']}.tif")
+    for e in especies_activas(region):
+        idon = leer_tif(region.out / f"idoneidad_{e['id']}.tif")
         lista = candidatos(idon, acc["tiempo_pie_min"], acc["subida_m"], acc["origen_id"], dist, malla.celda)
         datos["especies"][e["id"]] = georreferenciar(lista, malla, restr, meteo)
         if verbose:
@@ -194,4 +192,5 @@ def calcular(out: Path = APP, verbose: bool = True) -> dict:
 
 
 if __name__ == "__main__":
-    calcular()
+    from .region import region_cli
+    calcular(region_cli())

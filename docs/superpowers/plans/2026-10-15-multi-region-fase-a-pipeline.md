@@ -2786,7 +2786,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 **Interfaces:**
 - Consumes: `scripts/regresion_marbella.sh despues`, `tests/dorado/marbella.json`, `dorado.huella/comparar`.
 
-- [ ] **Step 1: Test que compara lo que haya en disco con el dorado (se salta sin datos)**
+- [x] **Step 1: Test que compara lo que haya en disco con el dorado (se salta sin datos)**
 
 ```python
 # pipeline/tests/test_regresion_marbella.py
@@ -2808,7 +2808,7 @@ def test_salidas_de_marbella_iguales_al_dorado():
     assert not difs, "\n".join(difs[:50])
 ```
 
-- [ ] **Step 2: Re-ejecutar todo sin red con el código nuevo**
+- [x] **Step 2: Re-ejecutar todo sin red con el código nuevo**
 
 ```bash
 cd /Users/alexanderkrupnov/Documents/Claude/setas-alicante
@@ -2821,7 +2821,7 @@ until ! kill -0 "$(cat "$SCRATCH/regresion_despues.pid")" 2>/dev/null; do sleep 
 ```
 Expected: `OK: N archivos comparados, 0 diferencias` y `FIN`; N igual al de la generación (Task 2, Step 4).
 
-- [ ] **Step 3: Si hay diferencias**
+- [x] **Step 3: Si hay diferencias**
 
 Usa superpowers:systematic-debugging. Pistas por tipo:
 - `.tif` distinto: localiza el primer paso que lo produce (`ejecutar` del log) y compara su lógica vieja (`git show <commit de la Task 2>:pipeline/setas_pipeline/<modulo>.py`) con la nueva. Para `distancia_acceso.tif` / `tiempo_pie.tif` / `app/acceso.bin*`, el sospechoso es el recorte OSM (Task 6).
@@ -2832,7 +2832,7 @@ Usa superpowers:systematic-debugging. Pistas por tipo:
 - `app/manifest.json: clave 'X' distinta`: solo `region`, `legal` y `especies[].sin_habitat` pueden cambiar; cualquier otra es un fallo.
 Corrige en el código (nunca en el dorado), commit, y repite el Step 2. No se regenera el dorado salvo que el usuario lo autorice.
 
-- [ ] **Step 4: Suite completa y commit**
+- [x] **Step 4: Suite completa y commit**
 
 ```bash
 cd pipeline && uv run pytest -q 2>&1 | tail -2

@@ -9,8 +9,7 @@ la idoneidad ya es 0 allí por arbol.tif).
 from __future__ import annotations
 import json
 from datetime import date
-from pathlib import Path
-import geopandas as gpd, numpy as np, pandas as pd, yaml
+import geopandas as gpd, numpy as np, pandas as pd
 from pyproj import Transformer
 from rasterio.features import rasterize
 from .malla import Malla, CRS, SIN_FUEGO, escribir_tif
@@ -49,12 +48,10 @@ def caja_wgs84(bounds, n: int = 32) -> tuple[float, float, float, float]:
 
 
 def construir_fuego(malla: Malla, region, ref: int | None = None, mfe: gpd.GeoDataFrame | None = None):
-    from .adaptadores import Contexto, cargar_capa
-    from .region import FUENTES
+    from .adaptadores import contexto_region, cargar_capa
     ref = ref or date.today().year
     desde = ref - VENTANA_ANIOS
-    ctx = Contexto(raw=region.raw, zona=None, malla=malla, fuentes=yaml.safe_load(Path(FUENTES).read_text()),
-                   capas=region.capas, desde_anio=desde)
+    ctx = contexto_region(region, malla=malla, desde_anio=desde)
     trozos = []
     capa = cargar_capa("incendios", region.capas, ctx)
     if len(capa):

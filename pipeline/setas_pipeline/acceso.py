@@ -304,8 +304,8 @@ def calcular(region, pbf: Path | None = None, out: Path | None = None, verbose=T
     out = out or region.app
     malla = Malla.cargar(region.out / "malla.json")
     if pbf is None:
-        from .adaptadores.osm import pbf_zona
-        pbf = pbf_zona(region.raw, list(region.osm_extractos), malla.bounds)
+        from .adaptadores.osm import pbf_region
+        pbf = pbf_region(region, malla)
     z = dem_50m(region.raw, malla)
     H, W = z.shape
     tr50 = from_origin(malla.x0, malla.y1, CELDA, CELDA)

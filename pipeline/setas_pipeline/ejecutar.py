@@ -64,10 +64,10 @@ def pasos_de(region: Region) -> dict:
 
     def _accesos():
         from .accesos import construir_accesos
-        from .adaptadores.osm import pbf_zona
+        from .adaptadores.osm import pbf_region
         RAW.mkdir(parents=True, exist_ok=True)
         malla = _malla()
-        construir_accesos(malla, OUT, FUENTES, pbf_zona(RAW, list(region.osm_extractos), malla.bounds))
+        construir_accesos(malla, OUT, FUENTES, pbf_region(region, malla))
 
     def _idoneidad():
         from .idoneidad import construir_idoneidad

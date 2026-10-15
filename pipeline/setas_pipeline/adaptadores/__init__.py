@@ -76,4 +76,20 @@ def cargar_capa(tipo: str, capas: dict, ctx: Contexto) -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(pd.concat(trozos, ignore_index=True), crs=CRS)
 
 
+
+def contexto_region(region, malla=None, zona=None, desde_anio: int | None = None) -> Contexto:
+    """Contexto completo de una región (el mismo en la Fase 1 y en la exportación): malla y zona de data/<region>/out
+    (zona None si aún no hay zona.geojson), fuentes.yaml, capas de la región y el pbf OSM recortado bajo demanda."""
+    import yaml
+    from ..descargas import cargar_zona
+    from ..malla import Malla
+    from ..region import FUENTES
+    from .osm import pbf_region
+    malla = malla if malla is not None else Malla.cargar(region.out / "malla.json")
+    if zona is None and (region.out / "zona.geojson").exists():
+        zona = cargar_zona(region.out / "zona.geojson")
+    return Contexto(raw=region.raw, zona=zona, malla=malla, fuentes=yaml.safe_load(Path(FUENTES).read_text()),
+                    capas=region.capas, osm_pbf=lambda: pbf_region(region, malla), desde_anio=desde_anio)
+
+
 from . import rediam, effis, derivados, osm  # noqa: E402,F401  (registran sus adaptadores)

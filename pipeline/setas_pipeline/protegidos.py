@@ -17,9 +17,9 @@ def rasterizar_protegidos(gdf, zona, malla: Malla):
 
 
 def construir_protegidos(malla: Malla, region):
-    from .adaptadores import Contexto, cargar_capa
+    from .adaptadores import contexto_region, cargar_capa
     zona = cargar_zona(region.out / "zona.geojson")
-    gdf = cargar_capa("protegidos", region.capas, Contexto(raw=region.raw, zona=zona, malla=malla, capas=region.capas))
+    gdf = cargar_capa("protegidos", region.capas, contexto_region(region, malla=malla, zona=zona))
     a = rasterizar_protegidos(gdf, zona, malla)
     escribir_tif(malla, region.out / "protegido.tif", a, NODATA)
     return a

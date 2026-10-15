@@ -73,6 +73,11 @@ def pbf_zona(raw: Path, extractos: list[str], bounds_malla) -> Path:
     return destino
 
 
+def pbf_region(region, malla) -> Path:
+    """raw/zona.osm.pbf de la región (extractos de su config recortados a su malla)."""
+    return pbf_zona(region.raw, list(region.osm_extractos), malla.bounds)
+
+
 @registrar("senderos", "osm_relaciones")
 def osm_relaciones(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
     from ..rutas import relaciones_osm, clasificar_ref

@@ -160,3 +160,18 @@ def test_rediam_senderos_normaliza(tmp_path, monkeypatch):
                       A.Contexto(raw=tmp_path, zona=ZONA))
     assert list(g.columns) == ["ref", "name", "network", "osmc", "tipo", "fuente", "dificultad", "geometry"]
     assert list(g["name"]) == ["Sendero Gr 7", "Ruta X"] and set(g["fuente"]) == {"rediam"}
+
+
+def test_contexto_region_completo_y_unico(tmp_path):
+    import dataclasses
+    from setas_pipeline.region import cargar_region
+    r = dataclasses.replace(cargar_region("marbella"), datos=tmp_path)
+    r.out.mkdir(parents=True)
+    MALLA.guardar(r.out / "malla.json")
+    gpd.GeoDataFrame(geometry=[ZONA], crs=A.CRS).to_file(r.out / "zona.geojson", driver="GeoJSON")
+    ctx = A.contexto_region(r, desde_anio=2016)
+    assert ctx.raw == r.raw and ctx.capas == r.capas and ctx.desde_anio == 2016
+    assert ctx.malla.bounds == MALLA.bounds and ctx.zona.equals(ZONA)
+    assert "incendios" in ctx.fuentes and callable(ctx.osm_pbf)
+    sin_zona = dataclasses.replace(r, datos=tmp_path / "otra")
+    assert A.contexto_region(sin_zona, malla=MALLA).zona is None          # sin zona.geojson: no la inventa

@@ -78,15 +78,33 @@ class Region:
         return {k: fusionar(v, self.overrides_especies.get(k, {})) for k, v in catalogo.items() if k in validas}
 
 
+def _numero(v) -> bool:
+    return isinstance(v, (int, float)) and not isinstance(v, bool)
+
+
+def _lista(v) -> list:
+    """Lista de la YAML: un valor vacío (None) es una lista vacía; cualquier otro tipo no es lista."""
+    return [] if v is None else v
+
+
 def validar(d: dict, ruta: Path, catalogo: dict) -> list[str]:
+    """Errores de la config de una región (lista vacía = válida). Nunca lanza por tipos raros o nulos."""
     from .adaptadores import REGISTRO
+    if not isinstance(d, dict):
+        return ["la config no es un mapa YAML"]
     e = [f"falta la clave '{k}'" for k in OBLIGATORIAS if k not in d]
+    if e:
+        return e
+    for k in ("zona", "capas", "especies", "legal", "atribuciones"):
+        if not isinstance(d[k], dict):
+            e.append(f"'{k}' debe ser un mapa")
     if e:
         return e
     if d["id"] != Path(ruta).stem:
         e.append(f"id '{d['id']}' no coincide con el archivo '{Path(ruta).stem}'")
     o = d["origen"]
-    if not (isinstance(o, dict) and -180 <= o.get("lon", 999) <= 180 and -90 <= o.get("lat", 999) <= 90):
+    if not (isinstance(o, dict) and _numero(o.get("lon")) and _numero(o.get("lat"))
+            and -180 <= o["lon"] <= 180 and -90 <= o["lat"] <= 90):
         e.append("origen debe ser {lon, lat} en grados")
     e += [f"falta zona.{k}" for k in CLAVES_ZONA if k not in d["zona"]]
     x = d["osm_extractos"]
@@ -96,30 +114,52 @@ def validar(d: dict, ruta: Path, catalogo: dict) -> list[str]:
         if tipo not in REGISTRO:
             e.append(f"capa desconocida '{tipo}' (conocidas: {sorted(REGISTRO)})")
             continue
+        if not isinstance(fuentes, list) or not all(isinstance(f, dict) for f in fuentes):
+            e.append(f"capas.{tipo} debe ser una lista de fuentes {{adaptador: …}}")
+            continue
         for f in fuentes:
             if f.get("adaptador") not in REGISTRO[tipo]:
                 e.append(f"capas.{tipo}: adaptador desconocido '{f.get('adaptador')}' (conocidos: {sorted(REGISTRO[tipo])})")
-    act, sin = d["especies"].get("activas", []), d["especies"].get("sin_habitat", [])
-    if not act:
+    act, sin = _lista(d["especies"].get("activas")), _lista(d["especies"].get("sin_habitat"))
+    if not isinstance(act, list) or not isinstance(sin, list):
+        e.append("especies.activas y especies.sin_habitat deben ser listas")
+        act, sin = (act if isinstance(act, list) else []), (sin if isinstance(sin, list) else [])
+    elif not act:
         e.append("especies.activas está vacía")
     for k in [*act, *sin]:
         if k not in catalogo:
             e.append(f"especie '{k}' no está en especies.yaml")
     for k in set(act) & set(sin):
         e.append(f"especie '{k}' a la vez en activas y sin_habitat")
-    for k in d.get("overrides_especies", {}) or {}:
+    overrides = d.get("overrides_especies") or {}
+    if not isinstance(overrides, dict):
+        e.append("overrides_especies debe ser un mapa")
+        overrides = {}
+    for k in overrides:
         if k not in set(act) | set(sin):
             e.append(f"overrides_especies.{k}: la especie no está en la región")
     legal = d["legal"]
     for k in ("aviso", "tipos_restriccion", "ccaa"):
         if k not in legal:
             e.append(f"falta legal.{k}")
-    for i, c in enumerate(legal.get("ccaa") or []):
+    ccaa = legal.get("ccaa")
+    if not isinstance(ccaa, list) or not ccaa:
+        e.append("legal.ccaa debe ser una lista no vacía")
+        ccaa = []
+    for i, c in enumerate(ccaa):
+        if not isinstance(c, dict):
+            e.append(f"legal.ccaa[{i}] debe ser un mapa")
+            continue
         e += [f"legal.ccaa[{i}]: falta {k}" for k in CLAVES_CCAA if k not in c]
         if "verificado" in c and not isinstance(c["verificado"], bool):
             e.append(f"legal.ccaa[{i}].verificado debe ser true/false")
-    if not legal.get("ccaa"):
-        e.append("legal.ccaa está vacía")
+    # Cada tipo de restricción que declara una fuente necesita su texto (si no, la app pintaría un recinto sin
+    # explicación). Los tipos que salen de los datos (p. ej. PORN) no se pueden comprobar aquí.
+    textos = legal.get("tipos_restriccion") if isinstance(legal.get("tipos_restriccion"), dict) else {}
+    fuentes_r = d["capas"].get("restricciones")
+    for f in fuentes_r if isinstance(fuentes_r, list) else []:
+        if isinstance(f, dict) and "tipo" in f and f["tipo"] not in textos:
+            e.append(f"capas.restricciones: tipo '{f['tipo']}' sin texto en legal.tipos_restriccion")
     e += [f"falta atribuciones.{k}" for k in CLAVES_ATRIBUCION if k not in d["atribuciones"]]
     return e
 

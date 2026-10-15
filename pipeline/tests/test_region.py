@@ -91,3 +91,21 @@ def test_listar_y_cli(tmp_path):
     assert R.region_cli([]).id == "marbella"
     with pytest.raises(SystemExit):
         R.region_cli(["--region", "no_existe"])
+
+
+@pytest.mark.parametrize("cambio, mensaje", [
+    (lambda d: d["especies"].__setitem__("sin_habitat", None), None),                 # vacío en YAML: vale
+    (lambda d: d["capas"].__setitem__("senderos", None), "capas.senderos"),
+    (lambda d: d["origen"].__setitem__("lon", "-4.88"), "origen"),
+    (lambda d: d["especies"].__setitem__("activas", "boletus_edulis"), "especies.activas"),
+    (lambda d: d.__setitem__("zona", None), "zona"),
+    (lambda d: d["legal"].__setitem__("ccaa", None), "legal.ccaa"),
+    (lambda d: d["capas"]["restricciones"][1].__setitem__("tipo", "parque_natural"), "parque_natural"),
+])
+def test_validacion_no_revienta_con_nulos_y_tipos_raros(tmp_path, cambio, mensaje):
+    regiones = _copia(tmp_path, cambio)
+    if mensaje is None:
+        assert R.cargar_region("marbella", regiones=regiones).especies_sin_habitat == ()
+    else:
+        with pytest.raises(R.RegionInvalida, match=mensaje):
+            R.cargar_region("marbella", regiones=regiones)

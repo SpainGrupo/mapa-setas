@@ -245,3 +245,17 @@ def test_regiones_json_indexa_las_que_tienen_manifest(tmp_path):
     assert lista == [{"id": "marbella", "nombre": "Marbella", "origen": [-4.8825, 36.5101],
                       "bbox": [-5.9, 36.0, -3.8, 37.5], "total_bytes": 123, "generado": "2026-10-15T10:00:00+00:00"}]
     assert json.loads((datos / "regiones.json").read_text()) == lista
+
+
+def test_regiones_junto_a_otros_pasos_tambien_se_escribe(monkeypatch):
+    import setas_pipeline.exportar as ex
+    hechos = []
+    monkeypatch.setattr(ex.Malla, "cargar", staticmethod(lambda ruta: None))
+    monkeypatch.setattr(ex, "escribir_manifest", lambda region: hechos.append("manifest") or
+                        {"archivos": [], "total_bytes": 0})
+    monkeypatch.setattr(ex, "escribir_regiones", lambda: hechos.append("regiones") or [])
+    ex.main(["manifest", "regiones", "--region", "marbella"])
+    assert hechos == ["manifest", "regiones"]
+    hechos.clear()
+    ex.main(["regiones"])
+    assert hechos == ["regiones"]

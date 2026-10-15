@@ -19,12 +19,11 @@ import argparse, io, json, math, subprocess, tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 import numpy as np
-import yaml
 from PIL import Image
 from pyproj import Transformer
 
 from .malla import Malla, leer_tif
-from .region import Region, cargar_region, argumento_region, listar_regiones, DATOS, REGIONES, ESPECIES, FUENTES
+from .region import Region, cargar_region, argumento_region, listar_regiones, DATOS, REGIONES, ESPECIES
 
 UMBRALES = (0, 200, 400, 600, 800, 1000)
 ZOOM_IDONEIDAD = (8, 13)
@@ -279,13 +278,8 @@ def _indices(malla: Malla, lon, lat, tr):
 
 
 def _contexto(region: Region, zona=None):
-    from .adaptadores import Contexto
-    from .adaptadores.osm import pbf_zona
-    from .descargas import cargar_zona
-    malla = Malla.cargar(region.out / "malla.json")
-    return Contexto(raw=region.raw, zona=zona if zona is not None else cargar_zona(region.out / "zona.geojson"),
-                    malla=malla, fuentes=yaml.safe_load(FUENTES.read_text()), capas=region.capas,
-                    osm_pbf=lambda: pbf_zona(region.raw, list(region.osm_extractos), malla.bounds))
+    from .adaptadores import contexto_region
+    return contexto_region(region, zona=zona)
 
 
 def _bbox_zona(region: Region, margen=MARGEN_M):
@@ -607,12 +601,18 @@ def main(argv=None):
     if pasos & {"rutas", "todo"}:
         from .rutas import construir
         print("rutas…", flush=True); construir(region)
-    if pasos == {"respaldo"}:
+    if pasos <= {"respaldo", "regiones"} and "respaldo" in pasos:
         from .respaldo import exportar_respaldo
         print("respaldo…", flush=True); exportar_respaldo(region, malla)
+        if "regiones" in pasos:
+            lista = escribir_regiones()
+            print(f"regiones.json: {[r['id'] for r in lista]}")
         return
     m = escribir_manifest(region)
     print(f"manifest {region.id}: {len(m['archivos'])} archivos, {m['total_bytes'] / 1e6:.1f} MB")
+    if "regiones" in pasos:                       # el índice va después del manifest que acaba de cambiar
+        lista = escribir_regiones()
+        print(f"regiones.json: {[r['id'] for r in lista]}")
 
 
 if __name__ == "__main__":

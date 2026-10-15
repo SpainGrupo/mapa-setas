@@ -91,7 +91,7 @@
   - `comparar(dorado: dict, actual: dict, solo: list[str] | None = None) -> list[str]` (lista de diferencias, vacía = OK)
   - CLI: `uv run python -m setas_pipeline.dorado generar|comparar --out DIR --dorado JSON [--desde EPOCH] [--solo REL ...]`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # pipeline/tests/test_dorado.py
@@ -209,12 +209,12 @@ def test_pmtiles_real(tmp_path):
     assert h["zoom"] == [8, 8] and h["atribucion"] == "IGN" and h["nombre"] == "x" and h["bytes"] > 0
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `cd pipeline && uv run pytest tests/test_dorado.py -v`
 Expected: FAIL con `ImportError: cannot import name 'dorado'`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 ```python
 # pipeline/setas_pipeline/dorado.py
@@ -408,12 +408,12 @@ if __name__ == "__main__":
     sys.exit(main())
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `cd pipeline && uv run pytest tests/test_dorado.py -v`
 Expected: PASS (11 tests). Si `Reader.header()` no trae `addressed_tiles_count` o `min_lon_e7` en la versión instalada de `pmtiles`, mira las claves reales con `uv run python -c "from pmtiles.reader import Reader, MmapSource; f=open('…','rb'); print(Reader(MmapSource(f)).header())"` sobre el pmtiles del test y ajusta `huella_pmtiles` (no el test).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add pipeline/setas_pipeline/dorado.py pipeline/tests/test_dorado.py

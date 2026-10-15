@@ -1154,7 +1154,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 Decisión: recorte con `osmium extract -s smart` (vías completas y multipolígonos completos) sobre la malla + 5 km. `rutas` recorta a la zona + 2 km y `acceso`/`accesos` rasterizan solo dentro de la malla, así que lo que queda fuera del recorte nunca llegaba a las salidas: con un solo extracto las salidas de Marbella deben ser idénticas (lo prueba la Task 10). Con un solo extracto no hay `merge`.
 
-- [ ] **Step 1: Instalar osmium-tool**
+- [x] **Step 1: Instalar osmium-tool**
 
 Lee primero `/Users/alexanderkrupnov/Documents/Claude/Z.Funciones Base/README.md` (regla del workspace). Si no aparece osmium-tool:
 ```bash
@@ -1162,7 +1162,7 @@ brew install osmium-tool && osmium --version | head -1
 ```
 Expected: `osmium version 1.x`. Anota en el informe que hay que añadir osmium-tool a `Z.Funciones Base/setup.sh` (fuera de este repo; no lo edites).
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 ```python
 # pipeline/tests/test_osm.py
@@ -1229,12 +1229,12 @@ def test_pbf_zona_recorta_de_verdad(tmp_path):
 ```
 (Comprueba con la versión instalada de pyosmium que `osmium.osm.mutable.Node(location=(lon, lat))` y `SimpleWriter.add_node/add_way/close` existen; si cambia el nombre, ajusta el fixture, no la aserción.)
 
-- [ ] **Step 3: Run tests to verify they fail**
+- [x] **Step 3: Run tests to verify they fail**
 
 Run: `cd pipeline && uv run pytest tests/test_osm.py -v`
 Expected: FAIL (`No module named 'setas_pipeline.adaptadores.osm'`).
 
-- [ ] **Step 4: Implementation**
+- [x] **Step 4: Implementation**
 
 ```python
 # pipeline/setas_pipeline/adaptadores/osm.py
@@ -1331,12 +1331,12 @@ En `adaptadores/__init__.py` cambia la última línea a:
 from . import rediam, effis, derivados, osm  # noqa: E402,F401  (registran sus adaptadores)
 ```
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `cd pipeline && uv run pytest tests/test_osm.py -v && uv run pytest -q`
 Expected: PASS (el test real de osmium no puede salir SKIPPED: si sale, falta el Step 1).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add pipeline/setas_pipeline/adaptadores pipeline/tests/test_osm.py

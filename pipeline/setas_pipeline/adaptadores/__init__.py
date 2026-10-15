@@ -76,4 +76,4 @@ def cargar_capa(tipo: str, capas: dict, ctx: Contexto) -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(pd.concat(trozos, ignore_index=True), crs=CRS)
 
 
-from . import rediam, effis, derivados  # noqa: E402,F401  (registran sus adaptadores)
+from . import rediam, effis, derivados, osm  # noqa: E402,F401  (registran sus adaptadores)

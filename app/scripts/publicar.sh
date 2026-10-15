@@ -59,5 +59,6 @@ git init -q -b gh-pages
 git add -A
 git -c user.name="$(git -C "$RAIZ" config user.name)" -c user.email="$(git -C "$RAIZ" config user.email)" \
   commit -q -m "Publicación $(git -C "$RAIZ" rev-parse --short HEAD)"
-git push -f "$REMOTO" gh-pages
+# ~285 MB en un solo commit: sin buffer grande GitHub corta por HTTP 408
+git -c http.postBuffer=1048576000 -c http.version=HTTP/1.1 push -f "$REMOTO" gh-pages
 echo "Publicado: https://spaingrupo.github.io/mapa-setas/"

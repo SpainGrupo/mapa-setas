@@ -7,7 +7,7 @@ Alcance pedido por Alexander el 15-10: todo hasta completarlo, reutilizando lo a
 ## 1. Objetivo y criterios de éxito
 1. La misma PWA sirve Marbella y Alicante. El usuario elige región, y cada región se descarga por separado para usarla sin cobertura.
 2. Marbella no cambia. Sus salidas del pipeline son idénticas antes y después del refactor (§7.1), y sus e2e siguen en verde.
-3. Alicante tiene el catálogo que sirve allí: rovellón (*L. sanguifluus*), negrilla, llenega, *Suillus*, *Lepista*, *Agaricus*, *Hydnum*, *P. eryngii*, colmenilla y turma. Las especies de alcornocal salen como «sin hábitat en esta zona» y no como puntuaciones bajas.
+3. Alicante tiene el catálogo que sirve allí: rovellón (*L. sanguifluus*), llenega, *Suillus*, *Lepista*, *Agaricus*, *Hydnum*, *P. eryngii*, colmenilla y turma. Las especies de alcornocal salen como «sin hábitat en esta zona» y no como puntuaciones bajas.
 4. Toda comestible nueva llega con sus confusiones peligrosas en la guía y en el reconocedor (*T. pardinum*, *T. equestre*, *Gyromitra*, *Clitocybe dealbata*). La regla SPEC §2 no se toca: nunca se afirma comestibilidad.
 5. La normativa sale por comunidad autónoma del punto. Lo que no se ha cotejado en fuente oficial dice «pendiente de verificar» y nunca da un cupo inventado.
 6. Se publica solo con las puertas en verde (§8).
@@ -52,7 +52,7 @@ OSM con varios extractos: se descargan y se recortan con `osmium extract -b <bbo
 - Suelo: `mapeo_suelo` añade los `DESC_UNIT` de la zona (Keuper, yesos, dolomías, Buntsandstein/rodeno). La clase ácida queda para rodeno y cuarcitas.
 
 ### 3.5 Especies (Alicante)
-- Perfiles nuevos según INV §2: `tricholoma_terreum`, `hygrophorus_latitabundus`, `suillus_collinitus`, `lepista_nuda`, `agaricus_campestris`, `hydnum_repandum`, `morchella_spp` y `terfezia_claveryi`. Se ajusta `lactarius_sanguifluus`.
+- Perfiles nuevos según INV §2 (sin `tricholoma_terreum`: decisión de Alexander del 15-10, ficha tóxica sin capa): `hygrophorus_latitabundus`, `suillus_collinitus`, `lepista_nuda`, `agaricus_campestris`, `hydnum_repandum`, `morchella_spp` y `terfezia_claveryi`. Se ajusta `lactarius_sanguifluus`.
 - `morchella_spp`: sin bonus por quemado en esta entrega (PENDIENTE de diseño, INV §2). `penaliza_fuego: false`.
 - Calibración GBIF con hold-out por bloques cuando n≥10, igual que en Marbella. Con n<10, el perfil queda heurístico y la app lo marca como «modelo sin calibrar en esta zona».
 - `sin_habitat`: no se exportan sus pmtiles (ahorra espacio, §6). El manifest las lista con `sin_habitat: true`.

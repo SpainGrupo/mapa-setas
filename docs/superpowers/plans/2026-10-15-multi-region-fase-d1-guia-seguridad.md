@@ -1366,3 +1366,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 | SPEC §2: nunca comestibilidad; Orden SCO/3303/2006 derogada | Global Constraints, 3 (Step 6), 8 (Step 2) |
 
 Los valores entre `< >` de Tasks 2 y 3 (títulos de Commons, `RecordID` de Index Fungorum, `usageKey` de GBIF y las URL de NEJM y PubMed) no son huecos del plan. Son datos que hay que copiar del dosier de Task 1, porque escribirlos aquí sin comprobarlos sería inventarlos.
+
+## Decisiones de Alexander (2026-10-15), prevalecen sobre las tareas anteriores
+1. ***Tricholoma terreum* (negrilla): ficha TÓXICA y sin capa en el mapa.** El grupo es `toxica`, con la toxicidad muscular descrita (Yin et al. 2014) en `toxicidad_nota`. No va en las especies activas de ninguna región ni tiene perfil de idoneidad. Las reglas de confusión con *T. pardinum* y *T. equestre* se mantienen.
+2. **Especies buscables sin parecida tóxica documentada** (*Hydnum*, *Suillus*, *H. latitabundus* y las que salgan en la Tarea 1): se aprueba la excepción. Cada una entra en `EXCEPCIONES_APROBADAS` con este texto en la ficha: "Sin confusiones tóxicas documentadas en las fuentes consultadas; eso no garantiza nada, confirma con un experto." Pasa por humanizer.
+3. **"Considerada comestible por la bibliografía": se QUITA.** Se sustituye por una etiqueta neutra del grupo, sin la palabra "comestible", por ejemplo "Apreciada en la bibliografía micológica" (pasa por humanizer). Se añade un test que falle si la palabra "comestible" aparece como afirmación en textos de la app.

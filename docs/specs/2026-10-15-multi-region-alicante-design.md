@@ -113,8 +113,8 @@ Palancas en este orden, medidas en la fase de datos de Alicante:
 - `setas:capa` con una especie que no existe en la nueva región: se toma la primera activa, como ya hace `main.ts:159`.
 
 ## 7. Pruebas
-1. **Regresión de Marbella.** Antes del refactor se genera `pipeline/tests/dorado/marbella.json` con el hash de los píxeles de cada `.tif` de `out/` y los JSON de `out/app` normalizados (sin `generado`). También guarda la lista y el tamaño de los pmtiles, con un ±1 % de tolerancia porque tippecanoe mete metadatos. Después del refactor, `ejecutar todo` + `exportar todo` con `--region marbella`, sobre la caché clonada, tiene que dar el mismo dorado. El test se salta si no hay datos.
-2. Tests unitarios de `region.py` (validación), de cada adaptador (con respuestas grabadas como fixtures) y de la expansión `pino → pino_*`.
+1. **Regresión de Marbella.** Antes del refactor se genera `pipeline/tests/dorado/marbella.json` con el hash de los píxeles de cada `.tif` de `out/` y los JSON de `out/app` normalizados (sin `generado`). También guarda la lista y el tamaño de los pmtiles, con un ±1 % de tolerancia porque tippecanoe mete metadatos. Después del refactor se regenera sin red (todo menos `zona` y `base`, que no tienen caché) con `--region marbella` sobre la caché clonada, y tiene que dar el mismo dorado (plan A, tareas 2 y 10). El test se salta si no hay datos.
+2. Tests unitarios de `region.py` (validación), de cada adaptador (con respuestas grabadas como fixtures) y de que NODATA (255) no se lea como `sabina`.
 3. App, con vitest: `region.ts`, migración OPFS, claves por región, `sin_habitat`, normativa por CCAA y origen desde el manifest. Los tests que usan Marbella siguen igual. Se añaden casos de Alicante.
 4. e2e: el actual con Marbella sin cambios, más un e2e de Alicante (punto en Mariola, especie activa, especie sin hábitat, normativa CV, descarga offline, cambio de región).
 5. Seguridad: los tests de `seguridad.ts` se amplían a las reglas nuevas, con cobertura del 100 %. Hay un test que comprueba que cada comestible activa en una región tiene al menos una confusión tóxica con ficha.

@@ -3,7 +3,8 @@ import './estilos.css';
 import { registerSW } from 'virtual:pwa-register';
 import type { Map as MapaML, GeoJSONSource, LngLat } from 'maplibre-gl';
 import { baseDatos, cargarJson, cargarManifest, mb } from './datos';
-import { cargarRegiones, claveRegion, establecerActiva, hayRegionActiva, regionActiva, resolverRegion, type RegionIndice } from './region';
+import { CLAVE_REGION, cargarRegiones, claveRegion, establecerActiva, hayRegionActiva, regionActiva, resolverRegion, type RegionIndice } from './region';
+import { iniciarSelectorRegion, pintarAjustesRegion, posicionRapida, preguntarRegion, type OpcionesRegionUi } from './region-ui';
 import { migrarARegiones } from './migracion';
 import type { EntradaLegal, ManifestApp } from './manifest-region';
 import { PENDIENTE, textoCupo, vistaNormativa } from './normativa';
@@ -26,7 +27,7 @@ import { Gps } from './gps';
 import { borrarMapas, descargarMapas, estadoDescarga, moverEnOpfs } from './opfs';
 import { borrarSitio, guardarSitio, guardarVarios, leerSitio, listarSitios } from './sitios';
 import { aGPX, aJSON, deGPX, deJSON, nuevoId } from './intercambio';
-import type { AccesoSitio, Sitio } from './tipos';
+import type { AccesoSitio, Manifest, Sitio } from './tipos';
 import type { Feature } from 'geojson';
 import { claveMeteo, edadHoras, fechaMadrid, obtener, renombrarCache, CADUCIDAD_H, type DatosMeteo, type PuntoMeteo } from './meteo';
 import { bandaAltitud, ddmm, humedadAcumulada, semaforo, sumarDias, textoBanda, type ResultadoSemaforo } from './semaforo';
@@ -1156,6 +1157,22 @@ $('#creditos-fotos').addEventListener('toggle', () => pintarCreditos());
 
 async function pintarAjustes() {
   if (!hayRegionActiva()) return;
+  // Otras regiones: se descargan y borran aquí sin recargar (el mapa no las está leyendo). La activa usa «Mapas sin conexión».
+  pintarAjustesRegion({ ...opcionesRegion,
+    descargar: async (id, b) => {
+      b.disabled = true;
+      try {
+        const m = await cargarJson<Manifest>('manifest.json', id);
+        if (!m) throw new Error('No se pudo leer el manifest de la región');
+        await descargarMapas(m, id, baseDatos(id), (h, t) => { b.textContent = `Descargando… ${mb(h)} de ${mb(t)}`; });
+        avisar(`${nombreRegion(id)} ya funciona sin conexión`);
+      } catch (err) { avisar(`Error en la descarga: ${(err as Error).message}`, 6000); }
+      pintarAjustes();
+    },
+    borrar: async (id) => {
+      if (!confirm(`¿Borrar los mapas descargados de ${nombreRegion(id)}?`)) return;
+      await borrarMapas(id); pintarAjustes();
+    } });
   pintarEstadoGuia();
   pintarAjustesModelo();
   const est = estadoDescarga();
@@ -1312,9 +1329,17 @@ iniciarReconocer({
     { especie: especieGuia ? especieMapaDeFicha(especieGuia, (manifest?.especies ?? []).map((e) => e.id)) : '', foto }),
 });
 
-// Hasta la tarea 11 (region-ui.ts): sin GPS ni pregunta, la primera región.
-const posicionRapida = async () => null;
-const preguntarRegion = async (rs: RegionIndice[]) => rs[0]?.id ?? null;
+const nombreRegion = (id: string) => regiones.find((r) => r.id === id)?.nombre ?? id;
+/** Cambiar de región guarda la elección y recarga: ninguna caché de módulo (PMTiles, acceso, sitios) arrastra la anterior. */
+const opcionesRegion: OpcionesRegionUi = {
+  regiones: () => regiones,
+  activa: () => regionActiva(),
+  estado: (id) => estadoDescarga(id),
+  cambiar: (id) => {
+    try { localStorage.setItem(CLAVE_REGION, id); } catch { /* solo esta sesión */ }
+    recargarTrasCambioDeMapas(`Región: ${nombreRegion(id)}`);
+  },
+};
 
 /** Arranque: migración de la instalación plana (una vez) → índice de regiones → región activa → mapa. */
 async function arrancar() {
@@ -1328,6 +1353,7 @@ async function arrancar() {
   const id = await resolverRegion(regiones, { almacen: localStorage, posicion: posicionRapida, preguntar: preguntarRegion });
   if (!id) { $('#sin-datos').hidden = false; return; }
   establecerActiva(id);
+  iniciarSelectorRegion(opcionesRegion);
   await iniciarMapa();
 }
 arrancar().then(pintarAjustes).finally(() => guardarFotosSinConexion(pintarEstadoGuia));

@@ -198,6 +198,28 @@ details > summary { cursor: pointer; }
 /* ---------------------------------------------------------------- mapa: cromo flotante */
 .mapa-cab { position: absolute; z-index: 10; top: calc(var(--sup) + 6px); left: 10px; right: 10px; display: grid; gap: 8px; pointer-events: none; }
 .mapa-cab > * { pointer-events: auto; }
+/* Chip de región (cabecera del mapa): vidrio, compacto, con área de toque de 44 px. */
+.chip-region { justify-self: start; position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 36px;
+  padding: 6px 12px 6px 10px; border: 0; border-radius: 999px; font: inherit; font-size: 15px; font-weight: 800; color: var(--tinta);
+  transition: transform 100ms var(--curva); }
+.chip-region::after { content: ''; position: absolute; inset: -4px; }
+.chip-region:active { transform: scale(0.97); }
+.chip-region .ico { width: 18px; height: 18px; }
+.chip-region[aria-expanded=true] { background: var(--tinta); color: var(--hoja); }
+/* Lista de regiones (hoja y Ajustes) */
+.lista-regiones { list-style: none; margin: 0; padding: 4px 10px 8px; display: grid; gap: 6px; }
+.lista-regiones li { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 12px; min-height: var(--toque-1);
+  padding: 10px 14px; border-radius: 16px; background: var(--velo); }
+.lista-regiones li > b { font-size: 17px; }
+.lista-regiones li > .nota { grid-column: 1; font-size: 14px; }
+.lista-regiones [role=option] { cursor: pointer; transition: transform 100ms var(--curva); }
+.lista-regiones [role=option]:active { transform: scale(0.98); }
+.lista-regiones [role=option][aria-selected=true] { background: var(--bosque-t); }
+.lista-regiones [aria-disabled=true] { opacity: 0.6; cursor: default; }
+.regiones-intro { padding: 0 20px 6px; }
+.lista-regiones-ajustes { padding: 0; }
+.lista-regiones-ajustes .acciones-region { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.chip-en-uso { font-size: 13px; font-weight: 800; padding: 4px 10px; border-radius: 999px; background: var(--bosque-t); color: var(--bosque-tx); }
 .fila-especie { display: flex; gap: 8px; align-items: center; }
 .selector-especie {
   flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 10px;
@@ -849,6 +871,7 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
   @keyframes aparecer-abajo { from { opacity: 0; } }
   .btn:active, .fab:active, .chip:active, .pestanas button:active, .selector-especie:active, .btn-x:active, .btn-redondo:active { transform: none !important; }
   .interruptores input[type=checkbox]::after { transition: none; }
+  .chip-region:active, .lista-regiones [role=option]:active { transform: none; }
 }
 
 /* ---------------------------------------------------------------- ficha: «Cuándo está activa» */

@@ -1923,7 +1923,7 @@ export function pintarAjustesRegion(o: OpcionesRegionUi & { descargar: (id: stri
 ```
 IDs del DOM: `#btn-region`, `#btn-region-nombre`, `#dlg-region`, `#tit-regiones`, `#regiones-intro`, `#lista-regiones` (opciones `li[role=option][data-region]`), `#ajustes-region`, `#ajustes-lista-regiones` (filas `li[data-region]` con botones `[data-accion=usar|descargar|borrar]`), `#tit-mapas-offline`.
 
-- [ ] **Step 1: Markup**
+- [x] **Step 1: Markup**
 
 `app/index.html`, dentro de `<header class="mapa-cab">` y antes de `<div class="fila-especie">`:
 ```html
@@ -1952,7 +1952,7 @@ Primera sección de `#p-ajustes .cuerpo`:
 ```
 En «Mapas sin conexión», el `<h2>` pasa a `<h2 id="tit-mapas-offline">Mapas sin conexión</h2>`.
 
-- [ ] **Step 2: `region-ui.ts`**
+- [x] **Step 2: `region-ui.ts`**
 
 ```ts
 // Selector de región (spec §4.2): chip en la cabecera del mapa y hoja #dlg-region; lista con descargas en Ajustes.
@@ -2080,7 +2080,7 @@ export function pintarAjustesRegion(o: OpcionesRegionUi & {
 }
 ```
 
-- [ ] **Step 3: Wiring en `main.ts`**
+- [x] **Step 3: Wiring en `main.ts`**
 
 - Borra los stubs `posicionRapida` y `preguntarRegion` de la tarea 7 e importa `import { iniciarSelectorRegion, pintarAjustesRegion, posicionRapida, preguntarRegion, type OpcionesRegionUi } from './region-ui';` y `import { CLAVE_REGION } from './region';` (junto al import existente de `./region`).
 - Opciones compartidas:
@@ -2116,7 +2116,7 @@ const opcionesRegion: OpcionesRegionUi = {
 ```
 La región activa no se descarga aquí: usa la sección «Mapas sin conexión» de siempre, que recarga la página. Las demás regiones no las está leyendo el mapa, así que no hace falta recargar.
 
-- [ ] **Step 4: CSS**
+- [x] **Step 4: CSS**
 
 `app/src/estilos.css`, junto a `.fila-especie`:
 ```css
@@ -2149,12 +2149,12 @@ y dentro del bloque `@media (prefers-reduced-motion: reduce)` existente:
 ```
 La hoja usa `.dlg.dlg-hoja`, que ya entra con `subir` y `var(--entrada)`, igual que `#dlg-especie`. El modo oscuro sale de los tokens (`--tinta`, `--hoja`, `--velo`, `--bosque-t`, `--vidrio-*`). No hace falta CSS propio.
 
-- [ ] **Step 5: Verify**
+- [x] **Step 5: Verify**
 
 Run: `cd app && npx tsc --noEmit && npx vitest run`
 Expected: PASS. Con una sola región (Marbella), `#btn-region` y `#ajustes-region` siguen ocultos y el título es «Mapas sin conexión». El e2e de la tarea 13 lo cubre.
 
-- [ ] **Step 6: Humanizer, revisión de diseño y commit**
+- [x] **Step 6: Humanizer, revisión de diseño y commit**
 
 - Humanizer sobre: «Elige región», «No tenemos tu ubicación. Elige dónde vas a buscar setas; la puedes cambiar cuando quieras.», «Región», «Cada región se descarga aparte. Puedes tener varias en el teléfono.», «Usar esta región», «En uso», «Descargar (N MB)», «Descargada · N MB», «Sin descargar · N MB», «Sin descargar · necesita conexión», «Región: X. Cambiar de región», «X: lista sin conexión», «¿Borrar los mapas descargados de X?». Si cambia `textoEstadoRegion`, actualiza `region.test.ts`.
 - Comprueba las capturas `regiones-chip.png` y `regiones-chip-oscuro.png` de la tarea 13 contra `MASTER.md`: vidrio, contraste ≥ 4,5:1 y toque ≥ 44 px.
@@ -2595,3 +2595,4 @@ El código cambió desde que se escribió el plan: la fase A (pipeline multi-reg
 6. **Atribuciones (cambio mínimo en el pipeline).** El manifest de la fase A no traía `atribuciones`. `exportar.py` ahora emite `atribuciones = region.atribuciones` (el bloque del yaml: idoneidad, protegidos, restricciones, rutas, titularidad…; `mapa` y `fuentes` son opcionales) y `dorado.py` añade `atribuciones` a `MANIFEST_NUEVAS` (con su test). La app: `atribuciones.mapa` si viene; si no, el texto de legado en Marbella o `idoneidad + « · Protomaps»` en otra región; `atribuciones.capas` guarda las de cada capa y la de titularidad se cita en los popups de montes y pasos. El manifest de Marbella se regeneró (`exportar manifest regiones`). **Fase C:** `alicante.yaml` puede declarar `atribuciones.mapa` y `atribuciones.fuentes` (valor de `fuente` de rutas.pmtiles → nombre).
 7. **Titularidad (llegó con la fusión de `main`).** `titularidad.ts` deja de llevar «Junta» y «BOJA 196»: `ponerTextosTitularidad(manifest.titularidad)` carga textos, aviso y norma del manifest (yaml `legal.titularidad`); sin ellos quedan textos neutros (monte «autonómico», solo la Ley 43/2003). La leyenda de `index.html` rellena los dos textos de monte desde el manifest. La nota de «Puntuación del día» y el comentario de `ranking.ts` dicen «autonómico o municipal». El popup de pasos deja «Fuente: REDIAM» por la atribución de titularidad y dice que el trazado «puede ser» aproximado.
 8. **Tarea 9.** `mapa.ts` ya tenía `entidadesTesela` (genérico, de la fusión de `main`): `restriccionEn` y `ccaaEn` lo usan en lugar de crear `entidadesEn`. `ccaaEnPunto` devuelve ids canónicos (acepta los códigos cortos del pipeline). Humanizer: «Todas las comunidades de la región. Toca un punto del mapa para ver solo la suya.»; el resto de cadenas queda como en el plan.
+9. **Tarea 11, humanizer.** «No sabemos dónde estás. Elige la zona donde vas a buscar setas; puedes cambiarla cuando quieras.» y «<Región> ya funciona sin conexión» sustituyen a los borradores; el resto de cadenas no cambia.

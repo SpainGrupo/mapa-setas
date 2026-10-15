@@ -48,6 +48,9 @@
       <div id="mira" class="mira" aria-hidden="true" hidden><svg class="ico"><use href="#i-mira"/></svg></div>
 
       <header class="mapa-cab">
+        <button id="btn-region" class="chip-region vidrio" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="dlg-region" hidden>
+          <svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg><span id="btn-region-nombre"></span><svg class="ico se-flecha" aria-hidden="true"><use href="#i-abajo"/></svg>
+        </button>
         <div class="fila-especie">
           <span class="sr" id="etq-especie">Especie</span>
           <!-- El <select> oculto guarda el valor (lo leen el mapa, la Zona y los sitios); se elige con el selector con fotos. -->
@@ -343,8 +346,13 @@
     <section id="p-ajustes" class="pantalla" aria-label="Ajustes">
       <header class="cab"><h1>Ajustes y descargas</h1></header>
       <div class="cuerpo">
+        <section id="ajustes-region" class="grupo-ajustes" aria-labelledby="tit-ajustes-region" hidden>
+          <h2 id="tit-ajustes-region">Región</h2>
+          <p class="nota">Cada región se descarga aparte. Puedes tener varias en el teléfono.</p>
+          <ul id="ajustes-lista-regiones" class="lista-regiones lista-regiones-ajustes"></ul>
+        </section>
         <section class="grupo-ajustes">
-          <h2>Mapas sin conexión</h2>
+          <h2 id="tit-mapas-offline">Mapas sin conexión</h2>
           <p id="estado-descarga" class="estado">Comprobando…</p>
           <progress id="prog-descarga" max="1" value="0" hidden></progress>
           <button id="btn-descargar" class="btn btn-primario btn-ancho" type="button">Descargar mapas para usar sin conexión</button>
@@ -457,6 +465,15 @@
       <form method="dialog"><button class="btn-x" value="cerrar"><svg class="ico" aria-hidden="true"><use href="#i-cerrar"/></svg><span class="sr">Cerrar</span></button></form>
     </div>
     <ul id="lista-especies" class="lista-especies" role="listbox" aria-labelledby="tit-especies"></ul>
+  </dialog>
+
+  <dialog id="dlg-region" class="dlg dlg-hoja hoja-regiones" aria-labelledby="tit-regiones">
+    <div class="hoja-cab">
+      <h2 id="tit-regiones">Elige región</h2>
+      <form method="dialog"><button class="btn-x" value="cerrar"><svg class="ico" aria-hidden="true"><use href="#i-cerrar"/></svg><span class="sr">Cerrar</span></button></form>
+    </div>
+    <p id="regiones-intro" class="nota regiones-intro" hidden>No sabemos dónde estás. Elige la zona donde vas a buscar setas; puedes cambiarla cuando quieras.</p>
+    <ul id="lista-regiones" class="lista-regiones" role="listbox" aria-labelledby="tit-regiones"></ul>
   </dialog>
 
   <div id="aviso" class="toast" role="status" aria-live="polite" hidden></div>

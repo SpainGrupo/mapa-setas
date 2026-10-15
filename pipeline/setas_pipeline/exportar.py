@@ -10,6 +10,7 @@
     uv run python -m setas_pipeline.exportar titularidad [--region …]         # montes públicos, cotos, vallas OSM, pasos públicos
     uv run python -m setas_pipeline.exportar citas      [--region …]          # citas.pmtiles (citas y sitios conocidos)
     uv run python -m setas_pipeline.exportar lugares    [--region …]          # pueblo más cercano en meteo_puntos.json
+    uv run python -m setas_pipeline.exportar ccaa       [--region …]          # ccaa.pmtiles (si la región declara capas.ccaa)
     uv run python -m setas_pipeline.exportar manifest   [--region …]
     uv run python -m setas_pipeline.exportar todo       [--region …]
     uv run python -m setas_pipeline.exportar respaldo   [--region …]          # Fase 7: OsmAnd/Locus (out/respaldo/)
@@ -25,6 +26,7 @@ import numpy as np
 from PIL import Image
 from pyproj import Transformer
 
+from .avisos import leer as leer_avisos
 from .malla import Malla, leer_tif
 from .region import Region, cargar_region, argumento_region, listar_regiones, DATOS, REGIONES, ESPECIES
 
@@ -360,6 +362,8 @@ def especies(region: Region) -> list[dict]:
     return [{"id": k, "nombre": v["nombre"], **({"tiempo": v["tiempo"]} if "tiempo" in v else {}),
              "fiabilidad": fiabilidad(cal.get(k, {}).get("n"), cal.get(k, {}).get("lift_validacion")),
              "n_citas": cal.get(k, {}).get("n"),
+             # Fase C: false = perfil heurístico sin validar con citas en esta zona (n < MIN_OBS o sin lift).
+             "calibrado": fiabilidad(cal.get(k, {}).get("n"), cal.get(k, {}).get("lift_validacion")) != "sin_validar",
              "sin_habitat": k in region.especies_sin_habitat}
             for k, v in perfiles.items()]
 
@@ -493,6 +497,33 @@ def restricciones_gdf(region: Region):
     return gdf.to_crs("EPSG:4326")
 
 
+ZOOM_CCAA = (4, 10)          # la app consulta el punto en la tesela del nivel máximo
+
+
+def exportar_ccaa(region: Region, out: Path | None = None):
+    """Comunidades autónomas (capa `ccaa` de la región) recortadas a la zona + margen → ccaa.pmtiles (capa
+    'ccaa', propiedades id y nombre). Solo si la región declara capas.ccaa."""
+    import geopandas as gpd
+    from .adaptadores import cargar_capa
+    out = out or region.app
+    if "ccaa" not in region.capas:
+        return None
+    ctx = _contexto(region)
+    zona = ctx.zona.buffer(MARGEN_M)
+    g = cargar_capa("ccaa", region.capas, ctx)
+    g = g[g.intersects(zona)].copy()
+    g["geometry"] = [x.intersection(zona).simplify(20) for x in g.geometry]
+    g = gpd.GeoDataFrame(g[["id", "nombre", "geometry"]], crs="EPSG:25830").to_crs("EPSG:4326")
+    with tempfile.TemporaryDirectory() as tmp:
+        gj = Path(tmp) / "ccaa.geojson"
+        gj.write_text(g.to_json(drop_id=True))
+        _tippecanoe(gj, out / "ccaa.pmtiles", "ccaa", *ZOOM_CCAA,
+                    ["--no-tile-size-limit", "--detect-shared-borders",
+                     f"--attribution={region.atribuciones.get('ccaa', 'IGN CC BY 4.0')}"])
+    print(f"  ccaa: {g['id'].tolist()}", flush=True)
+    return g
+
+
 def exportar_restricciones(region: Region, out: Path | None = None):
     out = out or region.app
     gdf = restricciones_gdf(region)
@@ -579,7 +610,10 @@ def escribir_manifest(region: Region, out: Path | None = None) -> dict:
         # Multi-región (2026-10-15): de qué región es este manifest y su normativa por comunidad autónoma.
         "region": {"id": region.id, "nombre": region.nombre, "origen": list(region.origen),
                    "etiqueta_origen": region.etiqueta_origen},
-        "legal": {"ccaa": region.legal["ccaa"]},
+        "legal": {"ccaa": region.legal["ccaa"],
+                  # Fase C: textos por región del popup de espacio protegido y del chip de sitio restringido (si
+                  # la región no los declara, la app usa los de siempre).
+                  **{k: region.legal[k] for k in ("texto_protegido", "chip_sitio_restringido") if k in region.legal}},
         # Atribuciones de la región (yaml `atribuciones`): la app cita su fuente en popups y en Ajustes.
         "atribuciones": region.atribuciones,
         "bbox": [round(v, 5) for v in bbox],
@@ -604,6 +638,9 @@ def escribir_manifest(region: Region, out: Path | None = None) -> dict:
                   if (out / "citas.pmtiles").exists() else None),
         # Fase 9: sitios candidatos por especie (también en la descarga offline, vía `archivos`).
         "sitios": sitios_manifest(out),
+        # Fase C: comunidades autónomas (normativa del punto) y avisos de datos (fuentes caídas, celdas NODATA).
+        "ccaa": "ccaa.pmtiles" if (out / "ccaa.pmtiles").exists() else None,
+        "avisos": leer_avisos(region.out),
         "archivos": archivos,
         "total_bytes": sum(a["bytes"] for a in archivos),
     }
@@ -674,7 +711,7 @@ def modelo_disponible(out: Path) -> dict | None:
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("pasos", nargs="+", choices=["capas", "restricciones", "titularidad", "citas", "lugares", "base",
+    ap.add_argument("pasos", nargs="+", choices=["capas", "restricciones", "ccaa", "titularidad", "citas", "lugares", "base",
                                                  "meteo", "acceso", "altitud", "rutas", "sitios", "manifest",
                                                  "respaldo", "regiones", "todo"])
     ap.add_argument("--maxzoom", type=int, default=ZOOM_BASE_MAX)
@@ -692,6 +729,8 @@ def main(argv=None):
         print("curvas…", flush=True); exportar_curvas(region, malla)
         print("protegidos…", flush=True); exportar_protegidos(region)
         print("restricciones…", flush=True); exportar_restricciones(region)
+    if pasos & {"capas", "ccaa", "todo"} and "ccaa" in region.capas:
+        print("ccaa…", flush=True); exportar_ccaa(region)
     if pasos == {"restricciones"}:
         print("restricciones…", flush=True); exportar_restricciones(region)
     if pasos & {"titularidad", "todo"}:

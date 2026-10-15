@@ -23,6 +23,8 @@ CLAVES_ZONA = ("radio_m", "paso_m", "max_s", "max_snap_m", "cierre_m", "osrm")
 CLAVES_CCAA = ("id", "nombre", "norma", "cupo_kg_dia", "texto", "verificado", "fuente_url")
 CLAVES_ATRIBUCION = ("idoneidad", "protegidos", "restricciones", "rutas", "respaldo_protegidos")
 CAPAS_TITULARIDAD = ("montes_publicos", "cotos_caza", "pasos_publicos")
+# Lista cerrada de la app (manifest-region.ts IDS_CCAA) y sus alias cortos (ALIAS_CCAA).
+IDS_CCAA = ("andalucia", "comunitat_valenciana", "region_murcia", "castilla_la_mancha", "AND", "CV", "MUR", "CLM")
 
 
 class RegionInvalida(ValueError):
@@ -156,6 +158,8 @@ def validar(d: dict, ruta: Path, catalogo: dict) -> list[str]:
             e.append(f"legal.ccaa[{i}] debe ser un mapa")
             continue
         e += [f"legal.ccaa[{i}]: falta {k}" for k in CLAVES_CCAA if k not in c]
+        if "id" in c and c["id"] not in IDS_CCAA:
+            e.append(f"legal.ccaa[{i}].id '{c['id']}' no está en la lista cerrada de la app {IDS_CCAA}")
         if "verificado" in c and not isinstance(c["verificado"], bool):
             e.append(f"legal.ccaa[{i}].verificado debe ser true/false")
     # Cada tipo de restricción que declara una fuente necesita su texto (si no, la app pintaría un recinto sin
@@ -192,6 +196,10 @@ def validar(d: dict, ruta: Path, catalogo: dict) -> list[str]:
             e.append("citas.centro debe ser {lon, lat} en grados")
         if not (_numero(ci.get("radio_km")) and ci["radio_km"] > 0):
             e.append("citas.radio_km debe ser un número > 0")
+        tx = ci.get("taxa", {})
+        if not (isinstance(tx, dict) and all(isinstance(v, list) and v and all(isinstance(n, str) for n in v)
+                                             for v in tx.values())):
+            e.append("citas.taxa debe ser un mapa {especie: [nombres científicos]}")
     return e
 
 

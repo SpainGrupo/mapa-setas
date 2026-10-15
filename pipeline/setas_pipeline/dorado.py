@@ -7,7 +7,8 @@
 Qué entra (rutas relativas a out/):
 - *.tif: sha256 de los píxeles + dtype, forma, nodata, transform y CRS (no los bytes del archivo).
 - *.json / *.geojson: sha256 del JSON canónico sin las claves `generado`. app/manifest.json se guarda
-  entero, normalizado: sin `region`, `legal` ni `especies[].sin_habitat` (claves nuevas permitidas), sin
+  entero, normalizado: sin `region`, `legal`, `atribuciones`, `ccaa`, `avisos` ni `especies[].sin_habitat` /
+  `calibrado` (claves nuevas permitidas), sin
   `total_bytes` (va aparte con tolerancia) y con `bytes` = null en los .pmtiles.
 - *.pmtiles: tamaño (±1 %), zooms, nº de teselas, bbox (±1e-4°), name y attribution.
 - *.mbtiles / *.sqlitedb: tamaño (±1 %).
@@ -24,8 +25,8 @@ VERSION = 1
 TOLERANCIA = 0.01
 TOLERANCIA_BBOX_E7 = 1000
 MANIFEST = "app/manifest.json"
-MANIFEST_NUEVAS = ("region", "legal", "atribuciones")
-MANIFEST_ESPECIE_NUEVAS = ("sin_habitat",)
+MANIFEST_NUEVAS = ("region", "legal", "atribuciones", "ccaa", "avisos")
+MANIFEST_ESPECIE_NUEVAS = ("sin_habitat", "calibrado")
 # No los produce ningún paso re-ejecutable sin red (base = Protomaps) o no son del pipeline actual.
 NO_REGENERADOS = {"region_base.geojson", "base_build.txt", "vista_arbol.png", "vista_suelo.png", "app/base.pmtiles"}
 SIN_HUELLA = ("app/modelo/",)            # paquete del reconocedor (modelo/construir.py), no es del pipeline

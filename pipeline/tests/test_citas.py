@@ -47,3 +47,14 @@ def test_origen_csv():
     assert citas.origen_csv("https://www.gbif.org/occurrence/1") is None
     assert citas.origen_csv("https://pmc.ncbi.nlm.nih.gov/articles/x/") == "literatura"
     assert citas.origen_csv("https://www.malagahoy.es/x") == "foro"
+
+
+def test_taxa_extra_por_region_sin_tocar_las_demas():
+    import dataclasses
+    from setas_pipeline import citas as C
+    from setas_pipeline.region import cargar_region
+    m = cargar_region("marbella")
+    assert C.taxa_region(m) == C.TAXA
+    a = dataclasses.replace(m, citas={**m.citas, "taxa": {"morchella_spp": ["Morchella esculenta"]}})
+    t = C.taxa_region(a)
+    assert t["morchella_spp"] == ["Morchella esculenta"] and "morchella_spp" not in C.TAXA

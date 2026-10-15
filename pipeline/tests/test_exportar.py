@@ -289,3 +289,67 @@ def test_lugar_cercano():
     assert lugar_cercano(36.58, -4.79, lug) == "Ojén"
     assert lugar_cercano(36.70, -5.10, lug) == "Ronda"
     assert lugar_cercano(36.7, -5.1, []) is None
+
+
+# ---------------------------------------------------------------- fase C: ccaa, avisos y calibrado
+
+def _zona_marbella(r):
+    (r.out / "zona.geojson").write_text(json.dumps({"type": "FeatureCollection", "features": [{
+        "type": "Feature", "properties": {}, "geometry": {"type": "Polygon", "coordinates": [[
+            [-4.9, 36.5], [-4.8, 36.5], [-4.8, 36.6], [-4.9, 36.6], [-4.9, 36.5]]]}}]}))
+
+
+def test_manifest_lleva_avisos_ccaa_y_calibrado(tmp_path):
+    import setas_pipeline.exportar as ex
+    from setas_pipeline import avisos
+    r = _region(tmp_path)
+    r.app.mkdir(parents=True)
+    _zona_marbella(r)
+    (r.out / "calibracion.json").write_text(json.dumps({"boletus_aereus": {"n": 40, "lift_validacion": 2.5},
+                                                        "boletus_edulis": {"n": 4, "lift_validacion": None}}))
+    m = ex.escribir_manifest(r)
+    assert m["avisos"] == [] and m["ccaa"] is None
+    cal = {e["id"]: e["calibrado"] for e in m["especies"]}
+    assert cal["boletus_aereus"] is True and cal["boletus_edulis"] is False and cal["amanita_caesarea"] is False
+    avisos.registrar(r.out, "mfe", ["Sin datos de vegetación en el 30 % de la zona"])
+    (r.app / "ccaa.pmtiles").write_bytes(b"x")
+    m = ex.escribir_manifest(r)
+    assert m["avisos"] == ["Sin datos de vegetación en el 30 % de la zona"] and m["ccaa"] == "ccaa.pmtiles"
+    assert "ccaa.pmtiles" in [a["nombre"] for a in m["archivos"]]
+    assert "texto_protegido" not in m["legal"]                      # Marbella no lo declara: la app usa el de siempre
+
+
+def test_manifest_legal_con_textos_de_la_region(tmp_path):
+    import setas_pipeline.exportar as ex
+    legal = {**cargar_region("marbella").legal, "texto_protegido": "Consulta su PRUG.",
+             "chip_sitio_restringido": "Espacio protegido"}
+    r = _region(tmp_path, legal=legal)
+    r.app.mkdir(parents=True)
+    _zona_marbella(r)
+    m = ex.escribir_manifest(r)
+    assert m["legal"]["texto_protegido"] == "Consulta su PRUG." and m["legal"]["chip_sitio_restringido"] == "Espacio protegido"
+
+
+def test_exportar_ccaa_recorta_a_la_zona_con_id_y_nombre(tmp_path, monkeypatch):
+    import geopandas as gpd
+    from shapely.geometry import box
+    import setas_pipeline.exportar as ex
+    from setas_pipeline import adaptadores as A
+    capas = {**cargar_region("marbella").capas, "ccaa": [{"adaptador": "falso"}]}
+    r = _region(tmp_path, capas=capas)
+    r.app.mkdir(parents=True)
+    _zona_marbella(r)
+    from setas_pipeline.malla import Malla
+    Malla.desde_bounds(300000, 4040000, 340000, 4060000).guardar(r.out / "malla.json")
+    monkeypatch.setitem(A.REGISTRO["ccaa"], "falso", lambda cfg, ctx: gpd.GeoDataFrame(
+        {"id": ["andalucia", "region_murcia"], "nombre": ["Andalucía", "Región de Murcia"]},
+        geometry=[box(250000, 3990000, 400000, 4100000), box(600000, 4100000, 700000, 4200000)], crs=A.CRS))
+    escrito = {}
+    monkeypatch.setattr(ex, "_tippecanoe", lambda gj, destino, capa, zmin, zmax, extra=(): escrito.update(
+        fc=json.loads(gj.read_text()), capa=capa, z=(zmin, zmax), destino=destino))
+    ex.exportar_ccaa(r)
+    assert escrito["capa"] == "ccaa" and escrito["z"] == (4, 10) and escrito["destino"].name == "ccaa.pmtiles"
+    props = [f["properties"] for f in escrito["fc"]["features"]]
+    assert props == [{"id": "andalucia", "nombre": "Andalucía"}]
+    x0, y0, x1, y1 = gpd.GeoDataFrame.from_features(escrito["fc"]["features"]).total_bounds
+    assert -4.95 < x0 and x1 < -4.75 and 36.45 < y0 and y1 < 36.65      # recortada a la zona + 2 km

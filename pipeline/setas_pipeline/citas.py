@@ -309,12 +309,18 @@ def es_nuevo(r, prev) -> bool:
     return not any(distancia_km(r["lat"], r["lon"], a, b) * 1000 < DEDUPE_M for a, b in prev.get(r["especie"], ()))
 
 
+def taxa_region(region) -> dict[str, list[str]]:
+    """TAXA más los taxones propios de la región (regiones/<id>.yaml → citas.taxa: {especie: [nombres]}).
+    Los extra van por región para no cambiar las citas de las demás."""
+    return {**TAXA, **(region.citas.get("taxa") or {})}
+
+
 def construir(region, refrescar=False) -> tuple[list[dict], dict]:
     centro, radio_km = ambito(region)
     raw = region.raw / "citas"
     wkt = poligono_wkt(centro, radio_km)
     todos, stats = [], {}
-    for esp, nombres in TAXA.items():
+    for esp, nombres in taxa_region(region).items():
         claves = {c for c in (gbif_claves(n) for n in nombres) if c}
         brutos = _cache(raw, f"gbif_{esp}", refrescar, lambda: [o for c in sorted(claves) for o in gbif_ocurrencias(c, wkt)])
         for x in {o["key"]: o for o in brutos}.values():

@@ -247,3 +247,11 @@ def test_iepnb_mfe_caido_lanza_fuente_caida_sin_trocear(tmp_path, monkeypatch):
         M.iepnb_mfe({"adaptador": "iepnb_mfe", "intentos": 3}, _ctx(tmp_path, fuentes={
             "mfe": {"wfs_url": "https://geoserver.iepnb.es/geoserver/wfs"}}))
     assert len(pedidas) == 3 and all("GetCapabilities" in u for u in pedidas)
+
+
+def test_caja_de_la_fuente_recorta_las_teselas(tmp_path, monkeypatch):
+    pedidas = _falso_get(monkeypatch, {})
+    cfg = {"adaptador": "wfs", "url": "https://w", "capa": "a:b", "tesela_m": 100000, "caja": [690000, 4250000, 712000, 4320000]}
+    A.cargar_capa("protegidos", {"protegidos": [cfg]}, _ctx(tmp_path))
+    bboxes = [parse_qs(urlparse(u).query)["bbox"][0] for u in pedidas]
+    assert bboxes and all(float(b.split(",")[2]) <= 712000 for b in bboxes)

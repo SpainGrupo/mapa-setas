@@ -105,16 +105,17 @@ def _url_capa(cfg: dict, capa) -> str:
     return cfg["url"].rstrip("/") + ("" if capa is None else f"/{capa}")
 
 
-def _zona(ctx: Contexto):
-    if ctx.zona is not None:
-        return ctx.zona
+def _zona(ctx: Contexto, cfg: dict | None = None):
+    """Zona del contexto (o la caja de la malla), recortada a `cfg.caja` [xmin, ymin, xmax, ymax] (EPSG:25830) si
+    la fuente la declara: p. ej. un GeoServer que rechaza cajas fuera del rango válido del huso 30 (500)."""
     from shapely.geometry import box
-    return box(*ctx.malla.bounds)
+    z = ctx.zona if ctx.zona is not None else box(*ctx.malla.bounds)
+    return z.intersection(box(*cfg["caja"])) if cfg and cfg.get("caja") else z
 
 
 def arcgis(cfg: dict, ctx: Contexto, tipo: str) -> gpd.GeoDataFrame:
     cache = Path(ctx.raw) / cfg.get("cache", "arcgis")
-    trozos = [consultar_arcgis(_url_capa(cfg, c), _zona(ctx), cache / str(c), cfg.get("pagina", PAGINA),
+    trozos = [consultar_arcgis(_url_capa(cfg, c), _zona(ctx, cfg), cache / str(c), cfg.get("pagina", PAGINA),
                                cfg.get("tesela_m", TESELA_M), cfg.get("where", "1=1")) for c in _capas(cfg)]
     trozos = [t for t in trozos if len(t)]
     if not trozos:
@@ -198,7 +199,7 @@ def wfs(cfg: dict, ctx: Contexto, tipo: str) -> gpd.GeoDataFrame:
         g = gpd.read_file(ruta)
         g = g.set_crs(CRS, allow_override=True) if g.crs is None else g.to_crs(CRS)
     else:
-        g = descargar_teselas(plantilla_wfs(cfg), _zona(ctx), cfg.get("tesela_m", TESELA_M), cache,
+        g = descargar_teselas(plantilla_wfs(cfg), _zona(ctx, cfg), cfg.get("tesela_m", TESELA_M), cache,
                               pagina=cfg.get("pagina", PAGINA))
         if len(g):
             g = g[~g.geometry.to_wkb().duplicated()]

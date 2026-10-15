@@ -88,6 +88,7 @@ capas:
       url: "https://mapas-gis-inter.carm.es/geoserver/wfs"
       capa: "SIG_LUP_SITES_CARM:ENP"
       cache: iderm_enp
+      caja: [550000, 4130000, 712000, 4300000]  # Murcia; al este de x≈712 km el GeoServer da 500 (fuera del huso 30)
       campos: {codigo: codigoenp, nombre: nombre, figura: figura}
       licencia: "AccessConstraints/Fees NONE; licencia formal PENDIENTE"
     - adaptador: zip_geojson                     # MITECO BDN: ENP de Castilla-La Mancha (NUT2 42); sin Natura 2000
@@ -154,6 +155,7 @@ capas:
       url: "https://mapas-gis-inter.carm.es/geoserver/wfs"
       capa: "PFO_ZOR_DMVP_CARM:MONTES"
       cache: iderm_montes
+      caja: [550000, 4130000, 712000, 4300000]  # ídem
       filtro: {clas_art11: ["Público"]}
       campos: {nombre: nombremont, detalle: propiedad, codigo: id_monte}
       clase: {campo: propiedad, valores: {"Comunidad Autónoma": monte_junta, "Ayuntamiento": monte_municipal,

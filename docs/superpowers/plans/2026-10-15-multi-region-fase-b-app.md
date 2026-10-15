@@ -403,7 +403,7 @@ export function nombreFuente(f: string, fuentes: Record<string, string>): string
 ```
 `tipos.ts` añade a `Especie`: `sin_habitat?: boolean`; y a `Manifest`: `region?: unknown; legal?: unknown; atribuciones?: unknown; ccaa?: string | null; avisos?: unknown`. Se tipan como `unknown` porque `prepararManifest` los valida.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `app/src/manifest-region.test.ts`:
 ```ts
@@ -482,12 +482,12 @@ describe('nombreFuente', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd app && npx vitest run src/manifest-region.test.ts`
 Expected: FAIL, «Failed to resolve import "./manifest-region"».
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 `app/src/tipos.ts`. Sustituye la línea de `Especie` y añade los campos al final de `Manifest`, antes de `archivos`:
 ```ts
@@ -598,12 +598,12 @@ export function nombreFuente(f: string, fuentes: Record<string, string>): string
 ```
 Nota: `texto_protegido` y `chip_sitio_restringido` usan por defecto el texto genérico de hoy en todas las regiones. No es un dato de Marbella: es el aviso neutro que ya se enseña.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd app && npx vitest run src/manifest-region.test.ts && npx tsc --noEmit`
 Expected: PASS y `tsc` sin errores.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add app/src/manifest-region.ts app/src/manifest-region.test.ts app/src/tipos.ts
@@ -2589,3 +2589,6 @@ El código cambió desde que se escribió el plan: la fase A (pipeline multi-reg
 
 1. **Datos en el worktree.** `pipeline/data` ya existe en el worktree con la disposición multi-región (`regiones.json`, `marbella/out/app`, modelo en `marbella/out/app/modelo/`), así que `SETAS_DATOS` no hace falta; el legado plano se mantiene para el checkout principal.
 2. **`origen` es `[lon, lat]`** en `regiones.json` y en `manifest.region` (exportar.py). La app acepta las dos formas (`[lon, lat]` y `{lat, lon}`) y las normaliza a `{lat, lon}`. Test de `disposicion` con la forma real.
+3. **`legal.ccaa[].id` del pipeline es corto** (`AND`, como fija la spec §3.6 y los tests de la fase A). La app mantiene los ids canónicos (`andalucia`, `comunitat_valenciana`, `region_murcia`, `castilla_la_mancha`, compartidos con el Worker) y acepta los alias `AND`/`CV`/`MUR`/`CLM` (`idCcaa()` en `manifest-region.ts`). **Fase C:** `alicante.yaml` y `ccaa.pmtiles` deben usar uno de esos dos juegos de ids.
+4. **`legal.ccaa[].norma` es la cita completa** («Resolución de 23-09-2026 … (BOJA 196, 08-10-2026)»), no la sigla. La app saca la sigla (`siglaNorma()`: BOJA, DOGV, BORM, DOCM, BOE; una norma corta se toma tal cual) y la guarda en `EntradaLegal.sigla`, que es lo que citan la nota orientativa y el enlace «Texto oficial (…)». La nota de Marbella sigue diciendo «(BOJA)».
+5. **Marbella ya trae `legal`** con `verificado: false` (pendiente de Alexander) y `cupo_kg_dia: 3`. Por eso Ajustes de Marbella pasa a enseñar la entrada por CCAA («Andalucía · Pendiente de verificar», el mismo texto del aviso y el enlace al BOJA) en lugar del aviso suelto; el cupo no se pinta aparte (no está verificado), pero el texto del aviso ya lo cita. `normas_legado` solo se usa si no hay ninguna entrada válida.

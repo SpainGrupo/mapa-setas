@@ -18,7 +18,9 @@ import type { Fiabilidad } from './fiabilidad';
 
 export interface Especie { id: string; nombre: string; tiempo?: Reglas; fiabilidad?: Fiabilidad;
   /** Citas de la zona con precisión ≤ 1 km que usó la calibración (calibracion.json → exportar.especies). */
-  n_citas?: number | null }
+  n_citas?: number | null;
+  /** Multi-región: la especie está en la guía pero sin hábitat en esta región (sin pmtiles de idoneidad). */
+  sin_habitat?: boolean }
 
 export interface Manifest {
   generado: string;
@@ -41,6 +43,13 @@ export interface Manifest {
     montes_municipales?: number } | null;
   /** Citas y sitios conocidos (exportar.exportar_citas): PMTiles con la capa 'citas'. */
   citas?: { capa: string; n?: number; por_origen?: Record<string, number> } | null;
+  /** Multi-región (contrato en docs/superpowers/plans/2026-10-15-multi-region-fase-b-app.md). Validados en manifest-region.ts. */
+  region?: unknown;
+  legal?: unknown;
+  atribuciones?: unknown;
+  /** PMTiles de comunidades autónomas (capa 'ccaa', propiedades id y nombre). */
+  ccaa?: string | null;
+  avisos?: unknown;
   archivos: { nombre: string; bytes: number }[];
   total_bytes: number;
   /** Reconocedor offline (modelo/construir.py): descarga opcional aparte, no cuenta en total_bytes. */

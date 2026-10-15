@@ -3,6 +3,7 @@
 // reconocedor en Ajustes. Regla §2: nunca «comestible»; las peligrosas no descartadas siempre en rojo.
 import { mb, raizDatos } from './datos';
 import { archivoModelo, borrarModelo, descargarModelo, estadoModelo } from './opfs';
+import type { IdCcaa } from './manifest-region';
 import type { Manifest } from './tipos';
 import { cargarGuia, fichasGuia, insignia, urlFotoGuia } from './guia-ui';
 import { binomio, nombreComun, type Ficha } from './guia';
@@ -22,6 +23,8 @@ export interface OpcionesReconocer {
   /** `mortales`: nombres de las mortales aún sin descartar en este resultado (para el aviso de la ficha). */
   verFicha: (id: string, mortales: () => string[]) => void;
   guardarSitio: (d: { especieGuia?: string; foto?: Blob; lat: number; lon: number }) => void;
+  /** Comunidad autónoma para el prompt de la segunda opinión (null: la del Worker por defecto). */
+  ccaaGemini?: (p: { lat: number; lon: number } | null) => Promise<IdCcaa | null>;
 }
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
@@ -517,10 +520,11 @@ async function segundaOpinion() {
     const ev = evaluar(resultado.noReconocido ? [] : resultado.candidatos, fichasGuia(), respuestas, resultado.noReconocido);
     const jpgs = await Promise.all(fotos.map(aJpeg));
     if (jpgs.some((j) => j.size > MAX_BYTES_FOTO)) throw new Error('Alguna foto sigue pesando más de 1,5 MB tras reducirla.');
+    const ccaa = (await op.ccaaGemini?.(posicion).catch(() => null)) ?? null;
     const r = await pedirSegundaOpinion(URL_WORKER, {
       fotos: await Promise.all(jpgs.map(aBase64)),
       respuestas_guiadas: respuestasParaWorker(ev.preguntas, respuestas),
-      contexto: { fecha: fechaHoy(), ...(posicion ? { lat: +posicion.lat.toFixed(5), lon: +posicion.lon.toFixed(5) } : {}) },
+      contexto: { fecha: fechaHoy(), ...(posicion ? { lat: +posicion.lat.toFixed(5), lon: +posicion.lon.toFixed(5) } : {}), ...(ccaa ? { ccaa } : {}) },
       candidatos_offline: resultado.noReconocido ? [] : resultado.candidatos.map((c) => ({
         id: (c.idGuia && !c.afin ? c.idGuia : c.nombre.toLowerCase().replace(/\s+/g, '_')).slice(0, 120),
         nombre: c.nombre, score: Math.min(1, Math.max(0, +c.prob.toFixed(4))) })),

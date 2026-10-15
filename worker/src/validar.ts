@@ -1,5 +1,6 @@
 // Validación estricta de la petición de la PWA. Todo lo que no encaja se rechaza con 400/413.
 import { ErrorHttp } from "./http";
+import { esCcaa, type Ccaa } from "./ccaa";
 
 export const MAX_FOTOS = 4;
 export const MAX_BYTES_FOTO = 1.5 * 1024 * 1024; // tras decodificar el base64
@@ -22,6 +23,8 @@ export interface Contexto {
   fecha?: string;
   lat?: number;
   lon?: number;
+  /** Comunidad autónoma del punto (lista cerrada, ccaa.ts); sin ella, el prompt usa Andalucía. */
+  ccaa?: Ccaa;
 }
 
 export interface CandidatoOffline {
@@ -106,7 +109,7 @@ export function validarPeticion(cuerpo: unknown): PeticionIdentificar {
   const ctx: Contexto = {};
   if (contexto !== undefined) {
     if (!esObjeto(contexto)) throw invalida("'contexto' debe ser un objeto.");
-    const permitidas = new Set(["arbol", "suelo", "altitud", "fecha", "lat", "lon"]);
+    const permitidas = new Set(["arbol", "suelo", "altitud", "fecha", "lat", "lon", "ccaa"]);
     for (const k of Object.keys(contexto)) {
       if (!permitidas.has(k)) throw invalida(`Campo no admitido en 'contexto': ${k.slice(0, 40)}`);
     }
@@ -119,6 +122,10 @@ export function validarPeticion(cuerpo: unknown): PeticionIdentificar {
     if (contexto.altitud != null) ctx.altitud = numero(contexto.altitud, "contexto.altitud", -500, 9000);
     if (contexto.lat != null) ctx.lat = numero(contexto.lat, "contexto.lat", -90, 90);
     if (contexto.lon != null) ctx.lon = numero(contexto.lon, "contexto.lon", -180, 180);
+    if (contexto.ccaa != null) {
+      if (!esCcaa(contexto.ccaa)) throw invalida("'contexto.ccaa' no es una comunidad admitida.");
+      ctx.ccaa = contexto.ccaa;
+    }
   }
 
   const offline: CandidatoOffline[] = [];

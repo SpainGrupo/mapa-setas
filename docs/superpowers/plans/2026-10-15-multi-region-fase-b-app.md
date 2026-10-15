@@ -2185,7 +2185,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - App: `CCAA_GEMINI: readonly IdCcaa[]`; `elegirCcaaGemini(idsPunto: string[] | null, idsRegion: string[]): IdCcaa | null`. Devuelve `null` si sale `andalucia` o no hay nada: así la petición de Marbella es idéntica a la de hoy y la app nueva funciona con el Worker antiguo.
   - `ReconocerOps.ccaaGemini?: (p: { lat: number; lon: number } | null) => Promise<IdCcaa | null>`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `worker/test/worker.test.ts`, dentro de `describe("llamada a Gemini", …)`:
 ```ts
@@ -2224,12 +2224,12 @@ describe('elegirCcaaGemini', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `cd worker && npx vitest run` y `cd app && npx vitest run src/gemini.test.ts`
 Expected: FAIL en los tests nuevos (la petición con `ccaa` recibe 400 por «Campo no admitido» y el prompt nombra Andalucía; `elegirCcaaGemini` no existe).
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `worker/src/gemini.ts`. Sustituye la primera línea de `INSTRUCCIONES` por una función:
 ```ts
@@ -2289,12 +2289,12 @@ y `PeticionGemini.contexto` gana `ccaa?: IdCcaa`.
   ccaaGemini: async (p) => elegirCcaaGemini(p && manifest && M ? await M.ccaaEn(manifest, p.lat, p.lon) : null, manifest?.legal.map((e) => e.id) ?? []),
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `cd worker && npx vitest run && npx tsc --noEmit` y `cd app && npx vitest run && npx tsc --noEmit`
 Expected: PASS.
 
-- [ ] **Step 5: Puerta de seguridad y commit**
+- [x] **Step 5: Puerta de seguridad y commit**
 
 - Ejecuta la skill `security-review` sobre el diff de `worker/` (spec §8: «security-review del Worker si cambia el prompt»). Qué revisar: lista cerrada con `hasOwnProperty` (sin `in`, que deja pasar `__proto__` y `toString`), el texto del prompt nunca sale del cliente, la petición antigua sin `ccaa` sigue siendo válida, y los límites de tamaño y CORS no cambian.
 - **Orden de despliegue:** el Worker nuevo (`cd worker && npm run deploy`, lo hace Alexander) tiene que estar desplegado **antes** de publicar datos de Alicante. Para Marbella no hay orden: la app no envía `ccaa` cuando es Andalucía.
@@ -2596,3 +2596,4 @@ El código cambió desde que se escribió el plan: la fase A (pipeline multi-reg
 7. **Titularidad (llegó con la fusión de `main`).** `titularidad.ts` deja de llevar «Junta» y «BOJA 196»: `ponerTextosTitularidad(manifest.titularidad)` carga textos, aviso y norma del manifest (yaml `legal.titularidad`); sin ellos quedan textos neutros (monte «autonómico», solo la Ley 43/2003). La leyenda de `index.html` rellena los dos textos de monte desde el manifest. La nota de «Puntuación del día» y el comentario de `ranking.ts` dicen «autonómico o municipal». El popup de pasos deja «Fuente: REDIAM» por la atribución de titularidad y dice que el trazado «puede ser» aproximado.
 8. **Tarea 9.** `mapa.ts` ya tenía `entidadesTesela` (genérico, de la fusión de `main`): `restriccionEn` y `ccaaEn` lo usan en lugar de crear `entidadesEn`. `ccaaEnPunto` devuelve ids canónicos (acepta los códigos cortos del pipeline). Humanizer: «Todas las comunidades de la región. Toca un punto del mapa para ver solo la suya.»; el resto de cadenas queda como en el plan.
 9. **Tarea 11, humanizer.** «No sabemos dónde estás. Elige la zona donde vas a buscar setas; puedes cambiarla cuando quieras.» y «<Región> ya funciona sin conexión» sustituyen a los borradores; el resto de cadenas no cambia.
+10. **Tarea 12.** `NOMBRE_CCAA`/`esCcaa` viven en `worker/src/ccaa.ts` (sin ciclo de imports). El test de 400 añade `constructor`, `hasOwnProperty` y una lista, y usa una IP por petición. La skill `security-review` no arranca en este repo (no hay `origin/HEAD`); se hizo la revisión a mano con su lista: lista cerrada con `hasOwnProperty`, el texto del prompt nunca sale del cliente, el error no repite la entrada, la petición sin `ccaa` sigue valiendo, límites y CORS iguales. Sin hallazgos. **No se despliega el Worker** (lo hace Alexander antes de publicar Alicante).

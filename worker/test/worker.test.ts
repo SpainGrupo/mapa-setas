@@ -132,6 +132,14 @@ describe("rutas y método", () => {
 });
 
 describe("límites de tamaño y validación", () => {
+  it("400 con una comunidad fuera de la lista cerrada (incluidas claves de Object.prototype)", async () => {
+    const malas: unknown[] = ["galicia", "Andalucia", "__proto__", "toString", "constructor", "hasOwnProperty", "", 3, { a: 1 }, ["andalucia"]];
+    for (const [i, ccaa] of malas.entries()) {
+      const r = await llamar(peticion({ ...valida, contexto: { ...valida.contexto, ccaa } }, { ip: `9.9.9.${i}` }));
+      expect(r.status, String(ccaa)).toBe(400);
+    }
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
   it("413 si el cuerpo supera el máximo", async () => {
     const enorme = "a".repeat(MAX_BYTES_CUERPO + 10);
     const r = await llamar(peticion(enorme));
@@ -258,6 +266,14 @@ describe("tope global diario y KV obligatorio", () => {
 });
 
 describe("llamada a Gemini", () => {
+  it("el prompt nombra la comunidad pedida y por defecto Andalucía", async () => {
+    await llamar(peticion(valida));
+    expect(JSON.parse(fetchMock.mock.calls.at(-1)![1].body).systemInstruction.parts[0].text).toContain("en Andalucía (España)");
+    await llamar(peticion({ ...valida, contexto: { ...valida.contexto, ccaa: "comunitat_valenciana" } }, { ip: "5.6.7.8" }));
+    const t = JSON.parse(fetchMock.mock.calls.at(-1)![1].body).systemInstruction.parts[0].text;
+    expect(t).toContain("en la Comunitat Valenciana (España)");
+    expect(t).not.toContain("Andalucía");
+  });
   it("usa generateContent, cabecera de clave y salida JSON con esquema", async () => {
     await llamar(peticion(valida));
     const [url, init] = fetchMock.mock.calls[0]!;

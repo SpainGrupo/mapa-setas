@@ -2,6 +2,17 @@
 // La respuesta se presenta con la misma regla de seguridad: sus «peligrosas_posibles» se suman (unión) a las
 // peligrosas locales no descartadas, y cualquier texto que diga «comestible» se neutraliza.
 import { sinComestible, type Peligrosa } from './seguridad';
+import { IDS_CCAA, type IdCcaa } from './manifest-region';
+
+/** Comunidades que conoce el Worker (worker/src/ccaa.ts, NOMBRE_CCAA). */
+export const CCAA_GEMINI: readonly IdCcaa[] = IDS_CCAA;
+/** La del punto si se conoce; si no, la primera de la región. 'andalucia' es el valor por defecto del Worker → null
+ * (no se envía): así la petición de Marbella es la de siempre y la app funciona con el Worker anterior. */
+export function elegirCcaaGemini(idsPunto: string[] | null, idsRegion: string[]): IdCcaa | null {
+  const conocida = (ids: string[] | null) => ids?.find((i): i is IdCcaa => (CCAA_GEMINI as readonly string[]).includes(i)) ?? null;
+  const c = conocida(idsPunto) ?? conocida(idsRegion);
+  return c === 'andalucia' ? null : c;
+}
 
 /** URL del Worker fijada en el build (VITE_WORKER_URL). En e2e (?e2e=1) se puede sustituir desde localStorage. */
 export function urlWorker(env: string | undefined, e2e: boolean, ls: Pick<Storage, 'getItem'> | null): string {
@@ -22,7 +33,7 @@ export interface RespuestaGemini {
 export interface PeticionGemini {
   fotos: string[];
   respuestas_guiadas: Record<string, string | null>;
-  contexto: { fecha?: string; lat?: number; lon?: number; altitud?: number; arbol?: string; suelo?: string };
+  contexto: { fecha?: string; lat?: number; lon?: number; altitud?: number; arbol?: string; suelo?: string; ccaa?: IdCcaa };
   candidatos_offline: { id: string; nombre: string; score: number }[];
 }
 

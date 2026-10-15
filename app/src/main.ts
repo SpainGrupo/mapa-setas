@@ -36,6 +36,7 @@ import { pintarGrafico } from './grafico';
 import { abrirFicha, cargarGuia, fichasGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, mostrarGuia, pintarCreditos, ponerBloqueTiempo, type EstadoFotos } from './guia-ui';
 import { binomio, especieMapaDeFicha, fichaDeEspecieMapa } from './guia';
 import { iniciarReconocer, mostrarReconocer, pintarAjustesModelo } from './reconocer-ui';
+import { elegirCcaaGemini } from './gemini';
 import { Hoja } from './hoja';
 
 registerSW({ immediate: true });
@@ -1314,6 +1315,7 @@ $<HTMLInputElement>('#hoy-solo-publicos').addEventListener('change', (ev) => {
 
 iniciarReconocer({
   manifest: () => manifest,
+  ccaaGemini: async (p) => elegirCcaaGemini(p && manifest && M ? await M.ccaaEn(manifest, p.lat, p.lon) : null, manifest?.legal.map((e) => e.id) ?? []),
   avisar,
   verFicha: (id, mortales) => {
     irA('p-guia');

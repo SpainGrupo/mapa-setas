@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import datos from '../../guia/especies.json';
-import { fechaHoy, fusionarPeligrosas, limpiarRespuesta, mensajeError, pedirSegundaOpinion, urlWorker, type PeticionGemini } from './gemini';
+import { elegirCcaaGemini, fechaHoy, fusionarPeligrosas, limpiarRespuesta, mensajeError, pedirSegundaOpinion, urlWorker, type PeticionGemini } from './gemini';
 import { evaluar, type FichaMin } from './seguridad';
 
 const fichas: (FichaMin & { grupo: string })[] = datos as never;
@@ -90,3 +90,13 @@ describe('pedirSegundaOpinion', () => {
 });
 
 it('fechaHoy en Madrid', () => expect(fechaHoy(new Date('2026-10-13T23:30:00Z'))).toBe('2026-10-14'));
+
+describe('elegirCcaaGemini', () => {
+  it('la del punto si es conocida; si no, la primera conocida de la región; Andalucía y nada → null', () => {
+    expect(elegirCcaaGemini(['region_murcia'], ['comunitat_valenciana', 'region_murcia'])).toBe('region_murcia');
+    expect(elegirCcaaGemini(['galicia'], ['comunitat_valenciana'])).toBe('comunitat_valenciana');
+    expect(elegirCcaaGemini(null, ['andalucia'])).toBeNull();
+    expect(elegirCcaaGemini(['andalucia'], ['comunitat_valenciana'])).toBeNull();
+    expect(elegirCcaaGemini(null, [])).toBeNull();
+  });
+});

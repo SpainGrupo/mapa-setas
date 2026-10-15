@@ -4,12 +4,14 @@
 //   calidad      = punt_media × ln(1 + area_ha) × bonus_pisado   (la misma con la que el pipeline los ordena)
 //   semáforo     = estado de la especie en el punto meteo del sitio el día D: verde 1, amarillo 0,5, gris 0,3, rojo 0,1
 //   fiabilidad   = la del mapa de la especie: buena 1, media 0,85, sin validar 0,75, baja 0,6
-// y el filtro de dificultad máxima del usuario quita los sitios que lo superan (no los rebaja).
+// y el filtro de dificultad máxima del usuario quita los sitios que lo superan (no los rebaja). Con «solo montes
+// públicos» se quitan también los que no caen en un monte público (titularidad de sitios.json).
 // Para enseñarla se pasa a 0–100 contra el máximo teórico (100 × ln 101 × 1 × 1 × 1): así un mismo sitio vale
 // lo mismo de un día a otro salvo por el tiempo.
 import type { Estado } from './semaforo';
 import type { Fiabilidad } from './fiabilidad';
 import { dentroDeDificultad, dificultad, type Dificultad } from './ruta';
+import { esPublico, type Titularidad } from './titularidad';
 
 export interface SitioCandidato {
   id: number;                 // índice plano de la celda (fila·ancho + col) en acceso.bin
@@ -26,6 +28,8 @@ export interface SitioCandidato {
   restringido: boolean;
   meteo_id: number;
   bonus_pisado?: number;
+  /** Titularidad del punto (pipeline sitios.py + titularidad.py); sin dato = como «probablemente privado». */
+  titularidad?: Titularidad;
 }
 export interface SitiosJson { version: number; generado: string; especies: Record<string, SitioCandidato[]> }
 
@@ -55,11 +59,14 @@ export interface Opciones {
   estadoEn: EstadoEn;
   fiabilidad: (especie: string) => Fiabilidad;
   maxDificultad: Dificultad | null;
+  /** Solo sitios en monte público (Junta o municipal). */
+  soloPublicos?: boolean;
 }
 
 export function puntuar(especie: string, s: SitioCandidato, o: Opciones): Entrada | null {
   const dif = dificultad(s.t_pie_min, s.subida_m);
   if (!dentroDeDificultad(dif, o.maxDificultad)) return null;
+  if (o.soloPublicos && !esPublico(s.titularidad)) return null;
   const estado = o.estadoEn(especie, s.meteo_id) ?? 'gris';
   const score = calidad(s) * FACTOR_SEMAFORO[estado] * FACTOR_FIABILIDAD[o.fiabilidad(especie)];
   return { especie, sitio: s, estado, dificultad: dif, score, puntuacion: puntuacion100(score) };

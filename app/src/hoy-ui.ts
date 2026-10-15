@@ -29,6 +29,8 @@ export interface ContextoHoy {
   hayFicha: (especie: string) => Promise<boolean>;
   verFicha: (especie: string) => void;
   irZona: () => void;
+  /** Interruptor «solo montes públicos» (compartido con el mapa). */
+  soloPublicos: () => boolean;
 }
 
 const CLAVE_DIF = 'setas:dificultad-max';
@@ -195,6 +197,7 @@ function opciones(fecha: string): Opciones {
     },
     fiabilidad: fiab,
     maxDificultad: maxDificultad(),
+    soloPublicos: ctx.soloPublicos(),
   };
 }
 
@@ -205,7 +208,9 @@ async function pintarTopEspecie(datos: SitiosJson | null, o: Opciones) {
   const id = sel.value;
   const top = datos ? topEspecie(datos, id, o, 10) : [];
   if (!datos) vacio(ul, 'Esta versión de los mapas no trae sitios candidatos.');
-  else if (!top.length) vacio(ul, (datos.especies[id]?.length ?? 0) ? 'Ningún sitio con esa dificultad. Prueba a subir el máximo.' : 'Sin sitios candidatos para esta seta.');
+  else if (!top.length) vacio(ul, !(datos.especies[id]?.length ?? 0) ? 'Sin sitios candidatos para esta seta.'
+    : o.soloPublicos && !datos.especies[id].some((s) => esPublico(s.titularidad)) ? 'Ningún sitio de esta seta cae en monte público.'
+      : 'Ningún sitio con esa dificultad. Prueba a subir el máximo.');
   top.forEach((e, i) => ul.append(fila(e, [e], i + 1)));
   if (ultimo) { ultimo.especie = id; ultimo.top = top; }
   $('#hoy-ver-ficha').hidden = !(await ctx.hayFicha(id));
@@ -289,9 +294,11 @@ export async function pintarHoy() {
   const general = datos && m ? topGeneral(datos, m.especies.map((e) => e.id), o, n) : [];
   const ul = $('#top-general');
   ul.replaceChildren();
-  $('#hoy-general-nota').textContent = `Los ${n} mejores sitios de cada seta que no esté en rojo ese día, de mejor a peor y hasta 20. Si dos setas quedan a menos de 300 m, comparten fila.`;
+  $('#hoy-general-nota').textContent = `Los ${n} mejores sitios de cada seta que no esté en rojo ese día, de mejor a peor y hasta 20. Si dos setas quedan a menos de 300 m, comparten fila.`
+    + (o.soloPublicos ? ' Solo sitios en monte público (Junta o municipal).' : '');
   if (!datos) vacio(ul, 'Esta versión de los mapas no trae sitios candidatos.');
-  else if (!general.length) vacio(ul, 'Ese día todas las setas están en rojo o ningún sitio cumple la dificultad elegida.');
+  else if (!general.length) vacio(ul, o.soloPublicos ? 'Ese día ningún sitio en monte público cumple los filtros.'
+    : 'Ese día todas las setas están en rojo o ningún sitio cumple la dificultad elegida.');
   general.forEach((f, i) => ul.append(fila(f.principal, f.entradas, i + 1)));
   ultimo = { fecha, confianza: confianza(hoy, fecha), general, especie: sel.value, top: [], calendario: [], sinSitios: !datos };
   await pintarTopEspecie(datos, o);
@@ -302,7 +309,8 @@ export async function pintarHoy() {
 /** Resumen para el e2e (window.__setas.tops()). */
 export function resumenHoy() {
   if (!ultimo) return null;
-  const e = (x: Entrada) => ({ especie: x.especie, id: x.sitio.id, puntuacion: x.puntuacion, estado: x.estado, dificultad: x.dificultad, score: x.score });
+  const e = (x: Entrada) => ({ especie: x.especie, id: x.sitio.id, puntuacion: x.puntuacion, estado: x.estado, dificultad: x.dificultad, score: x.score,
+    titularidad: x.sitio.titularidad?.clase ?? 'privado' });
   return { fecha: ultimo.fecha, confianza: ultimo.confianza, sinSitios: ultimo.sinSitios,
     general: ultimo.general.map((f) => ({ ...e(f.principal), especies: f.especies })), especie: ultimo.especie, top: ultimo.top.map(e),
     calendario: ultimo.calendario.map((f) => ({ id: f.id, clase: f.estado.clase, texto: f.estado.texto })) };

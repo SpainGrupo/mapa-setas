@@ -507,6 +507,19 @@ try {
   await p.locator('#guia-vista-lista').waitFor();
   await p.locator('.pestanas [data-p=p-hoy]').click();
   await p.waitForSelector('#top-general .top-fila');
+  // «Solo montes públicos» en el Top: todas las filas en monte público; al quitarlo vuelve el top completo.
+  await p.locator('#hoy-solo-publicos').check();
+  await p.waitForFunction(() => window.__setas.tops().general.every((f) => f.titularidad !== 'privado'));
+  const tPub = await tops();
+  const chipsPub = await p.$$eval('#top-general .tf-titularidad', (cs) => cs.map((c) => c.dataset.clase));
+  comprobar(tPub.general.length > 0 && tPub.general.every((f) => /^monte_/.test(f.titularidad)) && chipsPub.every((c) => /^monte_/.test(c))
+    && tPub.top.every((e) => /^monte_/.test(e.titularidad)),
+    `«Solo montes públicos» en el Top: ${tPub.general.length} filas, todas en monte público (${[...new Set(chipsPub)].join(', ')})`);
+  await p.locator('#top-general .tf-titularidad').first().scrollIntoViewIfNeeded();
+  await captura('hoy-solo-publicos.png');
+  await p.locator('#hoy-solo-publicos').uncheck();
+  await p.waitForFunction((n) => window.__setas.tops().general.map((f) => `${f.especie}:${f.id}:${f.puntuacion}`).join(',') === n, firma(t0));
+  comprobar(firma(await tops()) === firma(t0), 'quitar «Solo montes públicos» devuelve el top general de antes');
   ok(`filas con varias setas a ≤300 m: ${t0.general.filter((f) => f.especies.length > 1).map((f) => f.especies.join('+')).join(', ') || 'ninguna hoy'}`);
   await captura('hoy-general.png');
   comprobar(t0.top.length === 10 && t0.top.every((e) => e.especie === t0.especie), `top 10 de ${t0.especie}`);

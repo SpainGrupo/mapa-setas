@@ -328,6 +328,7 @@ interface UltimoAcceso {
   ms?: { consulta: number; traza: number; total: number };
   lector?: unknown;
   restricciones?: Restriccion[] | null;
+  titularidad?: Titularidad | null;
 }
 let ultimoAcceso: UltimoAcceso | null = null;
 let consultaAcceso = 0;
@@ -431,6 +432,23 @@ async function pintarRestriccion(el: HTMLElement, lat: number, lon: number, vige
   return rs;
 }
 
+/** Etiqueta de titularidad del punto (monte público o «probablemente privado», con refuerzos y paso público). */
+async function pintarTitularidad(el: HTMLElement, lat: number, lon: number, vigente: () => boolean, conNorma = true): Promise<Titularidad | null> {
+  el.hidden = true;
+  el.replaceChildren();
+  const t = manifest && M ? await M.titularidadEn(manifest, lat, lon) : null;
+  if (!vigente() || !t) return t;
+  el.dataset.clase = t.clase;
+  const b = document.createElement('b'); b.textContent = textoTitularidad(t);
+  b.insertAdjacentHTML('afterbegin', `<svg class="ico" aria-hidden="true"><use href="#${esPublico(t) ? 'i-pin' : 'i-alerta'}"/></svg>`);
+  el.append(b);
+  for (const d of detallesTitularidad(t)) { const s = document.createElement('span'); s.textContent = d; el.append(s); }
+  if (conNorma) { const n = document.createElement('small'); n.textContent = NORMA_TITULARIDAD; el.append(n); }
+  el.title = NORMA_TITULARIDAD;
+  el.hidden = false;
+  return t;
+}
+
 /** Ficha «Acceso» del punto: aparcamiento, tiempo y subida a pie y trazado aproximado (todo con los datos locales). */
 async function mostrarAcceso(lat: number, lon: number) {
   if (!$('#tarjeta-ruta').hidden) cerrarRuta();
@@ -446,10 +464,12 @@ async function mostrarAcceso(lat: number, lon: number) {
   estadoAcceso('Calculando el acceso…', false);
   pintarTrazaAcceso([{ type: 'Feature', properties: { tipo: 'destino' }, geometry: { type: 'Point', coordinates: [lon, lat] } }]);
   const restr = pintarRestriccion($('#ta-restriccion'), lat, lon, () => n === consultaAcceso);
+  const tit = pintarTitularidad($('#ta-titularidad'), lat, lon, () => n === consultaAcceso);
   const c = await calcularAcceso(lat, lon);
   const rs = await restr;
+  const ti = await tit;
   if (n !== consultaAcceso) return;
-  ultimoAcceso = { punto: { lat, lon }, estado: c.estado, acceso: c.acceso, traza: c.traza, ms: c.ms, lector: c.lector, restricciones: rs };
+  ultimoAcceso = { punto: { lat, lon }, estado: c.estado, acceso: c.acceso, traza: c.traza, ms: c.ms, lector: c.lector, restricciones: rs, titularidad: ti };
   $('#tarjeta-acceso').dataset.estado = c.estado;
   if (c.estado !== 'ok' || !c.acceso || !c.linea) { estadoAcceso(c.texto, false); return; }
   const { acceso, linea } = c;
@@ -887,11 +907,14 @@ function pintarPuntoMapa() {
     geometry: { type: 'Point', coordinates: [puntoSel.lon, puntoSel.lat] } }] : [] });
 }
 
+let consultaZona = 0;
 function elegirPunto(lat: number, lon: number, conTarjeta: boolean) {
   const p = puntoMasCercano(puntosMeteo, lat, lon);
   if (!p) return;
   const km = Math.hypot(p.lat - lat, (p.lon - lon) * Math.cos((lat * Math.PI) / 180)) * 111.2;
   if (km > DISTANCIA_MAX_KM) return;
+  const n = ++consultaZona;
+  pintarTitularidad($('#tz-titularidad'), lat, lon, () => n === consultaZona, false);
   puntoSel = p;
   localStorage.setItem(CLAVE_PUNTO, String(p.id));
   pintarPuntoMapa();
@@ -1145,6 +1168,12 @@ iniciarHoy({
   hayFicha: async (especie) => !!(await cargarGuia()) && hayFicha(fichaDeEspecieMapa(especie)),
   verFicha: (especie) => { irA('p-guia'); abrirFicha(fichaDeEspecieMapa(especie)); },
   irZona: () => irA('p-zona'),
+  soloPublicos,
+});
+$<HTMLInputElement>('#hoy-solo-publicos').checked = soloPublicos();
+$<HTMLInputElement>('#hoy-solo-publicos').addEventListener('change', (ev) => {
+  ponerSoloPublicos((ev.target as HTMLInputElement).checked);
+  pintarHoy();
 });
 
 iniciarReconocer({

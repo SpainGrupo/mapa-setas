@@ -38,6 +38,35 @@ function pm(nombre: string): string {
   return 'pmtiles://' + url;
 }
 
+type EntidadGeo = { properties: Record<string, unknown>; geometry: any };
+
+/** Entidades de la capa `capa` en la tesela del nivel máximo de `archivo` que contiene el punto (sin filtrar
+ * por geometría). Sin tesela → []. Si no se puede leer (sin red y sin descarga) → null. */
+async function entidadesTesela(archivo: string, capa: string, lat: number, lon: number): Promise<EntidadGeo[] | null> {
+  pm(archivo);
+  const a = archivosPm.get(BASE_DATOS + archivo)!;
+  try {
+    const z = (await a.getHeader()).maxZoom;
+    const { x, y } = teselaDe(lat, lon, z);
+    const t = await a.getZxy(z, x, y);
+    if (!t) return [];
+    const l = new VectorTile(new PbfReader(new Uint8Array(t.data))).layers[capa];
+    if (!l) return [];
+    return Array.from({ length: l.length }, (_, i) => l.feature(i).toGeoJSON(x, y, z) as EntidadGeo);
+  } catch (e) {
+    console.warn(capa, e);
+    return null;
+  }
+}
+
+/** Titularidad del punto (titularidad.pmtiles): monte público o «probablemente privado», con refuerzos y paso
+ * público. Igual que restriccionEn: lee la tesela (OPFS o HTTP) y no depende de la capa pintada. null si no se sabe. */
+export async function titularidadEn(m: Manifest, lat: number, lon: number): Promise<Titularidad | null> {
+  if (!m.titularidad) return null;
+  const fs = await entidadesTesela(m.titularidad.capa, 'titularidad', lat, lon);
+  return fs ? etiquetaTitularidad(fs, lat, lon) : null;
+}
+
 /**
  * Recintos restringidos (restricciones.pmtiles) que contienen el punto. Lee la tesela del nivel máximo del
  * archivo con la misma Source OPFS/HTTP que el mapa: sin conexión sale de OPFS y no depende de que la capa esté
@@ -159,6 +188,10 @@ function estilo(conMeteo: boolean, archivoRutas: string | null, archivoRestricci
       paint: { 'fill-color': '#8a8a86', 'fill-opacity': 0.35, 'fill-outline-color': '#ffffff' } },
     { id: 'protegidos-relleno', type: 'fill', source: 'protegidos', 'source-layer': 'protegidos',
       paint: { 'fill-color': '#6a1b9a', 'fill-opacity': 0.06 } },
+    // «Solo montes públicos»: velo claro sobre lo que no es monte público (encima de la idoneidad, que se inserta
+    // justo antes de protegidos-relleno).
+    ...(archivoTitularidad ? [{ id: 'fuera-publico', type: 'fill', source: 'titularidad', 'source-layer': 'fuera_publico',
+      layout: { visibility: 'none' }, paint: { 'fill-color': '#f3efe6', 'fill-opacity': 0.86 } } as LayerSpecification] : []),
     { id: 'protegidos-linea', type: 'line', source: 'protegidos', 'source-layer': 'protegidos',
       paint: { 'line-color': '#6a1b9a', 'line-width': 2, 'line-dasharray': [3, 2] } },
   ];
@@ -229,6 +262,16 @@ export function crearMapa(contenedor: HTMLElement, m: Manifest): MapaML {
     if (restr) {
       new maplibregl.Popup({ maxWidth: '290px', className: 'popup-restricciones', anchor: ev.point.y < mapa.getContainer().clientHeight * 0.6 ? 'top' : 'bottom' }).setLngLat(ev.lngLat)
         .setDOMContent(popupRestriccion(aRestriccion(restr.properties, m.restricciones?.tipos))).addTo(mapa);
+      return;
+    }
+    const paso = visible('pasos-linea') ? mapa.queryRenderedFeatures([[cx - 8, cy - 8], [cx + 8, cy + 8]], { layers: ['pasos-linea'] })[0] : undefined;
+    if (paso) {
+      new maplibregl.Popup({ maxWidth: '280px', className: 'popup-pasos', anchor: ancla }).setLngLat(ev.lngLat).setDOMContent(popupPaso(paso.properties)).addTo(mapa);
+      return;
+    }
+    const monte = visible('titularidad-relleno') ? mapa.queryRenderedFeatures(ev.point, { layers: ['titularidad-relleno'] })[0] : undefined;
+    if (monte) {
+      new maplibregl.Popup({ maxWidth: '290px', className: 'popup-montes', anchor: ancla }).setLngLat(ev.lngLat).setDOMContent(popupMonte(monte.properties)).addTo(mapa);
       return;
     }
     const f = mapa.getLayer('protegidos-relleno') ? mapa.queryRenderedFeatures(ev.point, { layers: ['protegidos-relleno'] })[0] : undefined;

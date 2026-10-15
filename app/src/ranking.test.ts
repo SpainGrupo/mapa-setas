@@ -40,6 +40,15 @@ describe('puntuación', () => {
     expect(puntuar('x', dificil, opc({}, { maxDificultad: 'moderada' }))).toBeNull();
     expect(puntuar('x', dificil, opc({}, { maxDificultad: 'dificil' }))!.dificultad).toBe('dificil');
   });
+  it('«solo montes públicos» quita los sitios privados o sin dato de titularidad', () => {
+    const junta = sitio({ titularidad: { clase: 'monte_junta', monte: 'El Meliche' } });
+    const muni = sitio({ titularidad: { clase: 'monte_municipal' } });
+    const priv = sitio({ titularidad: { clase: 'privado', refuerzos: ['coto'] } });
+    const sin = sitio();
+    const o = opc({}, { soloPublicos: true });
+    expect([junta, muni, priv, sin].map((s) => !!puntuar('x', s, o))).toEqual([true, true, false, false]);
+    expect([junta, muni, priv, sin].every((s) => !!puntuar('x', s, opc()))).toBe(true);
+  });
 });
 
 describe('top por especie', () => {

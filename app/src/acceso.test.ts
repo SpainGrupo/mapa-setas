@@ -213,12 +213,12 @@ describe('trazado', () => {
 describe('datos reales del pipeline (si existen): mismo resultado que acceso.py --consultar', () => {
   const dir = fileURLToPath(new URL('../../pipeline/data/out/app/', import.meta.url));
   const hay = existsSync(dir + 'acceso.bin') && existsSync(dir + 'aparcamientos.json');
-  it.skipIf(!hay)('36.589, −5.244: 8 min, +1 m, 4 pasos, aparcamiento 86596', async () => {
+  it.skipIf(!hay)('36.589, −5.244: 8 min, +1 m, 4 pasos, aparcamiento 86597', async () => {
     const cab = parsearCabecera(JSON.parse(readFileSync(dir + 'acceso.json', 'utf8')));
     const buf = readFileSync(dir + 'acceso.bin');
     const { r, l } = contado(lectorBlob(new Blob([buf])));
     const c = await consultar(cab, l, 36.589, -5.244);
-    expect(c).toMatchObject({ estado: 'ok', celda: { fila: 1080, col: 853 }, tiempo_min: 8, subida_m: 1, origen: 86596 });
+    expect(c).toMatchObject({ estado: 'ok', celda: { fila: 1080, col: 853 }, tiempo_min: 8, subida_m: 1, origen: 86597 });
     if (c.estado !== 'ok') return;
     const t = await trazar(cab, l, c.celda);
     expect(t.completa).toBe(true);

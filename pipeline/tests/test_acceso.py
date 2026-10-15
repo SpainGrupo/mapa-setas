@@ -184,3 +184,11 @@ def test_escribir_sin_altitud_la_deja_sin_dato(tmp_path):
     A.escribir_app(tmp_path, m, u, u, np.zeros((1, 2), np.uint32), np.zeros((1, 2), np.uint8), [])
     _, r = A.leer_app(tmp_path)
     assert (r["altitud"] == A.SIN_ALTITUD).all()
+
+
+def test_es_camino_excluye_acceso_privado():
+    assert not A.es_camino({"highway": "track", "access": "private"})
+    assert not A.es_camino({"highway": "path", "access": "no"})
+    assert not A.es_camino({"highway": "footway", "foot": "private"})
+    assert A.es_camino({"highway": "track", "access": "private", "foot": "yes"})     # paso a pie permitido
+    assert A.es_camino({"highway": "track", "access": "permit"})

@@ -543,6 +543,16 @@ def escribir_manifest(out: Path = APP) -> dict:
     return m
 
 
+def _leer_json(ruta: Path) -> dict:
+    return json.loads(ruta.read_text()) if ruta.exists() else {}
+
+
+def titularidad_manifest() -> dict:
+    from .titularidad import TEXTOS, AVISO, NORMA
+    return {"capa": "titularidad.pmtiles", "textos": TEXTOS, "aviso": AVISO, "norma": NORMA,
+            **_leer_json(OUT / "titularidad_resumen.json")}
+
+
 def sitios_manifest(out: Path) -> dict | None:
     """Clave `sitios` del manifest: {archivo, version, n_por_especie} si existe sitios.json."""
     ruta = out / "sitios.json"

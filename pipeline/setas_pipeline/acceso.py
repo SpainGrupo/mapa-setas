@@ -68,10 +68,18 @@ def apto_coche(tags: dict) -> tuple[bool, int]:
     return False, -1
 
 
+PIE_SI = {"yes", "designated", "permissive"}
+
+
 def es_camino(tags: dict) -> bool:
-    """Vía por la que se anda a velocidad de sendero (incluye las de coche)."""
+    """Vía por la que se anda a velocidad de sendero (incluye las de coche). Excluye las de acceso
+    privado o prohibido (access=private|no, o foot=private|no), salvo que foot=yes|designated|permissive."""
     hw = tags.get("highway")
-    return hw in VIAS_PIE or hw in VIAS_COCHE
+    if not (hw in VIAS_PIE or hw in VIAS_COCHE):
+        return False
+    if tags.get("foot") in PIE_SI:
+        return True
+    return tags.get("access") not in ACCESO_NO and tags.get("foot") not in ACCESO_NO
 
 
 def _pares(shape, dr, dc):

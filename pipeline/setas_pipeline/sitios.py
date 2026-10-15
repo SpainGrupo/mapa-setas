@@ -14,7 +14,8 @@ submanchas sin ninguna celda con acceso se descartan.
 Datos del punto (los mismos arrays de 100 m que lee la app, para que app y pipeline coincidan):
 t_pie_min, subida_m y aparcamiento_id de acceso.bin; dist_camino_m de distancia_acceso.tif
 (null sin dato); restringido = el punto cae en un recinto de la capa legal (restricciones_gdf);
-meteo_id = punto de meteo_puntos.json más cercano.
+meteo_id = punto de meteo_puntos.json más cercano; titularidad = clase del punto según titularidad.geojson
+(monte_junta | monte_municipal | privado; titularidad.py), con monte (nombre), refuerzos y paso.
 Orden por calidad = punt_media × ln(1 + area_ha) × bonus_pisado (manchas buenas, grandes con rendimiento
 decreciente y poco pisadas). Se eligen de forma voraz las MAXIMO primeras por especie saltando las que
 estén a < 1,5 km de otra ya elegida.
@@ -182,10 +183,15 @@ def calcular(out: Path = APP, verbose: bool = True) -> dict:
     meteo = json.loads((out / "meteo_puntos.json").read_text())
     datos = {"version": VERSION, "generado": datetime.now(timezone.utc).isoformat(timespec="seconds"),
              "especies": {}}
+    from .titularidad import titularidad_puntos
     for e in especies():
         idon = leer_tif(OUT / f"idoneidad_{e['id']}.tif")
         lista = candidatos(idon, acc["tiempo_pie_min"], acc["subida_m"], acc["origen_id"], dist, malla.celda)
-        datos["especies"][e["id"]] = georreferenciar(lista, malla, restr, meteo)
+        geo = georreferenciar(lista, malla, restr, meteo)
+        for s, tit in zip(geo, titularidad_puntos([(s["lon"], s["lat"]) for s in geo])):
+            if tit:
+                s["titularidad"] = {k: v for k, v in tit.items() if k != "texto" and v not in (None, [], False)}
+        datos["especies"][e["id"]] = geo
         if verbose:
             print(f"  sitios {e['id']}: {len(lista)}", flush=True)
     out.mkdir(parents=True, exist_ok=True)

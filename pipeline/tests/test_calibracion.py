@@ -80,13 +80,19 @@ def test_validacion_bloques_lift_en_bloques_retenidos():
 
 def test_citas_especie_y_precision():
     from setas_pipeline.calibracion import citas_especie, filtrar_precision
-    f = lambda esp, prec: {"properties": {"especie": esp, "lon": -4.9, "lat": 36.5, "precision_m": prec}}
+    f = lambda esp, prec, origen="inat": {"properties": {"especie": esp, "lon": -4.9, "lat": 36.5, "precision_m": prec,
+                                                         "origen": origen}}
     c = {"features": [f("boletus_reticulatus", 50), f("boletus_reticulatus", None), f("boletus_reticulatus", 5000),
+                      f("boletus_reticulatus", 100, "foro"), f("boletus_reticulatus", 1000, "foro"),
+                      f("boletus_reticulatus", 5000, "literatura"), f("boletus_reticulatus", None, "literatura"),
                       f("amanita_caesarea", 10)]}
     pts = citas_especie(c, "boletus_aestivalis")          # clave del pipeline → id de la guía
-    assert len(pts) == 3
-    ok, sin, imprecisas = filtrar_precision(pts)
-    assert ok == [(-4.9, 36.5, 50)] and sin == 1 and imprecisas == 1
+    assert len(pts) == 7
+    ok, sin, descartadas = filtrar_precision(pts)
+    # sin incertidumbre declarada se conserva (criterio de filtrar_incertidumbre); > 1 km fuera;
+    # foros/literatura solo con precisión «punto» (≤ 100 m)
+    assert [p[2:] for p in ok] == [(50, "inat"), (None, "inat"), (100, "foro")]
+    assert sin == 1 and descartadas == 4
 
 
 def test_decidir_borde_urbano():

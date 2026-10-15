@@ -2,7 +2,9 @@
 
 Desde 2026-10-15 la fuente son las citas ampliadas de data/out/citas.geojson (GBIF + iNaturalist +
 Observation vía GBIF + foros/literatura, citas.py): solo las de la zona de calibración (celdas de tierra de
-la zona) y con precisión declarada ≤ INCERTIDUMBRE_MAX. Las funciones de descarga directa de GBIF se
+la zona). Se descartan las que declaran una incertidumbre > INCERTIDUMBRE_MAX; las que no la declaran se
+conservan (como filtrar_incertidumbre). Las de foros o literatura solo calibran con precisión «punto»
+(≤ PRECISION_PUNTO_M); las de paraje, municipio o sierra no. Las funciones de descarga directa de GBIF se
 conservan para la caché antigua (data/raw/gbif)."""
 from __future__ import annotations
 import hashlib, json, logging, re
@@ -193,18 +195,33 @@ def cargar_citas(out_dir: Path) -> dict:
     return json.loads(ruta.read_text()) if ruta.exists() else {"features": []}
 
 
+ORIGENES_TEXTO = ("foro", "literatura")   # sitios de foros/literatura: precisión estimada por el tipo de lugar
+PRECISION_PUNTO_M = 100                    # citas.PRECISION_CSV «punto»
+
+
 def citas_especie(citas: dict, clave: str) -> list[tuple]:
-    """(lon, lat, precision_m) de las citas de una especie del pipeline."""
+    """(lon, lat, precision_m, origen) de las citas de una especie del pipeline."""
     esp = ID_CITAS.get(clave, clave)
-    return [(f["properties"]["lon"], f["properties"]["lat"], f["properties"].get("precision_m"))
+    return [(f["properties"]["lon"], f["properties"]["lat"], f["properties"].get("precision_m"),
+             f["properties"].get("origen"))
             for f in citas.get("features", []) if f["properties"].get("especie") == esp]
 
 
-def filtrar_precision(pts, maximo: float = INCERTIDUMBRE_MAX):
-    """Solo las citas con precisión declarada ≤ maximo → (conservadas, n_sin_precision, n_imprecisas)."""
-    ok = [p for p in pts if p[2] is not None and float(p[2]) <= maximo]
-    sin = sum(1 for p in pts if p[2] is None)
-    return ok, sin, len(pts) - len(ok) - sin
+def filtrar_precision(pts, maximo: float = INCERTIDUMBRE_MAX, punto: float = PRECISION_PUNTO_M):
+    """Mismo criterio que filtrar_incertidumbre: se descartan las que declaran > maximo y se conservan las que no
+    declaran incertidumbre. Foros y literatura solo valen con precisión «punto» (≤ punto m).
+    → (conservadas, n_sin_precision conservadas, n_descartadas)."""
+    ok, sin = [], 0
+    for p in pts:
+        prec, origen = p[2], (p[3] if len(p) > 3 else None)
+        if origen in ORIGENES_TEXTO:
+            if prec is not None and float(prec) <= punto:
+                ok.append(p)
+        elif prec is None:
+            ok.append(p); sin += 1
+        elif float(prec) <= maximo:
+            ok.append(p)
+    return ok, sin, len(pts) - len(ok)
 
 
 def decidir_borde_urbano(res: dict, min_obs: int = MIN_OBS) -> tuple[bool, list[str]]:
@@ -356,8 +373,9 @@ def informe(out_dir: Path, perfiles: dict, raw_dir: Path | None = None) -> Path:
     apagados = sorted(SIN_FACTORES | DESACTIVADOS_POR_DEFECTO)
     L = ["# Calibración con citas (GBIF + iNaturalist + Observation + foros/literatura)", "",
          f"Citas de `data/out/{CITAS}` (citas.py) de la zona de calibración: solo las que caen en celdas de "
-         f"tierra dentro de la zona y con precisión declarada ≤ {INCERTIDUMBRE_MAX} m (las que no la declaran "
-         "se descartan). Las duplicadas entre fuentes ya vienen fundidas (misma especie, < 100 m, mismo día).",
+         f"tierra dentro de la zona; se descartan las que declaran una incertidumbre > {INCERTIDUMBRE_MAX} m y se "
+         f"conservan las que no la declaran. Las de foros o literatura solo cuentan con precisión «punto» (≤ "
+         f"{PRECISION_PUNTO_M} m); las de paraje, municipio o sierra no calibran. Las duplicadas entre fuentes ya vienen fundidas (misma especie, < 100 m, mismo día).",
          f"Umbral de idoneidad buena: ≥{UMBRAL}. Lift = % obs. buenas / % zona buena (celdas de tierra).",
          f"Variante «500 m»: puntuación = máximo en una ventana {VENTANA}×{VENTANA} celdas alrededor del punto "
          "(las coordenadas son imprecisas); el % de zona se calcula con el mismo filtro para que el lift sea comparable.",
@@ -372,7 +390,7 @@ def informe(out_dir: Path, perfiles: dict, raw_dir: Path | None = None) -> Path:
          "sus observaciones y sus celdas de tierra, y se da la media de los pliegues con observaciones "
          "(entre paréntesis, cuántos). Mide si el lift se sostiene en zonas distintas, no un ajuste: "
          "los perfiles no se tocan con ella.", "",
-         "| especie | citas | precisión ≤1 km | sin precisión | en tierra | mediana | %obs≥50 | %zona≥50 "
+         "| especie | citas | conservadas | sin incert. (conservadas) | en tierra | mediana | %obs≥50 | %zona≥50 "
          "| lift ajuste (dentro de muestra) | lift validación (bloques) "
          "| mediana 500 m | %obs≥50 500 m | %zona≥50 500 m | lift 500 m ajuste | lift 500 m validación (bloques) |",
          "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]

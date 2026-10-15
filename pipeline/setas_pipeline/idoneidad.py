@@ -32,7 +32,7 @@ FACTOR_BORDE_URBANO = 0.5
 # Factores que construir_idoneidad deja apagados por defecto. La calibración con citas.geojson
 # (calibracion.md, «Máscara de edificado») decide si «borde_urbano» se queda: si baja el lift de validación
 # de alguna especie con n ≥ MIN_OBS, se apaga aquí y queda solo la exclusión dura.
-DESACTIVADOS_POR_DEFECTO: frozenset = frozenset()
+DESACTIVADOS_POR_DEFECTO: frozenset = frozenset({"borde_urbano"})   # calibracion.md 2026-10-15: baja M. procera
 
 FACTORES_V2 = {"dosel", "estado", "fuego", "orientacion_pendiente", "humedad", "cubierta", "matorral_cerca",
                "edificado", "borde_urbano"}

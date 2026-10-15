@@ -161,19 +161,20 @@ def mfe_region(malla: Malla, region, zona):
         if cfg.get("respaldo") and principal:
             continue
         nombre = cfg.get("nombre", cfg["adaptador"])
+        ambito = cfg.get("ambito", "zona")
         try:
             g = normalizar("mfe", REGISTRO["mfe"][cfg["adaptador"]](cfg, ctx))
+            if ambito != "zona":
+                ccaa = _ccaa_de(ctx, region) if ccaa is None else ccaa
+                if ccaa is None or not (ccaa["id"] == ambito).any():
+                    raise ValueError(f"capas.mfe: ámbito '{ambito}' sin polígono en la capa ccaa de la región")
         except (FuenteCaida, requests.RequestException) as e:
             avisos_.append(f"Vegetación: {nombre} no respondió el {date.today().isoformat()} ({e}).")
             print(f"  WARNING: {avisos_[-1]}", flush=True)
             continue
-        ambito = cfg.get("ambito", "zona")
         if ambito == "zona":
             area, principal = zona, True
         else:
-            ccaa = _ccaa_de(ctx, region) if ccaa is None else ccaa
-            if ccaa is None or not (ccaa["id"] == ambito).any():
-                raise ValueError(f"capas.mfe: ámbito '{ambito}' sin polígono en la capa ccaa de la región")
             area = union_all(list(ccaa[ccaa["id"] == ambito].geometry)).intersection(zona)
             g = g[g.intersects(area)]
         trozos.append(g)
@@ -183,7 +184,11 @@ def mfe_region(malla: Malla, region, zona):
     cubierto = union_all(areas) if areas else None
     falta = zona if cubierto is None else zona.difference(cubierto)
     if not falta.is_empty and falta.area > 0.001 * zona.area:
-        ccaa = _ccaa_de(ctx, region) if ccaa is None else ccaa
+        if ccaa is None:
+            try:
+                ccaa = _ccaa_de(ctx, region)
+            except requests.RequestException as e:      # solo sirve para nombrar las CCAA del aviso
+                print(f"  WARNING: sin capa ccaa para el aviso ({e})", flush=True)
         nombres = []
         if ccaa is not None:
             for _, c in ccaa.iterrows():

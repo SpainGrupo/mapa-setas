@@ -40,12 +40,6 @@ def _cubierta(textos: pd.Series, mapeo: dict) -> list[int]:
             for t in textos]
 
 
-def _estado(textos: pd.Series) -> list[int]:
-    from ..vegetacion import ESTADO_MFE
-    return [ESTADO[ESTADO_MFE.get(str(t).strip().lower(), "sin_dato")] if isinstance(t, str) else ESTADO["sin_dato"]
-            for t in textos]
-
-
 def _gdf(ids, arbol, fcc, estado, cubierta, anio, artificial, geometria) -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame({"id": [str(i) for i in ids], "arbol": np.asarray(arbol, "uint8"),
                              "fcc": np.clip(np.nan_to_num(np.asarray(fcc, "float64")), 0, 100).astype("uint8"),
@@ -57,6 +51,7 @@ def _gdf(ids, arbol, fcc, estado, cubierta, anio, artificial, geometria) -> gpd.
 @registrar("mfe", "arcgis_mfe")
 def arcgis_mfe(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
     from .generico import consultar_arcgis, _zona
+    from ..vegetacion import clasificar_estado
     g = consultar_arcgis(cfg["url"], _zona(ctx), Path(ctx.raw) / cfg.get("cache", "mfe_arcgis"),
                          cfg.get("pagina", 1000), cfg.get("tesela_m", 25000))
     if not len(g):
@@ -66,7 +61,7 @@ def arcgis_mfe(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
     tipestr = g.get("tipestr_definicion", pd.Series([None] * len(g), index=g.index))
     artificial = tipestr.fillna("").str.strip().isin(cfg.get("artificial", ["Artificial"]))
     return _gdf(g.get("idfotofija", g.index), [clase_arbol_nombre(n, cfg["mapeo_arbol"]) for n in g["sp1_nom_ifn"]],
-                pd.to_numeric(g["fccarb"], errors="coerce"), _estado(g["e1_definicion"]),
+                pd.to_numeric(g["fccarb"], errors="coerce"), clasificar_estado(g["e1_definicion"]),
                 _cubierta(tipestr, cfg.get("mapeo_cubierta", {})), [0] * len(g), artificial, g.geometry)
 
 
@@ -88,6 +83,13 @@ def comprobar_wfs(url: str, intentos: int = 3, esperas=ESPERAS_S) -> None:
     raise FuenteCaida(f"{url} no responde ({ultimo}) tras {intentos} intentos")
 
 
+def _cache_completa(d: Path) -> bool:
+    """descargar_teselas escribe omitidos.json al acabar una pasada: si existe y está vacío, la caché está entera."""
+    import json
+    o = d / "omitidos.json"
+    return o.exists() and json.loads(o.read_text()) == []
+
+
 @registrar("mfe", "iepnb_mfe")
 def iepnb_mfe(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
     from ..descargas import descargar_teselas
@@ -95,7 +97,8 @@ def iepnb_mfe(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
                               clasificar_estado, plantilla_mfe)
     from ..edificado import TIPESTR_ARTIFICIAL
     m = ctx.fuentes["mfe"]
-    comprobar_wfs(m["wfs_url"], cfg.get("intentos", 3))
+    if not (_cache_completa(Path(ctx.raw) / "mfe") and _cache_completa(Path(ctx.raw) / "mfe_desarbolado")):
+        comprobar_wfs(m["wfs_url"], cfg.get("intentos", 3))     # con la caché completa no hace falta el servidor
     zona = ctx.zona
     arb = descargar_teselas(plantilla_mfe(m), zona, TESELA_MFE, Path(ctx.raw) / "mfe", pagina=PAGINA_MFE)
     arb = arb.drop_duplicates("id_ff21") if len(arb) else arb

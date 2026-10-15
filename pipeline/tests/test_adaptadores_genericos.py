@@ -275,3 +275,22 @@ def test_iepnb_mfe_mapeo_extra_de_la_region(tmp_path, monkeypatch):
     assert g["arbol"].tolist() == [ARBOL["sabina"], ARBOL["pino"], ARBOL["sin_arbolado"]]
     assert g["anio_incendio"].tolist() == [0, 2019, 0] and g["artificial"].tolist() == [False, True, False]
     assert g["cubierta"].tolist()[2] == CUBIERTA["matorral"]
+
+
+def test_obtener_bytes_no_cachea_una_excepcion_ogc(tmp_path, monkeypatch):
+    _falso_get(monkeypatch, {"ign": b'<?xml version="1.0"?><ows:ExceptionReport>x</ows:ExceptionReport>'}, modulo=G)
+    with pytest.raises(ValueError, match="OGC"):
+        G.obtener_bytes("https://ign/wfs", tmp_path / "c.gml")
+    assert not (tmp_path / "c.gml").exists()
+
+
+def test_iepnb_con_cache_completa_no_comprueba_el_servidor(tmp_path, monkeypatch):
+    for d in ("mfe", "mfe_desarbolado"):
+        (tmp_path / d).mkdir()
+        (tmp_path / d / "omitidos.json").write_text("[]")
+    monkeypatch.setattr(M, "comprobar_wfs", lambda *a, **k: (_ for _ in ()).throw(AssertionError("no debía llamarse")))
+    monkeypatch.setattr(descargas, "descargar_teselas", lambda *a, **k: gpd.GeoDataFrame(geometry=[], crs=A.CRS))
+    import yaml
+    from setas_pipeline.region import FUENTES
+    g = M.iepnb_mfe({"adaptador": "iepnb_mfe"}, _ctx(tmp_path, fuentes=yaml.safe_load(FUENTES.read_text())))
+    assert len(g) == 0

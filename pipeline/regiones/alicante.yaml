@@ -71,7 +71,9 @@ capas:
       url: "https://carto.icv.gva.es/arcgis/rest/services/tm_medio_ambiente/espacios_protegidos/MapServer"
       capas: [10]
       cache: icv_enp
-      campos: {codigo: site_code, nombre: nombre}
+      # objectid y no site_code: la parte terrestre y la marina de la Serra Gelada comparten ES521103
+      campos: {codigo: objectid, nombre: nombre}
+      prefijo_codigo: "icv10-"
       valores: {figura: "Parque Natural"}
       licencia: "CC BY 4.0"
     - adaptador: arcgis                          # ICV: Reservas Naturales (11)

@@ -36,9 +36,31 @@ def pasos_de(region: Region) -> dict:
     # NODATA donde ninguna fuente cubre la zona. Sin capas.mfe (Marbella), el camino de siempre.
     POR_REGION = "mfe" in region.capas
 
+    hecho_region = []          # vegetación por región ya construida en esta ejecución (escribe las 5 capas)
+
     def _vegetacion_region():
+        if hecho_region:
+            return
         from .vegetacion import construir_vegetacion_region
         construir_vegetacion_region(_malla(), region)
+        hecho_region.append(True)
+
+    def _salidas_vegetacion(nombres):
+        """Con capas.mfe, si la última vegetación dejó avisos (fuente caída, celdas NODATA) el paso no cuenta como
+        al día: se reintenta en la siguiente ejecución sin --forzar."""
+        def f():
+            rutas = [OUT / n for n in nombres]
+            if POR_REGION:
+                from .avisos import ARCHIVO
+                import json
+                a = OUT / ARCHIVO
+                if a.exists() and json.loads(a.read_text()).get("mfe"):
+                    rutas.append(OUT / "_mfe_incompleto")          # no existe: fuerza el paso
+            return rutas
+        return f
+
+    def _entradas_mfe():
+        return [*_geo(), *([OUT / "mfe_region.gpkg"] if POR_REGION else [])]
 
     def _vegetacion():
         if POR_REGION:
@@ -117,16 +139,16 @@ def pasos_de(region: Region) -> dict:
     return {
         "zona": (_zona, lambda: [ZONA, OUT / "malla.json"], lambda: []),
         "relieve": (_relieve, lambda: [OUT / f"{n}.tif" for n in ("altitud", "pendiente", "orientacion")], _geo),
-        "vegetacion": (_vegetacion, lambda: [OUT / "arbol.tif"], _geo),
+        "vegetacion": (_vegetacion, _salidas_vegetacion(["arbol.tif"]), _geo),
         "suelo": (_suelo, lambda: [OUT / "suelo.tif"], _geo),
-        "estructura": (_estructura, lambda: [OUT / "fcc.tif", OUT / "estado.tif"], _geo),
-        "cubierta": (_cubierta, lambda: [OUT / "cubierta.tif", OUT / "dist_matorral.tif"], _geo),
-        "incendios": (_incendios, lambda: [OUT / "fuego.tif"], _geo),
+        "estructura": (_estructura, _salidas_vegetacion(["fcc.tif", "estado.tif"]), _geo),
+        "cubierta": (_cubierta, _salidas_vegetacion(["cubierta.tif", "dist_matorral.tif"]), _geo),
+        "incendios": (_incendios, lambda: [OUT / "fuego.tif"], _entradas_mfe),
         "humedad": (_humedad, lambda: [OUT / f"{n}.tif" for n in ("twi", "dist_cauce", "humedad")],
                     lambda: [*_geo(), OUT / "altitud.tif"]),
         "protegidos": (_protegidos, lambda: [OUT / "protegido.tif"], _geo),
         "accesos": (_accesos, lambda: [OUT / "distancia_acceso.tif"], _geo),
-        "edificado": (_edificado, lambda: [OUT / "edificado.tif"], _geo),
+        "edificado": (_edificado, lambda: [OUT / "edificado.tif"], _entradas_mfe),
         "idoneidad": (_idoneidad, _por_especie("idoneidad_{}.tif"), _entradas_idoneidad),
         "calibracion": (_calibracion, lambda: [OUT / "calibracion.md"],
                         lambda: [*_por_especie("idoneidad_{}.tif")(), OUT / "citas.geojson"]),

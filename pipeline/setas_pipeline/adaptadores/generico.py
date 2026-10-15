@@ -94,6 +94,10 @@ def consultar_arcgis(url_capa: str, zona, cache: Path, pagina: int = PAGINA, tes
     return g[~g.geometry.to_wkb().duplicated()] if len(g) else g
 
 
+def _huella(texto: str) -> str:
+    return hashlib.sha1(texto.encode()).hexdigest()[:8]
+
+
 def _capas(cfg: dict) -> list:
     if "capas" in cfg:
         c = cfg["capas"]
@@ -114,8 +118,9 @@ def _zona(ctx: Contexto, cfg: dict | None = None):
 
 
 def arcgis(cfg: dict, ctx: Contexto, tipo: str) -> gpd.GeoDataFrame:
-    cache = Path(ctx.raw) / cfg.get("cache", "arcgis")
-    trozos = [consultar_arcgis(_url_capa(cfg, c), _zona(ctx, cfg), cache / str(c), cfg.get("pagina", PAGINA),
+    cache = Path(ctx.raw) / cfg.get("cache", f"arcgis_{_huella(cfg['url'])}")
+    sufijo = "" if cfg.get("where", "1=1") == "1=1" else f"_{_huella(cfg['where'])}"
+    trozos = [consultar_arcgis(_url_capa(cfg, c), _zona(ctx, cfg), cache / f"{c}{sufijo}", cfg.get("pagina", PAGINA),
                                cfg.get("tesela_m", TESELA_M), cfg.get("where", "1=1")) for c in _capas(cfg)]
     trozos = [t for t in trozos if len(t)]
     if not trozos:
@@ -131,7 +136,7 @@ def arcgis_por_anio(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
     for anio, capa in sorted((int(a), c) for a, c in cfg["capas_anio"].items()):
         if ctx.desde_anio is not None and anio < ctx.desde_anio:
             continue
-        g = consultar_arcgis(_url_capa(cfg, capa), _zona(ctx), cache / str(anio), cfg.get("pagina", 2000),
+        g = consultar_arcgis(_url_capa(cfg, capa), _zona(ctx), cache / str(anio), cfg.get("pagina", PAGINA),
                              cfg.get("tesela_m", TESELA_M))
         if len(g):
             out.append(gpd.GeoDataFrame({"anio": anio, "fuente": cfg.get("fuente", "arcgis")},
@@ -174,6 +179,8 @@ def obtener_bytes(url: str, cache: Path, intentos: int = 5, timeout: int = 600) 
             if r.status_code >= 500:
                 raise requests.HTTPError(f"{r.status_code}")
             r.raise_for_status()
+            if b"ExceptionReport" in r.content[:2000]:       # OGC devuelve errores con 200: no se cachean
+                raise ValueError(f"{url[:120]}: el servidor devolvió una excepción OGC: {r.text[:300]}")
             parcial = cache.with_name(cache.name + ".part")
             parcial.write_bytes(r.content)
             parcial.rename(cache)
@@ -188,7 +195,7 @@ def obtener_bytes(url: str, cache: Path, intentos: int = 5, timeout: int = 600) 
 
 
 def wfs(cfg: dict, ctx: Contexto, tipo: str) -> gpd.GeoDataFrame:
-    cache = Path(ctx.raw) / cfg.get("cache", "wfs")
+    cache = Path(ctx.raw) / cfg.get("cache", f"wfs_{_huella(cfg['url'] + cfg['capa'])}")
     if cfg.get("formato") == "gml":
         params = {"service": "WFS", "version": "2.0.0", "request": "GetFeature", "typeNames": cfg["capa"],
                   "srsName": "EPSG:25830"}

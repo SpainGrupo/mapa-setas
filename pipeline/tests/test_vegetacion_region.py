@@ -94,3 +94,16 @@ def test_nodata_no_se_puntua_como_sabina():
     uno = np.ones((1, 2), "float32")
     s = puntuar(perfil, arbol, uno * 500, uno * -1, uno * 0, np.array([[2, 2]], "uint8"))
     assert s[0, 0] > 0 and s[0, 1] == 0
+
+
+def test_ejecutar_reintenta_la_vegetacion_si_quedaron_avisos(tmp_path):
+    from setas_pipeline import ejecutar as E
+    r = _region(tmp_path, CAPAS)
+    r.out.mkdir(parents=True)
+    for n in ("arbol", "fcc", "estado", "cubierta", "dist_matorral"):
+        (r.out / f"{n}.tif").write_bytes(b"x")
+    tabla = E.pasos_de(r)
+    assert all(p.exists() for p in tabla["vegetacion"][1]())
+    avisos.registrar(r.out, "mfe", ["Sin datos de vegetación en el 40 % de la zona"])
+    assert not all(p.exists() for p in tabla["vegetacion"][1]())
+    assert r.out / "mfe_region.gpkg" in tabla["incendios"][2]()

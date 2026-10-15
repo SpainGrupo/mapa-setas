@@ -135,6 +135,110 @@ def construir_cubierta(malla: Malla, raw_dir: Path, out_dir: Path, fuentes: Path
     return a
 
 
+# ---------------------------------------------------------------- multi-región, fase C (capas.mfe de la región)
+MFE_REGION = "mfe_region.gpkg"          # recintos normalizados (incendios.py y edificado.py los leen de aquí)
+
+
+def _ccaa_de(ctx, region):
+    from .adaptadores import cargar_capa
+    return cargar_capa("ccaa", region.capas, ctx) if "ccaa" in region.capas else None
+
+
+def mfe_region(malla: Malla, region, zona):
+    """Fuentes de `capas.mfe` en orden → (recintos normalizados, área cubierta, avisos).
+    Cada fuente cubre `ambito`: «zona» (por defecto) o un id de la capa `ccaa`. Si una fuente de ámbito «zona»
+    responde, las marcadas `respaldo: true` se saltan. Una fuente caída deja un aviso; nunca vegetación inventada."""
+    import requests
+    from datetime import date
+    from shapely import union_all
+    from .adaptadores import REGISTRO, contexto_region, normalizar, vacio
+    from .adaptadores.mfe import FuenteCaida
+    ctx = contexto_region(region, malla=malla, zona=zona)
+    ccaa = None
+    trozos, areas, avisos_ = [], [], []
+    principal = False
+    for cfg in region.capas["mfe"]:
+        if cfg.get("respaldo") and principal:
+            continue
+        nombre = cfg.get("nombre", cfg["adaptador"])
+        try:
+            g = normalizar("mfe", REGISTRO["mfe"][cfg["adaptador"]](cfg, ctx))
+        except (FuenteCaida, requests.RequestException) as e:
+            avisos_.append(f"Vegetación: {nombre} no respondió el {date.today().isoformat()} ({e}).")
+            print(f"  WARNING: {avisos_[-1]}", flush=True)
+            continue
+        ambito = cfg.get("ambito", "zona")
+        if ambito == "zona":
+            area, principal = zona, True
+        else:
+            ccaa = _ccaa_de(ctx, region) if ccaa is None else ccaa
+            if ccaa is None or not (ccaa["id"] == ambito).any():
+                raise ValueError(f"capas.mfe: ámbito '{ambito}' sin polígono en la capa ccaa de la región")
+            area = union_all(list(ccaa[ccaa["id"] == ambito].geometry)).intersection(zona)
+            g = g[g.intersects(area)]
+        trozos.append(g)
+        areas.append(area)
+        print(f"  MFE {nombre}: {len(g)} recintos", flush=True)
+    gdf = gpd.GeoDataFrame(pd.concat(trozos, ignore_index=True), crs=CRS) if trozos else vacio("mfe")
+    cubierto = union_all(areas) if areas else None
+    falta = zona if cubierto is None else zona.difference(cubierto)
+    if not falta.is_empty and falta.area > 0.001 * zona.area:
+        ccaa = _ccaa_de(ctx, region) if ccaa is None else ccaa
+        nombres = []
+        if ccaa is not None:
+            for _, c in ccaa.iterrows():
+                if c.geometry.intersection(falta).area > 0.01 * falta.area:
+                    nombres.append(c["nombre"])
+        pct = round(100 * falta.area / zona.area)
+        donde = f" ({', '.join(nombres)})" if nombres else ""
+        avisos_.append(f"Sin datos de vegetación en el {pct} % de la zona{donde}: ninguna fuente del Mapa Forestal "
+                       "respondió para esa parte. Esas celdas salen sin puntuar (no es «baja idoneidad»).")
+        print(f"  WARNING: {avisos_[-1]}", flush=True)
+    return gdf, cubierto, avisos_
+
+
+def construir_vegetacion_region(malla: Malla, region, zona=None):
+    """arbol, fcc, estado, cubierta y dist_matorral de una región con `capas.mfe`, con NODATA (255; −1 en
+    dist_matorral) donde ninguna fuente cubre la zona. Escribe también out/mfe_region.gpkg y los avisos."""
+    from scipy.ndimage import distance_transform_edt
+    from . import avisos
+    out = region.out
+    zona = cargar_zona(out / "zona.geojson") if zona is None else zona
+    gdf, cubierto, textos = mfe_region(malla, region, zona)
+    dentro = mascara_zona(zona, malla)
+    sin = np.ones_like(dentro) if cubierto is None or cubierto.is_empty else ~(dentro & mascara_zona(cubierto, malla))
+    arb = gdf[gdf["arbol"] != ARBOL["sin_arbolado"]]
+    a = rasterizar_clases(arb, "arbol", malla)
+    a[sin] = NODATA
+    escribir_tif(malla, out / "arbol.tif", a, NODATA)
+    for nombre in ("fcc", "estado"):
+        v = rasterizar_clases(arb, nombre, malla, fill=0)
+        v[sin] = NODATA
+        escribir_tif(malla, out / f"{nombre}.tif", v, NODATA)
+    cub = rasterizar_clases(gdf[gdf["cubierta"] > 0], "cubierta", malla, fill=CUBIERTA["ninguna"])
+    matorral = np.isin(cub, [CUBIERTA["matorral"], CUBIERTA["pastizal_matorral"]])
+    d = (distance_transform_edt(~matorral) * malla.celda).astype("float32") if matorral.any() \
+        else np.full(cub.shape, DIST_MAX_M, "float32")
+    d = np.minimum(d, DIST_MAX_M)
+    cub[sin] = NODATA
+    d[sin & dentro] = -1.0
+    escribir_tif(malla, out / "cubierta.tif", cub, NODATA)
+    escribir_tif(malla, out / "dist_matorral.tif", d, -1.0)
+    (out / MFE_REGION).unlink(missing_ok=True)
+    if len(gdf):
+        gdf.to_file(out / MFE_REGION, driver="GPKG")
+    avisos.registrar(out, "mfe", textos)
+    print(f"  vegetación: {int((sin & dentro).sum())} celdas de la zona sin datos (NODATA) de {int(dentro.sum())}",
+          flush=True)
+    return a
+
+
+def leer_mfe_region(out: Path) -> gpd.GeoDataFrame:
+    from .adaptadores import vacio
+    ruta = Path(out) / MFE_REGION
+    return gpd.read_file(ruta) if ruta.exists() else vacio("mfe")
+
+
 if __name__ == "__main__":
     from .region import region_cli, FUENTES
     r = region_cli()

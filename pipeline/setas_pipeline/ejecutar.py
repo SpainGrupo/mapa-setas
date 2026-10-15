@@ -32,7 +32,17 @@ def pasos_de(region: Region) -> dict:
         from .relieve import construir_relieve
         construir_relieve(_malla(), RAW, OUT, FUENTES)
 
+    # Regiones con capas.mfe (fase C): un solo paso escribe arbol, fcc, estado, cubierta y dist_matorral, con
+    # NODATA donde ninguna fuente cubre la zona. Sin capas.mfe (Marbella), el camino de siempre.
+    POR_REGION = "mfe" in region.capas
+
+    def _vegetacion_region():
+        from .vegetacion import construir_vegetacion_region
+        construir_vegetacion_region(_malla(), region)
+
     def _vegetacion():
+        if POR_REGION:
+            return _vegetacion_region()
         from .vegetacion import construir_vegetacion
         construir_vegetacion(_malla(), RAW, OUT, FUENTES, ZONA)
 
@@ -41,18 +51,23 @@ def pasos_de(region: Region) -> dict:
         construir_suelo(_malla(), RAW, OUT, FUENTES, ZONA)
 
     def _estructura():
+        if POR_REGION:
+            return _vegetacion_region()
         from .vegetacion import construir_estructura
         construir_estructura(_malla(), RAW, OUT, FUENTES, ZONA)
 
     def _cubierta():
+        if POR_REGION:
+            return _vegetacion_region()
         from .vegetacion import construir_cubierta
         construir_cubierta(_malla(), RAW, OUT, FUENTES, ZONA)
 
     def _incendios():
         from .incendios import construir_fuego
-        from .vegetacion import _mfe_arbolado
+        from .vegetacion import _mfe_arbolado, leer_mfe_region
         from .descargas import cargar_zona
-        construir_fuego(_malla(), region, mfe=_mfe_arbolado(RAW, FUENTES, cargar_zona(ZONA)))
+        mfe = leer_mfe_region(OUT) if POR_REGION else _mfe_arbolado(RAW, FUENTES, cargar_zona(ZONA))
+        construir_fuego(_malla(), region, mfe=mfe)
 
     def _humedad():
         from .hidrologia import construir_humedad

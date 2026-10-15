@@ -58,7 +58,8 @@ def construir_fuego(malla: Malla, region, ref: int | None = None, mfe: gpd.GeoDa
         trozos.append(capa)
     if mfe is not None and len(mfe):
         from .vegetacion import anio_incendio_mfe
-        m = mfe.assign(anio=anio_incendio_mfe(mfe).astype(int), fuente="MFE")
+        anio = mfe["anio_incendio"] if "anio_incendio" in mfe.columns else anio_incendio_mfe(mfe)   # capas.mfe
+        m = mfe.assign(anio=anio.astype(int), fuente="MFE")
         trozos.append(m[m["anio"] >= desde][["anio", "fuente", "geometry"]])
     if trozos:
         gdf = gpd.GeoDataFrame(pd.concat(trozos, ignore_index=True), crs=CRS)

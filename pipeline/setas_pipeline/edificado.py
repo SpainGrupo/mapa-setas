@@ -209,6 +209,19 @@ def artificial_mfe(raw_dir: Path, fuentes: Path, zona, malla: Malla) -> np.ndarr
                      transform=malla.transform, fill=0, dtype="uint8").astype(bool)
 
 
+def artificial_region(out_dir: Path, malla: Malla) -> np.ndarray:
+    """Regiones con capas.mfe (fase C): recintos marcados `artificial` en out/mfe_region.gpkg."""
+    from rasterio.features import rasterize
+    from .vegetacion import leer_mfe_region
+    g = leer_mfe_region(out_dir)
+    sel = g[g["artificial"].astype(bool)] if len(g) else g
+    print(f"  MFE artificial: {len(sel)} recintos", flush=True)
+    if not len(sel):
+        return np.zeros((malla.alto, malla.ancho), bool)
+    return rasterize(((geo, 1) for geo in sel.to_crs(CRS).geometry), out_shape=(malla.alto, malla.ancho),
+                     transform=malla.transform, fill=0, dtype="uint8").astype(bool)
+
+
 def landuse_osm(pbf: Path, malla: Malla) -> np.ndarray:
     """Celdas cuyo centro cae en un área OSM landuse=residential|industrial."""
     import osmium
@@ -268,7 +281,8 @@ def construir_edificado(malla: Malla, region, fuentes: Path, zona_path: Path, pb
     edif = pd.concat(trozos, ignore_index=True) if trozos else gpd.GeoDataFrame(geometry=[], crs=CRS)
     print(f"  Catastro: {len(edif)} edificios de {len(zips)} municipios", flush=True)
     huella, cerca = huella_y_cerca(edif.geometry.values, malla)
-    art = artificial_mfe(raw_dir, fuentes, zona, malla)
+    art = (artificial_region(out_dir, malla) if "mfe" in region.capas
+           else artificial_mfe(raw_dir, fuentes, zona, malla))
     lu = landuse_osm(pbf, malla)
     dentro = mascara_zona(zona, malla)
     e = combinar(huella, cerca, art, lu, dentro)

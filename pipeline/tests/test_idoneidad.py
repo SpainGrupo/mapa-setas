@@ -148,3 +148,16 @@ def test_puntuar_v2_desactivar_factor():
     s = puntuar(P2, a(ARBOL["castano"], "uint8"), a(600.0, "float32"), a(0.0, "float32"),
                 a(20.0, "float32"), a(SUELO["acido"], "uint8"), {"fcc": a(0, "uint8")}, desactivar={"dosel"})
     assert int(s[0, 0]) == 100
+
+
+def test_codigo_de_arbol_desconocido_cuenta_como_otro():
+    import numpy as np
+    from setas_pipeline.idoneidad import puntuar
+    perfil = {"arboles": {"otro": 0.5, "sabina": 1.0}, "altitud": {"min": 0, "opt_min": 0, "opt_max": 3000, "max": 3000},
+              "orientacion": "indiferente", "suelo": {"desconocido": 1.0}}
+    arbol = np.array([[7, 9, 8, 255]], dtype="uint8")
+    z = np.full((1, 4), 500.0, dtype="float32")
+    s = puntuar(perfil, arbol, z, np.zeros_like(z), np.zeros_like(z), np.zeros((1, 4), "uint8"), {})
+    assert s[0, 0] == s[0, 1]          # código desconocido → 'otro', nunca 'sabina'
+    assert s[0, 2] > s[0, 0]           # 8 = sabina con su propio peso
+    assert s[0, 3] == 0                # 255 (NODATA) = fuera de zona: 0, como antes de añadir sabina

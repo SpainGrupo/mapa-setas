@@ -566,7 +566,7 @@ Expected: `133+ passed`.
 **Interfaces:**
 - Produces: `ARBOL["sabina"] == 8`. Ningún código de `fuentes.yaml → mfe.mapeo_arbol` apunta a `sabina` en esta fase (el mapeo de *Juniperus* es de la fase de datos de Alicante y debe ir por región, porque en la zona de Marbella cambiaría `arbol.tif`).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # añadir a pipeline/tests/test_malla.py
@@ -598,12 +598,12 @@ def test_codigo_de_arbol_desconocido_cuenta_como_otro():
 ```
 (Si la firma real de `puntuar` difiere en los argumentos opcionales, ajusta la llamada mirando `idoneidad.py:119`; el contenido de las aserciones no cambia.)
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `cd pipeline && uv run pytest tests/test_malla.py tests/test_idoneidad.py -v -k "sabina or desconocido"`
 Expected: FAIL (`'sabina'` no está en `ARBOL`).
 
-- [ ] **Step 3: Implementation**
+- [x] **Step 3: Implementation**
 
 `malla.py:12-13`:
 ```python
@@ -618,12 +618,12 @@ ARBOL = {"sin_arbolado": 0, "alcornoque": 1, "encina": 2, "quejigo": 3,
     f_arbol = _tabla(perfil["arboles"], ARBOL)[codigo]
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `cd pipeline && uv run pytest -q`
 Expected: todo PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add pipeline/setas_pipeline/malla.py pipeline/setas_pipeline/idoneidad.py pipeline/tests/test_malla.py pipeline/tests/test_idoneidad.py

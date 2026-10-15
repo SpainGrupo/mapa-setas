@@ -120,7 +120,8 @@ def puntuar(perfil, arbol, altitud, orientacion, pendiente, suelo, capas: dict |
             desactivar=frozenset()) -> np.ndarray:
     capas = capas or {}
     on = lambda nombre, capa=None: nombre not in desactivar and (capa is None or capa in capas)
-    f_arbol = _tabla(perfil["arboles"], ARBOL)[np.minimum(arbol, max(ARBOL.values()))]
+    codigo = np.where(arbol > max(ARBOL.values()), ARBOL["otro"], arbol)   # NODATA 255 y códigos raros → otro
+    f_arbol = _tabla(perfil["arboles"], ARBOL)[codigo]
     if "dosel" in perfil and on("dosel", "fcc"):
         f_arbol = f_arbol * f_dosel(capas["fcc"], perfil["dosel"]["opt"], perfil["dosel"].get("peso", 1.0))
     if on("estado", "estado"):

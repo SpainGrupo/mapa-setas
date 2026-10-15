@@ -10,7 +10,8 @@ from rasterio.transform import from_origin
 CRS = "EPSG:25830"
 NODATA_F = -9999.0
 ARBOL = {"sin_arbolado": 0, "alcornoque": 1, "encina": 2, "quejigo": 3,
-         "castano": 4, "pino": 5, "pinsapo": 6, "otro": 7}
+         "castano": 4, "pino": 5, "pinsapo": 6, "otro": 7,
+         "sabina": 8}   # 2026-10-15 multi-región: añadido al final sin renumerar (arbol.tif de Marbella no cambia)
 SUELO = {"desconocido": 0, "acido": 1, "basico": 2, "ultrabasico": 3, "otro": 4}
 # Modelo v2 (2026-10-14): estructura del rodal y cubierta desarbolada (MFE), años desde el último incendio
 ESTADO = {"sin_dato": 0, "monte_bravo": 1, "latizal": 2, "fustal": 3}     # estado de masa de la especie 1

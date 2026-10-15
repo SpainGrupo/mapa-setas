@@ -422,6 +422,9 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .tf-minis .miniatura-especie { width: 64px; height: 64px; border-radius: 16px; border: 2px solid var(--hoja); }
 .tf-minis .miniatura-especie + .miniatura-especie { margin-left: -30px; }
 .tf-tit { display: grid; gap: 4px; min-width: 0; }
+.tf-nombres { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 4px; }
+.tf-especie { all: unset; box-sizing: border-box; cursor: pointer; min-height: 24px; text-align: left; text-decoration: underline; text-decoration-color: oklch(62% 0.017 158 / 0.5); text-underline-offset: 3px; }
+.tf-especie:focus-visible { outline: 3px solid var(--ruta); outline-offset: 2px; border-radius: 6px; }
 .tf-tit b { font-size: 18px; line-height: 1.2; font-weight: 800; overflow-wrap: anywhere; }
 .tf-cifra { display: grid; justify-items: end; text-align: right; }
 .tf-cifra b { font-family: var(--cifras); font-size: 38px; line-height: 1; letter-spacing: -0.04em; }

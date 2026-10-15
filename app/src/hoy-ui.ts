@@ -97,8 +97,17 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIEleme
   const minis = document.createElement('span'); minis.className = 'tf-minis';
   for (const e of entradas.slice(0, 2)) minis.append(miniatura(e.especie));
   const tit = document.createElement('div'); tit.className = 'tf-tit';
-  const b = document.createElement('b'); b.textContent = entradas.map((e) => nombre(e.especie)).join(' · ');
-  tit.append(b);
+  // Tocar el nombre de la seta abre su ficha (misma función que el calendario); sin ficha, no hace nada más.
+  const nombres = document.createElement('div'); nombres.className = 'tf-nombres';
+  entradas.forEach((e, i) => {
+    if (i) nombres.append(' · ');
+    const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'tf-especie'; bt.dataset.especie = e.especie;
+    bt.setAttribute('aria-label', `Ver la ficha de ${nombre(e.especie)}`);
+    const b = document.createElement('b'); b.textContent = nombre(e.especie); bt.append(b);
+    bt.onclick = async () => { if (await ctx.hayFicha(e.especie)) ctx.verFicha(e.especie); };
+    nombres.append(bt);
+  });
+  tit.append(nombres);
   const estados = entradas.length > 1 ? [...new Set(entradas.map((e) => e.estado))] : [principal.estado];
   for (const e of estados) {
     const est = document.createElement('span'); est.className = 'tf-estado chip-estado'; est.dataset.estado = e;

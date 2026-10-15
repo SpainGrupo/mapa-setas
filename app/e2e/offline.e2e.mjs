@@ -492,11 +492,21 @@ try {
     && t0.general.every((f, i, a) => !i || a[i - 1].score >= f.score) && await p.locator('#top-general .top-fila').count() === t0.general.length,
     `top general: ${t0.general.length} filas ordenadas, sin especies en rojo (A. caesarea fuera); primera ${t0.general[0].especie} ${t0.general[0].puntuacion}/100`);
   const fila0 = p.locator('#top-general .top-fila').first();
-  const f0 = await fila0.evaluate((li) => ({ t: li.innerText, botones: [...li.querySelectorAll('button')].map((b) => b.textContent || b.getAttribute('aria-label')),
+  const f0 = await fila0.evaluate((li) => ({ t: li.innerText, botones: [...li.querySelectorAll('button:not(.tf-especie)')].map((b) => b.textContent || b.getAttribute('aria-label')),
     menuOculto: li.querySelector('.tf-menu').hidden, img: li.querySelector('.miniatura-especie img')?.getAttribute('src') ?? '' }));
   comprobar(/de 100/.test(f0.t) && /a pie/.test(f0.t) && /km de (Marbella|ti)/.test(f0.t) && /(Fácil|Moderada|Difícil|Muy difícil)/.test(f0.t) && /Buen momento|Esperar|Sin datos/.test(f0.t)
     && f0.botones.join('|') === 'Ruta a pie|Más acciones|Ver en mapa|Cómo llegar en coche|Guardar' && f0.menuOculto && f0.img.includes('miniaturas/'),
     'cada fila: miniatura, puntuación, estado, tiempo a pie, subida, dificultad, distancia, «Ruta a pie» y el resto en «Más acciones»');
+  // Tocar el nombre de la seta en una fila del Top abre su ficha (la misma que el calendario).
+  const espFila = await fila0.locator('.tf-especie').first().getAttribute('data-especie');
+  await fila0.locator('.tf-especie').first().click();
+  await p.locator(`#guia-ficha[data-id=${espFila}]`).waitFor({ timeout: 10000 });
+  const banTop = await p.locator('#guia-ficha .banner-comestible').allTextContents();
+  comprobar(banTop.every((t) => t === 'Considerada comestible por la bibliografía. No la consumas sin la confirmación de un experto.'), `Top → ficha de ${espFila} (solo el aviso fijo de la Guía, ${banTop.length} banner)`);
+  await p.locator(`#guia-ficha[data-id=${espFila}] .btn-volver`).click();
+  await p.locator('#guia-vista-lista').waitFor();
+  await p.locator('.pestanas [data-p=p-hoy]').click();
+  await p.waitForSelector('#top-general .top-fila');
   ok(`filas con varias setas a ≤300 m: ${t0.general.filter((f) => f.especies.length > 1).map((f) => f.especies.join('+')).join(', ') || 'ninguna hoy'}`);
   await captura('hoy-general.png');
   comprobar(t0.top.length === 10 && t0.top.every((e) => e.especie === t0.especie), `top 10 de ${t0.especie}`);

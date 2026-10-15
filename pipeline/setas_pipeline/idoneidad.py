@@ -3,6 +3,7 @@
     hábitat = max(árbol × dosel × estado de masa, cubierta desarbolada)
     idoneidad = hábitat × altitud × (orientación × pendiente) × pendiente extrema × suelo
                 × incendio (solo micorrícicas) × humedad (TWI / cauces) × jaral cercano (si el perfil lo pide)
+                × edificado (0 en lo edificado; × FACTOR_BORDE_URBANO con un edificio a ≤ 100 m)
 
 Fuentes de cada factor: docs/investigacion/2026-10-14-factores-y-trucos.md (recs. 2, 3, 4, 7, 8).
 Las capas v2 son opcionales: si falta una, su factor es neutro (1).
@@ -26,8 +27,16 @@ ESTADO_FACTOR = {"sin_dato": 1.0, "monte_bravo": 0.4, "latizal": 0.8, "fustal": 
 # Incendio (7.º CFE: −73 % al año 1, −19 % al año 5): ×0,3 años 0–2, ×0,6 años 3–5 (rec. 3)
 FUEGO = ((2, 0.3), (5, 0.6))
 
-FACTORES_V2 = {"dosel", "estado", "fuego", "orientacion_pendiente", "humedad", "cubierta", "matorral_cerca"}
-CAPAS_V2 = ("fcc", "estado", "fuego", "humedad", "cubierta", "dist_matorral")
+# Edificado (2026-10-15, edificado.py): exclusión dura de lo edificado y penalización de borde urbano.
+FACTOR_BORDE_URBANO = 0.5
+# Factores que construir_idoneidad deja apagados por defecto. La calibración con citas.geojson
+# (calibracion.md, «Máscara de edificado») decide si «borde_urbano» se queda: si baja el lift de validación
+# de alguna especie con n ≥ MIN_OBS, se apaga aquí y queda solo la exclusión dura.
+DESACTIVADOS_POR_DEFECTO: frozenset = frozenset()
+
+FACTORES_V2 = {"dosel", "estado", "fuego", "orientacion_pendiente", "humedad", "cubierta", "matorral_cerca",
+               "edificado", "borde_urbano"}
+CAPAS_V2 = ("fcc", "estado", "fuego", "humedad", "cubierta", "dist_matorral", "edificado")
 
 
 def cargar_perfiles(ruta: Path) -> dict:
@@ -144,6 +153,11 @@ def puntuar(perfil, arbol, altitud, orientacion, pendiente, suelo, capas: dict |
         s = s * f_humedad(capas["humedad"], perfil["humedad"]) / max_humedad(perfil["humedad"])
     if "matorral_cerca" in perfil and on("matorral_cerca", "dist_matorral"):
         s = s * f_matorral_cerca(capas["dist_matorral"], perfil["matorral_cerca"])
+    if on("edificado", "edificado") or on("borde_urbano", "edificado"):
+        from .edificado import factor_edificado
+        s = s * factor_edificado(capas["edificado"],
+                                 cerca=FACTOR_BORDE_URBANO if on("borde_urbano") else 1.0,
+                                 excluir=on("edificado"))
     # 255 = fuera de la zona (NODATA) en arbol.tif y suelo.tif
     s = np.where((altitud == NODATA_F) | (arbol == 255) | (suelo == 255), 0, s)
     return np.rint(np.clip(s, 0, 1) * 100).astype("uint8")
@@ -156,7 +170,8 @@ def cargar_capas(out_dir: Path) -> tuple[dict, dict]:
     return base, v2
 
 
-def construir_idoneidad(out_dir: Path, perfiles: dict, desactivar=frozenset(), sufijo: str = ""):
+def construir_idoneidad(out_dir: Path, perfiles: dict, desactivar=None, sufijo: str = ""):
+    desactivar = DESACTIVADOS_POR_DEFECTO if desactivar is None else frozenset(desactivar)
     malla = Malla.cargar(Path(out_dir) / "malla.json")
     base, v2 = cargar_capas(out_dir)
     for clave, perfil in perfiles.items():

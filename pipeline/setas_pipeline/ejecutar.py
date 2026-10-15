@@ -74,6 +74,11 @@ def _accesos():
     construir_accesos(_malla(), RAW, OUT, FUENTES)
 
 
+def _edificado():
+    from .edificado import construir_edificado
+    construir_edificado(_malla(), RAW, OUT, FUENTES, ZONA)
+
+
 def _idoneidad():
     from .idoneidad import construir_idoneidad
     construir_idoneidad(OUT, cargar_perfiles(ESPECIES))
@@ -116,8 +121,10 @@ PASOS = {
                 lambda: [*_geo(), OUT / "altitud.tif"]),
     "protegidos": (_protegidos, lambda: [OUT / "protegido.tif"], _geo),
     "accesos": (_accesos, lambda: [OUT / "distancia_acceso.tif"], _geo),
+    "edificado": (_edificado, lambda: [OUT / "edificado.tif"], _geo),
     "idoneidad": (_idoneidad, _por_especie("idoneidad_{}.tif"), _entradas_idoneidad),
-    "calibracion": (_calibracion, lambda: [OUT / "calibracion.md"], _por_especie("idoneidad_{}.tif")),
+    "calibracion": (_calibracion, lambda: [OUT / "calibracion.md"],
+                    lambda: [*_por_especie("idoneidad_{}.tif")(), OUT / "citas.geojson"]),
     "vista": (_vista, _por_especie("vista_{}.png"), _por_especie("idoneidad_{}.tif")),
 }
 

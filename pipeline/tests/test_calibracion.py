@@ -76,3 +76,24 @@ def test_validacion_bloques_lift_en_bloques_retenidos():
     assert v["lifts"] == [2.0, 1.0] and v["lift_medio"] == 1.5 and v["pliegues"] == 2
     vacio = validacion_bloques(m, r, tierra, [], pl, k=2)
     assert vacio["lift_medio"] is None and vacio["pliegues"] == 0
+
+
+def test_citas_especie_y_precision():
+    from setas_pipeline.calibracion import citas_especie, filtrar_precision
+    f = lambda esp, prec: {"properties": {"especie": esp, "lon": -4.9, "lat": 36.5, "precision_m": prec}}
+    c = {"features": [f("boletus_reticulatus", 50), f("boletus_reticulatus", None), f("boletus_reticulatus", 5000),
+                      f("amanita_caesarea", 10)]}
+    pts = citas_especie(c, "boletus_aestivalis")          # clave del pipeline → id de la guía
+    assert len(pts) == 3
+    ok, sin, imprecisas = filtrar_precision(pts)
+    assert ok == [(-4.9, 36.5, 50)] and sin == 1 and imprecisas == 1
+
+
+def test_decidir_borde_urbano():
+    from setas_pipeline.calibracion import decidir_borde_urbano
+    v = lambda e, b: {"exclusion": {"val": {"lift_medio": e}}, "exclusion_borde": {"val": {"lift_medio": b}}}
+    res = {"a": {"celda": {"n": 20}, "variantes": v(2.0, 2.5)},
+           "b": {"celda": {"n": 5}, "variantes": v(2.0, 1.0)}}          # n < 10: no cuenta
+    assert decidir_borde_urbano(res) == (True, [])
+    res["c"] = {"celda": {"n": 12}, "variantes": v(3.0, 2.9)}
+    assert decidir_borde_urbano(res) == (False, ["c"])

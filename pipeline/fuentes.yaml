@@ -251,3 +251,33 @@ zonificacion_porn:
   verificacion: "2026-10-14: 118 recintos en la caja de la malla; Zonas de Reserva (A/ARE/R) en Grazalema, Sierra de las Nieves, Los Alcornocales, Tejeda-Almijara-Alhama, Del Estrecho, Maro-Cerro Gordo…; Reservas Naturales (RN) en lagunas."
   licencia: "Uso libre y gratuito mencionando autores y propietarios (GetCapabilities: Fees 'Gratuito'); REDIAM publica sus datos con CC BY 4.0"
   parque_nacional: "Parque Nacional Sierra de las Nieves: de la caché RENPA (enp, FIGURA = 'Parque Nacional')."
+
+# ---------------------------------------------------------------- Titularidad (2026-10-15, titularidad.py)
+montes_publicos:
+  nombre: "REDIAM — Catálogo (Registro) de Montes Públicos de Andalucía, WFS, capa ms:Catalogo_Montes_Públicos_Andalucia"
+  url_patron: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_Catalogo_Montes_Publicos_Andalucia?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:Catalogo_Montes_P%C3%BAblicos_Andalucia&outputFormat=application/json;%20subtype=geojson&srsName=EPSG:25830&bbox={xmin},{ymin},{xmax},{ymax},urn:ogc:def:crs:EPSG::25830"
+  verificacion: "2026-10-15: caja x 320000-340000, y 4040000-4060000 → 12 montes (5 Comunidad Autónoma de Andalucía, 6 Ayuntamiento, 1 Otras Entidades Públicas). Campos: id, codigo_ja, nombre, provincias, tipo_titul, acceso_inf, sup_ha."
+  ficha: "portalrediam.cica.es/geonetwork, c3f9579d16afd3aabd4c0d180f135cf678384aa6 (actualizada 07-10-2026)"
+  limitacion: "No distingue los montes de ayuntamiento gestionados por la Junta de los que no (PENDIENTE)."
+  licencia: "Uso libre y gratuito mencionando a autores y propietarios (AccessConstraints del WFS); el repo trata REDIAM como CC BY 4.0."
+  atribucion: "REDIAM, Junta de Andalucía"
+
+vias_pecuarias:
+  nombre: "REDIAM — Inventario de vías pecuarias (dic. 2025), WFS Patrimonio Natural, capa ms:inventario_vvpp"
+  url_patron: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_WFS_Patrimonio_Natural?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:inventario_vvpp&outputFormat=application/json;%20subtype=geojson&srsName=EPSG:25830&bbox={xmin},{ymin},{xmax},{ymax},urn:ogc:def:crs:EPSG::25830"
+  verificacion: "2026-10-15: caja x 320000-340000, y 4040000-4060000 → 15 tramos (p. ej. CORDEL DE BENAHAVIS A OJEN). El servicio REDIAM_Inventario_VVPP da 504 con cajas de 20 km; este no."
+  aviso: "El trazado de las vías pecuarias no deslindadas es aproximado (metadatos REDIAM)."
+  atribucion: "REDIAM, Junta de Andalucía"
+
+cotos_caza:
+  nombre: "REDIAM — Terrenos cinegéticos vigentes (temporada 2025-26), capa ms:Terrenos_cinegeticos_vigentes"
+  url_patron: "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_terrenos_cinegeticos_vigentes?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:Terrenos_cinegeticos_vigentes&outputFormat=application/json;%20subtype=geojson&srsName=EPSG:25830&bbox={xmin},{ymin},{xmax},{ymax},urn:ogc:def:crs:EPSG::25830"
+  verificacion: "2026-10-15: caja x 320000-340000, y 4040000-4060000 → 20 recintos (11 cotos privados, 8 deportivos, 1 reserva andaluza). Sin campo de cercado."
+  uso: "Solo refuerza el aviso de finca privada; nunca lo quita."
+  atribucion: "REDIAM, Junta de Andalucía"
+
+catastro_bu:
+  nombre: "Catastro INSPIRE — Edificios (BU), descarga ATOM por municipio"
+  atom: "https://www.catastro.hacienda.gob.es/INSPIRE/buildings/{prov}/ES.SDGC.bu.atom_{prov}.xml"
+  verificacion: "2026-10-15: curl falla por la cadena TLS (CA desconocida); requests (certifi) descarga bien. Feeds provinciales en UTF-8 (Málaga) o ISO-8859-1 (resto)."
+  licencia: "Uso libre citando a la D. G. del Catastro como autora y propietaria; solo se publica información transformada (máscara de edificado), no los edificios."

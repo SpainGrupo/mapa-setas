@@ -111,3 +111,14 @@ def test_pmtiles_real(tmp_path):
     s.cerrar((-5.0, 36.0, -4.0, 37.0), 8, 8, "IGN")
     h = D.huella(out)["pmtiles"]["app/x.pmtiles"]
     assert h["zoom"] == [8, 8] and h["atribucion"] == "IGN" and h["nombre"] == "x" and h["bytes"] > 0
+
+
+def test_salidas_ajenas_a_la_rama_no_entran_en_la_huella(tmp_path):
+    out = _out(tmp_path)
+    viejo = time.time() - 3600
+    for rel in ("edificado.tif", "titularidad_resumen.json", "app/titularidad.pmtiles"):
+        (out / rel).write_bytes(b"x")
+        os.utime(out / rel, (viejo, viejo))
+    h = D.huella(out, desde=time.time() - 60)   # no exige regenerarlas
+    assert "edificado.tif" not in h["tif"] and "titularidad_resumen.json" not in h["json"]
+    assert "app/titularidad.pmtiles" not in h["pmtiles"]

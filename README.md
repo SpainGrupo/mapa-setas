@@ -16,7 +16,8 @@ Los sitios que guardas («Mis sitios») se quedan en tu navegador: no se envían
 ## Estructura
 
 - `pipeline/`: genera los datos (terreno, vegetación, idoneidad por especie, acceso a pie, restricciones).
-  Python con `uv`. La salida (`pipeline/data/out/app`) no se versiona.
+  Python con `uv`. La salida (`pipeline/data/<region>/out/app`) no se versiona. `--region` en los CLIs, por defecto
+  `marbella`; config en `pipeline/regiones/<id>.yaml`.
 - `app/`: la PWA (Vite + MapLibre + PMTiles). Los datos se enlazan desde la salida del pipeline.
 - `guia/`: fichas de especies y fotos con licencia libre (créditos en `guia/CREDITOS.md`).
 - `modelo/`: construcción del paquete del reconocedor (BioCLIP en ONNX, int8).
@@ -41,7 +42,7 @@ El detalle de cada fuente (URL, fecha de consulta, licencia) está en `pipeline/
 ## Compilar y publicar
 
 Requisitos: Node (con `npm ci` hecho en `app/`), Python 3, ffmpeg para las miniaturas de la guía y los datos
-del pipeline ya generados en `pipeline/data/out/app`.
+del pipeline ya generados en `pipeline/data/<region>/out/app` (hoy la app enlaza `marbella`).
 
 ```sh
 cd app

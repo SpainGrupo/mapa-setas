@@ -106,7 +106,7 @@ describe('cabecera', () => {
     expect(() => parsearCabecera(mutar(j))).toThrow(/acceso\.json/);
   });
   it('la cabecera real del pipeline (si existe) se lee', () => {
-    const p = fileURLToPath(new URL('../../pipeline/data/out/app/acceso.json', import.meta.url));
+    const p = fileURLToPath(new URL('../../pipeline/data/marbella/out/app/acceso.json', import.meta.url));
     if (!existsSync(p)) return;
     const cab = parsearCabecera(JSON.parse(readFileSync(p, 'utf8')));
     expect(cab.ancho * cab.alto).toBeGreaterThan(1e6);
@@ -211,7 +211,7 @@ describe('trazado', () => {
 });
 
 describe('datos reales del pipeline (si existen): mismo resultado que acceso.py --consultar', () => {
-  const dir = fileURLToPath(new URL('../../pipeline/data/out/app/', import.meta.url));
+  const dir = fileURLToPath(new URL('../../pipeline/data/marbella/out/app/', import.meta.url));
   const hay = existsSync(dir + 'acceso.bin') && existsSync(dir + 'aparcamientos.json');
   it.skipIf(!hay)('36.589, −5.244: 8 min, +1 m, 4 pasos, aparcamiento 86596', async () => {
     const cab = parsearCabecera(JSON.parse(readFileSync(dir + 'acceso.json', 'utf8')));

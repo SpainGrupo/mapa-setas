@@ -2853,7 +2853,7 @@ Expected: todo PASS, `test_salidas_de_marbella_iguales_al_dorado` PASSED (no SKI
 **Interfaces:**
 - Produces: mientras no llegue el plan de la app, la app sigue leyendo un `data/` plano con los datos de Marbella: `app/public/data` → `pipeline/data/marbella/out/app`. El layout publicado definitivo (spec §4.1: `data/regiones.json`, `data/<region>/…`, `data/modelo/`) es del plan de la app; este plan deja listo `pipeline/data/regiones.json` y `pipeline/data/<region>/out/app/` para que ese plan lo copie.
 
-- [ ] **Step 1: Cambios mínimos de ruta**
+- [x] **Step 1: Cambios mínimos de ruta**
 
 - `app/scripts/enlazar-datos.mjs`: comentario de la línea 1 → `// Enlaza <app>/<dir>/data → pipeline/data/marbella/out/app (interino hasta el selector de región; los datos no se versionan).`; línea 8 → `const destino = '../../pipeline/data/marbella/out/app';`
 - `app/scripts/publicar.sh`: línea 3 `(pipeline/data/out/app)` → `(pipeline/data/marbella/out/app)`; línea 18 → `DATOS="$RAIZ/pipeline/data/marbella/out/app"   # interino: una sola región; el layout data/<region>/ llega con el plan de la app`.
@@ -2861,7 +2861,7 @@ Expected: todo PASS, `test_salidas_de_marbella_iguales_al_dorado` PASSED (no SKI
 - `modelo/construir.py`: línea 8 `pipeline/data/out/app/modelo/` → `pipeline/data/marbella/out/app/modelo/`; líneas 32-33 `"pipeline/data/out/app/…"` → `"pipeline/data/marbella/out/app/…"` (el plan de la app lo moverá a `data/modelo/`, compartido).
 - `README.md:19,44` y `stages/01_terreno/CONTEXT.md:14`: `pipeline/data/out` → `pipeline/data/<region>/out` (con una frase: «`--region` en los CLIs, por defecto `marbella`; config en `pipeline/regiones/<id>.yaml`»).
 
-- [ ] **Step 2: Verificar**
+- [x] **Step 2: Verificar**
 
 ```bash
 cd /Users/alexanderkrupnov/Documents/Claude/setas-alicante
@@ -2872,7 +2872,7 @@ npx --prefix app vitest run src/acceso.test.ts src/ranking.test.ts
 ```
 Expected: grep vacío; `public/data -> ../../pipeline/data/marbella/out/app`; los tests de datos reales salen PASSED (no saltados: el worktree tiene los datos migrados).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add app/scripts/enlazar-datos.mjs app/scripts/publicar.sh app/src/acceso.test.ts app/src/ranking.test.ts modelo/construir.py README.md stages/01_terreno/CONTEXT.md
@@ -2881,7 +2881,7 @@ git commit -m "chore: la app y el reconocedor leen pipeline/data/marbella/out/ap
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
-- [ ] **Step 4: Instrucciones de migración del checkout principal — NO ejecutar en este plan**
+- [x] **Step 4: Instrucciones de migración del checkout principal — NO ejecutar en este plan**
 
 Se hacen al fusionar `region-alicante` en `main`, con el visto bueno de Alexander, en `/Users/alexanderkrupnov/Documents/Claude/setas`:
 1. Antes de fusionar: `cd pipeline && uv run pytest -q` en verde en el worktree y la Task 10 en `OK`.
@@ -2893,7 +2893,7 @@ Se hacen al fusionar `region-alicante` en `main`, con el visto bueno de Alexande
 7. El primer `ejecutar accesos`/`exportar acceso|rutas` crea `data/marbella/raw/zona.osm.pbf` (osmium, unos segundos).
 8. Quitar el worktree solo cuando la Fase B/app lo diga (spec §8).
 
-- [ ] **Step 5: Wrap-up**
+- [x] **Step 5: Wrap-up**
 
 Run: `cd pipeline && uv run pytest -q` y `git log --oneline region-alicante -12`.
 Expected: todo en verde; un commit por task.

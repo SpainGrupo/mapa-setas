@@ -5,7 +5,7 @@
     uv run python construir.py --solo-texto            # vocabulario nuevo: rehace texto_f16.bin, etiquetas.json y
                                                        # referencia.json con la misma torre de visión ya exportada
 
-Salida en pipeline/data/out/app/modelo/ (no versionada):
+Salida en pipeline/data/marbella/out/app/modelo/ (no versionada):
   vision_int8.onnx            torre de visión de BioCLIP (ViT-B/16), int8 solo en MatMul/Gemm (onnxruntime-web
                               no implementa ConvInteger), entrada [1,3,224,224] → embedding L2-normalizado [1,512]
   texto_f16.bin               embeddings de texto («a photo of <especie>.») N×512 en float16 little-endian
@@ -29,8 +29,8 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent
 REPO = RAIZ.parent
-SALIDA = REPO / "pipeline/data/out/app/modelo"
-MANIFEST = REPO / "pipeline/data/out/app/manifest.json"
+SALIDA = REPO / "pipeline/data/marbella/out/app/modelo"
+MANIFEST = REPO / "pipeline/data/marbella/out/app/manifest.json"
 ORT_APP = REPO / "app/node_modules/onnxruntime-web"
 ORT_VERSION = "1.20.1"
 HF_REPO = "imageomics/bioclip"

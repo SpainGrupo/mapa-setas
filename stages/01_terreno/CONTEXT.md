@@ -11,7 +11,7 @@ The control point for this stage. Define exactly what it reads, does, and writes
 Ejecutar las tareas 0–10 del plan de la Fase 1: descargar fuentes, generar capas GeoTIFF alineadas en EPSG:25830 y puntuar idoneidad por especie.
 
 ## Outputs
-- capas en pipeline/data/out/ (no versionadas), informe de calibración y PNG de vista previa -> output/
+- capas en pipeline/data/<region>/out/ (no versionadas; `--region` en los CLIs, por defecto `marbella`; config en `pipeline/regiones/<id>.yaml`), informe de calibración y PNG de vista previa -> output/
 
 ## Verify
 Puerta de revisión: code-review (high) + revisión del informe de calibración con Alexander. Antes de dar la etapa por hecha, verification-before-completion.

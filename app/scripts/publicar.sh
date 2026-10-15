@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Publica la app en GitHub Pages (rama huérfana gh-pages de SpainGrupo/mapa-setas).
-# Los datos (pipeline/data/out/app) no se versionan en main ni se pueden generar en CI: este script hace el
+# Los datos (pipeline/data/marbella/out/app) no se versionan en main ni se pueden generar en CI: este script hace el
 # build, copia (archivos reales, no enlaces) solo lo que la app pide —manifest.json, manifest.archivos y el
 # paquete del reconocedor (manifest.modelo)— y fuerza la rama gh-pages con un único commit.
 #
@@ -15,7 +15,7 @@ set -euo pipefail
 
 APP="$(cd "$(dirname "$0")/.." && pwd)"
 RAIZ="$(cd "$APP/.." && pwd)"
-DATOS="$RAIZ/pipeline/data/out/app"
+DATOS="$RAIZ/pipeline/data/marbella/out/app"   # interino: una sola región; el layout data/<region>/ llega con el plan de la app
 REMOTO="${REMOTO:-https://github.com/SpainGrupo/mapa-setas.git}"
 SALIDA="${SALIDA:-$(mktemp -d)/gh-pages}"
 LIMITE=$((95 * 1024 * 1024))   # GitHub rechaza archivos de más de 100 MB

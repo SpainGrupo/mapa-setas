@@ -97,7 +97,7 @@ describe('sitios.json', () => {
     expect(parsearSitios(null)).toBeNull();
     expect(parsearSitios({ especies: { a: [sitio(), { lat: 'x' }], b: 3 } })!.especies).toEqual({ a: [expect.objectContaining({ punt_media: 80 })] });
   });
-  const p = fileURLToPath(new URL('../../pipeline/data/out/app/sitios.json', import.meta.url));
+  const p = fileURLToPath(new URL('../../pipeline/data/marbella/out/app/sitios.json', import.meta.url));
   it.skipIf(!existsSync(p))('el del pipeline se lee y da un top general', () => {
     const d = parsearSitios(JSON.parse(readFileSync(p, 'utf8')))!;
     const t = topGeneral(d, Object.keys(d.especies), opc(), 2);

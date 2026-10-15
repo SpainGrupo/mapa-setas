@@ -1365,12 +1365,12 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - `main.ts`: `arrancar()` (migración → índice → región → mapa); variables `regiones: RegionIndice[]`; `manifest: ManifestApp | null`.
   - `window.__setas.region()` (solo e2e): `{ activa: string; regiones: string[] }`.
 
-- [ ] **Step 1: Write the failing check**
+- [x] **Step 1: Write the failing check**
 
 Run: `cd app && npx tsc --noEmit 2>&1 | grep -c "error TS"`
 Expected: un número > 0 (las firmas de la tarea 5 rompen `main.ts`, `mapa.ts`, `datos.ts`, `acceso-datos.ts` y `reconocer-ui.ts`).
 
-- [ ] **Step 2: Implement**
+- [x] **Step 2: Implement**
 
 `app/src/datos.ts` (entero):
 ```ts
@@ -1449,7 +1449,7 @@ const posicionRapida = async () => null;
 const preguntarRegion = async (rs: RegionIndice[]) => rs[0]?.id ?? null;
 ```
 
-- [ ] **Step 3: Verify**
+- [x] **Step 3: Verify**
 
 Run: `cd app && npx tsc --noEmit && npm test`
 Expected: sin errores de tipos; todos los tests en verde (los de antes y los nuevos).
@@ -1457,7 +1457,7 @@ Expected: sin errores de tipos; todos los tests en verde (los de antes y los nue
 Run: `cd app && SETAS_DATOS=/Users/alexanderkrupnov/Documents/Claude/setas/pipeline/data npm run build && (php -S 127.0.0.1:8765 -t dist servidor.php >/private/tmp/setas-php.log 2>&1 &) && sleep 1 && curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8765/data/regiones.json http://127.0.0.1:8765/data/marbella/manifest.json`
 Expected: `200` y `200`. Para el servidor después (`pkill -f "php -S 127.0.0.1:8765"`).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add app/src/datos.ts app/src/mapa.ts app/src/acceso-datos.ts app/src/reconocer-ui.ts app/src/main.ts app/src/opfs.ts

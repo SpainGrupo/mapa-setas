@@ -1,7 +1,7 @@
 // Pestaña Reconocer: fotos → reconocedor offline (Web Worker) → candidatos + capa de seguridad + preguntas guiadas,
 // y con cobertura la segunda opinión (Gemini, vía el Worker de Cloudflare). También la descarga opcional del
 // reconocedor en Ajustes. Regla §2: nunca «comestible»; las peligrosas no descartadas siempre en rojo.
-import { BASE_DATOS, mb } from './datos';
+import { mb, raizDatos } from './datos';
 import { archivoModelo, borrarModelo, descargarModelo, estadoModelo } from './opfs';
 import type { Manifest } from './tipos';
 import { cargarGuia, fichasGuia, insignia, urlFotoGuia } from './guia-ui';
@@ -609,7 +609,7 @@ async function descargar() {
   const prog = $<HTMLProgressElement>('#prog-modelo');
   btn.disabled = true; prog.hidden = false; prog.value = 0;
   try {
-    await descargarModelo(m, BASE_DATOS, (h, t) => {
+    await descargarModelo(m, raizDatos(), (h, t) => {
       prog.value = h / t;
       $('#estado-modelo').textContent = `Descargando el reconocedor… ${mb(h)} de ${mb(t)}`;
     });

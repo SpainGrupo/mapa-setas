@@ -4,7 +4,7 @@ const noEsta = (n: string) => Object.assign(new Error(`NotFoundError: ${n}`), { 
 export class ArchivoFalso {
   readonly kind = 'file';
   constructor(public name: string, public padre: DirFalso, public datos: Uint8Array = new Uint8Array()) {}
-  async getFile() { return new File([this.datos], this.name); }
+  async getFile() { return new File([this.datos as BlobPart], this.name); }
   async move(destino: DirFalso, nombre: string) {
     this.padre.entradas.delete(this.name);
     this.name = nombre; this.padre = destino;

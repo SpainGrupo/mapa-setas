@@ -7,7 +7,7 @@ import { PbfReader } from 'pbf';
 import { layers, namedFlavor } from '@protomaps/basemaps';
 import { FuenteOpfsHttp } from './fuente';
 import { archivoOpfs } from './opfs';
-import { BASE_DATOS } from './datos';
+import { baseDatos } from './datos';
 import type { Manifest } from './tipos';
 import { NOMBRE_TIPO_RESTRICCION, ORIENTATIVO, aRestriccion, restriccionesEn, teselaDe, type Restriccion } from './restricciones';
 import { etiquetaTitularidad, TEXTO_TITULARIDAD, type Titularidad } from './titularidad';
@@ -29,7 +29,7 @@ const archivosPm = new Map<string, PMTiles>();
 
 /** URL pmtiles:// de un archivo de datos; registra la Source OPFS/HTTP la primera vez. */
 function pm(nombre: string): string {
-  const url = BASE_DATOS + nombre;
+  const url = baseDatos() + nombre;
   if (!fuentes.has(url)) {
     const f = new FuenteOpfsHttp(url, () => archivoOpfs(nombre));
     fuentes.set(url, f);
@@ -46,7 +46,7 @@ type EntidadGeo = { properties: Record<string, unknown>; geometry: any };
  * por geometría). Sin tesela → []. Si no se puede leer (sin red y sin descarga) → null. */
 async function entidadesTesela(archivo: string, capa: string, lat: number, lon: number): Promise<EntidadGeo[] | null> {
   pm(archivo);
-  const a = archivosPm.get(BASE_DATOS + archivo)!;
+  const a = archivosPm.get(baseDatos() + archivo)!;
   try {
     const z = (await a.getHeader()).maxZoom;
     const { x, y } = teselaDe(lat, lon, z);
@@ -76,22 +76,8 @@ export async function titularidadEn(m: Manifest, lat: number, lon: number): Prom
  */
 export async function restriccionEn(m: Manifest, lat: number, lon: number): Promise<Restriccion[] | null> {
   if (!m.restricciones) return null;
-  const capa = m.restricciones.capa;
-  pm(capa);
-  const a = archivosPm.get(BASE_DATOS + capa)!;
-  try {
-    const z = (await a.getHeader()).maxZoom;
-    const { x, y } = teselaDe(lat, lon, z);
-    const t = await a.getZxy(z, x, y);
-    if (!t) return [];
-    const l = new VectorTile(new PbfReader(new Uint8Array(t.data))).layers.restricciones;
-    if (!l) return [];
-    const fs = Array.from({ length: l.length }, (_, i) => l.feature(i).toGeoJSON(x, y, z) as { properties: Record<string, unknown>; geometry: any });
-    return restriccionesEn(fs, lat, lon, m.restricciones.tipos);
-  } catch (e) {
-    console.warn('restricciones', e);
-    return null;
-  }
+  const fs = await entidadesTesela(m.restricciones.capa, 'restricciones', lat, lon);
+  return fs && restriccionesEn(fs, lat, lon, m.restricciones.tipos);
 }
 
 // Tras cambiar los archivos de OPFS (actualización o borrado) la app recarga la página (ver main.ts,

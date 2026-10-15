@@ -2,7 +2,7 @@
 // 38 MB en memoria. Orden: archivo descargado en OPFS (Blob.slice) → HTTP con Range. Si el pipeline publica
 // acceso.bin.gz, se descomprime una vez con DecompressionStream a un Blob (el navegador lo puede llevar a disco)
 // y se lee igual con Blob.slice.
-import { BASE_DATOS, cargarJson } from './datos';
+import { baseDatos, cargarJson } from './datos';
 import { archivoOpfs } from './opfs';
 import { descomprimir, lectorBlob, nombreBinario, parsearCabecera, type AparcamientosCompactos, type Cabecera, type Lector } from './acceso';
 import type { Manifest } from './tipos';
@@ -52,13 +52,13 @@ async function cargar(m: Manifest): Promise<DatosAcceso | null> {
   if (f) {
     base = lectorBlob(gzip ? await descomprimir(f.stream()) : f);
   } else if (gzip) {
-    const r = await fetch(BASE_DATOS + nombre);
+    const r = await fetch(baseDatos() + nombre);
     if (!r.ok || !r.body) throw new Error(`HTTP ${r.status} al bajar ${nombre}`);
     estado.origen = 'http-completo';
     base = lectorBlob(await descomprimir(r.body));
   } else {
     estado.origen = 'http';
-    base = lectorHttp(BASE_DATOS + nombre, estado);
+    base = lectorHttp(baseDatos() + nombre, estado);
   }
   const lector: Lector = {
     async leer(o, n) {

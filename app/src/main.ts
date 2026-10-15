@@ -2,7 +2,10 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import './estilos.css';
 import { registerSW } from 'virtual:pwa-register';
 import type { Map as MapaML, GeoJSONSource, LngLat } from 'maplibre-gl';
-import { BASE_DATOS, cargarJson, cargarManifest, mb } from './datos';
+import { baseDatos, cargarJson, cargarManifest, mb } from './datos';
+import { cargarRegiones, claveRegion, establecerActiva, hayRegionActiva, regionActiva, resolverRegion, type RegionIndice } from './region';
+import { migrarARegiones } from './migracion';
+import type { ManifestApp } from './manifest-region';
 import type { Base } from './mapa';
 // MapLibre (≈1 MB) va en su propio trozo y se carga al arrancar el mapa: el resto de la app se pinta antes.
 let M: typeof import('./mapa') | null = null;
@@ -19,12 +22,12 @@ import type { SitiosJson } from './ranking';
 import { datosAcceso } from './acceso-datos';
 import { iniciarSelectorEspecie, ordenSelector, pintarSelectorEspecie } from './selector-especie';
 import { Gps } from './gps';
-import { borrarMapas, descargarMapas, estadoDescarga } from './opfs';
+import { borrarMapas, descargarMapas, estadoDescarga, moverEnOpfs } from './opfs';
 import { borrarSitio, guardarSitio, guardarVarios, leerSitio, listarSitios } from './sitios';
 import { aGPX, aJSON, deGPX, deJSON, nuevoId } from './intercambio';
-import type { AccesoSitio, Manifest, Sitio } from './tipos';
+import type { AccesoSitio, Sitio } from './tipos';
 import type { Feature } from 'geojson';
-import { edadHoras, fechaMadrid, obtener, CADUCIDAD_H, type DatosMeteo, type PuntoMeteo } from './meteo';
+import { claveMeteo, edadHoras, fechaMadrid, obtener, renombrarCache, CADUCIDAD_H, type DatosMeteo, type PuntoMeteo } from './meteo';
 import { bandaAltitud, ddmm, humedadAcumulada, semaforo, sumarDias, textoBanda, type ResultadoSemaforo } from './semaforo';
 import { expresionColores, haceTexto, NOMBRE_ESTADO, puntoMasCercano } from './zona';
 import { pintarGrafico } from './grafico';
@@ -43,7 +46,8 @@ function cifra(el: HTMLElement, texto: string) {
     const b = document.createElement('b'); b.textContent = t; return b;
   }));
 }
-let manifest: Manifest | null = null;
+let manifest: ManifestApp | null = null;
+let regiones: RegionIndice[] = [];
 let mapa: MapaML | null = null;
 let gps: Gps | null = null;
 const nombres: Record<string, string> = {};
@@ -112,7 +116,7 @@ function aplicarIdoneidad() {
   const especie = $<HTMLSelectElement>('#sel-especie').value;
   const umbral = Number($<HTMLInputElement>('#rng-umbral').value);
   $('#txt-umbral').textContent = `≥ ${umbral} m`;
-  localStorage.setItem('setas:capa', JSON.stringify({ especie, umbral }));
+  localStorage.setItem(claveRegion('capa'), JSON.stringify({ especie, umbral }));
   M!.ponerIdoneidad(mapa, especie, umbral);
   M!.verCapa(mapa, ['idoneidad'], $<HTMLInputElement>('[data-capa=idoneidad]').checked);
   pintarSemaforoMapa();
@@ -188,7 +192,7 @@ async function iniciarMapa() {
   M.ponerNombresEspecie((id) => nombres[id] ?? id);
   $('#rampa').style.background = `linear-gradient(90deg, ${M.COLORES_IDONEIDAD.join(',')})`;
   try {
-    const g = JSON.parse(localStorage.getItem('setas:capa') ?? 'null');
+    const g = JSON.parse(localStorage.getItem(claveRegion('capa')) ?? 'null');
     if (g && manifest.especies.some((e) => e.id === g.especie)) {
       $<HTMLSelectElement>('#sel-especie').value = g.especie;
       $<HTMLInputElement>('#rng-umbral').value = String(g.umbral);
@@ -198,7 +202,8 @@ async function iniciarMapa() {
 
   mapa = M.crearMapa($('#mapa'), manifest);
   gps = new Gps(mapa, (m) => avisar(m));
-  if (import.meta.env.DEV || E2E) (window as any).__setas = { mapa, origenes: M.origenes, meteo: () => ({ datos: meteo, origen: meteoOrigen, punto: puntoSel }),
+  if (import.meta.env.DEV || E2E) (window as any).__setas = { mapa, origenes: M.origenes,
+    region: () => ({ activa: regionActiva(), regiones: regiones.map((r) => r.id) }), meteo: () => ({ datos: meteo, origen: meteoOrigen, punto: puntoSel }),
     acceso: () => ultimoAcceso, trazaAcceso: () => trazaAcceso, hoy: hoyZona, tops: resumenHoy, selector: ordenSelector, puntoRef: refPunto,
     ruta: () => rutaActual && { ...rutaActual, perfil: { ...rutaActual.perfil } }, seguimiento: () => seguimiento,
     restriccionEn: (lat: number, lon: number) => manifest && M!.restriccionEn(manifest, lat, lon),
@@ -873,7 +878,7 @@ let puntosMeteo: PuntoMeteo[] = [];
 let meteo: DatosMeteo | null = null;
 let meteoOrigen: 'red' | 'cache' | 'ninguno' = 'ninguno';
 let puntoSel: PuntoMeteo | null = null;
-const CLAVE_PUNTO = 'setas:punto-meteo';
+const clavePunto = () => claveRegion('punto-meteo');
 const DISTANCIA_MAX_KM = 12;
 
 const especieSel = () => $<HTMLSelectElement>('#sel-especie').value;
@@ -982,7 +987,7 @@ function elegirPunto(lat: number, lon: number, conTarjeta: boolean) {
   const n = ++consultaZona;
   pintarTitularidad($('#tz-titularidad'), lat, lon, () => n === consultaZona, false);
   puntoSel = p;
-  localStorage.setItem(CLAVE_PUNTO, String(p.id));
+  localStorage.setItem(clavePunto(), String(p.id));
   pintarPuntoMapa();
   if (conTarjeta && $('#tarjeta-ruta').hidden) { if (!$('#tarjeta-acceso').hidden) cerrarAcceso(); $('#tarjeta-zona').hidden = false; }
   pintarTarjeta();
@@ -1102,7 +1107,7 @@ async function cargarMeteo(forzar: boolean) {
   if (!puntosMeteo.length) return;
   const btn = $<HTMLButtonElement>('#btn-meteo');
   if (forzar) { btn.disabled = true; $('#estado-meteo').textContent = 'Consultando el tiempo…'; }
-  const r = await obtener(puntosMeteo, { forzar });
+  const r = await obtener(puntosMeteo, { forzar, clave: claveMeteo(regionActiva()) });
   meteo = r.datos;
   meteoOrigen = r.origen;
   document.body.dataset.meteo = r.origen;
@@ -1116,7 +1121,7 @@ async function cargarMeteo(forzar: boolean) {
 async function iniciarMeteo() {
   if (!manifest?.meteo) return;
   puntosMeteo = (await cargarJson<PuntoMeteo[]>(manifest.meteo.puntos)) ?? [];
-  const guardado = localStorage.getItem(CLAVE_PUNTO);
+  const guardado = localStorage.getItem(clavePunto());
   puntoSel = puntosMeteo.find((p) => String(p.id) === guardado) ?? null;
   pintarPuntoMapa();
   sitiosCandidatos().then((d) => { sitiosRef = d; repintarSelector(); });
@@ -1142,6 +1147,7 @@ $('#btn-guia-fotos').addEventListener('click', () => guardarFotosSinConexion(pin
 $('#creditos-fotos').addEventListener('toggle', () => pintarCreditos());
 
 async function pintarAjustes() {
+  if (!hayRegionActiva()) return;
   pintarEstadoGuia();
   pintarAjustesModelo();
   const est = estadoDescarga();
@@ -1181,7 +1187,7 @@ $('#btn-descargar').addEventListener('click', async () => {
   const prog = $<HTMLProgressElement>('#prog-descarga');
   btn.disabled = true; prog.hidden = false; prog.value = 0;
   try {
-    const { persistente } = await descargarMapas(manifest, BASE_DATOS, (h, t) => {
+    const { persistente } = await descargarMapas(manifest, regionActiva(), baseDatos(), (h, t) => {
       prog.value = h / t;
       $('#estado-descarga').textContent = `Descargando… ${mb(h)} de ${mb(t)}`;
     });
@@ -1259,4 +1265,22 @@ iniciarReconocer({
     { especie: especieGuia ? especieMapaDeFicha(especieGuia, (manifest?.especies ?? []).map((e) => e.id)) : '', foto }),
 });
 
-iniciarMapa().then(pintarAjustes).finally(() => guardarFotosSinConexion(pintarEstadoGuia));
+// Hasta la tarea 11 (region-ui.ts): sin GPS ni pregunta, la primera región.
+const posicionRapida = async () => null;
+const preguntarRegion = async (rs: RegionIndice[]) => rs[0]?.id ?? null;
+
+/** Arranque: migración de la instalación plana (una vez) → índice de regiones → región activa → mapa. */
+async function arrancar() {
+  await migrarARegiones({
+    almacen: localStorage,
+    raiz: async () => (navigator.storage?.getDirectory ? navigator.storage.getDirectory() : null),
+    moverArchivos: (desde, hacia, nombres) => moverEnOpfs(desde, hacia, nombres),
+    renombrarMeteo: renombrarCache,
+  }).catch((e) => console.warn('migración a regiones', e));
+  regiones = await cargarRegiones();
+  const id = await resolverRegion(regiones, { almacen: localStorage, posicion: posicionRapida, preguntar: preguntarRegion });
+  if (!id) { $('#sin-datos').hidden = false; return; }
+  establecerActiva(id);
+  await iniciarMapa();
+}
+arrancar().then(pintarAjustes).finally(() => guardarFotosSinConexion(pintarEstadoGuia));

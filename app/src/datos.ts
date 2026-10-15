@@ -1,18 +1,22 @@
 import type { Manifest } from './tipos';
 import { archivoOpfs } from './opfs';
+import { baseDatos, raizDatos, regionActiva } from './region';
+import { prepararManifest, type ManifestApp } from './manifest-region';
 
-export const BASE_DATOS = new URL('data/', document.baseURI).href;
+export { mb } from './unidades';
+export { baseDatos, raizDatos };
 
-/** JSON de datos desde la red; sin cobertura, la copia descargada en OPFS. */
-export async function cargarJson<T>(nombre: string): Promise<T | null> {
+/** JSON de datos de una región desde la red; sin cobertura, la copia descargada en OPFS. */
+export async function cargarJson<T>(nombre: string, region = regionActiva()): Promise<T | null> {
   try {
-    const r = await fetch(BASE_DATOS + nombre, { cache: 'no-cache' });
+    const r = await fetch(baseDatos(region) + nombre, { cache: 'no-cache' });
     if (r.ok) return await r.json();
   } catch { /* sin red */ }
-  const f = await archivoOpfs(nombre);
+  const f = await archivoOpfs(nombre, region);
   return f ? JSON.parse(await f.text()) : null;
 }
 
-export const cargarManifest = () => cargarJson<Manifest>('manifest.json');
-
-export { mb } from './unidades';
+export async function cargarManifest(region = regionActiva()): Promise<ManifestApp | null> {
+  const m = await cargarJson<Manifest>('manifest.json', region);
+  return m ? prepararManifest(m, region) : null;
+}

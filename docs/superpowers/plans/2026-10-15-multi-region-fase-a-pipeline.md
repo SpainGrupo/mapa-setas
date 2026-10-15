@@ -649,7 +649,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - `registrar(tipo: str, nombre: str)` (decorador)
   - `vacio(tipo) -> GeoDataFrame`, `normalizar(tipo, gdf) -> GeoDataFrame`, `cargar_capa(tipo, capas: dict, ctx) -> GeoDataFrame`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # pipeline/tests/test_adaptadores.py
@@ -708,12 +708,12 @@ def test_registro_trae_los_adaptadores_de_marbella():
     pytest.importorskip("setas_pipeline.adaptadores.rediam")
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `cd pipeline && uv run pytest tests/test_adaptadores.py -v`
 Expected: FAIL (`No module named 'setas_pipeline.adaptadores'`).
 
-- [ ] **Step 3: Implementation**
+- [x] **Step 3: Implementation**
 
 ```python
 # pipeline/setas_pipeline/adaptadores/__init__.py
@@ -796,12 +796,12 @@ def cargar_capa(tipo: str, capas: dict, ctx: Contexto) -> gpd.GeoDataFrame:
 ```
 (Las líneas `from . import rediam, effis, derivados, osm  # noqa: E402,F401` se añaden al final en las Tasks 5 y 6.)
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `cd pipeline && uv run pytest tests/test_adaptadores.py -v`
 Expected: PASS (el último test sale SKIPPED hasta la Task 5).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add pipeline/setas_pipeline/adaptadores/__init__.py pipeline/tests/test_adaptadores.py

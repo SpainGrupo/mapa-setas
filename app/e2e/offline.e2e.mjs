@@ -58,7 +58,7 @@ const sumar = (iso, n) => new Date(Date.parse(iso + 'T00:00:00Z') + n * 864e5).t
 let puntosMeteo = null, consultasMeteo = 0;
 await ctx.route('**/api.open-meteo.com/**', async (r) => {
   consultasMeteo++;
-  puntosMeteo ??= await (await fetch(new URL('data/meteo_puntos.json', URL_APP))).json();
+  puntosMeteo ??= await (await fetch(new URL('data/marbella/meteo_puntos.json', URL_APP))).json();
   const u = new URL(r.request().url());
   const lat = u.searchParams.get('latitude').split(',').map(Number), lon = u.searchParams.get('longitude').split(',').map(Number);
   const hoy = HOY_E2E;
@@ -152,6 +152,8 @@ try {
   await mapaListo();
   await p.waitForFunction(() => navigator.serviceWorker?.controller, null, { timeout: 30000 });
   ok('carga en línea con el service worker activo');
+  const reg = await p.evaluate(() => window.__setas.region());
+  comprobar(reg.activa === 'marbella' && await p.locator('#btn-region').isHidden(), `región activa marbella y sin chip con una sola región (${reg.regiones})`);
   await reposo();
   await captura('01-inicio.png');
   // Conteos de la guía servida (la guía puede crecer; no se fijan números).
@@ -161,7 +163,7 @@ try {
   const N_CREDITOS = guiaServida.reduce((n, f) => n + f.fotos.length, 0);
 
   // Selector de especie con fotos.
-  const idsMapa = await p.evaluate(async () => (await (await fetch('data/manifest.json')).json()).especies.map((e) => e.id));
+  const idsMapa = await p.evaluate(async () => (await (await fetch('data/marbella/manifest.json')).json()).especies.map((e) => e.id));
   comprobar(await p.locator('#sel-especie').isHidden() && await p.locator('#btn-especie[aria-haspopup=dialog]').isVisible(),
     'el <select> de especie queda oculto tras un botón con miniatura');
   await p.locator('#btn-especie').click();
@@ -205,7 +207,7 @@ try {
 
   // Fiabilidad por especie (manifest → hoja de especies y leyenda). Calibración con citas.geojson (2026-10-15):
   // P. eryngii (n=11) se sostiene en la validación por bloques; B. edulis no llega a 10 citas y dice cuántas tiene.
-  const manF = await p.evaluate(async () => (await fetch('data/manifest.json')).json());
+  const manF = await p.evaluate(async () => (await fetch('data/marbella/manifest.json')).json());
   const nEdulis = manF.especies.find((e) => e.id === 'boletus_edulis').n_citas;
   await p.locator('#btn-especie').click();
   await p.locator('#dlg-especie[open]').waitFor();
@@ -228,10 +230,10 @@ try {
   await elegirEspecie('boletus_edulis');
 
   // Idoneidad: los 12 × 6 PMTiles responden a Range con la cabecera PMTiles v3, y cada especie se pinta en el mapa.
-  const man = await p.evaluate(async () => (await fetch('data/manifest.json')).json());
+  const man = await p.evaluate(async () => (await fetch('data/marbella/manifest.json')).json());
   const malos = [];
   for (const e of man.especies) for (const u of man.umbrales) {
-    const r = await fetch(new URL(`data/idoneidad_${e.id}_${u}.pmtiles`, URL_APP), { headers: { Range: 'bytes=0-6' } });
+    const r = await fetch(new URL(`data/marbella/idoneidad_${e.id}_${u}.pmtiles`, URL_APP), { headers: { Range: 'bytes=0-6' } });
     const b = Buffer.from(await r.arrayBuffer());
     if (r.status !== 206 || b.toString('latin1', 0, 7) !== 'PMTiles') malos.push(`${e.id}_${u}:${r.status}`);
   }
@@ -483,7 +485,7 @@ try {
   await captura('02-ajustes-descargado.png');
 
   // Re-descarga cortada: el primer .pmtiles pasa y el segundo se aborta en todos los reintentos.
-  const estadoAntes = await p.evaluate(() => localStorage.getItem('setas:mapas-descargados'));
+  const estadoAntes = await p.evaluate(() => localStorage.getItem('setas:mapas-descargados:marbella'));
   let primero = null, victima = null, abortadas = 0;
   await ctx.route('**/*.pmtiles', (r) => {
     const req = r.request();
@@ -503,12 +505,15 @@ try {
     const raiz = await navigator.storage.getDirectory();
     const dirs = [];
     for await (const k of raiz.keys()) dirs.push(k);
-    return { estado: localStorage.getItem('setas:mapas-descargados'), dirs, aviso: document.querySelector('#aviso').textContent };
+    const enMapas = [];
+    try { for await (const k of (await raiz.getDirectoryHandle('mapas')).keys()) enMapas.push(k); } catch { /* sin mapas */ }
+    return { estado: localStorage.getItem('setas:mapas-descargados:marbella'), dirs, enMapas, aviso: document.querySelector('#aviso').textContent };
   });
   comprobar(abortadas === 3, `${victima} abortado en sus 3 intentos (${abortadas})`);
   comprobar(tras.estado === estadoAntes && /Descargado el/.test(await p.locator('#estado-descarga').textContent()),
     'el estado de la descarga anterior sigue intacto');
-  comprobar(!tras.dirs.includes('mapas-nuevo') && tras.dirs.includes('mapas'), `staging borrado, mapas antiguos en su sitio (${tras.dirs.join(', ')})`);
+  comprobar(!tras.dirs.includes('mapas-nuevo') && tras.dirs.includes('mapas') && tras.enMapas.includes('marbella'),
+    `staging borrado, mapas antiguos en mapas/marbella (${tras.dirs.join(', ')} · mapas/${tras.enMapas.join(', ')})`);
   await captura('02b-redescarga-fallida.png');
 
   // Re-descarga completa: intercambio sobre los archivos existentes y recarga.
@@ -516,7 +521,7 @@ try {
   await p.locator('#btn-descargar').click();
   await recarga2;
   await mapaListo();
-  const tras2 = await p.evaluate(() => ({ estado: localStorage.getItem('setas:mapas-descargados'), aviso: document.querySelector('#aviso').textContent }));
+  const tras2 = await p.evaluate(() => ({ estado: localStorage.getItem('setas:mapas-descargados:marbella'), aviso: document.querySelector('#aviso').textContent }));
   comprobar(/Mapas actualizados/.test(tras2.aviso) && tras2.estado && tras2.estado !== estadoAntes
     && JSON.parse(tras2.estado).archivos[victima] > 0, 're-descarga completa: archivos sustituidos y estado nuevo');
 
@@ -601,7 +606,7 @@ try {
       grises: document.querySelectorAll('#lista-especies .inactiva').length, total: document.querySelectorAll('#lista-especies [role=option]').length,
       centro: window.__setas.vista()?.centro };
   }, MARBELLA);
-  const puntos = await (await fetch(new URL('data/meteo_puntos.json', URL_APP))).json();
+  const puntos = await (await fetch(new URL('data/marbella/meteo_puntos.json', URL_APP))).json();
   const kmRef = selM.refs.map((r) => { const q = puntos.find((x) => x.id === r?.id); return q ? km([q.lat, q.lon], [MARBELLA.lat, MARBELLA.lon]) : Infinity; });
   comprobar(selM.refs.every((r) => r?.origen === 'vista') && kmRef.every((k) => k <= 40) && selM.orden.activas.length > 0 && selM.grises < selM.total
     && selM.lugares.length === selM.orden.activas.length && selM.lugares.every((t) => /^activa cerca de \S/.test(t)),
@@ -765,7 +770,7 @@ try {
   const txtModelo = await btnModelo.textContent();
   comprobar(/^Descargar reconocedor para usar sin conexión \(≈\d+ MB\)$/.test(txtModelo), `botón del reconocedor: «${txtModelo}»`);
   comprobar(/Pendiente de configurar/.test(await p.locator('#estado-gemini').textContent()), 'Ajustes: segunda opinión «Pendiente de configurar» sin VITE_WORKER_URL');
-  const mapasAntes = await p.evaluate(() => JSON.parse(localStorage.getItem('setas:mapas-descargados')).archivos);
+  const mapasAntes = await p.evaluate(() => JSON.parse(localStorage.getItem('setas:mapas-descargados:marbella')).archivos);
   comprobar(!Object.keys(mapasAntes).some((n) => /onnx|wasm|texto_f16/.test(n)), 'la descarga de mapas no incluye el reconocedor');
   const t0Modelo = Date.now();
   await btnModelo.click();
@@ -1212,6 +1217,7 @@ try {
   await analizar('amanita_caesarea_1.jpg');
   await responder('interior_huevo', 'naranja_amarillo');
   const btnG = p.locator('#rec-gemini');
+  await btnG.waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});   // pintarGemini corre tras pintar el resultado
   comprobar(await btnG.isVisible() && await btnG.isEnabled(), 'con conexión y Worker configurado: botón «Segunda opinión (Gemini)» activo');
   await ctx.setOffline(true);
   await p.waitForFunction(() => document.querySelector('#rec-gemini').disabled);

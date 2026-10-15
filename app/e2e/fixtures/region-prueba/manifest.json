@@ -1,0 +1,19 @@
+{
+  "region": { "id": "prueba", "nombre": "Prueba", "origen": [-0.481, 38.3452], "etiqueta_origen": "de Alicante (prueba)" },
+  "bbox": [-5.30, 36.65, -5.05, 36.82],
+  "base": null,
+  "especies": [
+    { "id": "amanita_caesarea", "nombre": "Amanita caesarea", "sin_habitat": false },
+    { "id": "terfezia_arenaria", "nombre": "Terfezia arenaria", "sin_habitat": true }
+  ],
+  "meteo": null, "acceso": null, "rutas": null, "restricciones": null, "sitios": null, "titularidad": null, "citas": null, "modelo": null, "ccaa": null,
+  "legal": {
+    "ccaa": [{ "id": "CV", "nombre": "Comunitat Valenciana (prueba)", "norma": "Orden de prueba del e2e (DOGV núm. 0)", "cupo_kg_dia": 9,
+      "texto": "Texto de prueba del e2e: normativa sin cotejar.", "verificado": false, "fuente_url": "https://dogv.gva.es/" }],
+    "texto_protegido": "Prueba e2e: consulta el PRUG del espacio.",
+    "chip_sitio_restringido": "Prueba e2e: espacio protegido"
+  },
+  "atribuciones": { "mapa": "Prueba e2e: IGN CC BY 4.0, © OpenStreetMap ODbL, Protomaps", "fuentes": {} },
+  "avisos": ["Prueba e2e: capa de vegetación sin datos en parte de la zona."],
+  "archivos": ["protegidos.pmtiles", "idoneidad_amanita_caesarea_0.pmtiles"]
+}

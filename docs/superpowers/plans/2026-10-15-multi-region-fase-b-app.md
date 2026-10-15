@@ -2325,7 +2325,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - `**/data/prueba/<archivo>` → `route.fetch` a `data/marbella/<archivo>`. Playwright reenvía la cabecera `Range`.
 - El fixture tiene una especie activa (`amanita_caesarea`), una `sin_habitat` (`terfezia_arenaria`) y una entrada `legal` de la Comunitat Valenciana con `verificado: false` y un cupo que **no** se debe ver. Trae atribuciones propias y un aviso. `ccaa: null` (sin capa, así que se enseñan todas). En `archivos` solo lleva 1 PMTiles de idoneidad y `protegidos.pmtiles`, para que su descarga sea pequeña.
 
-- [ ] **Step 1: Ajustar el e2e de Marbella (solo rutas y claves)**
+- [x] **Step 1: Ajustar el e2e de Marbella (solo rutas y claves)**
 
 En `app/e2e/offline.e2e.mjs`:
 - 55: `new URL('data/marbella/meteo_puntos.json', URL_APP)`
@@ -2359,7 +2359,7 @@ Ningún texto esperado cambia: «(BOJA)», «km de (Marbella|ti)», «Normativa 
     "e2e:regiones": "node e2e/regiones.e2e.mjs",
 ```
 
-- [ ] **Step 2: Fixture**
+- [x] **Step 2: Fixture**
 
 `app/e2e/fixtures/region-prueba/manifest.json`:
 ```json
@@ -2385,7 +2385,7 @@ Ningún texto esperado cambia: «(BOJA)», «km de (Marbella|ti)», «Normativa 
 ```
 (`archivos` es una lista de nombres. El e2e la convierte en `{nombre, bytes}` con los tamaños reales y rellena `generado`, `zoom`, `umbrales` y `total_bytes`).
 
-- [ ] **Step 3: `regiones.e2e.mjs`**
+- [x] **Step 3: `regiones.e2e.mjs`**
 
 ```js
 // e2e de regiones (multi-región, fase B): una región falsa «prueba» servida por Playwright sobre los archivos de Marbella
@@ -2537,7 +2537,7 @@ try {
 }
 ```
 
-- [ ] **Step 4: Run e2e**
+- [x] **Step 4: Run e2e**
 
 Run:
 ```bash
@@ -2547,7 +2547,7 @@ cd app && SETAS_DATOS=/Users/alexanderkrupnov/Documents/Claude/setas/pipeline/da
 ```
 Expected: los dos e2e terminan sin «Falla:». El de Marbella imprime los mismos pasos que antes, más «región activa marbella y sin chip con una sola región». El de regiones imprime «e2e de regiones: OK».
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add app/e2e/offline.e2e.mjs app/e2e/regiones.e2e.mjs app/e2e/fixtures/region-prueba/manifest.json app/package.json
@@ -2597,3 +2597,4 @@ El código cambió desde que se escribió el plan: la fase A (pipeline multi-reg
 8. **Tarea 9.** `mapa.ts` ya tenía `entidadesTesela` (genérico, de la fusión de `main`): `restriccionEn` y `ccaaEn` lo usan en lugar de crear `entidadesEn`. `ccaaEnPunto` devuelve ids canónicos (acepta los códigos cortos del pipeline). Humanizer: «Todas las comunidades de la región. Toca un punto del mapa para ver solo la suya.»; el resto de cadenas queda como en el plan.
 9. **Tarea 11, humanizer.** «No sabemos dónde estás. Elige la zona donde vas a buscar setas; puedes cambiarla cuando quieras.» y «<Región> ya funciona sin conexión» sustituyen a los borradores; el resto de cadenas no cambia.
 10. **Tarea 12.** `NOMBRE_CCAA`/`esCcaa` viven en `worker/src/ccaa.ts` (sin ciclo de imports). El test de 400 añade `constructor`, `hasOwnProperty` y una lista, y usa una IP por petición. La skill `security-review` no arranca en este repo (no hay `origin/HEAD`); se hizo la revisión a mano con su lista: lista cerrada con `hasOwnProperty`, el texto del prompt nunca sale del cliente, el error no repite la entrada, la petición sin `ccaa` sigue valiendo, límites y CORS iguales. Sin hallazgos. **No se despliega el Worker** (lo hace Alexander antes de publicar Alicante).
+11. **Tarea 13.** El fixture de «prueba» usa la forma real del pipeline (`origen: [lon, lat]`, `legal.ccaa[].id: "CV"`, `norma` larga con «DOGV núm. 0») para probar la alineación. En `offline.e2e.mjs`, además de rutas y claves, se espera a que el botón de Gemini sea visible antes de comprobarlo: en la primera pasada falló una vez por tiempo (en la segunda pasó entero, 164 pasos, sin errores de página).

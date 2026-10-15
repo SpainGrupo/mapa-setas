@@ -9,7 +9,9 @@
     "build": "node scripts/enlazar-guia.mjs && node scripts/enlazar-ort.mjs && tsc --noEmit && vite build && node scripts/enlazar-datos.mjs dist",
     "servir": "php -S 127.0.0.1:8765 -t dist servidor.php",
     "test": "vitest run",
-    "e2e": "node e2e/offline.e2e.mjs",
+    "e2e": "node e2e/offline.e2e.mjs && node e2e/regiones.e2e.mjs",
+    "e2e:marbella": "node e2e/offline.e2e.mjs",
+    "e2e:regiones": "node e2e/regiones.e2e.mjs",
     "cobertura": "vitest run --coverage --coverage.include=src/seguridad.ts --coverage.include=src/reconocer-nucleo.ts --coverage.thresholds.100"
   },
   "dependencies": {

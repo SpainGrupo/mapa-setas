@@ -1838,7 +1838,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Consumes: `ManifestApp.especies_sin_habitat` (tarea 3).
 - Produces: `iniciarSelectorEspecie(deManifest, { estadoHoy?, hoy?, sinHabitat?: () => Especie[] })`; `ordenSelector()` devuelve además `sinHabitat: string[]`. Cada fila es `<li role="option" aria-disabled="true" class="sin-habitat" data-sin-habitat="<id>">` y lleva el texto «Sin hábitat en esta zona».
 
-- [ ] **Step 1: Implement**
+- [x] **Step 1: Implement**
 
 En `app/src/selector-especie.ts`:
 - estado del módulo: `let sinHabitat: () => Especie[] = () => [];`, y `ultimoOrden` gana `sinHabitat: string[]` (inicial `[]`).
@@ -1882,12 +1882,12 @@ Al principio de `pintarSelectorEspecie`, `ultimoOrden = { activas: …, inactiva
 ```
 El texto se queda en `--tinta-2` (10,3:1) y no se apaga con `opacity`: tiene que leerse al sol.
 
-- [ ] **Step 2: Verify**
+- [x] **Step 2: Verify**
 
 Run: `cd app && npx tsc --noEmit && npx vitest run`
 Expected: PASS. En Marbella `especies_sin_habitat` está vacío: ni separador ni filas, y el selector queda igual que hoy.
 
-- [ ] **Step 3: Humanizer y commit**
+- [x] **Step 3: Humanizer y commit**
 
 Humanizer sobre «Sin hábitat en esta zona», el texto fijado por la spec §4.4. Si propone otro, se mantiene el de la spec y se anota la propuesta para Alexander.
 ```bash

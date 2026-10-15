@@ -17,7 +17,10 @@ let estadoHoy: (id: string) => ResultadoSemaforo | null = () => null;
 let hoy: () => string = () => new Date().toISOString().slice(0, 10);
 /** Pueblo del punto meteo que decide el estado de cada seta (main.ts): «activa cerca de Ojén». */
 let lugar: (id: string) => string | null = () => null;
-let ultimoOrden: { activas: string[]; inactivas: { id: string; etiqueta: EtiquetaInactiva }[]; lugares: Record<string, string | null> } = { activas: [], inactivas: [], lugares: {} };
+/** Especies de la guía sin hábitat en la región activa (manifest.especies_sin_habitat): grises y no elegibles. */
+let sinHabitat: () => Especie[] = () => [];
+let ultimoOrden: { activas: string[]; inactivas: { id: string; etiqueta: EtiquetaInactiva }[]; lugares: Record<string, string | null>; sinHabitat: string[] } =
+  { activas: [], inactivas: [], lugares: {}, sinHabitat: [] };
 /** Orden de la última lista pintada (e2e: window.__setas.selector()). */
 export const ordenSelector = () => ultimoOrden;
 
@@ -76,7 +79,7 @@ export function pintarSelectorEspecie() {
   const orden = ordenarSelector(lista.map((e) => ({ id: e.id, especie: e, fiabilidad: nivelFiabilidad(e.fiabilidad),
     resultado: estadoHoy(e.id), meses: e.tiempo?.meses ?? [] })), hoy());
   const lugares: Record<string, string | null> = Object.fromEntries(lista.map((e) => [e.id, lugar(e.id)]));
-  ultimoOrden = { activas: orden.activas.map((x) => x.id), inactivas: orden.inactivas.map((x) => ({ id: x.item.id, etiqueta: x.etiqueta })), lugares };
+  ultimoOrden = { activas: orden.activas.map((x) => x.id), inactivas: orden.inactivas.map((x) => ({ id: x.item.id, etiqueta: x.etiqueta })), lugares, sinHabitat: [] };
   const filas: { e: Especie; estado: ResultadoSemaforo | null; etiqueta: EtiquetaInactiva | null }[] = [
     ...orden.activas.map((x) => ({ e: x.especie, estado: x.resultado, etiqueta: null })),
     ...orden.inactivas.map((x) => ({ e: x.item.especie, estado: x.item.resultado, etiqueta: x.etiqueta })),
@@ -120,6 +123,30 @@ export function pintarSelectorEspecie() {
     li.append(caja, txt, marca);
     ul.append(li);
   }
+  // Especies de la guía sin hábitat en esta región (spec §4.4): grises, sin capa y no elegibles. La guía sigue teniendo su ficha.
+  const sh = sinHabitat();
+  ultimoOrden.sinHabitat = sh.map((e) => e.id);
+  if (sh.length) {
+    const sep = document.createElement('li');
+    sep.className = 'se-divisor'; sep.setAttribute('role', 'presentation'); sep.textContent = 'Sin hábitat en esta zona';
+    ul.append(sep);
+  }
+  for (const e of sh) {
+    const d = datosEspecie(e);
+    const li = document.createElement('li');
+    li.setAttribute('role', 'option'); li.setAttribute('aria-disabled', 'true'); li.setAttribute('aria-selected', 'false');
+    li.tabIndex = -1; li.className = 'sin-habitat'; li.dataset.sinHabitat = e.id;
+    const caja = document.createElement('span'); caja.className = 'miniatura-especie'; caja.setAttribute('aria-hidden', 'true');
+    miniatura(caja, d.miniatura);
+    const txt = document.createElement('span'); txt.className = 'se-texto';
+    const b = document.createElement('b'); b.textContent = d.comun;
+    const i = document.createElement('i'); i.textContent = d.cientifico;
+    const pie = document.createElement('span'); pie.className = 'se-pie';
+    const x = document.createElement('span'); x.className = 'se-inactiva'; x.textContent = 'Sin hábitat en esta zona';
+    pie.append(x); txt.append(b, i, pie);
+    li.append(caja, txt);
+    ul.append(li);
+  }
 }
 
 function elegir(id: string) {
@@ -131,8 +158,9 @@ function elegir(id: string) {
 }
 
 export function iniciarSelectorEspecie(deManifest: () => Especie[], o: { estadoHoy?: (id: string) => ResultadoSemaforo | null; hoy?: () => string;
-  lugar?: (id: string) => string | null } = {}) {
+  lugar?: (id: string) => string | null; sinHabitat?: () => Especie[] } = {}) {
   especies = deManifest;
+  if (o.sinHabitat) sinHabitat = o.sinHabitat;
   if (o.lugar) lugar = o.lugar;
   if (o.estadoHoy) estadoHoy = o.estadoHoy;
   if (o.hoy) hoy = o.hoy;

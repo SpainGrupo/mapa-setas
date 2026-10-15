@@ -176,7 +176,8 @@ async function iniciarMapa() {
   $('#leyenda-monte-junta').textContent = TEXTO_TITULARIDAD.monte_junta;
   $('#leyenda-monte-municipal').textContent = TEXTO_TITULARIDAD.monte_municipal;
   for (const e of manifest.especies) nombres[e.id] = e.nombre;
-  iniciarSelectorEspecie(() => manifest?.especies ?? [], { estadoHoy: estadoHoyRef, hoy: hoyZona, lugar: lugarRef });
+  iniciarSelectorEspecie(() => manifest?.especies ?? [], { estadoHoy: estadoHoyRef, hoy: hoyZona, lugar: lugarRef,
+    sinHabitat: () => manifest?.especies_sin_habitat ?? [] });
   cargarGuia().then((ok) => { if (ok) for (const f of fichasGuia()) nombres[f.id] ??= binomio(f); pintarSelectorEspecie(); });
   rellenarEspecies($<HTMLSelectElement>('#sel-especie'));
   rellenarEspecies($<HTMLSelectElement>('#filtro-especie'), ['', 'Todas']);

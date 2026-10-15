@@ -121,7 +121,7 @@ especies[].sin_habitat?: boolean    // true: sin pmtiles de idoneidad; la app la
   - Variable de entorno `SETAS_DATOS` (raíz de `pipeline/data`); por defecto `<repo>/pipeline/data`.
   - En disco tras `enlazar-datos.mjs <dir>`: `app/<dir>/data/regiones.json` (archivo real), `app/<dir>/data/<id>` → enlace a la carpeta de la región, `app/<dir>/data/modelo` → enlace al modelo (si existe).
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `app/scripts/disposicion-datos.test.mjs`:
 ```js
@@ -192,12 +192,12 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({ test: { include: ['src/**/*.test.ts', 'scripts/**/*.test.mjs'], environment: 'node' } });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd app && npx vitest run scripts/disposicion-datos.test.mjs`
 Expected: FAIL, «Failed to resolve import "./disposicion-datos.mjs"».
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 `app/scripts/disposicion-datos.mjs`:
 ```js
@@ -272,7 +272,7 @@ if (!d) {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd app && npx vitest run scripts/disposicion-datos.test.mjs`
 Expected: PASS (5 tests).
@@ -280,7 +280,7 @@ Expected: PASS (5 tests).
 Run: `cd app && SETAS_DATOS=/Users/alexanderkrupnov/Documents/Claude/setas/pipeline/data node scripts/enlazar-datos.mjs public && ls -l public/data && head -c 200 public/data/regiones.json`
 Expected: «public/data → … (legado plano: marbella + modelo)», enlaces `marbella` y `modelo`, y `regiones.json` con `"id":"marbella"`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add app/scripts/disposicion-datos.mjs app/scripts/disposicion-datos.test.mjs app/scripts/enlazar-datos.mjs app/vitest.config.ts
@@ -2580,3 +2580,12 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 4. **`ccaa.pmtiles` con `maxzoom` alto.** La consulta lee la tesela del nivel máximo; si es 14, una frontera compleja pesa más, pero solo se lee una tesela por consulta. Se pide un `maxzoom` de 10 en el contrato.
 5. **Orden de despliegue del Worker.** Si se publica Alicante con el Worker antiguo, la segunda opinión con `ccaa` da 400. Marbella no se ve afectada. Lo cubre la nota de la tarea 12.
 6. **El GPS en el primer arranque** pide permiso nada más abrir (solo con más de una región y sin región guardada). Lo mitigan el timeout de 6 s y la pregunta como respaldo. Los usuarios actuales no lo ven, porque la migración fija `marbella`.
+
+---
+
+## Desviaciones (ejecución 2026-10-15)
+
+El código cambió desde que se escribió el plan: la fase A (pipeline multi-región) ya está hecha y `main` se fusionó (selector por vista, «Puntuación del día», citas y titularidad). La app se alinea con lo que el pipeline emite de verdad:
+
+1. **Datos en el worktree.** `pipeline/data` ya existe en el worktree con la disposición multi-región (`regiones.json`, `marbella/out/app`, modelo en `marbella/out/app/modelo/`), así que `SETAS_DATOS` no hace falta; el legado plano se mantiene para el checkout principal.
+2. **`origen` es `[lon, lat]`** en `regiones.json` y en `manifest.region` (exportar.py). La app acepta las dos formas (`[lon, lat]` y `{lat, lon}`) y las normaliza a `{lat, lon}`. Test de `disposicion` con la forma real.

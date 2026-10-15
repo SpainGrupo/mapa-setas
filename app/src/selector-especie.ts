@@ -15,7 +15,9 @@ let especies: () => Especie[] = () => [];
 /** Semáforo de hoy de cada especie en su punto de referencia (main.ts); null sin datos del tiempo. */
 let estadoHoy: (id: string) => ResultadoSemaforo | null = () => null;
 let hoy: () => string = () => new Date().toISOString().slice(0, 10);
-let ultimoOrden: { activas: string[]; inactivas: { id: string; etiqueta: EtiquetaInactiva }[] } = { activas: [], inactivas: [] };
+/** Pueblo del punto meteo que decide el estado de cada seta (main.ts): «activa cerca de Ojén». */
+let lugar: (id: string) => string | null = () => null;
+let ultimoOrden: { activas: string[]; inactivas: { id: string; etiqueta: EtiquetaInactiva }[]; lugares: Record<string, string | null> } = { activas: [], inactivas: [], lugares: {} };
 /** Orden de la última lista pintada (e2e: window.__setas.selector()). */
 export const ordenSelector = () => ultimoOrden;
 
@@ -62,7 +64,7 @@ export function pintarSelectorEspecie() {
     btn.dataset.especie = actual.id;
     const leyenda = $('#txt-fiabilidad');
     if (leyenda) {
-      leyenda.textContent = textoFiabilidad(actual.fiabilidad);
+      leyenda.textContent = textoFiabilidad(actual.fiabilidad, actual.n_citas);
       leyenda.className = `insignia-fiabilidad fiab-${nivelFiabilidad(actual.fiabilidad)}`;
       leyenda.dataset.fiabilidad = nivelFiabilidad(actual.fiabilidad);
       $('#txt-fiabilidad-expl').textContent = EXPLICACION_FIABILIDAD;
@@ -73,7 +75,8 @@ export function pintarSelectorEspecie() {
   // Arriba las especies activas hoy (verde/amarillo en su punto de referencia); debajo, atenuadas pero elegibles, el resto.
   const orden = ordenarSelector(lista.map((e) => ({ id: e.id, especie: e, fiabilidad: nivelFiabilidad(e.fiabilidad),
     resultado: estadoHoy(e.id), meses: e.tiempo?.meses ?? [] })), hoy());
-  ultimoOrden = { activas: orden.activas.map((x) => x.id), inactivas: orden.inactivas.map((x) => ({ id: x.item.id, etiqueta: x.etiqueta })) };
+  const lugares: Record<string, string | null> = Object.fromEntries(lista.map((e) => [e.id, lugar(e.id)]));
+  ultimoOrden = { activas: orden.activas.map((x) => x.id), inactivas: orden.inactivas.map((x) => ({ id: x.item.id, etiqueta: x.etiqueta })), lugares };
   const filas: { e: Especie; estado: ResultadoSemaforo | null; etiqueta: EtiquetaInactiva | null }[] = [
     ...orden.activas.map((x) => ({ e: x.especie, estado: x.resultado, etiqueta: null })),
     ...orden.inactivas.map((x) => ({ e: x.item.especie, estado: x.item.resultado, etiqueta: x.etiqueta })),
@@ -99,15 +102,18 @@ export function pintarSelectorEspecie() {
     const i = document.createElement('i'); i.textContent = d.cientifico;
     txt.append(b, i);
     const pie = document.createElement('span'); pie.className = 'se-pie';
+    const donde = lugares[e.id];
     if (etiqueta) {
       li.classList.add('inactiva');
-      const x = document.createElement('span'); x.className = 'se-inactiva'; x.textContent = etiqueta === 'sin datos' ? 'sin datos del tiempo' : etiqueta;
+      const x = document.createElement('span'); x.className = 'se-inactiva';
+      x.textContent = (etiqueta === 'sin datos' ? 'sin datos del tiempo' : etiqueta) + (donde && etiqueta === 'seco' ? ` (mirado cerca de ${donde})` : '');
       pie.append(x);
     } else if (estado) {
       const x = document.createElement('span'); x.className = 'chip-estado se-estado'; x.dataset.estado = estado.estado; x.textContent = NOMBRE_ESTADO[estado.estado];
       pie.append(x);
+      if (donde) { const l = document.createElement('span'); l.className = 'se-lugar'; l.textContent = `activa cerca de ${donde}`; pie.append(l); }
     }
-    pie.append(insigniaFiabilidad(e.fiabilidad));
+    pie.append(insigniaFiabilidad(e.fiabilidad, e.n_citas));
     txt.append(pie);
     const marca = document.createElement('span'); marca.className = 'se-marca'; marca.setAttribute('aria-hidden', 'true');
     if (elegida) marca.innerHTML = '<svg class="ico"><use href="#i-check"/></svg>';
@@ -124,8 +130,10 @@ function elegir(id: string) {
   pintarSelectorEspecie();
 }
 
-export function iniciarSelectorEspecie(deManifest: () => Especie[], o: { estadoHoy?: (id: string) => ResultadoSemaforo | null; hoy?: () => string } = {}) {
+export function iniciarSelectorEspecie(deManifest: () => Especie[], o: { estadoHoy?: (id: string) => ResultadoSemaforo | null; hoy?: () => string;
+  lugar?: (id: string) => string | null } = {}) {
   especies = deManifest;
+  if (o.lugar) lugar = o.lugar;
   if (o.estadoHoy) estadoHoy = o.estadoHoy;
   if (o.hoy) hoy = o.hoy;
   const btn = $('#btn-especie');

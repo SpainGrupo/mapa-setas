@@ -7,6 +7,9 @@
     uv run python -m setas_pipeline.exportar rutas      # Fase 8: rutas.pmtiles (OSM + REDIAM)
     uv run python -m setas_pipeline.exportar sitios     # Fase 9: sitios.json (manchas candidatas por especie)
     uv run python -m setas_pipeline.exportar altitud    # Fase 9: añade la capa altitud a acceso.bin sin recalcular
+    uv run python -m setas_pipeline.exportar titularidad # montes públicos, cotos, vallas OSM, pasos públicos
+    uv run python -m setas_pipeline.exportar citas      # citas.pmtiles (citas y sitios conocidos)
+    uv run python -m setas_pipeline.exportar lugares    # nombre del pueblo más cercano en meteo_puntos.json
     uv run python -m setas_pipeline.exportar manifest
     uv run python -m setas_pipeline.exportar todo
     uv run python -m setas_pipeline.exportar respaldo  # Fase 7: OsmAnd/Locus (data/out/respaldo/)
@@ -207,6 +210,42 @@ def voronoi_zonas(puntos, zona) -> list:
     return res
 
 
+LUGARES_OSM = ("city", "town", "village")
+
+
+def lugares_osm(pbf: Path) -> list[tuple[str, float, float]]:
+    """(nombre, lat, lon) de los nodos OSM place=city|town|village con nombre."""
+    import osmium
+    res = []
+    for n in osmium.FileProcessor(str(pbf), osmium.osm.NODE).with_filter(
+            osmium.filter.TagFilter(*(("place", v) for v in LUGARES_OSM))):
+        nombre = n.tags.get("name")
+        if nombre:
+            res.append((nombre, n.location.lat, n.location.lon))
+    return res
+
+
+def lugar_cercano(lat: float, lon: float, lugares: list[tuple[str, float, float]]) -> str | None:
+    """Nombre del lugar más cercano (equirectangular; sobra a esta escala)."""
+    if not lugares:
+        return None
+    k = math.cos(math.radians(lat))
+    return min(lugares, key=lambda x: (x[1] - lat) ** 2 + ((x[2] - lon) * k) ** 2)[0]
+
+
+def anotar_lugares(out: Path = APP, pbf: Path = BASE / "data/raw/andalucia.osm.pbf") -> list[dict]:
+    """Añade `lugar` (pueblo más cercano, OSM) a meteo_puntos.json sin tocar ids ni coordenadas: el selector
+    de especie lo enseña como «activa cerca de Ojén»."""
+    ruta = out / "meteo_puntos.json"
+    lista = json.loads(ruta.read_text())
+    lug = lugares_osm(pbf)
+    for p in lista:
+        p["lugar"] = lugar_cercano(p["lat"], p["lon"], lug)
+    ruta.write_text(json.dumps(lista, ensure_ascii=False))
+    print(f"  lugares: {len(lista)} puntos meteo con nombre ({len(lug)} lugares OSM)", flush=True)
+    return lista
+
+
 def exportar_meteo(out: Path = APP):
     """meteo_puntos.json ({id, lat, lon, alt_media}) y meteo_zonas.pmtiles (Voronoi, capa 'meteo_zonas')."""
     import geopandas as gpd
@@ -236,7 +275,7 @@ def exportar_meteo(out: Path = APP):
                     ["--no-tile-size-limit", "--detect-shared-borders", "--no-simplification-of-shared-nodes",
                      "--attribution=Open-Meteo.com CC BY 4.0"])
     print(f"  meteo: {len(puntos)} puntos de {len(todos)} en la rejilla", flush=True)
-    return lista
+    return anotar_lugares(out)
 
 
 # ---------------------------------------------------------------- PMTiles
@@ -631,7 +670,7 @@ def modelo_disponible(out: Path) -> dict | None:
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("pasos", nargs="+", choices=["capas", "restricciones", "base", "meteo", "acceso", "altitud", "rutas", "sitios",
+    ap.add_argument("pasos", nargs="+", choices=["capas", "restricciones", "titularidad", "citas", "lugares", "base", "meteo", "acceso", "altitud", "rutas", "sitios",
                                          "manifest", "respaldo", "todo"])
     ap.add_argument("--maxzoom", type=int, default=ZOOM_BASE_MAX)
     a = ap.parse_args(argv)
@@ -653,6 +692,8 @@ def main(argv=None):
         exportar_base(maxzoom=a.maxzoom)
     if pasos & {"meteo", "todo"}:
         print("meteo…", flush=True); exportar_meteo()
+    elif "lugares" in pasos:
+        print("lugares…", flush=True); anotar_lugares()
     if pasos & {"acceso", "todo"}:
         from .acceso import calcular
         print("acceso…", flush=True); calcular()

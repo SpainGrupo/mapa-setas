@@ -11,7 +11,9 @@ import { altitudes, aparcamiento, centroCelda, consultar, nombreVia, simplificar
 import { dificultad, NOMBRE_DIFICULTAD, perfil, seguir, textoDistancia, type Dificultad, type Perfil, type Seguimiento } from './ruta';
 import { pintarPerfil } from './perfil-grafico';
 import { iniciarHoy, pintarHoy, resumenHoy, sitiosCandidatos } from './hoy-ui';
-import { diasEspecie, puntoReferencia, ventanaEspecie } from './ventana-especie';
+import { diasEspecie, puntoReferencia, referenciaVista, ventanaEspecie, type PuntoRef, type Vista } from './ventana-especie';
+import { AVISO_TITULARIDAD, detallesTitularidad, esPublico, NORMA_TITULARIDAD, textoTitularidad, type Titularidad } from './titularidad';
+import { AVISO_CITAS, COLOR_ORIGEN, NOMBRE_ORIGEN, ORIGENES_CITA } from './citas';
 import { bloqueCuando } from './ventana-ui';
 import type { SitiosJson } from './ranking';
 import { datosAcceso } from './acceso-datos';
@@ -163,7 +165,7 @@ async function iniciarMapa() {
   manifest = await cargarManifest();
   if (!manifest) { $('#sin-datos').hidden = false; return; }
   for (const e of manifest.especies) nombres[e.id] = e.nombre;
-  iniciarSelectorEspecie(() => manifest?.especies ?? [], { estadoHoy: estadoHoyRef, hoy: hoyZona });
+  iniciarSelectorEspecie(() => manifest?.especies ?? [], { estadoHoy: estadoHoyRef, hoy: hoyZona, lugar: lugarRef });
   cargarGuia().then((ok) => { if (ok) for (const f of fichasGuia()) nombres[f.id] ??= binomio(f); pintarSelectorEspecie(); });
   rellenarEspecies($<HTMLSelectElement>('#sel-especie'));
   rellenarEspecies($<HTMLSelectElement>('#filtro-especie'), ['', 'Todas']);
@@ -200,6 +202,9 @@ async function iniciarMapa() {
     acceso: () => ultimoAcceso, trazaAcceso: () => trazaAcceso, hoy: hoyZona, tops: resumenHoy, selector: ordenSelector, puntoRef: refPunto,
     ruta: () => rutaActual && { ...rutaActual, perfil: { ...rutaActual.perfil } }, seguimiento: () => seguimiento,
     restriccionEn: (lat: number, lon: number) => manifest && M!.restriccionEn(manifest, lat, lon),
+    titularidadEn: (lat: number, lon: number) => manifest && M!.titularidadEn(manifest, lat, lon),
+    olvidarGps: () => { if (gps) gps.ultima = null; }, vista: vistaMapa,
+    lugarHoy: (id: string) => lugarRef(id),
     sitioEditando: () => editando && { ...editando, foto: undefined }, accesoSitio: () => accesoSitio,
     resumenSemaforo: () => Object.fromEntries((manifest?.especies ?? []).map((e) => {
       const n: Record<string, number> = { verde: 0, amarillo: 0, rojo: 0, gris: 0 };
@@ -892,8 +897,32 @@ function estadoPunto(id: number, especie: string, fecha: string): ResultadoSemaf
 // Punto de referencia del tiempo de cada seta (ficha y selector del mapa): GPS cercano → mejor sitio → centro de la zona
 // (ventana-especie.ts, puntoReferencia).
 let sitiosRef: SitiosJson | null = null;
-function refPunto(especie: string) {
-  return puntoReferencia(puntosMeteo, { gps: gps?.ultima ?? null, sitios: sitiosRef?.especies[especie] ?? null, maxKm: DISTANCIA_MAX_KM });
+/** Vista actual del mapa (centro y esquinas), o null si el mapa no está listo. */
+function vistaMapa(): Vista | null {
+  if (!mapa || document.body.dataset.mapa !== 'listo') return null;
+  const b = mapa.getBounds(), c = mapa.getCenter();
+  return { centro: { lat: c.lat, lon: c.lng }, sw: { lat: b.getSouth(), lon: b.getWest() }, ne: { lat: b.getNorth(), lon: b.getEast() } };
+}
+/** Punto meteo de referencia de una seta: GPS a ≤ 12 km → la vista del mapa (el mejor punto de la vista) → su mejor
+ * sitio → centro de la zona (ventana-especie.ts). */
+function refPunto(especie: string): PuntoRef | null {
+  const g = gps?.ultima ?? null;
+  if (g) {
+    const r = puntoReferencia(puntosMeteo, { gps: g, maxKm: DISTANCIA_MAX_KM });
+    if (r?.origen === 'gps') return r;
+  }
+  const v = vistaMapa();
+  if (v && meteo) {
+    const hoy = hoyZona();
+    const r = referenciaVista(puntosMeteo, v, (p) => estadoPunto(p.id, especie, hoy), hoy);
+    if (r) return { id: r.id, origen: r.origen };
+  }
+  return puntoReferencia(puntosMeteo, { sitios: sitiosRef?.especies[especie] ?? null, maxKm: DISTANCIA_MAX_KM });
+}
+/** Pueblo del punto de referencia de una seta («activa cerca de Ojén»). */
+function lugarRef(especie: string): string | null {
+  const r = refPunto(especie);
+  return (r && puntosMeteo.find((p) => p.id === r.id)?.lugar) || null;
 }
 /** Semáforo de hoy de una especie en su punto de referencia (selector del mapa: siempre hoy, no el día elegido en Hoy). */
 function estadoHoyRef(especie: string): ResultadoSemaforo | null {

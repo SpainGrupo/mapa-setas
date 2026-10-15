@@ -31,6 +31,9 @@ const PUNTO = { latitude: 36.589, longitude: -5.244 };   // máximo local de ido
 // Restricciones: punto dentro del Parque Nacional Sierra de las Nieves (representative_point del recinto en
 // exportar.restricciones_gdf()); ACCESO y PUNTO quedan fuera de todo recinto.
 const RESTRINGIDO = { lat: 36.67638, lon: -4.97927, tipo: 'parque_nacional', chip: 'Parque Nacional · Sierra de las Nieves' };
+const MONTE = { lat: 36.57393, lon: -4.88831, nombre: 'Sierra Blanca' };
+const CITA = { lat: 36.601283, lon: -5.117867, especie: 'amanita_caesarea' };
+const MARBELLA = { lat: 36.5101, lon: -4.8825 };
 const ESPECIES_NUEVAS = ['lactarius_deliciosus', 'lactarius_sanguifluus', 'cantharellus_cibarius', 'amanita_ponderosa',
   'macrolepiota_procera', 'pleurotus_eryngii', 'terfezia_arenaria'];
 const FICHA_DE = { boletus_aestivalis: 'boletus_reticulatus', lactarius_sanguifluus: 'lactarius_deliciosus' };
@@ -579,6 +582,27 @@ try {
   await p.locator('#dlg-especie').waitFor({ state: 'hidden' });
   comprobar(await p.locator('#sel-especie').inputValue() === 'amanita_caesarea', 'una especie «no activa» se puede elegir igual');
   await elegirEspecie('boletus_edulis');
+
+  // Selector sin GPS con el centro del mapa en Marbella (2026-10-15): el estado sale de los puntos meteo de la vista,
+  // no del mejor sitio de cada seta en toda la zona, y dice dónde («activa cerca de …»).
+  await p.evaluate(({ lat, lon }) => { window.__setas.olvidarGps(); window.__setas.mapa.jumpTo({ center: [lon, lat], zoom: 10 }); }, MARBELLA);
+  await reposo();
+  await p.locator('#btn-especie').click();
+  await p.locator('#dlg-especie[open]').waitFor();
+  const selM = await p.evaluate(({ lat, lon }) => {
+    const ids = ['boletus_aereus', 'boletus_edulis', 'macrolepiota_procera'];
+    const refs = ids.map((id) => window.__setas.puntoRef(id));
+    return { orden: window.__setas.selector(), refs, lugares: [...document.querySelectorAll('#lista-especies .se-lugar')].map((x) => x.textContent),
+      grises: document.querySelectorAll('#lista-especies .inactiva').length, total: document.querySelectorAll('#lista-especies [role=option]').length,
+      centro: window.__setas.vista()?.centro };
+  }, MARBELLA);
+  const puntos = await (await fetch(new URL('data/meteo_puntos.json', URL_APP))).json();
+  const kmRef = selM.refs.map((r) => { const q = puntos.find((x) => x.id === r?.id); return q ? km([q.lat, q.lon], [MARBELLA.lat, MARBELLA.lon]) : Infinity; });
+  comprobar(selM.refs.every((r) => r?.origen === 'vista') && kmRef.every((k) => k <= 40) && selM.orden.activas.length > 0 && selM.grises < selM.total
+    && selM.lugares.length === selM.orden.activas.length && selM.lugares.every((t) => /^activa cerca de \S/.test(t)),
+    `selector sin GPS y el mapa en Marbella: ${selM.orden.activas.length} activas, ${selM.grises} en gris; referencia en la vista (a ${kmRef.map((k) => k.toFixed(0)).join('/')} km): «${selM.lugares[0]}»`);
+  await captura('selector-marbella.png');
+  await p.locator('#dlg-especie').evaluate((d) => d.close());
 
   // Fase 9: pestaña Hoy con el día fijo (?hoy=) y el fixture de 16 días.
   await p.locator('.pestanas [data-p=p-hoy]').click();

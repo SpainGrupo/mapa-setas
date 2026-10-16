@@ -4,23 +4,23 @@
   "app/aparcamientos.json": "347c72e9830fe5b77b1e07d3b9cf7026b1ff9dc8b1d8040dab2cbb43241e5f63",
   "app/meteo_puntos.json": "119d73ffaa210670131d3134bf45072a1ad895a6e701902bd22847216bdcedb9",
   "app/sitios.json": "333a5ff86fe0dda5f89d0ffaec0cd800ec9a13da5783cafb54626e12d93e50cc",
-  "calibracion.json": "702be4bf52f7833c044d0ded57e01e63c62585accb575685a02033f4e5f95e64",
+  "calibracion.json": "f8d2971a6001cc10d16554a18ad637b1cbe37968ba4925b531537279750b20cc",
   "citas.geojson": "64e95fa16d5f3c965183fa40324c64cca683ddae83c01ac0802dde06a9160d26",
   "citas_capa.json": "8216768e4c17fc683ad353db51a568cb3b7765c4540b3afc0c4fac4eea769a11",
   "fuego_resumen.json": "1c60c68a83bbd73e65444d31046b197a7b3723c6d40e73da6c86f6c64254359d",
   "malla.json": "17f755f4c0e3b62271eec9afd16b8c209db908a34292de11314b3cce0ec90089",
-  "respaldo/setas_amanita_caesarea_zonas_buenas.geojson": "76bbb3f1ce1cd65402e3836cce31d679dacc01f0148440c06f0d7f46f46cc7ac",
-  "respaldo/setas_amanita_ponderosa_zonas_buenas.geojson": "f0ecfeb035e2e7f965f9656c7243dcf3872bca3e71e179e600c62225db618520",
-  "respaldo/setas_boletus_aereus_zonas_buenas.geojson": "69cf9067e01c28740fd42e86bd5838b1c0629dc97af5b74e8b4ebe6b13226efd",
-  "respaldo/setas_boletus_aestivalis_zonas_buenas.geojson": "4722d400540d1486b4a4d7b0db54c5826bf5b24825a9db8524ccfe4b29d4de6a",
-  "respaldo/setas_boletus_edulis_zonas_buenas.geojson": "d53e50ac7a9aaee6763edf3c24358077900894425f19b2f87da6747968f8383c",
-  "respaldo/setas_boletus_pinophilus_zonas_buenas.geojson": "e61ec7307b407e39850c3542ea735edd94612cd24ec7f446eecff8301e9268ec",
-  "respaldo/setas_cantharellus_cibarius_zonas_buenas.geojson": "e9d9b20dc3f43264ad6914fbebd1efc9bbd59b6c1852f8abad8377529fbffd9b",
-  "respaldo/setas_lactarius_deliciosus_zonas_buenas.geojson": "904092b7bc01d75de30c730f292336b86e7442313c7286909b46bdfbafc59211",
-  "respaldo/setas_lactarius_sanguifluus_zonas_buenas.geojson": "c01af83c779d23b91c7c4fa060f689bb6e051206f03e9beb90a657366675ca3f",
-  "respaldo/setas_macrolepiota_procera_zonas_buenas.geojson": "43fa3d2b4c17fa98f07de96b6fe6ec4f0261d7d031de1b3c1e7a18e01720bb30",
-  "respaldo/setas_pleurotus_eryngii_zonas_buenas.geojson": "33b0aadbe7691aaeba331677da990a49d4306ba615368127f00800a3abb65fe2",
-  "respaldo/setas_terfezia_arenaria_zonas_buenas.geojson": "eecf388a29cf389288a3ea018265a182aa536e57e7e214bc6280142c492384c6",
+  "respaldo/setas_amanita_caesarea_zonas_buenas.geojson": "da9db0dd8573d0cd05c79267a4c20a2e6d961f9f816d1723328cbf9df61766a6",
+  "respaldo/setas_amanita_ponderosa_zonas_buenas.geojson": "1f3d7ec4155eeaf1fcd708e5777561f9b959de30f13ddb909a478cbb70b4120c",
+  "respaldo/setas_boletus_aereus_zonas_buenas.geojson": "6684545a10d8c7385bd974976ca6c9b76a04e5d9dc202561ec1a3d1410d02511",
+  "respaldo/setas_boletus_aestivalis_zonas_buenas.geojson": "4e5057fc5a06553eace5686907772c498d56dd3fe5d401becbb040a877463e4c",
+  "respaldo/setas_boletus_edulis_zonas_buenas.geojson": "0afa4538f97092019e3492646f42746e8e2278adae3cc647376a18ec3705149c",
+  "respaldo/setas_boletus_pinophilus_zonas_buenas.geojson": "c2310431a9225e058eb658d5a3ef2aa8581aa8f7effd35a71e4534525a304fbd",
+  "respaldo/setas_cantharellus_cibarius_zonas_buenas.geojson": "da741e33c766d5ac3d734ea045ff6e9de3ceae31f47bbc556f4f79005a6f88af",
+  "respaldo/setas_lactarius_deliciosus_zonas_buenas.geojson": "123e7a2d6ed6788b406e12b6a7b7c0aaaa292b9d106ce088213a9d7b06187189",
+  "respaldo/setas_lactarius_sanguifluus_zonas_buenas.geojson": "8d25898595ce0b143505e2097e1476bc175e7f0f97229be66ad2e12dfb4fda15",
+  "respaldo/setas_macrolepiota_procera_zonas_buenas.geojson": "9bf261fab5a0f23438464114f71fcabfea571834ac2558e2a15b8c095e7f0c29",
+  "respaldo/setas_pleurotus_eryngii_zonas_buenas.geojson": "680ccf3d8fb7e9c168d31a8b9df0b05ecb004a6856d686ab3ccbd764f90a5240",
+  "respaldo/setas_terfezia_arenaria_zonas_buenas.geojson": "4e29a8b49d04ea2a7babf0c8424dbb9c4fd881e90425593f971be24359b248db",
   "rutas.geojson": "109c10a0ba5b2058dd6477c2341d239ae6ca9150da4d60df1131c087d9a918c0",
   "titularidad.geojson": "0f1aa237e0b0ea6de6f8ec38b165293dd381b471745ab3001db10a6e86335af6",
   "titularidad_resumen.json": "22a63723c18c62bb6d91f071ad8cf6e298717582893cb4ad705d3d7c3e7ddd97",
@@ -762,31 +762,6 @@
    "puntos": "meteo_puntos.json",
    "zonas": "meteo_zonas.pmtiles"
   },
-  "modelo": {
-   "archivos": [
-    {
-     "bytes": 89569625,
-     "nombre": "vision_int8.onnx"
-    },
-    {
-     "bytes": 1641472,
-     "nombre": "texto_f16.bin"
-    },
-    {
-     "bytes": 47216,
-     "nombre": "etiquetas.json"
-    },
-    {
-     "bytes": 11246032,
-     "nombre": "ort-wasm-simd-threaded.wasm"
-    }
-   ],
-   "dir": "modelo/",
-   "etiquetas": 1603,
-   "ort_version": "1.20.1",
-   "total_bytes": 102504345,
-   "version": "14d878b1f4d32bcc"
-  },
   "restricciones": {
    "aviso": "Málaga (Res. 23-09-2026, BOJA 196, vigente hasta 31-05-2027): autoconsumo ≤3 kg por persona y día sin autorización en montes públicos, salvo Zonas de Reserva; de día, sin rastrillos ni remover el mantillo. Fincas privadas: permiso del propietario. Cádiz: la última resolución encontrada es de 2019, sin confirmar su vigencia.",
    "capa": "restricciones.pmtiles",
@@ -865,7 +840,7 @@
    ]
   }
  },
- "manifest_total_bytes": 169530779,
+ "manifest_total_bytes": 169532372,
  "pmtiles": {
   "app/citas.pmtiles": {
    "atribucion": "GBIF.org · iNaturalist · Observation.org · foros y literatura (cada cita con su licencia)",
@@ -875,7 +850,7 @@
     -34391000,
     375856370
    ],
-   "bytes": 638810,
+   "bytes": 638766,
    "nombre": "<out>/app/citas.pmtiles",
    "teselas": 1080,
    "zoom": [
@@ -891,7 +866,7 @@
     -34595500,
     375761290
    ],
-   "bytes": 12420209,
+   "bytes": 12420162,
    "nombre": "<out>/app/curvas.pmtiles",
    "teselas": 5886,
    "zoom": [
@@ -900,14 +875,14 @@
    ]
   },
   "app/idoneidad_amanita_caesarea_0.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 1492963,
+   "bytes": 1492988,
    "nombre": "idoneidad_amanita_caesarea_0",
    "teselas": 875,
    "zoom": [
@@ -916,14 +891,14 @@
    ]
   },
   "app/idoneidad_amanita_caesarea_1000.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 221787,
+   "bytes": 221812,
    "nombre": "idoneidad_amanita_caesarea_1000",
    "teselas": 186,
    "zoom": [
@@ -932,14 +907,14 @@
    ]
   },
   "app/idoneidad_amanita_caesarea_200.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 956792,
+   "bytes": 956819,
    "nombre": "idoneidad_amanita_caesarea_200",
    "teselas": 707,
    "zoom": [
@@ -948,14 +923,14 @@
    ]
   },
   "app/idoneidad_amanita_caesarea_400.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 586812,
+   "bytes": 586838,
    "nombre": "idoneidad_amanita_caesarea_400",
    "teselas": 454,
    "zoom": [
@@ -964,14 +939,14 @@
    ]
   },
   "app/idoneidad_amanita_caesarea_600.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 393278,
+   "bytes": 393305,
    "nombre": "idoneidad_amanita_caesarea_600",
    "teselas": 302,
    "zoom": [
@@ -980,14 +955,14 @@
    ]
   },
   "app/idoneidad_amanita_caesarea_800.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 294227,
+   "bytes": 294254,
    "nombre": "idoneidad_amanita_caesarea_800",
    "teselas": 236,
    "zoom": [
@@ -996,14 +971,14 @@
    ]
   },
   "app/idoneidad_amanita_ponderosa_0.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 1203852,
+   "bytes": 1203877,
    "nombre": "idoneidad_amanita_ponderosa_0",
    "teselas": 801,
    "zoom": [
@@ -1012,14 +987,14 @@
    ]
   },
   "app/idoneidad_amanita_ponderosa_1000.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 204708,
+   "bytes": 204733,
    "nombre": "idoneidad_amanita_ponderosa_1000",
    "teselas": 191,
    "zoom": [
@@ -1028,14 +1003,14 @@
    ]
   },
   "app/idoneidad_amanita_ponderosa_200.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 824066,
+   "bytes": 824093,
    "nombre": "idoneidad_amanita_ponderosa_200",
    "teselas": 669,
    "zoom": [
@@ -1044,14 +1019,14 @@
    ]
   },
   "app/idoneidad_amanita_ponderosa_400.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 508245,
+   "bytes": 508272,
    "nombre": "idoneidad_amanita_ponderosa_400",
    "teselas": 418,
    "zoom": [
@@ -1060,14 +1035,14 @@
    ]
   },
   "app/idoneidad_amanita_ponderosa_600.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 354349,
+   "bytes": 354376,
    "nombre": "idoneidad_amanita_ponderosa_600",
    "teselas": 299,
    "zoom": [
@@ -1076,14 +1051,14 @@
    ]
   },
   "app/idoneidad_amanita_ponderosa_800.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 270452,
+   "bytes": 270478,
    "nombre": "idoneidad_amanita_ponderosa_800",
    "teselas": 241,
    "zoom": [
@@ -1092,14 +1067,14 @@
    ]
   },
   "app/idoneidad_boletus_aereus_0.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 1329389,
+   "bytes": 1329414,
    "nombre": "idoneidad_boletus_aereus_0",
    "teselas": 806,
    "zoom": [
@@ -1108,14 +1083,14 @@
    ]
   },
   "app/idoneidad_boletus_aereus_1000.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 208048,
+   "bytes": 208072,
    "nombre": "idoneidad_boletus_aereus_1000",
    "teselas": 185,
    "zoom": [
@@ -1124,14 +1099,14 @@
    ]
   },
   "app/idoneidad_boletus_aereus_200.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 885398,
+   "bytes": 885422,
    "nombre": "idoneidad_boletus_aereus_200",
    "teselas": 686,
    "zoom": [
@@ -1140,14 +1115,14 @@
    ]
   },
   "app/idoneidad_boletus_aereus_400.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 555009,
+   "bytes": 555033,
    "nombre": "idoneidad_boletus_aereus_400",
    "teselas": 462,
    "zoom": [
@@ -1156,14 +1131,14 @@
    ]
   },
   "app/idoneidad_boletus_aereus_600.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 369773,
+   "bytes": 369801,
    "nombre": "idoneidad_boletus_aereus_600",
    "teselas": 306,
    "zoom": [
@@ -1172,14 +1147,14 @@
    ]
   },
   "app/idoneidad_boletus_aereus_800.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 279358,
+   "bytes": 279386,
    "nombre": "idoneidad_boletus_aereus_800",
    "teselas": 241,
    "zoom": [
@@ -1188,14 +1163,14 @@
    ]
   },
   "app/idoneidad_boletus_aestivalis_0.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 963379,
+   "bytes": 963406,
    "nombre": "idoneidad_boletus_aestivalis_0",
    "teselas": 650,
    "zoom": [
@@ -1204,14 +1179,14 @@
    ]
   },
   "app/idoneidad_boletus_aestivalis_1000.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 103213,
+   "bytes": 103239,
    "nombre": "idoneidad_boletus_aestivalis_1000",
    "teselas": 137,
    "zoom": [
@@ -1220,14 +1195,14 @@
    ]
   },
   "app/idoneidad_boletus_aestivalis_200.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 596947,
+   "bytes": 596974,
    "nombre": "idoneidad_boletus_aestivalis_200",
    "teselas": 577,
    "zoom": [
@@ -1236,14 +1211,14 @@
    ]
   },
   "app/idoneidad_boletus_aestivalis_400.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 359126,
+   "bytes": 359154,
    "nombre": "idoneidad_boletus_aestivalis_400",
    "teselas": 422,
    "zoom": [
@@ -1252,14 +1227,14 @@
    ]
   },
   "app/idoneidad_boletus_aestivalis_600.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 218266,
+   "bytes": 218293,
    "nombre": "idoneidad_boletus_aestivalis_600",
    "teselas": 269,
    "zoom": [
@@ -1268,14 +1243,14 @@
    ]
   },
   "app/idoneidad_boletus_aestivalis_800.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 151302,
+   "bytes": 151329,
    "nombre": "idoneidad_boletus_aestivalis_800",
    "teselas": 193,
    "zoom": [
@@ -1284,14 +1259,14 @@
    ]
   },
   "app/idoneidad_boletus_edulis_0.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 164040,
+   "bytes": 164065,
    "nombre": "idoneidad_boletus_edulis_0",
    "teselas": 198,
    "zoom": [
@@ -1300,14 +1275,14 @@
    ]
   },
   "app/idoneidad_boletus_edulis_1000.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 6424,
+   "bytes": 6448,
    "nombre": "idoneidad_boletus_edulis_1000",
    "teselas": 10,
    "zoom": [
@@ -1316,14 +1291,14 @@
    ]
   },
   "app/idoneidad_boletus_edulis_200.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 92732,
+   "bytes": 92757,
    "nombre": "idoneidad_boletus_edulis_200",
    "teselas": 138,
    "zoom": [
@@ -1332,14 +1307,14 @@
    ]
   },
   "app/idoneidad_boletus_edulis_400.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 41914,
+   "bytes": 41939,
    "nombre": "idoneidad_boletus_edulis_400",
    "teselas": 67,
    "zoom": [
@@ -1348,14 +1323,14 @@
    ]
   },
   "app/idoneidad_boletus_edulis_600.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 14520,
+   "bytes": 14545,
    "nombre": "idoneidad_boletus_edulis_600",
    "teselas": 23,
    "zoom": [
@@ -1364,14 +1339,14 @@
    ]
   },
   "app/idoneidad_boletus_edulis_800.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 6549,
+   "bytes": 6573,
    "nombre": "idoneidad_boletus_edulis_800",
    "teselas": 10,
    "zoom": [
@@ -1380,14 +1355,14 @@
    ]
   },
   "app/idoneidad_boletus_pinophilus_0.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 140282,
+   "bytes": 140306,
    "nombre": "idoneidad_boletus_pinophilus_0",
    "teselas": 174,
    "zoom": [
@@ -1396,14 +1371,14 @@
    ]
   },
   "app/idoneidad_boletus_pinophilus_1000.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 2687,
+   "bytes": 2712,
    "nombre": "idoneidad_boletus_pinophilus_1000",
    "teselas": 4,
    "zoom": [
@@ -1412,14 +1387,14 @@
    ]
   },
   "app/idoneidad_boletus_pinophilus_200.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 88758,
+   "bytes": 88785,
    "nombre": "idoneidad_boletus_pinophilus_200",
    "teselas": 132,
    "zoom": [
@@ -1428,14 +1403,14 @@
    ]
   },
   "app/idoneidad_boletus_pinophilus_400.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 43404,
+   "bytes": 43431,
    "nombre": "idoneidad_boletus_pinophilus_400",
    "teselas": 70,
    "zoom": [
@@ -1444,14 +1419,14 @@
    ]
   },
   "app/idoneidad_boletus_pinophilus_600.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 21307,
+   "bytes": 21335,
    "nombre": "idoneidad_boletus_pinophilus_600",
    "teselas": 35,
    "zoom": [
@@ -1460,14 +1435,14 @@
    ]
   },
   "app/idoneidad_boletus_pinophilus_800.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 6320,
+   "bytes": 6346,
    "nombre": "idoneidad_boletus_pinophilus_800",
    "teselas": 10,
    "zoom": [
@@ -1476,14 +1451,14 @@
    ]
   },
   "app/idoneidad_cantharellus_cibarius_0.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 1313254,
+   "bytes": 1313279,
    "nombre": "idoneidad_cantharellus_cibarius_0",
    "teselas": 717,
    "zoom": [
@@ -1492,14 +1467,14 @@
    ]
   },
   "app/idoneidad_cantharellus_cibarius_1000.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 205422,
+   "bytes": 205447,
    "nombre": "idoneidad_cantharellus_cibarius_1000",
    "teselas": 161,
    "zoom": [
@@ -1508,14 +1483,14 @@
    ]
   },
   "app/idoneidad_cantharellus_cibarius_200.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 847905,
+   "bytes": 847932,
    "nombre": "idoneidad_cantharellus_cibarius_200",
    "teselas": 575,
    "zoom": [
@@ -1524,14 +1499,14 @@
    ]
   },
   "app/idoneidad_cantharellus_cibarius_400.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 519656,
+   "bytes": 519683,
    "nombre": "idoneidad_cantharellus_cibarius_400",
    "teselas": 359,
    "zoom": [
@@ -1540,14 +1515,14 @@
    ]
   },
   "app/idoneidad_cantharellus_cibarius_600.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 367524,
+   "bytes": 367552,
    "nombre": "idoneidad_cantharellus_cibarius_600",
    "teselas": 268,
    "zoom": [
@@ -1556,14 +1531,14 @@
    ]
   },
   "app/idoneidad_cantharellus_cibarius_800.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 274886,
+   "bytes": 274914,
    "nombre": "idoneidad_cantharellus_cibarius_800",
    "teselas": 207,
    "zoom": [
@@ -1572,14 +1547,14 @@
    ]
   },
   "app/idoneidad_lactarius_deliciosus_0.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 584601,
+   "bytes": 584629,
    "nombre": "idoneidad_lactarius_deliciosus_0",
    "teselas": 544,
    "zoom": [
@@ -1588,14 +1563,14 @@
    ]
   },
   "app/idoneidad_lactarius_deliciosus_1000.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 21412,
+   "bytes": 21440,
    "nombre": "idoneidad_lactarius_deliciosus_1000",
    "teselas": 32,
    "zoom": [
@@ -1604,14 +1579,14 @@
    ]
   },
   "app/idoneidad_lactarius_deliciosus_200.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 307609,
+   "bytes": 307638,
    "nombre": "idoneidad_lactarius_deliciosus_200",
    "teselas": 379,
    "zoom": [
@@ -1620,14 +1595,14 @@
    ]
   },
   "app/idoneidad_lactarius_deliciosus_400.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 153139,
+   "bytes": 153168,
    "nombre": "idoneidad_lactarius_deliciosus_400",
    "teselas": 216,
    "zoom": [
@@ -1636,14 +1611,14 @@
    ]
   },
   "app/idoneidad_lactarius_deliciosus_600.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 66456,
+   "bytes": 66485,
    "nombre": "idoneidad_lactarius_deliciosus_600",
    "teselas": 95,
    "zoom": [
@@ -1652,14 +1627,14 @@
    ]
   },
   "app/idoneidad_lactarius_deliciosus_800.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 36327,
+   "bytes": 36356,
    "nombre": "idoneidad_lactarius_deliciosus_800",
    "teselas": 53,
    "zoom": [
@@ -1668,14 +1643,14 @@
    ]
   },
   "app/idoneidad_lactarius_sanguifluus_0.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 790013,
+   "bytes": 790040,
    "nombre": "idoneidad_lactarius_sanguifluus_0",
    "teselas": 609,
    "zoom": [
@@ -1684,14 +1659,14 @@
    ]
   },
   "app/idoneidad_lactarius_sanguifluus_1000.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 31635,
+   "bytes": 31662,
    "nombre": "idoneidad_lactarius_sanguifluus_1000",
    "teselas": 48,
    "zoom": [
@@ -1700,14 +1675,14 @@
    ]
   },
   "app/idoneidad_lactarius_sanguifluus_200.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 454037,
+   "bytes": 454066,
    "nombre": "idoneidad_lactarius_sanguifluus_200",
    "teselas": 482,
    "zoom": [
@@ -1716,14 +1691,14 @@
    ]
   },
   "app/idoneidad_lactarius_sanguifluus_400.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 237161,
+   "bytes": 237190,
    "nombre": "idoneidad_lactarius_sanguifluus_400",
    "teselas": 306,
    "zoom": [
@@ -1732,14 +1707,14 @@
    ]
   },
   "app/idoneidad_lactarius_sanguifluus_600.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 122353,
+   "bytes": 122381,
    "nombre": "idoneidad_lactarius_sanguifluus_600",
    "teselas": 175,
    "zoom": [
@@ -1748,14 +1723,14 @@
    ]
   },
   "app/idoneidad_lactarius_sanguifluus_800.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 60878,
+   "bytes": 60905,
    "nombre": "idoneidad_lactarius_sanguifluus_800",
    "teselas": 90,
    "zoom": [
@@ -1764,14 +1739,14 @@
    ]
   },
   "app/idoneidad_macrolepiota_procera_0.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 3954048,
+   "bytes": 3954072,
    "nombre": "idoneidad_macrolepiota_procera_0",
    "teselas": 1424,
    "zoom": [
@@ -1780,14 +1755,14 @@
    ]
   },
   "app/idoneidad_macrolepiota_procera_1000.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 401629,
+   "bytes": 401653,
    "nombre": "idoneidad_macrolepiota_procera_1000",
    "teselas": 380,
    "zoom": [
@@ -1796,14 +1771,14 @@
    ]
   },
   "app/idoneidad_macrolepiota_procera_200.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 2420766,
+   "bytes": 2420793,
    "nombre": "idoneidad_macrolepiota_procera_200",
    "teselas": 1348,
    "zoom": [
@@ -1812,14 +1787,14 @@
    ]
   },
   "app/idoneidad_macrolepiota_procera_400.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 1445847,
+   "bytes": 1445874,
    "nombre": "idoneidad_macrolepiota_procera_400",
    "teselas": 1076,
    "zoom": [
@@ -1828,14 +1803,14 @@
    ]
   },
   "app/idoneidad_macrolepiota_procera_600.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 912637,
+   "bytes": 912665,
    "nombre": "idoneidad_macrolepiota_procera_600",
    "teselas": 782,
    "zoom": [
@@ -1844,14 +1819,14 @@
    ]
   },
   "app/idoneidad_macrolepiota_procera_800.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 614550,
+   "bytes": 614577,
    "nombre": "idoneidad_macrolepiota_procera_800",
    "teselas": 566,
    "zoom": [
@@ -1860,14 +1835,14 @@
    ]
   },
   "app/idoneidad_pleurotus_eryngii_0.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 1805393,
+   "bytes": 1805418,
    "nombre": "idoneidad_pleurotus_eryngii_0",
    "teselas": 1280,
    "zoom": [
@@ -1876,14 +1851,14 @@
    ]
   },
   "app/idoneidad_pleurotus_eryngii_1000.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 183000,
+   "bytes": 183025,
    "nombre": "idoneidad_pleurotus_eryngii_1000",
    "teselas": 246,
    "zoom": [
@@ -1892,14 +1867,14 @@
    ]
   },
   "app/idoneidad_pleurotus_eryngii_200.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 1175192,
+   "bytes": 1175221,
    "nombre": "idoneidad_pleurotus_eryngii_200",
    "teselas": 1105,
    "zoom": [
@@ -1908,14 +1883,14 @@
    ]
   },
   "app/idoneidad_pleurotus_eryngii_400.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 723037,
+   "bytes": 723066,
    "nombre": "idoneidad_pleurotus_eryngii_400",
    "teselas": 781,
    "zoom": [
@@ -1924,14 +1899,14 @@
    ]
   },
   "app/idoneidad_pleurotus_eryngii_600.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 446908,
+   "bytes": 446937,
    "nombre": "idoneidad_pleurotus_eryngii_600",
    "teselas": 526,
    "zoom": [
@@ -1940,14 +1915,14 @@
    ]
   },
   "app/idoneidad_pleurotus_eryngii_800.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 291378,
+   "bytes": 291406,
    "nombre": "idoneidad_pleurotus_eryngii_800",
    "teselas": 369,
    "zoom": [
@@ -1956,14 +1931,14 @@
    ]
   },
   "app/idoneidad_terfezia_arenaria_0.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 2171484,
+   "bytes": 2171509,
    "nombre": "idoneidad_terfezia_arenaria_0",
    "teselas": 1238,
    "zoom": [
@@ -1972,14 +1947,14 @@
    ]
   },
   "app/idoneidad_terfezia_arenaria_1000.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 268648,
+   "bytes": 268673,
    "nombre": "idoneidad_terfezia_arenaria_1000",
    "teselas": 258,
    "zoom": [
@@ -1988,14 +1963,14 @@
    ]
   },
   "app/idoneidad_terfezia_arenaria_200.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 1342944,
+   "bytes": 1342972,
    "nombre": "idoneidad_terfezia_arenaria_200",
    "teselas": 1050,
    "zoom": [
@@ -2004,14 +1979,14 @@
    ]
   },
   "app/idoneidad_terfezia_arenaria_400.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 810599,
+   "bytes": 810627,
    "nombre": "idoneidad_terfezia_arenaria_400",
    "teselas": 699,
    "zoom": [
@@ -2020,14 +1995,14 @@
    ]
   },
   "app/idoneidad_terfezia_arenaria_600.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 524272,
+   "bytes": 524299,
    "nombre": "idoneidad_terfezia_arenaria_600",
    "teselas": 467,
    "zoom": [
@@ -2036,14 +2011,14 @@
    ]
   },
   "app/idoneidad_terfezia_arenaria_800.pmtiles": {
-   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL",
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
     -62182644,
     359587459,
     -34370899,
     375942006
    ],
-   "bytes": 372214,
+   "bytes": 372241,
    "nombre": "idoneidad_terfezia_arenaria_800",
    "teselas": 342,
    "zoom": [
@@ -2059,7 +2034,7 @@
     -34594610,
     375761790
    ],
-   "bytes": 79432,
+   "bytes": 79390,
    "nombre": "<out>/app/meteo_zonas.pmtiles",
    "teselas": 485,
    "zoom": [
@@ -2075,7 +2050,7 @@
     -35386960,
     375669960
    ],
-   "bytes": 423043,
+   "bytes": 422993,
    "nombre": "<out>/app/protegidos.pmtiles",
    "teselas": 859,
    "zoom": [
@@ -2091,7 +2066,7 @@
     -37637690,
     375439020
    ],
-   "bytes": 386520,
+   "bytes": 386477,
    "nombre": "<out>/app/restricciones.pmtiles",
    "teselas": 683,
    "zoom": [
@@ -2107,7 +2082,7 @@
     -34377090,
     375669820
    ],
-   "bytes": 1528375,
+   "bytes": 1528327,
    "nombre": "<out>/app/rutas.pmtiles",
    "teselas": 2468,
    "zoom": [
@@ -2139,7 +2114,7 @@
     -33307840,
     376690750
    ],
-   "bytes": 7970828,
+   "bytes": 7970780,
    "nombre": "<out>/app/titularidad.pmtiles",
    "teselas": 7653,
    "zoom": [
@@ -2151,20 +2126,20 @@
  "sha": {
   "app/acceso.bin": "dab6710b5e10a6c3d235ced7bea6ba83e4a47b70c91269a26474f3fcbe5e759e",
   "app/acceso.bin.gz": "cf1d093732e0ae318260cef813178e65909bb297591cd2f81fe53e1572b26c21",
-  "calibracion.md": "5d0719ff705e28ebee8e9d9c0cf757835058069f0291c365f7825fa66923ed05",
+  "calibracion.md": "f16c2fc8bf7f8816724de37f3d69041906cef1a0affe902acf629519b7d291de",
   "respaldo/README_respaldo.md": "fa1a539bcb99e4c449b1fc77ab1cfb8f3adea382b9ac49d450496c48b548e0b3",
-  "respaldo/setas_amanita_caesarea_zonas_buenas.kml": "222ba6bd308cb9bb1756f5ca0e568af9cbfce8274b42a7ea217381c340734b75",
-  "respaldo/setas_amanita_ponderosa_zonas_buenas.kml": "9a48726827b73b7a87209bcc0eceb6104160e726e3f8f3b3cd5a81416079cec5",
-  "respaldo/setas_boletus_aereus_zonas_buenas.kml": "5b53d1a772a100c6aaa726651dc0149dd4ff9ba8fb1d826078ff35ffd4841071",
-  "respaldo/setas_boletus_aestivalis_zonas_buenas.kml": "eff28cf829eecd21de90a769ea703a8e11cd1ea6c7875ac8b04a1635e1f692b6",
-  "respaldo/setas_boletus_edulis_zonas_buenas.kml": "87d7a705200a6e044d0f34e9e46472ab6b0dd4e7c5bee0c844bdba412aae2fd9",
-  "respaldo/setas_boletus_pinophilus_zonas_buenas.kml": "c8e65cac4248b3290f1dbc0d432f226baa65ac22e11ad509b12f17da6df08489",
-  "respaldo/setas_cantharellus_cibarius_zonas_buenas.kml": "976d8c08c2d976d436bfe7e35e9b1fc6c63a2c74d89a5f57cc5ad268e9e5b936",
-  "respaldo/setas_lactarius_deliciosus_zonas_buenas.kml": "0135a52f4e08cb20d2630d6bb4a88003f6b4754054c838d6992bc78247a8ef2e",
-  "respaldo/setas_lactarius_sanguifluus_zonas_buenas.kml": "7b23881e1147f4c9bd28eee9a092af62d6b3d1804bf26bf82b69926e52491148",
-  "respaldo/setas_macrolepiota_procera_zonas_buenas.kml": "8e3f781e513cb320a3f43b240f9b8f2fdc0e481bc9e3560213f014b8e1af8ab8",
-  "respaldo/setas_pleurotus_eryngii_zonas_buenas.kml": "41405565b082bea0adbcd2840cf458bbfc7ac67a7fa2c029fdd07496519a4b54",
-  "respaldo/setas_terfezia_arenaria_zonas_buenas.kml": "2204eeada8f3f6a51a4c080f1e03e71ac89fd20afa2568b427f3ffd91de0a7d4",
+  "respaldo/setas_amanita_caesarea_zonas_buenas.kml": "0fdba37f56669097316711e5af583e45349471b6b5fe62983765afc128c481c8",
+  "respaldo/setas_amanita_ponderosa_zonas_buenas.kml": "d5cb35ee3c3c07f37bfc68071ddb8905a4ed2c4c07c332a7c679a7eb1b5be38f",
+  "respaldo/setas_boletus_aereus_zonas_buenas.kml": "0d4a6a7c581148382a945ef451d5cdcaf3991a82921b71138b4b684b513f2ad1",
+  "respaldo/setas_boletus_aestivalis_zonas_buenas.kml": "b22f4f29ebabfe8aab9759bec70a67e7dad793f01b73a1fe1eec13edb033a64a",
+  "respaldo/setas_boletus_edulis_zonas_buenas.kml": "70dc350687adc6ff9a5fa28d20160de11dba75a357952f319ab8f62da77eab4f",
+  "respaldo/setas_boletus_pinophilus_zonas_buenas.kml": "5d1a126bd885698008f0ff7068797ca9b1d0f567a317e9d9ad6176f144c0370b",
+  "respaldo/setas_cantharellus_cibarius_zonas_buenas.kml": "0c07494a95f1a3fdd9ca09f00c822ac3c146cb817819655170744849cd685142",
+  "respaldo/setas_lactarius_deliciosus_zonas_buenas.kml": "4cb7b37c998e49ce7169355443d54d5b5d3a6bd980d0cd6b547d96c427feebb2",
+  "respaldo/setas_lactarius_sanguifluus_zonas_buenas.kml": "66593323c41978b030b96d839b26d46272944094f26b60bc5276e6233d17ed09",
+  "respaldo/setas_macrolepiota_procera_zonas_buenas.kml": "1bbda6fdfa242611cca59e8049397d4b83e08f92260cc121ef31d57801119eda",
+  "respaldo/setas_pleurotus_eryngii_zonas_buenas.kml": "a52ad9094b679868ea9573b104676d06176ef342551446d7a7cc5dd9296a3d98",
+  "respaldo/setas_terfezia_arenaria_zonas_buenas.kml": "ad522ef8451c18aef58dae93113f6eb2ae7644a11b761a7d909faae50218d45f",
   "vista_amanita_caesarea.png": "7cf67b0dc9a840ecd0e7a8de581f752a17aa4c56154fdcf3f23b54d8931395bf",
   "vista_amanita_ponderosa.png": "77d1f2f1277da0465433259e0161b22de91c53dfee484642b235850dec9a05a3",
   "vista_boletus_aereus.png": "fa18e589b5c1bdd8cd10164e03f847b455f8e80dcab417ddf9d7160cc0cce22d",
@@ -2352,7 +2327,7 @@
     2451
    ],
    "nodata": 255.0,
-   "sha256": "f5dd7391a85f89d9c8ac480fefcc0beb2ba68d1b88c2809300438f50dfc21470",
+   "sha256": "253fe5036b7237b77a87954d850ab2a99bc3c7c1b26ee58385fdb869ea997e86",
    "transform": [
     100.0,
     0.0,

@@ -129,7 +129,7 @@ Escribe la tabla «comestible | tóxica con ficha | diferencias (2-3) | fuente»
 
 **Puerta:** si alguna comestible activa sigue sin confusión tóxica documentada, **para** y lleva la lista al hilo principal con lo que dice cada fuente (por ejemplo, «sin parecidas peligrosas citadas»). Solo Alexander puede aprobar una excepción (Task 6, `EXCEPCIONES_APROBADAS`) o pedir una ficha tóxica más (fase D2). No se inventa una confusión para que pase el test.
 
-- [ ] **Step 4: Fotos candidatas en Commons**
+- [x] **Step 4: Fotos candidatas en Commons**
 
 Por cada taxón, lista los archivos de su categoría con licencia y tamaño. El script va al scratchpad, no al repo:
 
@@ -214,7 +214,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Consumes: dosier §4 (títulos de Commons elegidos).
 - Produces: `fotos.json[<id>] = [{archivo, autor, licencia, url_fuente}]` para `tricholoma_terreum`, `hygrophorus_latitabundus`, `morchella_spp`, `tricholoma_pardinum`, `tricholoma_equestre`, `gyromitra_esculenta`, `clitocybe_dealbata`, `suillus_bellinii` y `lactarius_deliciosus` (las dos últimas, enteras: `_1` y `_2` iguales que ahora y `_3` nueva). Lo consume `build.py` (Task 3).
 
-- [ ] **Step 1: Añadir las especies a `NUEVAS`**
+- [x] **Step 1: Añadir las especies a `NUEVAS`**
 
 Añade al final del diccionario `NUEVAS` (sin borrar las 4 que ya hay; el script es idempotente). Los títulos `File:` son los del dosier §4. Las entradas de las dos fichas que cambian conservan sus `_1` y `_2`, cuyos títulos están en `guia/_build/fotos.json`:
 
@@ -235,7 +235,7 @@ Añade al final del diccionario `NUEVAS` (sin borrar las 4 que ya hay; el script
 
 Los `<…>` de este bloque **no** son marcadores pendientes del plan: son los títulos exactos que Task 1 Step 4 elige mirando las fotos. Se copian del dosier carácter a carácter, con espacios y no guiones bajos, como en las entradas existentes.
 
-- [ ] **Step 2: Quitar las dos fotos que se sustituyen**
+- [x] **Step 2: Quitar las dos fotos que se sustituyen**
 
 El script no vuelve a descargar un archivo que ya existe. Si no se borran, la foto vieja se quedaría con los metadatos nuevos.
 
@@ -243,7 +243,7 @@ El script no vuelve a descargar un archivo que ya existe. Si no se borran, la fo
 git rm guia/fotos/suillus_bellinii_3.jpg guia/fotos/lactarius_deliciosus_3.jpg
 ```
 
-- [ ] **Step 3: Descargar y comprobar las licencias**
+- [x] **Step 3: Descargar y comprobar las licencias**
 
 ```bash
 cd modelo && uv run python ../guia/_build/fotos_nuevas.py
@@ -251,7 +251,7 @@ cd modelo && uv run python ../guia/_build/fotos_nuevas.py
 
 Salida esperada: una línea por foto con `fotos/<id>_<n>.jpg | <licencia> | <autor>`, sin `licencia no permitida`, y 27 líneas nuevas más las 12 de las especies anteriores. Si sale `licencia no permitida …`, cambia ese título por otro candidato del dosier y repite.
 
-- [ ] **Step 4: Comprobar los archivos**
+- [x] **Step 4: Comprobar los archivos**
 
 ```bash
 cd /Users/alexanderkrupnov/Documents/Claude/setas-alicante
@@ -271,7 +271,7 @@ EOF
 
 Esperado: 27 líneas, cada archivo entre 50 y 600 KB. Abre con Read cada JPEG nuevo y confirma que es la foto elegida.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add guia/_build/fotos_nuevas.py guia/_build/fotos.json guia/fotos/
@@ -294,7 +294,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 **Regla de redacción:** los textos de abajo son el **borrador de partida** con la morfología más citada. Cada frase se coteja con el dosier §2. Una frase sin fuente en el dosier se cambia por la de la fuente o por «Sin dato en las fuentes consultadas.». Ninguna se queda «porque suena bien». Los números (tamaños, latencias) tienen que coincidir con la fuente.
 
-- [ ] **Step 1: Fuentes nuevas**
+- [x] **Step 1: Fuentes nuevas**
 
 Debajo de `CYS = …` (línea 34) añade:
 
@@ -309,7 +309,7 @@ RIOJA_H = {"titulo": "Gobierno de La Rioja, Hygrophorus latitabundus en pinares 
 
 Las dos URL entre `< >` son las que el dosier §1 verificó con 200. Si alguna no se verifica, quita la constante y la frase que la cita.
 
-- [ ] **Step 2: Comestibles nuevas** (al final de la sección COMESTIBLES MENORES y de APRECIADAS)
+- [x] **Step 2: Comestibles nuevas** (al final de la sección COMESTIBLES MENORES y de APRECIADAS)
 
 ```python
 sp(id="tricholoma_terreum", nombre_cientifico="Tricholoma terreum (Schaeff.) P. Kumm.", nombres_comunes=["negrilla", "fredolic"],
@@ -364,7 +364,7 @@ sp(id="morchella_spp", nombre_cientifico="Morchella esculenta (L.) Pers. y espec
 
 `<RID>` y `<KEY>` son los números que el dosier §2 anotó para cada taxón (Index Fungorum y GBIF). Son enteros, sin comillas.
 
-- [ ] **Step 3: Tóxicas y mortales nuevas** (sección TÓXICAS / MORTALES de `build.py`)
+- [x] **Step 3: Tóxicas y mortales nuevas** (sección TÓXICAS / MORTALES de `build.py`)
 
 ```python
 sp(id="tricholoma_pardinum", nombre_cientifico="Tricholoma pardinum (Pers.) Quél.", nombres_comunes=["tricoloma atigrado"],
@@ -438,7 +438,7 @@ sp(id="clitocybe_dealbata", nombre_cientifico="Clitocybe dealbata (Sowerby) P. K
 
 Si el dosier §3 documenta más confusiones de `clitocybe_dealbata` (por ejemplo con `lepista_nuda` o `pleurotus_eryngii`), se añaden aquí **y** en la ficha de enfrente (Step 4), con sus diferencias y su fuente en `fuentes`.
 
-- [ ] **Step 4: Confusiones inversas y variantes en fichas existentes**
+- [x] **Step 4: Confusiones inversas y variantes en fichas existentes**
 
 En `agaricus_campestris` añade a `no_confundir_con`:
 
@@ -473,7 +473,7 @@ En las demás fichas de la lista de Task 1 Step 1 que tengan registros en Alican
 
 Ajusta los números `_1` y `_3` al orden real de las fotos de Task 2. Cada descripción tiene que ser verdad de **esa** foto (mírala).
 
-- [ ] **Step 5: Generar y validar**
+- [x] **Step 5: Generar y validar**
 
 ```bash
 python3 guia/_build/build.py guia/_build/fotos.json guia/especies.json
@@ -487,7 +487,7 @@ Esperado:
 
 Los `AVISO: … comestible sin parecido tóxico/mortal enlazado` que queden tienen que coincidir con la lista de la puerta de Task 1 Step 3. Si sale `asimetría`, falta la entrada inversa (Step 4).
 
-- [ ] **Step 6: Auditoría de redacción**
+- [x] **Step 6: Auditoría de redacción**
 
 ```bash
 python3 - <<'EOF'
@@ -514,7 +514,7 @@ git diff -U0 guia/especies.json | grep '^+' | grep -i 'comestib' | grep -v 'Cons
 
 Esperado: `fallos: 0` y el `grep` final sin salida.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add guia/_build/build.py guia/especies.json guia/CREDITOS.md
@@ -642,7 +642,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - No se usa `sombrero_mayor_10cm` en las reglas de Tricholoma, porque «no» dispara la alerta MORTAL de lepiota (`seguridad.ts:164`).
 - Queda una plaza libre hasta 20. No se añade la pregunta «láminas decurrentes»: *C. dealbata* se descarta por láminas rosas o marrones (champiñón), y la senderuela no la descarta.
 
-- [ ] **Step 1: Tests que fallan**
+- [x] **Step 1: Tests que fallan**
 
 En `seguridad.test.ts`:
 
@@ -770,12 +770,12 @@ describe('champiñón, senderuela y Clitocybe (grupo clitociboide)', () => {
 });
 ```
 
-- [ ] **Step 2: Comprobar que falla**
+- [x] **Step 2: Comprobar que falla**
 
 Run: `cd app && npx vitest run src/seguridad.test.ts`
 Expected: FAIL. Fallan los grupos (`'tricolomoide'` no existe), `color_sombrero` (`PREGUNTA[q]` sin definir) y el hallazgo (phalloides sale descartada con solo «amarillos»).
 
-- [ ] **Step 3: Implementación en `seguridad.ts`**
+- [x] **Step 3: Implementación en `seguridad.ts`**
 
 Cabecera, línea 5: cambia la lista por `(amanitoide, boletoide, cantareloide, lepiotoide, lactarioide, hipogeo, tricolomoide, morcheloide, clitociboide)`.
 
@@ -884,7 +884,7 @@ Antes del cierre `];` de `DESCARTES` (línea 157):
 
 Comentario de la línea 45: cambia «Pleurotus (seta de cardo) no tiene parecidas peligrosas en la guía: «otros».» por «Pleurotus (seta de cardo) va a «otros»; sus parecidas salen por «No confundir con…».».
 
-- [ ] **Step 4: `comparar.ts`**
+- [x] **Step 4: `comparar.ts`**
 
 En `RASGOS` (líneas 13-22):
 
@@ -914,12 +914,12 @@ En `FOTO_PREGUNTA`, después de `laminas_pie_color`:
     const loc = evaluar(c, fichas, { laminas_pie_color: 'amarillos', color_sombrero: 'naranja_rojo' }).peligrosas;   // amanitas descartadas; las mortales de otros grupos siguen
 ```
 
-- [ ] **Step 5: Tests y cobertura**
+- [x] **Step 5: Tests y cobertura**
 
 Run: `cd app && npx vitest run src/seguridad.test.ts src/comparar.test.ts src/gemini.test.ts && npm test && npm run cobertura && npx tsc --noEmit`
 Expected: todo PASS, `seguridad.ts` y `reconocer-nucleo.ts` al 100 % en líneas, ramas, funciones y sentencias, y `PREGUNTAS.length` = 19 (test existente `≤ 20`). Si algún test antiguo falla por las mortales nuevas (por ejemplo, el orden de `comparar.test.ts:18`), revisa que el fallo sea solo por la mortal nueva que se lista siempre y ajusta la expectativa a esa causa. No se debilita ninguna comprobación de seguridad.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add app/src/seguridad.ts app/src/seguridad.test.ts app/src/comparar.ts app/src/comparar.test.ts app/src/gemini.test.ts
@@ -939,7 +939,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Consumes: `pipeline/regiones/*.yaml` del plan A (clave `especies.activas`, lista en flujo, `docs/superpowers/plans/2026-10-15-multi-region-fase-a-pipeline.md:1429-1433`), `fichaDeEspecieMapa` y `COMESTIBLES` de `./guia` (Task 4).
 - Produces: nada que use otra tarea.
 
-- [ ] **Step 1: Escribir el test**
+- [x] **Step 1: Escribir el test**
 
 ```ts
 // Spec multi-región §7.5: cada comestible activa en alguna región tiene al menos una confusión tóxica o mortal con
@@ -1024,13 +1024,13 @@ describe('spec §7.5: comestibles activas con su confusión peligrosa', () => {
 });
 ```
 
-- [ ] **Step 2: Ejecutar**
+- [x] **Step 2: Ejecutar**
 
 Run: `cd app && npx vitest run src/seguridad-regiones.test.ts`
 
 Expected: los tests del lector y «cada especie activa tiene ficha» pasan. «cada comestible activa enlaza…» pasa solo si la puerta de Task 1 Step 3 se resolvió con fuentes. Si falla, el mensaje lista las fichas que faltan (por ejemplo `alicante: hydnum_repandum (ficha hydnum_repandum)`): **para** y lleva esa lista al hilo principal para que Alexander decida. No se rellena `EXCEPCIONES_APROBADAS` sin su respuesta.
 
-- [ ] **Step 3: Commit** (con el test en verde, o en rojo solo si el hilo principal lo autoriza y anota la decisión pendiente en el mensaje)
+- [x] **Step 3: Commit** (con el test en verde, o en rojo solo si el hilo principal lo autoriza y anota la decisión pendiente en el mensaje)
 
 ```bash
 git add app/src/seguridad-regiones.test.ts
@@ -1083,7 +1083,7 @@ Simulación de `vocabulario()` con estos cambios: **1603 → 1611 etiquetas** y 
 - `referencia.json`: ruido 0,2616, azul 0,2472 y gris 0,3099. El gris pasa con cualquier umbral razonable: es una limitación conocida, y el comentario del código ya la cuenta.
 - Propuesta: **0,28**, el primer múltiplo de 0,005 por encima del máximo de las ajenas reales. Deja fuera 3 de 90 fotos de la guía (3,3 %, por debajo del p05). Subir el umbral es seguro por diseño: con «no reconocido» las mortales se siguen listando todas (`seguridad.ts:225`).
 
-- [ ] **Step 1: Afines nuevas**
+- [x] **Step 1: Afines nuevas**
 
 En `alias.json`, dentro de `"afin"`, después de `"Terfezia leptoderma": "terfezia_arenaria"`:
 
@@ -1102,7 +1102,7 @@ En `alias.json`, dentro de `"afin"`, después de `"Terfezia leptoderma": "terfez
 
 Todas van como `afin` y no como `sinonimo`, aunque algunas fuentes las den por sinónimos. `afin` las enseña con su nombre y enlaza a la ficha, y así no se afirma una sinonimia que el dosier no haya comprobado. Actualiza la frase de afines en `modelo/README.md` (línea «marca especies afines (…)») con estas 9.
 
-- [ ] **Step 2: `--ajenas` en `construir.py`**
+- [x] **Step 2: `--ajenas` en `construir.py`**
 
 Firma y llamada. En `construir(solo_texto: bool = False)` → `construir(solo_texto: bool = False, ajenas: list[Path] | None = None)`. La llamada `referencia(i8, preprocess, texto, meta)` → `referencia(i8, preprocess, texto, meta, ajenas or [])`.
 
@@ -1133,7 +1133,7 @@ Argparse:
 
 Docstring de la cabecera: añade la línea `uv run python construir.py --solo-texto --ajenas <fotos…>   # y calibra «no reconocido» con fotos sin setas`.
 
-- [ ] **Step 3: Test del umbral, que falla**
+- [x] **Step 3: Test del umbral, que falla**
 
 En `reconocer-nucleo.test.ts`, añade `UMBRAL_MEDIO` al import de `./reconocer-nucleo` y al final:
 
@@ -1159,7 +1159,7 @@ describe('umbral «no reconocido» calibrado con modelo/referencia.json', () => 
 Run: `cd app && npx vitest run src/reconocer-nucleo.test.ts`
 Expected: FAIL (`ref.coseno_max_ajenas_reales` no existe; y, cuando exista, 0,27 > 0,2763 es falso).
 
-- [ ] **Step 4: Regenerar texto y referencia**
+- [x] **Step 4: Regenerar texto y referencia**
 
 Comprueba primero dónde escribe el script tras el plan A:
 
@@ -1189,7 +1189,7 @@ Salida esperada (unos 2 min; los pesos de BioCLIP ya están en `~/.cache/hugging
 python3 -c "import json;r=json.load(open('modelo/referencia.json'));print(r['coseno_max_fotos_guia'], r['coseno_max_ajenas'], r['coseno_max_ajenas_reales'])"
 ```
 
-- [ ] **Step 5: Comprobar las fotos nuevas con el modelo**
+- [x] **Step 5: Comprobar las fotos nuevas con el modelo**
 
 Script de un solo uso en el scratchpad (no se versiona). Calcula el top-3 de cada foto nueva con el modelo regenerado:
 
@@ -1217,7 +1217,7 @@ cd /Users/alexanderkrupnov/Documents/Claude/setas-alicante/modelo && uv run pyth
 
 Esperado: en cada foto, el top-1 o el top-2 es del mismo género que su ficha. Una foto cuyo top-3 no tenga nada de su género se vuelve a mirar con Read. Si la identificación de Commons es dudosa, se cambia por otra candidata del dosier (Task 2 Steps 1-3, y después Task 3 Step 5). BioCLIP también se equivoca: esto es solo un control, no lo que decide. Anota la tabla en el dosier §4.
 
-- [ ] **Step 6: Umbral nuevo**
+- [x] **Step 6: Umbral nuevo**
 
 Regla: `UMBRAL = ⌈(máx(ajenas_reales.max, ruido, azul) + 0,0001) / 0,005⌉ × 0,005`. Con los datos de arriba sale 0,28. Si con la referencia nueva `UMBRAL > coseno_max_fotos_guia.p05`, **para** e informa: el modelo ya no separa bien y hay que decidirlo en el hilo principal.
 
@@ -1235,7 +1235,7 @@ export const UMBRAL_NO_RECONOCIDO = 0.28;
 
 Actualiza también las líneas 24-25 (rango de las bandas) con el `min`, `mediana` y `n` nuevos de la referencia.
 
-- [ ] **Step 7: Tests, cobertura y e2e**
+- [x] **Step 7: Tests, cobertura y e2e**
 
 ```bash
 cd app && npx vitest run src/reconocer-nucleo.test.ts && npm test && npm run cobertura && npx tsc --noEmit && npm run e2e
@@ -1243,7 +1243,7 @@ cd app && npx vitest run src/reconocer-nucleo.test.ts && npm test && npm run cob
 
 Expected: todo PASS, 100 % en los dos archivos, y el e2e en verde (la paridad del top-5 navegador/Python se compara con la `referencia.json` nueva).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add modelo/vocabulario/alias.json modelo/construir.py modelo/README.md modelo/referencia.json \
@@ -1266,7 +1266,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Consumes: todo lo anterior.
 - Produces: rama con las puertas de spec §8 en verde para D1.
 
-- [ ] **Step 1: Humanizer sobre el copy nuevo**
+- [x] **Step 1: Humanizer sobre el copy nuevo**
 
 Reúne en un archivo del scratchpad el texto nuevo o cambiado que ve el usuario:
 
@@ -1296,7 +1296,7 @@ Lleva los cambios a la **fuente** (`build.py`, `seguridad.ts`) y regenera:
 python3 guia/_build/build.py guia/_build/fotos.json guia/especies.json && python3 guia/_build/creditos.py guia/especies.json guia/CREDITOS.md && python3 guia/validar.py
 ```
 
-- [ ] **Step 2: Auditoría de redacción, otra vez tras el humanizer**
+- [x] **Step 2: Auditoría de redacción, otra vez tras el humanizer**
 
 Repite Task 3 Step 6 (`fallos: 0` y el `grep` sin salida) y además:
 
@@ -1308,7 +1308,7 @@ grep -rn "SCO/3303" guia/especies.json guia/_build/build.py
 
 Esperado: el primer `grep` solo muestra la regex `PROHIBIDO` de `seguridad.ts:261`. El segundo y el tercero no muestran nada.
 
-- [ ] **Step 3: Code-review max**
+- [x] **Step 3: Code-review max**
 
 Invoca la skill `code-review` con el argumento `max` sobre el diff de la fase. Objetivos: `app/src/seguridad.ts`, `app/src/reconocer-nucleo.ts`, `guia/_build/build.py` (fichas nuevas y cambiadas), `app/src/comparar.ts`, `app/src/guia.ts` y `app/src/seguridad-regiones.test.ts`. Pide expresamente que revise:
 1. si alguna mortal puede quedar descartada con una sola respuesta o con respuestas contradictorias;
@@ -1318,7 +1318,7 @@ Invoca la skill `code-review` con el argumento `max` sobre el diff de la fase. O
 
 Arregla cada hallazgo confirmado con TDD (primero el test que lo reproduce) y repite hasta que no queden hallazgos de severidad alta.
 
-- [ ] **Step 4: Verificación completa**
+- [x] **Step 4: Verificación completa**
 
 ```bash
 python3 guia/validar.py
@@ -1330,7 +1330,7 @@ Esperado: `OK` en validar, todo vitest en verde, 100 % en los dos archivos, buil
 - la ficha de *T. equestre* sale en rojo (MORTAL o TÓXICA según su grupo);
 - el selector de especie dice «En la ficha de Suillus bellinii» o el texto que dé su nombre común si la región activa tiene *S. collinitus*.
 
-- [ ] **Step 5: Commit de los arreglos de las puertas**
+- [x] **Step 5: Commit de los arreglos de las puertas**
 
 ```bash
 git add guia/_build/build.py guia/especies.json guia/CREDITOS.md app/src/
@@ -1371,3 +1371,36 @@ Los valores entre `< >` de Tasks 2 y 3 (títulos de Commons, `RecordID` de Index
 1. ***Tricholoma terreum* (negrilla): ficha TÓXICA y sin capa en el mapa.** El grupo es `toxica`, con la toxicidad muscular descrita (Yin et al. 2014) en `toxicidad_nota`. No va en las especies activas de ninguna región ni tiene perfil de idoneidad. Las reglas de confusión con *T. pardinum* y *T. equestre* se mantienen.
 2. **Especies buscables sin parecida tóxica documentada** (*Hydnum*, *Suillus*, *H. latitabundus* y las que salgan en la Tarea 1): se aprueba la excepción. Cada una entra en `EXCEPCIONES_APROBADAS` con este texto en la ficha: "Sin confusiones tóxicas documentadas en las fuentes consultadas; eso no garantiza nada, confirma con un experto." Pasa por humanizer.
 3. **"Considerada comestible por la bibliografía": se QUITA.** Se sustituye por una etiqueta neutra del grupo, sin la palabra "comestible", por ejemplo "Apreciada en la bibliografía micológica" (pasa por humanizer). Se añade un test que falle si la palabra "comestible" aparece como afirmación en textos de la app.
+
+## Desviaciones (ejecución, 2026-10-16)
+
+Aplicadas las decisiones de Alexander del 2026-10-15 y el estado real de la rama (fases A, B y C hechas):
+
+1. **`tricholoma_terreum` es `toxica`** (decisión 1): sin `AV`; `toxicidad_nota` cita Yin et al. 2014 y la réplica de Davoli et al. 2016. En `seguridad.ts` entra en `PELIGROSAS_GRUPO.tricolomoide` (junto a *T. pardinum* y *T. equestre*) y no tiene regla de descarte: cualquier Tricholoma la trae como tóxica. Los tests de «negrilla» de Task 5 se adaptaron a eso.
+2. **`clitocybe_dealbata` es `mortal`**, no `toxica`: la regla de Task 1 Step 2 («mortal si una fuente toxicológica documenta muertes») lo exige, porque TOX dice que *C. dealbata* «ha llegado a producir la muerte» y First Nature la llama «deadly poisonous». Consecuencias: se lista siempre (como las demás mortales) y su descarte pide dos respuestas. Para eso se añade la pregunta 20, `anillo_pie` («¿Tiene un anillo…?»), y la regla queda `láminas rosas o marrones` + `anillo en el pie`. Motivo extra: con la edad sus láminas toman un tono rosado grisáceo (First Nature), así que «láminas rosas» sola no bastaba. `PREGUNTAS.length` = 20 (límite del Worker).
+3. **Excepciones aprobadas** (decisión 2): `hydnum_repandum`, `suillus_bellinii` (con *S. collinitus*), `lepista_nuda` y `hygrophorus_latitabundus` en `EXCEPCIONES_APROBADAS`, con el texto fijo `SIN_CONF` en su ficha. `pleurotus_eryngii` no necesita excepción: AmanitaCesarea.com cita «algunos Clitocybes tóxicos» y se enlaza con `clitocybe_dealbata`.
+4. **Fuera «Considerada comestible por la bibliografía»** (decisión 3): `AV` pasa a ser un marcador y se sustituye por grupo: «Apreciada en la bibliografía micológica.» / «Poco valorada en la bibliografía micológica.» + «No la consumas sin la confirmación de un experto (…)». En la app, `AVISO_COMESTIBLE` → `AVISO_BUSCADA[grupo]`. Se reescribieron las otras cuatro frases de la guía con la palabra (níscalo, *C. rhacodes*, criadilla jarera, *Scleroderma*). Guardas nuevas: `app/src/sin-comestible.test.ts` (fichas sin fuentes, literales de texto de `app/src/*.ts` con un tokenizador propio porque TypeScript 7 no trae API de JS, y texto visible de `index.html`) y `guia/validar.py` (error si un texto de ficha dice «comestib»).
+5. **Task 6 sin catálogo de respaldo**: ya existen `pipeline/regiones/{marbella,alicante}.yaml`; el test exige las dos y añade «ninguna especie del mapa es tóxica o mortal».
+6. **Modelo compartido**: `modelo/construir.py` escribe en `pipeline/data/modelo/` (antes `data/marbella/out/app/modelo/`, movido con `mv` en el worktree) y pone la clave `modelo` en el manifest de cada región de `data/regiones.json`. `exportar.modelo_disponible(out, compartido)` prefiere la carpeta compartida (test nuevo en `test_exportar.py`). `disposicion-datos.mjs` ya buscaba primero `data/modelo/`.
+7. **Worker** (fuera del plan original, pedido en el encargo): `worker/src/seguridad.ts` `REGLAS` añade Tricholoma → *T. equestre*, *T. pardinum*, *T. terreum*; Morchella/Gyromitra/Verpa/Helvella → *G. esculenta*; Clitocybe/Marasmius/Lepista/Agaricus/Pleurotus → *C. dealbata*. El prompt (`gemini.ts`) nombra esas confusiones.
+8. **Textos del borrador cambiados por las fuentes** (dosier §2): *T. terreum* 2-7 cm (no 3-8); *S. collinitus* sombrero pardo amarillento (no «pardo rojizo»); colmenilla sin «zonas quemadas» (ninguna fuente consultada lo dice); *T. pardinum* sin nombre común (no hay fuente) y con hábitat local PENDIENTE; *T. equestre* latencia 24-60 h (TOX).
+9. **Pregunta 20 y fusión de preguntas de superficie**: el plan contaba 19 preguntas, pero ya había 16; con las 4 nuevas y `anillo_pie` salían 21. `tricholoma_sombrero` y `morchella_sombrero` se fusionan en `superficie_sombrero` (fieltro gris / escamas oscuras / celdas / pliegues). Total: 20.
+10. **Umbral**: con el vocabulario nuevo (1611 etiquetas) el máximo de las 37 fotos sin setas baja a 0,2719 y la regla de Step 6 daría 0,275. Se deja **0,28**, como pide el encargo: también queda por encima del 0,2763 medido con el vocabulario anterior y por debajo del p05 de la guía (0,2929). Quedan fuera 3 de 110 fotos de la guía (dos de criadilla y una de seta de cardo). La foto `tricholoma_pardinum_3` (láminas de cerca) no tiene Tricholoma en su top-3; se volvió a mirar y se mantiene.
+11. **`clitocybe_dealbata` con 2 fotos** (Commons solo tiene una de *C. dealbata* y una válida de *C. rivulosa*). Total de la guía: 37 fichas, 110 fotos.
+12. **Regresión de Marbella**: el dorado comparaba la clave `modelo` del manifest, que cambia al regenerar el reconocedor. `dorado.py` la excluye (`MANIFEST_FUERA`), igual que ya excluía `app/modelo/` (test nuevo).
+13. **Hallazgos del code-review** (max sobre `b8c4c41..8cd4a82`, 15 de 30; segunda pasada high sobre los arreglos): ver commits `3f9afac` y `4034b1b`. Además de lo previsto: «NO COMESTIBLE» de tres boletos amargos → «NO SE DEBE CONSUMIR.»; llenega en `apreciada` (La Rioja: «muy apreciada en Cataluña»); alerta MORTAL nueva de phalloides/verna (láminas blancas con sombrero verdoso o blanco; huevo naranja con sombrero verdoso o blanco); alertas que traen su especie aunque ningún candidato la active; `binomiosDeFicha` en la segunda opinión; `notaBajoPeligro`; filtros de comestibilidad más amplios en app y Worker; el Worker lee `volva_saco`.
+
+## Puertas (resultado, 2026-10-16)
+
+- **Humanizer**: aplicado al copy nuevo (fichas, avisos, preguntas, alertas, motivos del Worker), registro neutro de guía de campo: sin rayas, sin muletillas, frases cortas; sin tocar cifras, nombres científicos ni MORTAL/TÓXICA/«No se debe probar».
+- **Auditoría de redacción**: 0 fallos (Task 3 Step 6 ampliada con «—»); `sin-comestible.test.ts` y `validar.py` en verde; ninguna cita de la Orden SCO/3303/2006.
+- **code-review max**: dos pasadas; arreglados los hallazgos de seguridad. Quedan abiertos (fuera de esta fase o decisión de Alexander): filtros de comestibilidad duplicados en app y Worker (conviene una lista común); con «no reconocido» solo se listan las mortales, no las tóxicas del grupo (diseño de spec §2); *T. pardinum* (tóxica) se descarta con una sola respuesta, como las demás tóxicas.
+- **security-review (manual; la skill falla sin origin/HEAD)**, sobre `worker/src/seguridad.ts` y `worker/src/gemini.ts`:
+  - Inyección en el prompt: el texto nuevo es fijo (no interpola datos del usuario); la región sigue validada contra la lista cerrada `ccaa.ts`. Sin cambio de superficie.
+  - Validación de entrada: `respuestas_guiadas` sigue limitado a 20 claves y 120 caracteres (`validar.ts`); `volva_saco` solo se lee como texto.
+  - Regex nuevas (`PROHIBIDO_EXTRA`): sin cuantificadores anidados ni retroceso catastrófico (alternativas literales con `\w*` acotado por `\b`); el lookbehind de longitud variable es válido en V8/Workers. Entrada limitada a 400 caracteres por campo.
+  - Salida: `postProcesar` sigue limpiando todos los textos y forzando el aviso; la red de seguridad solo añade peligrosas, nunca quita.
+  - Secretos, CORS, límite diario y KV: sin cambios. **No se ha desplegado el Worker.**
+- **Verificación**: app `npm test` 475/475; cobertura 100 % en `seguridad.ts` y `reconocer-nucleo.ts`; `npm run build` OK; `npm run e2e` OK (offline 164 + regiones 18); Worker 53/53 y `tsc` OK; pipeline `uv run pytest` 287/287; `python3 guia/validar.py` OK. Capturas e2e regeneradas.
+- **Aviso de entorno**: en `app/public/data` y `app/dist/data` aparecieron copias «marbella 2», «modelo 2», «alicante 2» (duplicados de sincronización de iCloud en ~/Documents); rompen `vite build`. Se borraron (eran enlaces y salidas de build).
+

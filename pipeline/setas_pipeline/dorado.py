@@ -78,15 +78,20 @@ def huella_tif(p: Path) -> dict:
                 "nodata": s.nodata, "transform": [round(v, 6) for v in tuple(s.transform)[:6]], "crs": str(s.crs)}
 
 
-def _nombre_relativo(nombre, out: Path | None):
+def _nombre_relativo(nombre, out: Path | None, rel: str | None = None):
     """tippecanoe pone como `name` la ruta absoluta de salida (-o): se guarda relativa a out/ ("<out>/app/x.pmtiles")
-    para que la huella no dependa de dónde estén los datos (esquema plano frente a <region>/out, otra máquina)."""
+    para que la huella no dependa de dónde estén los datos (esquema plano frente a <region>/out, otra máquina).
+    Si el archivo se generó en otro árbol y se copió aquí (p. ej. otro worktree), la ruta no cuelga de out/; si acaba
+    en la ruta relativa del propio archivo (`rel`), es la de -o en aquel árbol y se normaliza igual."""
     if out is None or not isinstance(nombre, str) or not Path(nombre).is_absolute():
         return nombre
     try:
         return "<out>/" + Path(nombre).resolve().relative_to(Path(out).resolve()).as_posix()
     except ValueError:
-        return nombre
+        pass
+    if rel and Path(nombre).parts[-len(Path(rel).parts):] == Path(rel).parts:
+        return "<out>/" + rel
+    return nombre
 
 
 def huella_pmtiles(p: Path, out: Path | None = None) -> dict:
@@ -97,7 +102,8 @@ def huella_pmtiles(p: Path, out: Path | None = None) -> dict:
     return {"bytes": p.stat().st_size, "zoom": [h["min_zoom"], h["max_zoom"]],
             "teselas": h.get("addressed_tiles_count"),
             "bbox_e7": [h["min_lon_e7"], h["min_lat_e7"], h["max_lon_e7"], h["max_lat_e7"]],
-            "atribucion": md.get("attribution"), "nombre": _nombre_relativo(md.get("name"), out)}
+            "atribucion": md.get("attribution"),
+            "nombre": _nombre_relativo(md.get("name"), out, p.relative_to(out).as_posix() if out else None)}
 
 
 def huella(out: Path, desde: float | None = None) -> dict:

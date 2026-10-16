@@ -93,3 +93,21 @@ def test_titularidad_puntos_con_poligonos(tmp_path):
     e, f = titularidad_puntos([(-4.5, 36.5), (-3.0, 36.5)], r, poligonos=p)
     assert e["clase"] == "monte_junta" and e["monte"] == "El Meliche" and e["texto"] == TEXTOS["monte_junta"]
     assert f["clase"] == "privado"
+
+
+def test_montes_mismo_codigo_poligonos_distintos_no_se_pierden(monkeypatch):
+    # dos recintos distintos con el mismo codigo_ja (monte en varias piezas) + la misma pieza repetida por
+    # solaparse dos teselas: se quita solo la repetida, nunca área
+    import geopandas as gpd
+    from shapely.geometry import box
+    from setas_pipeline.adaptadores import rediam, Contexto, CRS
+    cfg = MARBELLA.capas["montes_publicos"][0]
+    t = "Ayuntamiento"
+    g = gpd.GeoDataFrame({"codigo_ja": ["MA-1", "MA-1", "MA-1", "MA-2"], "nombre": ["A", "A", "A", "B"],
+                          "tipo_titul": [t] * 4},
+                         geometry=[box(0, 0, 100, 100), box(500, 0, 600, 100), box(0, 0, 100, 100),
+                                   box(0, 500, 100, 600)], crs=CRS)
+    monkeypatch.setattr(rediam, "_teselas", lambda cfg, ctx: g)
+    r = rediam.rediam_montes(cfg, Contexto(raw=".", zona=box(0, 0, 1000, 1000)))
+    assert len(r) == 3 and r.area.sum() == 30000
+    assert sorted(r["codigo"]) == ["MA-1", "MA-1", "MA-2"]

@@ -129,12 +129,19 @@ def _teselas(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
     return descargar_teselas(cfg["url_patron"], ctx.zona, cfg["tesela_m"], Path(ctx.raw) / cfg["cache"])
 
 
+def sin_repetidos(g: gpd.GeoDataFrame, codigo: str) -> gpd.GeoDataFrame:
+    """Quita las entidades repetidas por el solape de teselas: mismo código Y misma geometría. Un mismo
+    código puede tener varias piezas distintas (monte en varios recintos, vía en tramos): se conservan todas."""
+    clave = g.geometry.normalize().to_wkb()
+    return g[~pd.DataFrame({"c": g[codigo].values, "g": clave.values}).duplicated().values]
+
+
 @registrar("montes_publicos", "rediam_montes")
 def rediam_montes(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
     g = _teselas(cfg, ctx)
     if not len(g):
         return vacio("montes_publicos")
-    g = g.drop_duplicates("codigo_ja")
+    g = sin_repetidos(g, "codigo_ja")
     g["clase"] = [clase_monte(t, cfg) for t in g["tipo_titul"]]
     g = g[g["clase"].notna()]
     return g.assign(nombre=g["nombre"].str.strip(), detalle=g["tipo_titul"].str.strip(), codigo=g["codigo_ja"])
@@ -145,7 +152,7 @@ def rediam_cotos(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
     g = _teselas(cfg, ctx)
     if not len(g):
         return vacio("cotos_caza")
-    g = g.drop_duplicates("MATRICULA")
+    g = sin_repetidos(g, "MATRICULA")
     return g.assign(clase="coto", nombre=g["NOMBRE"].str.strip().str.title(),
                     detalle=g["TIPO"].str.strip().str.capitalize(), codigo=g["MATRICULA"])
 
@@ -155,7 +162,7 @@ def rediam_vias_pecuarias(cfg: dict, ctx: Contexto) -> gpd.GeoDataFrame:
     g = _teselas(cfg, ctx)
     if not len(g):
         return vacio("pasos_publicos")
-    g = g.drop_duplicates("CODIGOVIA")
+    g = sin_repetidos(g, "CODIGOVIA")
     return g.assign(clase="paso_publico", tipo="via_pecuaria", nombre=g["NOMBRE"].str.strip().str.capitalize(),
                     detalle="Vía pecuaria", codigo=g["CODIGOVIA"])
 

@@ -132,10 +132,9 @@ def leer_edificios(zip_path: Path):
 def huella_y_cerca(geoms, malla: Malla, sub: int = SUB, radio_m: float = RADIO_CERCA_M,
                    tesela: int = TESELA_CELDAS) -> tuple[np.ndarray, np.ndarray]:
     """→ (huella: fracción edificada 0..1 por celda, cerca: edificio a ≤ radio_m del centro de la celda).
-    Rasteriza a celda/sub por teselas con un margen de radio_m (EDT en el submuestreo)."""
+    Huella: rasteriza a celda/sub por teselas. Cerca: distancia exacta centro–huella (STRtree dwithin)."""
     from rasterio.features import rasterize
     from rasterio.transform import from_origin
-    from scipy.ndimage import distance_transform_edt
     import shapely
     geoms = np.asarray([g for g in geoms if g is not None and not g.is_empty], dtype=object)
     huella = np.zeros((malla.alto, malla.ancho), "float32")
@@ -144,27 +143,29 @@ def huella_y_cerca(geoms, malla: Malla, sub: int = SUB, radio_m: float = RADIO_C
         return huella, cerca
     arbol = shapely.STRtree(geoms)
     px = malla.celda / sub
-    m = int(np.ceil(radio_m / malla.celda)) + 1        # margen en celdas
     for f0 in range(0, malla.alto, tesela):
         for c0 in range(0, malla.ancho, tesela):
             f1, c1 = min(f0 + tesela, malla.alto), min(c0 + tesela, malla.ancho)
-            ef0, ec0 = max(f0 - m, 0), max(c0 - m, 0)
-            ef1, ec1 = min(f1 + m, malla.alto), min(c1 + m, malla.ancho)
-            x0, y1 = malla.x0 + ec0 * malla.celda, malla.y1 - ef0 * malla.celda
-            x1, y0 = malla.x0 + ec1 * malla.celda, malla.y1 - ef1 * malla.celda
-            idx = arbol.query(shapely.box(x0, y0, x1, y1))
-            if not len(idx):
+            x0, y1 = malla.x0 + c0 * malla.celda, malla.y1 - f0 * malla.celda
+            x1, y0 = malla.x0 + c1 * malla.celda, malla.y1 - f1 * malla.celda
+            # edificios de la tesela o a ≤ radio_m de ella (también fuera de la malla)
+            if not len(arbol.query(shapely.box(x0 - radio_m, y0 - radio_m, x1 + radio_m, y1 + radio_m))):
                 continue
-            h, w = (ef1 - ef0) * sub, (ec1 - ec0) * sub
-            a = rasterize(((g, 1) for g in geoms[idx]), out_shape=(h, w),
-                          transform=from_origin(x0, y1, px, px), fill=0, dtype="uint8", all_touched=False)
-            # huella: media por celda (solo la parte interior de la tesela)
-            fr = a.reshape(ef1 - ef0, sub, ec1 - ec0, sub).mean(axis=(1, 3), dtype="float32")
-            huella[f0:f1, c0:c1] = fr[f0 - ef0:f1 - ef0, c0 - ec0:c1 - ec0]
-            # cerca: distancia (m) del centro de cada celda al píxel edificado más próximo
-            d = distance_transform_edt(a == 0) * px
-            centro = d[sub // 2::sub, sub // 2::sub]
-            cerca[f0:f1, c0:c1] = centro[f0 - ef0:f1 - ef0, c0 - ec0:c1 - ec0] <= radio_m
+            # huella: fracción de píxeles de celda/sub edificados en cada celda
+            idx = arbol.query(shapely.box(x0, y0, x1, y1))
+            if len(idx):
+                a = rasterize(((g, 1) for g in geoms[idx]), out_shape=((f1 - f0) * sub, (c1 - c0) * sub),
+                              transform=from_origin(x0, y1, px, px), fill=0, dtype="uint8", all_touched=False)
+                huella[f0:f1, c0:c1] = a.reshape(f1 - f0, sub, c1 - c0, sub).mean(axis=(1, 3), dtype="float32")
+            # cerca: distancia exacta del centro de cada celda a la huella más próxima (no a píxeles: la EDT
+            # sobre el submuestreo perdía las casetas menores que un píxel, medía desde un punto desplazado
+            # medio píxel del centro y, en una tesela sin píxeles edificados, contaba un edificio fantasma)
+            ff, cc = np.mgrid[f0:f1, c0:c1]
+            pts = shapely.points(malla.x0 + (cc.ravel() + 0.5) * malla.celda,
+                                 malla.y1 - (ff.ravel() + 0.5) * malla.celda)
+            sub_cerca = np.zeros(pts.shape, bool)
+            sub_cerca[arbol.query(pts, predicate="dwithin", distance=radio_m)[0]] = True
+            cerca[f0:f1, c0:c1] = sub_cerca.reshape(f1 - f0, c1 - c0)
     return huella, cerca
 
 

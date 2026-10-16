@@ -97,3 +97,30 @@ def test_la_mairena_celda_con_edificio_vale_cero():
     assert leer_tif(OUT / "edificado.tif")[f, c] == E.EXCLUIDO
     for esp in ("boletus_aereus", "amanita_caesarea"):
         assert leer_tif(OUT / f"idoneidad_{esp}.tif")[f, c] == 0, esp
+
+
+def test_cerca_sin_pixeles_edificados_no_marca_la_esquina_de_la_tesela():
+    # caseta de 2×2 m que no cubre ningún centro de píxel de 10 m: la tesela queda sin píxeles edificados y
+    # la EDT medía la distancia a un «edificio fantasma» fuera de la esquina superior izquierda de la ventana
+    # caseta en la celda (2, 2), centro (250, 750); la tesela 0 (filas y columnas 0-3) empieza en el borde
+    # de la malla, sin margen, así que la esquina fantasma cae dentro de la tesela
+    h, c = E.huella_y_cerca([box(249, 749, 251, 751)], M, tesela=4)
+    assert not c[0, 0] and not c[0, 1]                          # a ≥ 200 m de la caseta
+    assert c[2, 2] and c[2, 1] and c[1, 2]                      # a 0 m y a 99 m
+
+
+def test_cerca_umbral_simetrico_desde_el_centro_de_la_celda():
+    # centro de la celda (fila 5, col 5) = (550, 450); edificios de 1 m de ancho a 99 y 101 m, a cada lado
+    for dx in (99, -99):
+        x = 550 + dx
+        _, c = E.huella_y_cerca([box(min(x, x + (1 if dx > 0 else -1)), 445, max(x, x + (1 if dx > 0 else -1)), 455)], M)
+        assert c[5, 5], dx
+    for dx in (101, -101):
+        x = 550 + dx
+        _, c = E.huella_y_cerca([box(min(x, x + (1 if dx > 0 else -1)), 445, max(x, x + (1 if dx > 0 else -1)), 455)], M)
+        assert not c[5, 5], dx
+
+
+def test_cerca_cuenta_edificios_justo_fuera_de_la_malla():
+    _, c = E.huella_y_cerca([box(-30, 440, -20, 460)], M)          # a 70 m del centro (50, 450) de (5, 0)
+    assert c[5, 0] and not c[5, 1]

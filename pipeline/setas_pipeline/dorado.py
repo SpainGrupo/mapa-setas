@@ -14,7 +14,7 @@ Qué entra (rutas relativas a out/):
 - *.mbtiles / *.sqlitedb: tamaño (±1 %).
 - Resto (.bin, .gz, .png, .md, .kml, .txt…): sha256 de los bytes.
 Con --desde, todo archivo con huella debe ser posterior a esa marca (prueba de que se re-ejecutó),
-salvo ENTRADAS (salen del paso zona, que necesita OSRM, o de citas.py, que necesita GBIF; no se re-ejecutan).
+salvo ENTRADAS (salen del paso zona, que necesita OSRM, o de citas.py; no se re-ejecutan).
 """
 from __future__ import annotations
 import argparse, hashlib, json, sys
@@ -31,8 +31,8 @@ MANIFEST_FUERA = ("modelo",)            # clave del reconocedor (modelo/construi
 # No los produce ningún paso re-ejecutable sin red (base = Protomaps) o no son del pipeline actual.
 NO_REGENERADOS = {"region_base.geojson", "base_build.txt", "vista_arbol.png", "vista_suelo.png", "app/base.pmtiles"}
 SIN_HUELLA = ("app/modelo/",)            # paquete del reconocedor (modelo/construir.py), no es del pipeline
-# citas.geojson sale de citas.py, que necesita red (GBIF species/match) aunque tenga caché: se huella pero no se
-# re-ejecuta (la calibración y la capa de citas sí se rehacen a partir de él).
+# citas.geojson sale de citas.py (sin red con la caché cruda desde 2026-10-16): se huella pero no se re-ejecuta
+# (la calibración y la capa de citas sí se rehacen a partir de él).
 ENTRADAS = {"zona.geojson", "malla.json", "citas.geojson"}
 CATEGORIAS = ("tif", "json", "sha", "tamano", "pmtiles")
 

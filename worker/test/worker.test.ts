@@ -396,6 +396,34 @@ describe("seguridad: comestibilidad y aviso", () => {
     expect(nombres).toContain("lepiota brunneoincarnata");
     expect(nombres).toContain("rubroboletus satanas");
   });
+  it("Alicante (fase D1): Tricholoma → T. equestre, T. pardinum y T. terreum; Morchella → Gyromitra; Agaricus, Marasmius y Lepista → Clitocybe dealbata", async () => {
+    const casos: [string, string[]][] = [
+      ["Tricholoma terreum", ["tricholoma equestre", "tricholoma pardinum", "tricholoma terreum"]],
+      ["Morchella esculenta", ["gyromitra esculenta"]],
+      ["Gyromitra gigas", ["gyromitra esculenta"]],
+      ["Agaricus campestris", ["clitocybe dealbata"]],
+      ["Marasmius oreades", ["clitocybe dealbata"]],
+      ["Lepista nuda", ["clitocybe dealbata"]],
+      ["Pleurotus eryngii", ["clitocybe dealbata"]],
+    ];
+    for (const [cand, esperadas] of casos) {
+      fetchMock.mockResolvedValueOnce(
+        respuestaGemini({
+          ...salidaModelo,
+          candidatos: [{ nombre_cientifico: cand, confianza: "baja", rasgos_observados: [], rasgos_que_faltan_ver: [] }],
+          peligrosas_posibles: [],
+        }),
+      );
+      const j = await (await llamar(peticion(valida))).json();
+      const nombres = j.peligrosas_posibles.map((p: any) => p.nombre_cientifico.toLowerCase());
+      expect(nombres, cand).toEqual(expect.arrayContaining(esperadas));
+      for (const p of j.peligrosas_posibles) expect(p.motivo, cand).toMatch(/^(Mortal|Tóxica)\./);
+    }
+  });
+  it("el prompt nombra las confusiones de Alicante", () => {
+    const t = cuerpoGemini(valida as any).systemInstruction.parts[0].text;
+    for (const n of ["Tricholoma equestre", "Tricholoma pardinum", "Gyromitra", "Clitocybe dealbata"]) expect(t).toContain(n);
+  });
   it("añade amanitas mortales si la persona marcó volva", async () => {
     const j = await (await llamar(peticion({ ...valida, respuestas_guiadas: { volva: true } }))).json();
     expect(j.peligrosas_posibles.map((p: any) => p.nombre_cientifico)).toContain("Amanita phalloides");

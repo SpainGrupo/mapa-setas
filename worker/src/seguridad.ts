@@ -147,6 +147,27 @@ const REGLAS: Regla[] = [
       { nombre_cientifico: "Rubroboletus satanas", motivo: "Tóxica. Boletos de poros rojos o que azulean al corte pueden ser tóxicos; hay que ver poros, pie y reacción al corte." },
     ],
   },
+  // Alicante (fase D1, mismas confusiones que app/src/seguridad.ts y la guía).
+  {
+    si: /^tricholoma\b/i,
+    añadir: [
+      { nombre_cientifico: "Tricholoma equestre", motivo: "Mortal. Láminas y pie amarillos; comerla varias veces ha causado intoxicaciones musculares (rabdomiólisis) con muertes." },
+      { nombre_cientifico: "Tricholoma pardinum", motivo: "Tóxica. Tricholoma grande con escamas oscuras y gruesas sobre fondo claro; intoxicación digestiva intensa." },
+      { nombre_cientifico: "Tricholoma terreum", motivo: "Tóxica. La negrilla se trata como tóxica: un estudio la relaciona con daño muscular; se parece a otros Tricholoma grises." },
+    ],
+  },
+  {
+    si: /^(morchella|mitrophora|gyromitra|verpa|helvella|disciotis)\b/i,
+    añadir: [
+      { nombre_cientifico: "Gyromitra esculenta", motivo: "Mortal. La falsa colmenilla tiene el sombrero como un cerebro y cámaras por dentro; hay que cortarla de arriba abajo." },
+    ],
+  },
+  {
+    si: /^(clitocybe|infundibulicybe|marasmius|lepista|collybia|agaricus|pleurotus)\b/i,
+    añadir: [
+      { nombre_cientifico: "Clitocybe dealbata", motivo: "Mortal. Clitocybe blanca de prado, a veces en corros con la senderuela o el champiñón; hay que ver el color de las láminas y si tiene anillo." },
+    ],
+  },
 ];
 
 function normaliza(n: string): string {

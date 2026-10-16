@@ -21,6 +21,9 @@ Método obligatorio:
    - Parasoles pequeños o lepiotas: Lepiota (p. ej. Lepiota brunneoincarnata) y otras lepiotas con amatoxinas.
    - Setas parecidas a rebozuelos (Cantharellus): Omphalotus olearius.
    - Boletos de poros rojos o anaranjados, o que azulean al corte: Rubroboletus satanas y otros boletos tóxicos.
+   - Negrillas y otros Tricholoma: Tricholoma equestre (mortal), Tricholoma pardinum y Tricholoma terreum.
+   - Colmenillas (Morchella): Gyromitra esculenta y Gyromitra gigas.
+   - Champiñones, senderuelas, Lepista o setas blancas de prado: Clitocybe dealbata y otras Clitocybe blancas.
    - Cualquier otro parecido tóxico pertinente (Entoloma, Cortinarius, Inocybe, Gyromitra, Galerina...).
 5. En fotos_recomendadas pide las fotos que faltan para avanzar (p. ej. "corte vertical del huevo", "base del pie desenterrada", "himenio de cerca", "reacción de la carne al corte").
 

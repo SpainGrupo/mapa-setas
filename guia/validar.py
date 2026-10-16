@@ -4,7 +4,7 @@
 Comprueba: esquema y tipos, grupos, ids únicos en snake_case, simetría de
 no_confundir_con, que cada foto exista y tenga licencia libre permitida
 (CC0, CC BY, CC BY-SA o dominio público; nunca NC ni ND), que CREDITOS.md
-cite cada foto y que ningún texto contenga frases prohibidas.
+cite cada foto y que ningún texto contenga frases prohibidas ni la palabra «comestible».
 
 Uso: python3 guia/validar.py   (sale con código 1 si hay errores)
 """
@@ -24,6 +24,9 @@ TEXTO = ["nombre_cientifico", "sombrero", "himenio", "pie", "volva", "anillo",
          "carne_y_corte", "olor_sabor", "esporada", "habitat", "temporada"]
 LISTAS = ["nombres_comunes", "rasgos_clave", "no_confundir_con", "fotos", "fuentes"]
 PROHIBIDO = re.compile(r"se puede comer|apta para el consumo|comestible segur|sin peligro", re.I)
+# Decisión de Alexander (2026-10-15): ningún texto de ficha dice «comestible» (salvo los títulos de las fuentes, que
+# son citas bibliográficas, y la clave de grupo `comestible_menor`).
+COMESTIB = re.compile(r"comestib", re.I)
 LIC_OK = re.compile(r"^(CC0( 1\.0)?|CC BY(-SA)? \d\.\d|Public domain|Dominio público)$", re.I)
 LIC_MAL = re.compile(r"\b(NC|ND)\b", re.I)
 SNAKE = re.compile(r"^[a-z][a-z0-9_]*$")
@@ -103,6 +106,8 @@ def main():
         for ruta, t in textos(e):
             if PROHIBIDO.search(t):
                 err(f"{eid}: frase prohibida en {ruta}: {t!r}")
+            if COMESTIB.search(t) and not ruta.startswith("fuentes") and ruta != "grupo":
+                err(f"{eid}: dice «comestible» en {ruta}: {t!r}")
 
     # simetría y referencias de no_confundir_con
     for eid, e in por_id.items():

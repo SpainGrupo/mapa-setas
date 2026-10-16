@@ -4,7 +4,15 @@ import json, sys
 FOTOS = json.load(open(sys.argv[1]))
 OUT = sys.argv[2]
 
-AV = "Considerada comestible por la bibliografía; consumir solo con confirmación de un experto (micólogo, sociedad micológica o farmacia)."
+# Aviso de las fichas que se buscan para recolectar. Decisión de Alexander (2026-10-15): fuera «Considerada comestible
+# por la bibliografía»; etiqueta neutra del grupo, sin la palabra «comestible». AV es un marcador: se sustituye al final
+# por el texto de AV_GRUPO según el grupo de cada ficha.
+AV = "§AV§"
+EXPERTO = "No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia)."
+AV_GRUPO = {"apreciada": "Apreciada en la bibliografía micológica. " + EXPERTO,
+            "comestible_menor": "Poco valorada en la bibliografía micológica. " + EXPERTO}
+# Decisión 2 de Alexander (2026-10-15): especies buscables sin parecida tóxica documentada en las fuentes.
+SIN_CONF = "Las fuentes consultadas no documentan confusiones con setas tóxicas. Eso no garantiza nada: confírmalo con un experto."
 
 # ---------- fuentes ----------
 def ac(slug, nombre):
@@ -30,6 +38,16 @@ IECT = {"titulo": "Tardío, J., Terfezia arenaria, en Inventario Español de los
 AND19 = {"titulo": "Andrino et al. (2019), The crop of desert truffle depends on agroclimatic parameters during two key annual periods (Agron. Sustain. Dev.)", "url": "https://hal.science/hal-02995102/document"}
 RLTC = {"titulo": "Global Fungal Red List Initiative, Terfezia claveryi", "url": "https://redlist.info/iucn/species_view/144803"}
 CYS = {"titulo": "Cesta y Setas, Las criadillas de tierra (confusiones con falsas trufas blancas; fuente secundaria)", "url": "https://www.cestaysetas.com/las-criadillas-de-tierra-unas-de-las-setas-mas-buscadas-de-la-primavera/"}
+# Fase D1 (Alicante): docs/investigacion/2026-10-15-fichas-alicante.md
+def gbif(key, nombre):
+    return {"titulo": f"GBIF, {nombre}: registros, también en la zona de Alicante (consulta 14-10-2026)", "url": f"https://www.gbif.org/species/{key}"}
+NEJM = {"titulo": "Bedry et al. (2001), Wild-mushroom intoxication as a cause of rhabdomyolysis, N Engl J Med 345:798-802", "url": "https://pubmed.ncbi.nlm.nih.gov/11556299/"}
+MORCH = {"titulo": "Saviuc et al. (2010), Can morels (Morchella sp.) induce a toxic neurological syndrome?, Clin Toxicol 48:365-372", "url": "https://pubmed.ncbi.nlm.nih.gov/20507248/"}
+YIN = {"titulo": "Yin et al. (2014), Chemical and toxicological investigations of a previously unknown poisonous European mushroom Tricholoma terreum, Chem Eur J 20:7001-7009", "url": "https://pubmed.ncbi.nlm.nih.gov/24753190/"}
+DAVOLI = {"titulo": "Davoli et al. (2016), Comment on «Chemical and toxicological investigations… Tricholoma terreum», Chem Eur J 22:5786-5788", "url": "https://pubmed.ncbi.nlm.nih.gov/26969909/"}
+IECT_LD = {"titulo": "MITECO, Inventario Español de los Conocimientos Tradicionales relativos a la Biodiversidad: Lactarius deliciosus (incl. L. sanguifluus)", "url": "https://www.miteco.gob.es/content/dam/miteco/es/biodiversidad/temas/inventarios-nacionales/iect_lactarius_deliciosus_tcm30-164130.pdf"}
+RIOJA_H = {"titulo": "Gobierno de La Rioja (A. Caballero, Grupo Cultural Micológico Verpa), Llenega gris, Hygrophorus latitabundus", "url": "https://www.larioja.org/medio-ambiente/es/reserva-biosfera/valores/naturaleza/valores-naturales/45_setaslocalizacion.ficheros/633897-451899_HydrophorusLimacinus.pdf"}
+ALIC = " Con registros en GBIF en la zona de Alicante."
 
 E = []
 def sp(**k):
@@ -67,7 +85,7 @@ sp(id="boletus_aereus", nombre_cientifico="Boletus aereus Bull.", nombres_comune
    carne_y_corte="Blanca, firme y compacta. No cambia al corte, ni siquiera bajo la cutícula.",
    olor_sabor="Agradables.",
    esporada="Amarillo ocrácea a amarillo olivácea.",
-   habitat="Alcornocales y castañares de Andalucía occidental; asociado a robles, encinas, alcornoques y castaños en suelos ácidos. En Cádiz es frecuente en los bosques de Quercus.",
+   habitat="Alcornocales y castañares de Andalucía occidental; asociado a robles, encinas, alcornoques y castaños en suelos ácidos. En Cádiz es frecuente en los bosques de Quercus." + ALIC,
    temporada="Otoño en Andalucía. First Nature indica octubre a febrero en zonas del sur de Europa.",
    rasgos_clave=["Sombrero casi negro y aterciopelado", "Poros blancos a amarillo verdosos que no azulean", "Carne blanca que no cambia, también bajo la cutícula", "Bajo alcornoques, encinas y castaños"],
    no_confundir_con=[
@@ -78,7 +96,7 @@ sp(id="boletus_aereus", nombre_cientifico="Boletus aereus Bull.", nombres_comune
      {"id": "rubroboletus_satanas", "diferencias": ["R. satanas tiene sombrero blanquecino, poros rojos y pie rojo bulboso", "Su carne azulea al corte"]},
      {"id": "caloboletus_calopus", "diferencias": ["C. calopus tiene sombrero claro, poros amarillos que azulean y pie rojo en la base", "Sabor muy amargo"]},
      {"id": "caloboletus_radicans", "diferencias": ["C. radicans tiene sombrero blanquecino, poros y pie amarillos", "Carne que azulea; muy amarga"]}],
-   fuentes=[ac("boletus-aereus", "Boletus aereus"), GUIA, LEI, fn("boletus-aereus", "Boletus aereus"), sf(159051, "Boletus aereus")])
+   fuentes=[ac("boletus-aereus", "Boletus aereus"), GUIA, LEI, fn("boletus-aereus", "Boletus aereus"), sf(159051, "Boletus aereus"), gbif(8733688, "Boletus aereus")])
 
 sp(id="boletus_reticulatus", nombre_cientifico="Boletus reticulatus Schaeff. (= B. aestivalis)", nombres_comunes=["boleto reticulado", "boleto estival"],
    grupo="apreciada", toxicidad_nota=AV,
@@ -146,7 +164,7 @@ sp(id="amanita_caesarea", nombre_cientifico="Amanita caesarea (Scop.) Pers.", no
    fuentes=[ac("amanita-caesarea", "Amanita caesarea"), GUIA, EFI, NAT, fn("amanita-caesarea", "Amanita caesarea"), wp("es", "Amanita_caesarea", "Amanita caesarea"), sf(208468, "Amanita caesarea")])
 
 sp(id="lactarius_deliciosus", nombre_cientifico="Lactarius deliciosus (L.) Gray", nombres_comunes=["níscalo", "mízcalo", "guíscano", "nízcalo"],
-   grupo="apreciada", toxicidad_nota=AV + " Especies próximas: L. sanguifluus (carne y látex que viran a rojo vino) y L. semisanguifluus, también citadas como comestibles. L. vinosus es para Index Fungorum sinónimo de L. sanguifluus.",
+   grupo="apreciada", toxicidad_nota=AV + " Especies próximas que se recolectan igual: L. sanguifluus (carne y látex que viran a rojo vino) y L. semisanguifluus. L. vinosus es para Index Fungorum sinónimo de L. sanguifluus.",
    sombrero="De 4 a 20 cm (hasta 25). Naranja con círculos concéntricos más claros y más oscuros, margen enrollado. Con la edad se hunde en embudo y aparecen manchas verdes.",
    himenio="Láminas naranjas, apretadas, que se vuelven verdes donde se dañan.",
    pie="Corto, hueco con la edad, quebradizo, con hoyuelos o manchas más oscuras.",
@@ -154,13 +172,13 @@ sp(id="lactarius_deliciosus", nombre_cientifico="Lactarius deliciosus (L.) Gray"
    carne_y_corte="Blanca o zanahoria, que al corte vira enseguida a naranja y luego a verde. Látex naranja que mantiene su color.",
    olor_sabor="Olor agradable, algo resinoso; sabor dulce, ligeramente acre.",
    esporada="Crema a ocre clara.",
-   habitat="Pinares de suelos ácidos; también bosques mixtos de pino y roble. Muy frecuente en toda Andalucía.",
+   habitat="Pinares de suelos ácidos; también bosques mixtos de pino y roble. Muy frecuente en toda Andalucía. En la zona de Alicante domina L. sanguifluus, que prefiere el suelo calizo: en la Comunitat Valenciana meridional es la especie más buscada.",
    temporada="Otoño y principios de invierno; abundante en años lluviosos.",
    rasgos_clave=["Látex naranja que no cambia a blanco ni a amarillo", "Manchas verdes en láminas y sombrero", "Sombrero naranja con zonas concéntricas", "Bajo pinos"],
    no_confundir_con=[
      {"id": "lactarius_torminosus", "diferencias": ["L. torminosus tiene el borde del sombrero muy lanoso, con pelos blancos", "Látex blanco y sabor muy acre", "Láminas crema rosadas, no naranjas; crece con abedules"]},
      {"id": "lactarius_chrysorrheus", "diferencias": ["L. chrysorrheus da un látex blanco que se vuelve amarillo azufre en segundos", "Es más pequeño y sale con robles y alcornoques, no con pinos"]}],
-   fuentes=[ac("lactarius-deliciosus", "Lactarius deliciosus"), GUIA, fn("lactarius-deliciosus", "Lactarius deliciosus"), wp("es", "Lactarius_sanguifluus", "Lactarius sanguifluus"), sf(224737, "Lactarius deliciosus"), sf(229103, "Lactarius sanguifluus"), sf(456055, "Lactarius vinosus")])
+   fuentes=[ac("lactarius-deliciosus", "Lactarius deliciosus"), GUIA, fn("lactarius-deliciosus", "Lactarius deliciosus"), wp("es", "Lactarius_sanguifluus", "Lactarius sanguifluus"), sf(224737, "Lactarius deliciosus"), sf(229103, "Lactarius sanguifluus"), sf(456055, "Lactarius vinosus"), IECT_LD, gbif(5248648, "Lactarius sanguifluus"), gbif(5248629, "Lactarius deliciosus")])
 
 sp(id="cantharellus_cibarius", nombre_cientifico="Cantharellus cibarius Fr.", nombres_comunes=["rebozuelo", "cabrilla", "chantarela"],
    grupo="apreciada", toxicidad_nota=AV + " La guía andaluza trata el rebozuelo local como C. subpruinosus (hoy C. pallens), muy parecido.",
@@ -189,33 +207,33 @@ sp(id="macrolepiota_procera", nombre_cientifico="Macrolepiota procera (Scop.) Si
    carne_y_corte="Blanquecina; vira solo un poco a rosa tostado. No enrojece claramente.",
    olor_sabor="Suaves y agradables, a nuez.",
    esporada="Blanquecina.",
-   habitat="Claros herbosos de bosques de coníferas y de Quercus, pastizales y bordes de camino. Muy frecuente y abundante en toda Andalucía.",
+   habitat="Claros herbosos de bosques de coníferas y de Quercus, pastizales y bordes de camino. Muy frecuente y abundante en toda Andalucía." + ALIC,
    temporada="Otoño.",
    rasgos_clave=["Pie con dibujo de piel de serpiente", "Anillo doble que se desliza", "Sombrero grande, de más de 10 cm", "Carne que no enrojece al corte"],
    no_confundir_con=[
      {"id": "chlorophyllum_rhacodes", "diferencias": ["Chlorophyllum tiene el pie liso, sin dibujo de serpiente", "Su carne enrojece al corte, sobre todo en el pie", "C. brunneum tiene bulbo brusco y marginado"]},
      {"id": "lepiota_brunneoincarnata", "diferencias": ["Lepiota brunneoincarnata es pequeña: sombrero de 2 a 6 cm", "Escamas pardas sobre fondo rosado y carne rosa vinosa en la base del pie", "Anillo reducido a un rodete fugaz"]},
      {"id": "amanita_pantherina", "diferencias": ["A. pantherina tiene verrugas blancas sobre sombrero pardo y margen estriado", "Volva con reborde y anillos en la base del pie", "Anillo membranoso simple, no doble"]}],
-   fuentes=[ac("macrolepiota-procera", "Macrolepiota procera"), GUIA, fn("macrolepiota-procera", "Macrolepiota procera"), sf(287857, "Macrolepiota procera")])
+   fuentes=[ac("macrolepiota-procera", "Macrolepiota procera"), GUIA, fn("macrolepiota-procera", "Macrolepiota procera"), sf(287857, "Macrolepiota procera"), gbif(8914748, "Macrolepiota procera")])
 
 # ================= COMESTIBLES MENORES =================
 sp(id="suillus_bellinii", nombre_cientifico="Suillus bellinii (Inzenga) Kuntze", nombres_comunes=[],
-   grupo="comestible_menor", toxicidad_nota=AV + " Se aconseja retirar la cutícula viscosa.",
-   sombrero="Hasta 15 cm. Pardo, con zonas blanquecinas hacia el borde, muy viscoso.",
+   grupo="comestible_menor", toxicidad_nota=AV + " Se aconseja retirar la cutícula viscosa. " + SIN_CONF,
+   sombrero="Hasta 15 cm. Pardo, con zonas blanquecinas hacia el borde, muy viscoso. S. collinitus, frecuente en los pinares de Alicante, tiene el sombrero pardo amarillento, de 4 a 12 cm, también viscoso.",
    himenio="Tubos cortos; poros pequeños, blanquecinos a beige y luego amarillentos.",
-   pie="Corto y robusto, blanquecino, con granulaciones rojizas.",
+   pie="Corto y robusto, blanquecino, con granulaciones rojizas. En S. collinitus el pie es amarillo, con granulaciones pardo rojizas y la base rosada por su micelio rosa.",
    volva="No tiene.", anillo="No tiene.",
    carne_y_corte="Blanquecina y firme, amarillenta en la base. No se describe cambio de color al corte.",
    olor_sabor="Sin dato en las fuentes consultadas.",
    esporada="Parda.",
-   habitat="Pinares mediterráneos litorales y de interior, con Pinus halepensis, P. pinaster y P. pinea. Frecuente en Andalucía y en Cádiz.",
-   temporada="Las fuentes andaluzas citan las especies próximas en otoños y primaveras lluviosas; sin dato específico para S. bellinii.",
-   rasgos_clave=["Sombrero muy viscoso, pardo con borde claro", "Pie corto y robusto con granulaciones rojizas", "Siempre bajo pinos", "Sin anillo"],
+   habitat="Pinares mediterráneos litorales y de interior, con Pinus halepensis, P. pinaster y P. pinea. Frecuente en Andalucía. S. collinitus y S. bellinii tienen registros en GBIF en la zona de Alicante.",
+   temporada="Las fuentes andaluzas citan las especies próximas en otoños y primaveras lluviosas; sin dato específico para S. bellinii. S. collinitus sale de octubre a febrero en el sur de Europa.",
+   rasgos_clave=["Sombrero muy viscoso, pardo con borde claro", "Pie corto y robusto con granulaciones rojizas", "Siempre bajo pinos", "Sin anillo", "S. collinitus: base del pie rosada"],
    no_confundir_con=[],
-   fuentes=[GUIA, LEI, wp("en", "Suillus_bellinii", "Suillus bellinii"), sf(324328, "Suillus bellinii")])
+   fuentes=[GUIA, LEI, wp("en", "Suillus_bellinii", "Suillus bellinii"), sf(324328, "Suillus bellinii"), fn("suillus-collinitus", "Suillus collinitus"), sf(306571, "Suillus collinitus"), gbif(9104622, "Suillus collinitus"), gbif(7552504, "Suillus bellinii")])
 
 sp(id="hydnum_repandum", nombre_cientifico="Hydnum repandum L.", nombres_comunes=["lengua de gato", "lengua de oveja", "lengua de vaca"],
-   grupo="comestible_menor", toxicidad_nota=AV + " Sabor algo amargo, más en ejemplares viejos.",
+   grupo="comestible_menor", toxicidad_nota=AV + " Sabor algo amargo, más en ejemplares viejos. " + SIN_CONF,
    sombrero="De 3 a 15 cm. Crema, blanquecino o amarillento, irregular y lobulado, aterciopelado y seco.",
    himenio="Aguijones (pinchos) crema, apretados, que se desprenden con facilidad. No tiene láminas ni poros.",
    pie="Corto, macizo, a veces descentrado, del color del sombrero o más claro.",
@@ -223,15 +241,15 @@ sp(id="hydnum_repandum", nombre_cientifico="Hydnum repandum L.", nombres_comunes
    carne_y_corte="Blanca, luego crema amarillenta; dura pero frágil. Sin cambio de color descrito.",
    olor_sabor="Olor muy suave; sabor algo amargo.",
    esporada="Crema blanquecina.",
-   habitat="Sobre todo encinares, más raramente pinares. En Andalucía no es muy frecuente; la guía la cita en las sierras de Jaén y Córdoba en otoños lluviosos.",
+   habitat="Sobre todo encinares, más raramente pinares. En Andalucía no es muy frecuente; la guía la cita en las sierras de Jaén y Córdoba en otoños lluviosos." + ALIC,
    temporada="Otoño avanzado; aguanta el frío y es de las últimas en desaparecer.",
-   rasgos_clave=["Aguijones bajo el sombrero en vez de láminas", "Sombrero crema e irregular", "Pie corto y macizo", "Según la guía andaluza no tiene confusión con setas venenosas"],
+   rasgos_clave=["Aguijones bajo el sombrero en vez de láminas", "Sombrero crema e irregular", "Pie corto y macizo", "Carne blanca, dura pero frágil"],
    no_confundir_con=[
      {"id": "cantharellus_cibarius", "diferencias": ["El rebozuelo tiene pliegues decurrentes, no aguijones", "Es amarillo yema y huele a albaricoque"]}],
-   fuentes=[ac("hydnum-repandum", "Hydnum repandum"), GUIA, fn("hydnum-repandum", "Hydnum repandum"), sf(225014, "Hydnum repandum")])
+   fuentes=[ac("hydnum-repandum", "Hydnum repandum"), GUIA, fn("hydnum-repandum", "Hydnum repandum"), sf(225014, "Hydnum repandum"), gbif(2554716, "Hydnum repandum")])
 
 sp(id="lepista_nuda", nombre_cientifico="Lepista nuda (Bull.) Cooke (Index Fungorum: Collybia nuda)", nombres_comunes=["pie azul"],
-   grupo="comestible_menor", toxicidad_nota=AV,
+   grupo="comestible_menor", toxicidad_nota=AV + " " + SIN_CONF + " AmanitaCesarea.com y First Nature avisan de que se puede confundir con Cortinarius de tonos violetas, que tienen cortina en el pie y esporada marrón herrumbre.",
    sombrero="De 5 a 15 cm. Violeta, azul violeta o marrón violáceo; con la edad o la sequedad pasa a crema u ocre. Liso, sin estrías.",
    himenio="Láminas lila violáceas, apretadas, un poco decurrentes en adultos; se separan fácilmente del sombrero.",
    pie="Violáceo, fibroso, con la base algo bulbosa y micelio blanco violáceo pegado a hojas y tierra.",
@@ -239,11 +257,11 @@ sp(id="lepista_nuda", nombre_cientifico="Lepista nuda (Bull.) Cooke (Index Fungo
    carne_y_corte="Blanca con reflejos violetas; tierna. Sin cambio de color descrito.",
    olor_sabor="Olor afrutado característico; sabor suave y dulce.",
    esporada="Rosa suave.",
-   habitat="Prados y bosques de pinos y encinas, a menudo en corros de brujas. Muy frecuente en toda Andalucía.",
+   habitat="Prados y bosques de pinos y encinas, a menudo en corros de brujas. Muy frecuente en toda Andalucía." + ALIC,
    temporada="Otoño, principios de invierno y primaveras lluviosas.",
    rasgos_clave=["Toda la seta violeta, también láminas y pie", "Esporada rosa, no marrón", "Sin cortina ni anillo", "Olor afrutado"],
    no_confundir_con=[],
-   fuentes=[ac("lepista-nuda", "Lepista nuda"), GUIA, fn("lepista-nuda", "Lepista nuda"), sf(356735, "Lepista nuda / Collybia nuda")])
+   fuentes=[ac("lepista-nuda", "Lepista nuda"), GUIA, fn("lepista-nuda", "Lepista nuda"), sf(356735, "Lepista nuda / Collybia nuda"), gbif(5242048, "Lepista nuda")])
 
 sp(id="russula_cyanoxantha", nombre_cientifico="Russula cyanoxantha (Schaeff.) Fr.", nombres_comunes=["carbonera", "seta de cerdos"],
    grupo="comestible_menor", toxicidad_nota=AV,
@@ -271,13 +289,14 @@ sp(id="agaricus_campestris", nombre_cientifico="Agaricus campestris L.", nombres
    carne_y_corte="Blanca, que al corte toma un tono rosado suave, sobre todo entre pie y sombrero. No amarillea.",
    olor_sabor="AmanitaCesarea.com los describe como agradables; la guía andaluza, como desagradables.",
    esporada="Marrón oscuro, pardo púrpura.",
-   habitat="Prados y pastizales, sobre todo los abonados por ganado. Muy frecuente en toda Andalucía.",
+   habitat="Prados y pastizales, sobre todo los abonados por ganado. Muy frecuente en toda Andalucía." + ALIC,
    temporada="Primavera y otoño.",
    rasgos_clave=["Láminas rosas que pasan a marrón y negro", "Sin volva en la base", "Carne que rosea, no amarillea", "En prados, no dentro del bosque"],
    no_confundir_con=[
      {"id": "amanita_phalloides", "diferencias": ["Las amanitas mortales tienen láminas blancas siempre, no rosas ni marrones", "Tienen volva blanca en saco en la base: hay que sacar la seta entera", "La forma blanca de A. phalloides comparte hábitat a veces"]},
-     {"id": "amanita_verna", "diferencias": ["A. verna es toda blanca, con láminas blancas y volva en saco", "Sale en primavera, como el champiñón"]}],
-   fuentes=[ac("agaricus-campestris", "Agaricus campestris"), GUIA, fn("agaricus-campestris", "Agaricus campestris"), sf(356498, "Agaricus campestris")])
+     {"id": "amanita_verna", "diferencias": ["A. verna es toda blanca, con láminas blancas y volva en saco", "Sale en primavera, como el champiñón"]},
+     {"id": "clitocybe_dealbata", "diferencias": ["Clitocybe dealbata es más pequeña (1 a 6 cm), blanca y como escarchada", "Sus láminas son blancas, pegadas al pie o algo decurrentes; con la edad, como mucho rosado grisáceas, nunca marrones", "No tiene anillo"]}],
+   fuentes=[ac("agaricus-campestris", "Agaricus campestris"), GUIA, fn("agaricus-campestris", "Agaricus campestris"), sf(356498, "Agaricus campestris"), fn("clitocybe-rivulosa", "Clitocybe rivulosa (= C. dealbata)"), gbif(5243458, "Agaricus campestris")])
 
 # ================= MORTALES =================
 sp(id="amanita_phalloides", nombre_cientifico="Amanita phalloides (Vaill. ex Fr.) Link", nombres_comunes=["oronja verde", "cicuta verde", "oronja mortal"],
@@ -291,7 +310,7 @@ sp(id="amanita_phalloides", nombre_cientifico="Amanita phalloides (Vaill. ex Fr.
    carne_y_corte="Blanca, sin cambio de color.",
    olor_sabor="Olor dulce o a rosas de joven, desagradable al envejecer. No se debe probar.",
    esporada="Blanca.",
-   habitat="Micorrícica de Quercus: encinares, alcornocales y robledales; también castaños. Citada en el P. N. Los Alcornocales (Jimena de la Frontera) bajo alcornoque y quejigo.",
+   habitat="Micorrícica de Quercus: encinares, alcornocales y robledales; también castaños. Citada en el P. N. Los Alcornocales (Jimena de la Frontera) bajo alcornoque y quejigo." + ALIC,
    temporada="Otoño.",
    fase_huevo="El huevo es blanco por fuera, como el de la oronja (A. caesarea). Cortado a lo largo es blanco por dentro y deja ver la silueta del pie y las láminas en blanco. No tiene naranja ni amarillo.",
    rasgos_clave=["Volva blanca en saco: sacar siempre la seta entera", "Láminas blanco puro", "Anillo blanco colgante", "Sombrero verde oliváceo con fibrillas radiales (puede ser blanco)"],
@@ -301,7 +320,7 @@ sp(id="amanita_phalloides", nombre_cientifico="Amanita phalloides (Vaill. ex Fr.
      {"id": "agaricus_campestris", "diferencias": ["El champiñón tiene láminas rosas a marrones, nunca blanco puro", "No tiene volva"]},
      {"id": "amanita_verna", "diferencias": ["A. verna es igual de mortal; es toda blanca y sale en primavera"]},
      {"id": "amanita_ponderosa", "diferencias": ["La guía andaluza cita la confusión del gurumelo con la forma blanca de A. phalloides", "La oronja verde sale en otoño; el gurumelo, a finales de invierno y en primavera", "A. phalloides tiene la carne blanca que no cambia y un anillo blanco colgante y persistente; el gurumelo tiene un anillo frágil que se pierde pronto y su carne toma tonos rosados al corte", "El gurumelo sale medio enterrado, con la volva gruesa y manchada de tierra, y huele a tierra mojada"]}],
-   fuentes=[ac("amanita-phalloides", "Amanita phalloides"), ALV, DON, TOX, EFI, BEATY, FUNG, fn("amanita-phalloides", "Amanita phalloides"), sf(178962, "Amanita phalloides")])
+   fuentes=[ac("amanita-phalloides", "Amanita phalloides"), ALV, DON, TOX, EFI, BEATY, FUNG, fn("amanita-phalloides", "Amanita phalloides"), sf(178962, "Amanita phalloides"), gbif(5240325, "Amanita phalloides")])
 
 sp(id="amanita_verna", nombre_cientifico="Amanita verna Bull. ex Lam.", nombres_comunes=["amanita de primavera", "cicuta blanca"],
    grupo="mortal",
@@ -314,7 +333,7 @@ sp(id="amanita_verna", nombre_cientifico="Amanita verna Bull. ex Lam.", nombres_
    carne_y_corte="Blanca, sin cambio de color.",
    olor_sabor="Sin dato fiable en las fuentes consultadas. No se debe probar.",
    esporada="Blanca.",
-   habitat="Suelos ácidos, probablemente con encina, rebollo y alcornoque. Holotipo de A. vidua en Galaroza (Huelva) bajo encina; los casos andaluces de primavera se concentran en el oeste.",
+   habitat="Suelos ácidos, probablemente con encina, rebollo y alcornoque. Holotipo de A. vidua en Galaroza (Huelva) bajo encina; los casos andaluces de primavera se concentran en el oeste." + ALIC,
    temporada="Primavera: abril a principios de junio.",
    fase_huevo="Huevo blanco por fuera y blanco por dentro al cortarlo. Puede confundirse con el huevo de la oronja, con un champiñón joven o con un gurumelo (A. ponderosa) que aún no ha abierto. A. verna y A. vidua salen en los mismos sitios y en la misma época que el gurumelo.",
    rasgos_clave=["Toda blanca", "Volva blanca en saco", "Láminas blancas siempre", "Sale en primavera"],
@@ -323,7 +342,7 @@ sp(id="amanita_verna", nombre_cientifico="Amanita verna Bull. ex Lam.", nombres_
      {"id": "agaricus_campestris", "diferencias": ["El champiñón tiene láminas rosas o marrones y no tiene volva"]},
      {"id": "amanita_phalloides", "diferencias": ["A. phalloides suele tener el sombrero verde oliváceo y sale en otoño; igual de mortal"]},
      {"id": "amanita_ponderosa", "diferencias": ["El gurumelo sale en los mismos sitios y en la misma época: es la confusión primaveral más peligrosa", "A. verna sigue blanca toda su vida y su carne no cambia de color; en el gurumelo el sombrero se vuelve ocre rojizo y la carne toma tonos rosados al corte", "A. verna tiene el pie liso y un anillo colgante, estriado y persistente; el del gurumelo es frágil y se pierde pronto", "El gurumelo huele a tierra mojada y sale medio enterrado, con la volva gruesa manchada de tierra", "Un ejemplar joven y cerrado de A. verna puede parecer un gurumelo: en ese estado ningún rasgo basta sin un experto"]}],
-   fuentes=[ALV, TOX, DON, ac("agaricus-campestris", "Agaricus campestris"), wp("es", "Amanita_verna", "Amanita verna"), sf(163667, "Amanita verna")])
+   fuentes=[ALV, TOX, DON, ac("agaricus-campestris", "Agaricus campestris"), wp("es", "Amanita_verna", "Amanita verna"), sf(163667, "Amanita verna"), gbif(5240320, "Amanita verna")])
 
 sp(id="lepiota_brunneoincarnata", nombre_cientifico="Lepiota brunneoincarnata Chodat & C. Martín", nombres_comunes=[],
    grupo="mortal",
@@ -336,12 +355,12 @@ sp(id="lepiota_brunneoincarnata", nombre_cientifico="Lepiota brunneoincarnata Ch
    carne_y_corte="Blanca y rosa vinosa en la base del pie.",
    olor_sabor="Olor algo afrutado. No se debe probar.",
    esporada="Blanca.",
-   habitat="Quejigales y alcornocales; citada en el P. N. Los Alcornocales (Cádiz-Málaga). También zonas herbosas bajo frondosas.",
+   habitat="Quejigales y alcornocales; citada en el P. N. Los Alcornocales (Cádiz-Málaga). También zonas herbosas bajo frondosas." + ALIC,
    temporada="Otoño.",
    rasgos_clave=["Parece un parasol en miniatura (menos de 6 cm)", "Escamas pardas sobre fondo rosado", "Base del pie rosa vinosa", "Anillo casi inexistente"],
    no_confundir_con=[
      {"id": "macrolepiota_procera", "diferencias": ["El parasol mide más de 10 cm, tiene anillo doble deslizante y pie con dibujo de serpiente", "La guía andaluza aconseja no recoger lepiotas de menos de 10 cm"]}],
-   fuentes=[SOG, TOX, ALV, fn("lepiota-brunneoincarnata", "Lepiota brunneoincarnata"), wp("es", "Lepiota_brunneoincarnata", "Lepiota brunneoincarnata"), sf(247927, "Lepiota brunneoincarnata")])
+   fuentes=[SOG, TOX, ALV, fn("lepiota-brunneoincarnata", "Lepiota brunneoincarnata"), wp("es", "Lepiota_brunneoincarnata", "Lepiota brunneoincarnata"), sf(247927, "Lepiota brunneoincarnata"), gbif(2535390, "Lepiota brunneoincarnata")])
 
 # ================= TÓXICAS =================
 sp(id="amanita_muscaria", nombre_cientifico="Amanita muscaria (L.) Lam.", nombres_comunes=["matamoscas", "falsa oronja", "oronja pintada"],
@@ -355,12 +374,12 @@ sp(id="amanita_muscaria", nombre_cientifico="Amanita muscaria (L.) Lam.", nombre
    carne_y_corte="Blanca, anaranjada bajo la cutícula.",
    olor_sabor="Casi sin olor ni sabor. No se debe probar.",
    esporada="Blanca.",
-   habitat="Micorrícica de coníferas y caducifolios en suelos ácidos. Sin datos de abundancia en la zona en las fuentes consultadas.",
+   habitat="Micorrícica de coníferas y caducifolios en suelos ácidos. Sin datos de abundancia en la zona en las fuentes consultadas." + ALIC,
    temporada="Finales de verano a finales de otoño.",
    rasgos_clave=["Láminas y pie blancos", "Verrugas blancas sobre sombrero rojo o naranja", "Base del pie con anillos de verrugas, sin volva en saco"],
    no_confundir_con=[
      {"id": "amanita_caesarea", "diferencias": ["La oronja tiene láminas, pie y anillo amarillos", "Volva blanca en saco, no verrugas", "Sombrero naranja liso y estriado. Ojo: un matamoscas descolorido o sin verrugas (var. aureola) se parece más"]}],
-   fuentes=[ac("amanita-muscaria", "Amanita muscaria"), ac("amanita-caesarea", "Amanita caesarea"), TOX, DON, fn("amanita-muscaria", "Amanita muscaria"), wp("es", "Amanita_muscaria", "Amanita muscaria"), sf(161267, "Amanita muscaria")])
+   fuentes=[ac("amanita-muscaria", "Amanita muscaria"), ac("amanita-caesarea", "Amanita caesarea"), TOX, DON, fn("amanita-muscaria", "Amanita muscaria"), wp("es", "Amanita_muscaria", "Amanita muscaria"), sf(161267, "Amanita muscaria"), gbif(8168319, "Amanita muscaria")])
 
 sp(id="amanita_pantherina", nombre_cientifico="Amanita pantherina (DC.) Krombh.", nombres_comunes=["pantera", "amanita pantera", "falso galipierno"],
    grupo="toxica",
@@ -373,12 +392,12 @@ sp(id="amanita_pantherina", nombre_cientifico="Amanita pantherina (DC.) Krombh."
    carne_y_corte="Blanca, tierna, sin cambio de color.",
    olor_sabor="Olor débil. No se debe probar.",
    esporada="Blanca.",
-   habitat="Bajo coníferas y caducifolios; First Nature la fotografía en alcornocales y pinares mixtos del Algarve y la señala más común en el sur de Europa.",
+   habitat="Bajo coníferas y caducifolios; First Nature la fotografía en alcornocales y pinares mixtos del Algarve y la señala más común en el sur de Europa." + ALIC,
    temporada="Verano y otoño; en el extremo sur puede salir hasta tres meses más tarde.",
    rasgos_clave=["Verrugas blanco puro sobre sombrero pardo", "Margen del sombrero estriado", "Bulbo con reborde neto y anillos encima", "Láminas blancas"],
    no_confundir_con=[
      {"id": "macrolepiota_procera", "diferencias": ["El parasol tiene escamas pardas sobre fondo blanco, no verrugas blancas sobre fondo pardo", "Anillo doble que se desliza y pie con dibujo de serpiente", "Sin volva ni reborde en el bulbo"]}],
-   fuentes=[ac("amanita-pantherina", "Amanita pantherina"), ac("macrolepiota-procera", "Macrolepiota procera"), TOX, fn("amanita-pantherina", "Amanita pantherina"), wp("es", "Amanita_pantherina", "Amanita pantherina"), sf(156565, "Amanita pantherina")])
+   fuentes=[ac("amanita-pantherina", "Amanita pantherina"), ac("macrolepiota-procera", "Macrolepiota procera"), TOX, fn("amanita-pantherina", "Amanita pantherina"), wp("es", "Amanita_pantherina", "Amanita pantherina"), sf(156565, "Amanita pantherina"), gbif(8961574, "Amanita pantherina")])
 
 def bol_lookalikes(dif):
     return [{"id": b, "diferencias": dif} for b in ["boletus_edulis", "boletus_aereus", "boletus_reticulatus", "boletus_pinophilus"]]
@@ -393,15 +412,15 @@ sp(id="rubroboletus_satanas", nombre_cientifico="Rubroboletus satanas (Lenz) Kua
    carne_y_corte="Blanca a amarillenta; azulea al corte (azul verdoso) y luego se desvanece.",
    olor_sabor="Olor desagradable en ejemplares viejos. No se debe probar.",
    esporada="Pardo olivácea.",
-   habitat="Suelos calizos, con encinas y otros Quercus; en Cádiz a veces en alcornocales.",
+   habitat="Suelos calizos, con encinas y otros Quercus; en Cádiz a veces en alcornocales." + ALIC,
    temporada="Finales de verano y otoño.",
    rasgos_clave=["Poros rojos o anaranjados", "Pie rojo, bulboso, con retículo", "Sombrero blanquecino", "Carne que azulea al corte"],
    no_confundir_con=bol_lookalikes(["Los boletus de la sección edulis tienen poros blancos a amarillo verdosos, nunca rojos", "Su carne es blanca y no azulea", "Su pie es pardo o avellana, no rojo"]),
-   fuentes=[fn("rubroboletus-satanas", "Rubroboletus satanas"), LEI, TOX, ac("caloboletus-calopus", "Caloboletus calopus"), ac("caloboletus-radicans", "Caloboletus radicans"), sf(809241, "Rubroboletus satanas")])
+   fuentes=[fn("rubroboletus-satanas", "Rubroboletus satanas"), LEI, TOX, ac("caloboletus-calopus", "Caloboletus calopus"), ac("caloboletus-radicans", "Caloboletus radicans"), sf(809241, "Rubroboletus satanas"), gbif(7722553, "Rubroboletus satanas")])
 
 sp(id="caloboletus_calopus", nombre_cientifico="Caloboletus calopus (Pers.) Vizzini", nombres_comunes=["boleto amargo"],
    grupo="toxica",
-   toxicidad_nota="NO COMESTIBLE. Muy amargo; el amargor no desaparece al cocinar. Puede que no sea tóxico; se incluye por su parecido con los boletus.",
+   toxicidad_nota="NO SE DEBE CONSUMIR. Muy amargo; el amargor no desaparece al cocinar. Puede que no sea tóxico; se incluye por su parecido con los boletus.",
    sombrero="Hasta 20 cm. Ocre claro, gamuza o café con leche casi blanco, afieltrado de joven.",
    himenio="Tubos y poros amarillos que azulean al dañarlos; nunca rojizos.",
    pie="Amarillento en el ápice y rojo púrpura hacia la base, con retículo blanco arriba y rojo pardo y marcado en el medio.",
@@ -417,7 +436,7 @@ sp(id="caloboletus_calopus", nombre_cientifico="Caloboletus calopus (Pers.) Vizz
 
 sp(id="caloboletus_radicans", nombre_cientifico="Caloboletus radicans (Pers.) Vizzini", nombres_comunes=["hongo blanco", "boleto blanco"],
    grupo="toxica",
-   toxicidad_nota="NO COMESTIBLE. Muy amargo; en crudo puede ser purgante y se cita que causa vómitos y diarrea intensos.",
+   toxicidad_nota="NO SE DEBE CONSUMIR. Muy amargo; en crudo puede ser purgante y se cita que causa vómitos y diarrea intensos.",
    sombrero="Hasta 20 cm. Blanco, beige o crema muy claro, pardusco en el centro; seco y cuarteado con la edad. Margen muy enrollado de joven.",
    himenio="Tubos y poros amarillos que pasan a verde; azulean al dañarlos.",
    pie="Robusto, amarillo claro, con retículo fino casi invisible; la base se hunde en el suelo como una raíz y tiene manchas rojizas.",
@@ -433,7 +452,7 @@ sp(id="caloboletus_radicans", nombre_cientifico="Caloboletus radicans (Pers.) Vi
 
 sp(id="tylopilus_felleus", nombre_cientifico="Tylopilus felleus (Bull.) P. Karst.", nombres_comunes=["boleto amargo"],
    grupo="toxica",
-   toxicidad_nota="NO COMESTIBLE. Probablemente no es tóxico, pero su sabor es extremadamente amargo. Se incluye por su parecido con los boletus.",
+   toxicidad_nota="NO SE DEBE CONSUMIR. Probablemente no es tóxico, pero su sabor es extremadamente amargo. Se incluye por su parecido con los boletus.",
    sombrero="De 6 a 12 cm. Pardo aterciopelado con tonos oliva.",
    himenio="Poros blanco crema de jóvenes y luego rosados o color coral; se manchan de pardo al tocarlos.",
    pie="Con un retículo pardo oscuro, más oscuro que el fondo.",
@@ -457,12 +476,12 @@ sp(id="omphalotus_olearius", nombre_cientifico="Omphalotus olearius (DC.) Singer
    carne_y_corte="Naranja por dentro y por fuera; no cambia de color.",
    olor_sabor="Desagradables según AmanitaCesarea.com (First Nature describe un olor fuerte agradable). No se debe probar.",
    esporada="Blanco crema.",
-   habitat="Al pie de olivos o sobre tocones y raíces de otros árboles (encinas, castaños). Crece en matas densas.",
+   habitat="Al pie de olivos o sobre tocones y raíces de otros árboles (encinas, castaños). Crece en matas densas." + ALIC,
    temporada="Verano a otoño; First Nature indica septiembre a enero en el sur de Europa.",
    rasgos_clave=["Láminas verdaderas, no pliegues", "Crece en matas sobre raíces o tocones", "Naranja intenso por fuera y por dentro", "Sale sobre todo al pie de olivos"],
    no_confundir_con=[
      {"id": "cantharellus_cibarius", "diferencias": ["El rebozuelo tiene pliegues gruesos y bifurcados, no láminas finas", "Es amarillo yema, crece en el suelo y no en matas sobre madera", "Huele a albaricoque"]}],
-   fuentes=[ac("cantharellus-cibarius", "Cantharellus cibarius"), GUIA, TOX, fn("omphalotus-olearius", "Omphalotus olearius"), wp("es", "Omphalotus_olearius", "Omphalotus olearius"), sf(288943, "Omphalotus olearius")])
+   fuentes=[ac("cantharellus-cibarius", "Cantharellus cibarius"), GUIA, TOX, fn("omphalotus-olearius", "Omphalotus olearius"), wp("es", "Omphalotus_olearius", "Omphalotus olearius"), sf(288943, "Omphalotus olearius"), gbif(2538088, "Omphalotus olearius")])
 
 sp(id="lactarius_torminosus", nombre_cientifico="Lactarius torminosus (Schaeff.) Pers.", nombres_comunes=["falso níscalo", "níscalo de cabra"],
    grupo="toxica",
@@ -491,16 +510,16 @@ sp(id="lactarius_chrysorrheus", nombre_cientifico="Lactarius chrysorrheus Fr.", 
    carne_y_corte="Látex blanco que se vuelve amarillo azufre en pocos segundos al aire.",
    olor_sabor="Sabor suave y luego amargo y picante. No se debe probar.",
    esporada="Blanco crema con tinte salmón.",
-   habitat="Casi siempre con robles y otros Quercus. Sin cita concreta en la zona en las fuentes consultadas, aunque la guía andaluza la menciona como posible confusión del níscalo.",
+   habitat="Casi siempre con robles y otros Quercus. Sin cita concreta en la zona en las fuentes consultadas, aunque la guía andaluza la menciona como posible confusión del níscalo." + ALIC,
    temporada="Otoño; First Nature indica que en países mediterráneos llega hasta febrero.",
    rasgos_clave=["Látex blanco que amarillea en segundos", "Bajo Quercus, no bajo pinos", "Más pequeño que el níscalo", "Sin manchas verdes"],
    no_confundir_con=[
      {"id": "lactarius_deliciosus", "diferencias": ["El níscalo tiene látex naranja que no amarillea", "Tiene manchas verdes y sale bajo pinos"]}],
-   fuentes=[GUIA, fn("lactarius-chrysorrheus", "Lactarius chrysorrheus"), TOX, wp("en", "Lactarius_chrysorrheus", "Lactarius chrysorrheus"), sf(233874, "Lactarius chrysorrheus")])
+   fuentes=[GUIA, fn("lactarius-chrysorrheus", "Lactarius chrysorrheus"), TOX, wp("en", "Lactarius_chrysorrheus", "Lactarius chrysorrheus"), sf(233874, "Lactarius chrysorrheus"), gbif(5248610, "Lactarius chrysorrheus")])
 
 sp(id="chlorophyllum_rhacodes", nombre_cientifico="Chlorophyllum rhacodes (Vittad.) Vellinga y C. brunneum (Farl. & Burt) Vellinga", nombres_comunes=["apagador menor"],
    grupo="toxica",
-   toxicidad_nota="TÓXICA O DUDOSA. C. brunneum se considera tóxica (gastroenteritis). C. rhacodes se tuvo por comestible, pero hoy hay dudas porque resulta indigesta para algunas personas y su clasificación es confusa. C. molybdites, de láminas verdosas, también es tóxica.",
+   toxicidad_nota="TÓXICA O DUDOSA. C. brunneum se considera tóxica (gastroenteritis). C. rhacodes se recolectaba, pero hoy hay dudas porque resulta indigesta para algunas personas y su clasificación es confusa. C. molybdites, de láminas verdosas, también es tóxica.",
    sombrero="Hasta 20 cm. Globoso y luego extendido, sin mamelón o con uno muy leve. Escamas grandes pardo grisáceas sobre fondo blanco rosado.",
    himenio="Láminas libres, blancas, luego ocres; color herrumbre donde se dañan.",
    pie="Liso, sin dibujo de piel de serpiente, blanquecino arriba y ocre óxido abajo. Base engrosada poco a poco (C. rhacodes) o bruscamente bulbosa y marginada (C. brunneum).",
@@ -547,15 +566,16 @@ sp(id="pleurotus_eryngii", nombre_cientifico="Pleurotus eryngii (DC.) Quél.", n
    carne_y_corte="Blanca, compacta y algo elástica. Las fuentes no describen cambio de color al corte.",
    olor_sabor="Olor suave y agradable; sabor dulce y suave.",
    esporada="Blanca a blanco crema.",
-   habitat="Pastizales, praderas y claros de bosque con cardo corredor (Eryngium campestre), sobre sus raíces en descomposición. Muy frecuente en Andalucía.",
+   habitat="Pastizales, praderas y claros de bosque con cardo corredor (Eryngium campestre), sobre sus raíces en descomposición. Muy frecuente en Andalucía." + ALIC,
    temporada="Sobre todo en otoño; también en primavera si ha llovido y hace templado.",
    rasgos_clave=["Láminas muy decurrentes, que bajan por el pie", "Pie excéntrico, sin anillo ni volva", "Nace de las raíces del cardo corredor, en pastizales", "Sombrero pardo de tono variable, con el borde enrollado de joven"],
-   no_confundir_con=[],
-   fuentes=[ac("pleurotus-eryngii", "Pleurotus eryngii"), GUIA, wp("es", "Pleurotus_eryngii", "Pleurotus eryngii"), sf(170772, "Pleurotus eryngii")])
+   no_confundir_con=[
+     {"id": "clitocybe_dealbata", "diferencias": ["AmanitaCesarea.com cita como posible confusión algunas Clitocybe tóxicas, de cutícula más clara, pie más central, láminas menos decurrentes y otro olor", "Clitocybe dealbata es pequeña (1 a 6 cm), blanca y como escarchada"]}],
+   fuentes=[ac("pleurotus-eryngii", "Pleurotus eryngii"), GUIA, wp("es", "Pleurotus_eryngii", "Pleurotus eryngii"), sf(170772, "Pleurotus eryngii"), gbif(9075265, "Pleurotus eryngii")])
 
 sp(id="terfezia_arenaria", nombre_cientifico="Terfezia arenaria (Moris) Trappe y T. claveryi Chatin", nombres_comunes=["criadilla de tierra", "turma", "turma de tierra", "patata de tierra"],
    grupo="apreciada",
-   toxicidad_nota=AV + " Crece bajo tierra y se reconoce peor que una seta con sombrero. Según Cesta y Setas, la confusión más peligrosa es con las falsas trufas blancas del género Choiromyces (C. meandriformis es tóxica y tiene la carne con venas blancas en forma de meandro). La criadilla jarera (Choiromyces magnusii), asociada a las jaras, es otra especie citada como comestible. Las Scleroderma, tóxicas, también se han confundido con trufas.",
+   toxicidad_nota=AV + " Crece bajo tierra y se reconoce peor que una seta con sombrero. Según Cesta y Setas, la confusión más peligrosa es con las falsas trufas blancas del género Choiromyces (C. meandriformis es tóxica y tiene la carne con venas blancas en forma de meandro). La criadilla jarera (Choiromyces magnusii), asociada a las jaras, es otra especie que se recolecta. Las Scleroderma, tóxicas, también se han confundido con trufas.",
    sombrero="No tiene sombrero ni pie. Cuerpo redondeado como una patata, de 3 a 10 cm (hasta 14 según el MITECO). Piel (peridio) blanco amarillenta de joven, luego rojiza y al final parda; lisa al principio y agrietada con la edad, a veces con manchas negras.",
    himenio="No tiene láminas ni poros: las esporas se forman dentro de la carne (gleba).",
    pie="No tiene.",
@@ -572,7 +592,7 @@ sp(id="terfezia_arenaria", nombre_cientifico="Terfezia arenaria (Moris) Trappe y
 
 sp(id="scleroderma_citrinum", nombre_cientifico="Scleroderma citrinum Pers. y S. verrucosum (Bull.) Pers.", nombres_comunes=["escleroderma", "escleroderma verrugoso"],
    grupo="toxica",
-   toxicidad_nota="TÓXICA. Hay informes contradictorios sobre su gravedad, pero se considera como mínimo no comestible y sospechosa; puede causar trastornos gastrointestinales. First Nature recomienda no comer ninguna especie del género. Se ha confundido con trufas.",
+   toxicidad_nota="TÓXICA. Hay informes contradictorios sobre su gravedad, pero se considera como mínimo sospechosa; puede causar trastornos gastrointestinales. First Nature recomienda no comer ninguna especie del género. Se ha confundido con trufas.",
    sombrero="No tiene sombrero: cuerpo redondeado o en forma de pera, de 3 a 10 cm. Piel (peridio) dura y gruesa. En S. citrinum es amarillo ocre, con escamas gruesas e irregulares; en S. verrucosum, pardo rojiza a ocre, con escamitas pequeñas. Al madurar se rompe por arriba de forma irregular.",
    himenio="No tiene láminas ni poros: las esporas se forman dentro (gleba).",
    pie="S. citrinum no tiene pie y se une al suelo con cordones blancos. S. verrucosum tiene un falso pie surcado, con cordones blancos en la base.",
@@ -586,6 +606,126 @@ sp(id="scleroderma_citrinum", nombre_cientifico="Scleroderma citrinum Pers. y S.
    no_confundir_con=[
      {"id": "terfezia_arenaria", "diferencias": ["La criadilla crece enterrada y sale en primavera", "Su interior es crema rosado con vetas claras, nunca negro violáceo ni pulverulento", "Su piel es fina o lisa al principio, blanquecina a rojiza, sin escamas duras"]}],
    fuentes=[fn("scleroderma-citrinum", "Scleroderma citrinum"), fn("scleroderma-verrucosum", "Scleroderma verrucosum"), ac("scleroderma-verrucosum", "Scleroderma verrucosum"), wp("en", "Scleroderma_citrinum", "Scleroderma citrinum"), sf(181865, "Scleroderma citrinum"), sf(211519, "Scleroderma verrucosum")])
+
+# ================= ALICANTE (fase D1): docs/investigacion/2026-10-15-fichas-alicante.md =================
+sp(id="hygrophorus_latitabundus", nombre_cientifico="Hygrophorus latitabundus Britzelm.", nombres_comunes=["llenega negra", "llenega gris", "mocosa"],
+   grupo="comestible_menor", toxicidad_nota=AV + " " + SIN_CONF,
+   sombrero="De 3 a 12 cm (hasta 13). Gris pardo a pardo negruzco, más oscuro en el centro. Muy viscoso con humedad y pegajoso mucho tiempo después. Borde enrollado y mamelón ancho y bajo.",
+   himenio="Láminas blancas, gruesas y céreas, algo decurrentes y medianamente separadas; con la edad se manchan de pardo.",
+   pie="Blanco, más grueso hacia la mitad y viscoso, con fibrillas pardas arriba; abajo lo oscurecen los restos de mucílago.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanca y firme.",
+   olor_sabor="Olor débil a seta y sabor suave.",
+   esporada="Blanca.",
+   habitat="Bajo pinos, en suelo calizo. En La Rioja sale en pinares de Pinus nigra y P. halepensis, junto al níscalo." + ALIC,
+   temporada="Otoño e invierno; de noviembre a enero en el sur de Portugal.",
+   rasgos_clave=["Sombrero gris oscuro a negruzco y muy viscoso", "Pie viscoso, oscurecido abajo por el mucílago", "Láminas blancas, gruesas y céreas", "Bajo pinos, en suelo calizo"],
+   no_confundir_con=[],
+   fuentes=[fn("hygrophorus-latitabundus", "Hygrophorus latitabundus"), RIOJA_H, sf(167748, "Hygrophorus latitabundus"), gbif(2538733, "Hygrophorus latitabundus")])
+
+sp(id="morchella_spp", nombre_cientifico="Morchella esculenta (L.) Pers. y especies próximas (M. elata, M. conica)", nombres_comunes=["colmenilla", "cagarria", "morilla", "múrgula"],
+   grupo="apreciada",
+   toxicidad_nota=AV + " Cruda o poco cocinada es tóxica. Saviuc et al. (2010) describen además un síndrome neurológico (temblor, mareo, falta de equilibrio) tras comer colmenillas, más frecuente con cantidades grandes.",
+   sombrero="De 3 a 8 cm de ancho y de 5 a 12 de alto; globoso, ovalado o cónico. Celdas hundidas e irregulares separadas por costillas, como un panal. De crema a ocre o pardo. M. elata es más oscura y puntiaguda, con las celdas en columnas.",
+   himenio="No tiene láminas ni poros: la superficie fértil está dentro de las celdas.",
+   pie="Blanco cremoso, granuloso, hueco y engrosado en la base. El borde del sombrero se une a él.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Cerosa y frágil. Cortada de arriba abajo, el sombrero y el pie forman una sola cavidad hueca.",
+   olor_sabor="Olor poco característico según First Nature; agradable según AmanitaCesarea.com.",
+   esporada="Blanco crema a ocre pálido.",
+   habitat="Sitios húmedos: riberas de ríos y arroyos, bajo álamos y chopos. También suelos calizos y removidos. Con registros en GBIF de M. esculenta y M. elata en la zona de Alicante.",
+   temporada="Primavera, desde finales de marzo.",
+   rasgos_clave=["Sombrero con celdas hundidas, como un panal", "Hueca de arriba abajo, en una sola cavidad", "Borde del sombrero unido al pie", "Sale en primavera"],
+   no_confundir_con=[
+     {"id": "gyromitra_esculenta", "diferencias": ["Gyromitra tiene el sombrero con pliegues como un cerebro, sin celdas", "Por dentro tiene cámaras irregulares; la colmenilla es una sola cavidad", "Su sombrero es pardo rojizo oscuro"]}],
+   fuentes=[ac("morchella-esculenta", "Morchella esculenta"), fn("morchella-esculenta", "Morchella esculenta"), MORCH, sf(247978, "Morchella esculenta"), gbif(2594602, "Morchella esculenta"), gbif(2594626, "Morchella elata")])
+
+sp(id="tricholoma_terreum", nombre_cientifico="Tricholoma terreum (Schaeff.) P. Kumm.", nombres_comunes=["negrilla", "fredolic", "ratonera"],
+   grupo="toxica",
+   toxicidad_nota="TÓXICA. Durante mucho tiempo se ha recolectado, pero Yin et al. (2014) aislaron en ella dos compuestos que en ratones dañan el músculo, y la relacionan con la rabdomiólisis. Otros micólogos lo discuten (Davoli et al., 2016). Por precaución, esta guía la trata como tóxica. Además se confunde con otros Tricholoma grises que también lo son.",
+   sombrero="De 2 a 7 cm según AmanitaCesarea.com (hasta 10 según First Nature). Gris ratón a gris pardo, más oscuro en el centro, como de fieltro, con fibras o escamillas finas que salen del centro. Convexo y luego plano, con un mamelón suave.",
+   himenio="Láminas escotadas, anchas, separadas y frágiles; blanco plata de jóvenes y luego gris claro, a veces amarillentas al envejecer.",
+   pie="De 2 a 6 cm, blanco grisáceo, cilíndrico y algo fibroso.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanca o algo grisácea, escasa y muy frágil.",
+   olor_sabor="Olor suave a harina según AmanitaCesarea.com; poco característico según First Nature. No se debe probar.",
+   esporada="Blanca.",
+   habitat="Bosques de coníferas, sobre todo pinares, en suelo calizo o neutro. Sale en grupos numerosos, a veces en corros." + ALIC,
+   temporada="Otoño y principios del invierno; aguanta las heladas.",
+   rasgos_clave=["Sombrero gris ratón, como de fieltro, de 2 a 7 cm", "Láminas blanquecinas o grises, nunca amarillo oro", "Carne fina y muy frágil", "En grupos numerosos bajo pinos"],
+   no_confundir_con=[
+     {"id": "tricholoma_pardinum", "diferencias": ["T. pardinum es más grande (5 a 15 cm) y carnoso, con escamas oscuras y gruesas en círculos sobre fondo claro", "Es menos frágil", "Algunas formas huelen a harina"]},
+     {"id": "tricholoma_equestre", "diferencias": ["T. equestre tiene las láminas y el pie amarillos", "Su sombrero es amarillento, con fibras pardas u oliva en el centro"]}],
+   fuentes=[ac("tricholoma-terreum", "Tricholoma terreum"), fn("tricholoma-terreum", "Tricholoma terreum"), YIN, DAVOLI, sf(216171, "Tricholoma terreum"), gbif(5241808, "Tricholoma terreum")])
+
+sp(id="tricholoma_pardinum", nombre_cientifico="Tricholoma pardinum (Pers.) Quél.", nombres_comunes=[],
+   grupo="toxica",
+   toxicidad_nota="TÓXICA. Intoxicación digestiva (náuseas, vómitos, dolor de vientre y diarrea) que empieza entre media hora y 4 horas después de comerla. La tabla de toxicidad cita casos graves, con lesiones en el hígado, shock y hemorragias digestivas.",
+   sombrero="De 5 a 15 cm; hemisférico y luego extendido, con un mamelón bajo. Fondo blanquecino con escamas pardas oscuras o grises en círculos concéntricos, mayores hacia el centro.",
+   himenio="Láminas blancas que amarillean, a veces con tono verdoso.",
+   pie="Blanco o pardo grisáceo claro, fibroso, con la base engrosada.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Firme, menos frágil que la de la negrilla.",
+   olor_sabor="Algunas formas huelen a harina. No se debe probar.",
+   esporada="Blanca.",
+   habitat="First Nature la describe bajo frondosas en Gran Bretaña; las fuentes consultadas no dan su hábitat en el levante. GBIF tiene un registro en la zona de Alicante.",
+   temporada="Final del verano y otoño.",
+   rasgos_clave=["Escamas oscuras y gruesas en círculos sobre fondo claro", "Sombrero grande, de hasta 15 cm", "Base del pie engrosada", "Láminas blancas que amarillean"],
+   no_confundir_con=[
+     {"id": "tricholoma_terreum", "diferencias": ["La negrilla es más pequeña (2 a 7 cm) y muy frágil", "Su sombrero es como de fieltro, sin escamas gruesas"]}],
+   fuentes=[fn("tricholoma-pardinum", "Tricholoma pardinum"), ac("tricholoma-terreum", "Tricholoma terreum (cita T. pardinum)"), TOX, sf(356853, "Tricholoma pardinum"), gbif(7242174, "Tricholoma pardinum")])
+
+sp(id="tricholoma_equestre", nombre_cientifico="Tricholoma equestre (L.) P. Kumm. (incluye T. auratum y T. flavovirens)", nombres_comunes=["seta de los caballeros", "verderón", "limonera"],
+   grupo="mortal",
+   toxicidad_nota="MORTAL. Comerla varias veces seguidas ha causado rabdomiólisis (destrucción del músculo): en Francia, 12 casos y 3 muertes (Bedry et al., 2001). La debilidad, el dolor muscular y la orina oscura aparecen entre 24 y 60 horas después.",
+   sombrero="De 5 a 12 cm. Amarillo, con fibrillas radiales pardas u oliváceas más densas en el centro; algo viscoso con lluvia. Con la edad pasa a ocre.",
+   himenio="Láminas amarillo oro, escotadas y apretadas, que siguen amarillas toda la vida.",
+   pie="De 5 a 10 cm, amarillo, algo más claro que el sombrero, con fibrillas a lo largo.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanca, amarillenta bajo la cutícula; firme.",
+   olor_sabor="Olor suave, algo harinoso según AmanitaCesarea.com; sin olor marcado según First Nature. No se debe probar.",
+   esporada="Blanca.",
+   habitat="Bosques de coníferas, mejor en suelo arenoso; a veces bajo frondosas. GBIF tiene registros en la zona de Alicante.",
+   temporada="Otoño e invierno.",
+   rasgos_clave=["Láminas amarillo oro", "Pie amarillo", "Sombrero amarillo con el centro más oscuro", "Sin anillo ni volva"],
+   no_confundir_con=[
+     {"id": "tricholoma_terreum", "diferencias": ["La negrilla tiene las láminas blanquecinas o grises, nunca amarillo oro", "Su sombrero es gris ratón, como de fieltro"]}],
+   fuentes=[ac("tricholoma-equestre", "Tricholoma equestre"), fn("tricholoma-equestre", "Tricholoma equestre"), NEJM, TOX, sf(176119, "Tricholoma equestre"), gbif(3324883, "Tricholoma equestre")])
+
+sp(id="gyromitra_esculenta", nombre_cientifico="Gyromitra esculenta (Pers.) Fr. (incluye G. gigas)", nombres_comunes=["falsa colmenilla", "bonete"],
+   grupo="mortal",
+   toxicidad_nota="MORTAL. Contiene giromitrina. Entre 6 y 24 horas después de comerla aparecen vómitos y diarrea y, en los casos graves, daño en el sistema nervioso, el hígado y el riñón; puede causar la muerte a los pocos días. Ni secarla ni cocinarla elimina el riesgo. La tabla de toxicidad incluye también G. gigas.",
+   sombrero="De 3 a 10 cm (hasta 15). Irregular y lobulado, con pliegues como un cerebro; pardo rojizo oscuro a casi negro. No tiene celdas.",
+   himenio="No tiene láminas ni poros: la superficie fértil es la del sombrero.",
+   pie="Corto, blanco rosado o crema, con surcos y frágil.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Por dentro tiene cámaras huecas irregulares; no es una sola cavidad como la colmenilla. Carne frágil y cérea.",
+   olor_sabor="Olor suave. No se debe probar.",
+   esporada="Amarillenta pálida.",
+   habitat="Bosques de coníferas con humus, en suelo arenoso bajo pinos; prefiere más de 800 m de altitud. GBIF no tiene registros en la zona de Alicante: la ficha está porque se confunde con la colmenilla.",
+   temporada="Primavera, como las colmenillas.",
+   rasgos_clave=["Sombrero como un cerebro, sin celdas", "Por dentro tiene cámaras; no está hueca de arriba abajo", "Color pardo rojizo oscuro", "Sale en primavera, como las colmenillas"],
+   no_confundir_con=[
+     {"id": "morchella_spp", "diferencias": ["La colmenilla tiene celdas hundidas como un panal, no pliegues", "Cortada de arriba abajo, la colmenilla es una sola cavidad"]}],
+   fuentes=[ac("gyromitra-esculenta", "Gyromitra esculenta"), fn("gyromitra-esculenta", "Gyromitra esculenta"), TOX, DON, sf(236690, "Gyromitra esculenta")])
+
+sp(id="clitocybe_dealbata", nombre_cientifico="Clitocybe dealbata (Sowerby) P. Kumm. (incluye C. rivulosa)", nombres_comunes=[],
+   grupo="mortal",
+   toxicidad_nota="MORTAL. Síndrome muscarínico entre 20 minutos y 2 horas después de comerla: sudor abundante, lagrimeo, salivación, vómitos, diarrea y visión borrosa. Casi siempre se cura, pero la tabla de toxicidad cita muertes, y First Nature advierte de que el riesgo es mayor con problemas de corazón o respiratorios.",
+   sombrero="De 1 a 6 cm. Blanco, con un tono beige al envejecer; harinoso o sedoso, como escarchado. Convexo y luego plano o algo hundido; con la edad aparecen anillos concéntricos tenues.",
+   himenio="Láminas blancas y apretadas, pegadas al pie o algo decurrentes; con la edad toman un tono rosado grisáceo.",
+   pie="De 3 a 4 cm, blanco, liso y harinoso o sedoso.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanca y fina.",
+   olor_sabor="Olor dulce, poco característico. No se debe probar.",
+   esporada="Blanca.",
+   habitat="Prados, cunetas, parques y dunas, a menudo en corros, donde también se buscan la senderuela y la seta de San Jorge. GBIF tiene registros en la zona de Alicante.",
+   temporada="De julio a diciembre en Gran Bretaña; las fuentes consultadas no dan fechas para el levante.",
+   rasgos_clave=["Seta pequeña y blanca, como escarchada", "Láminas blancas o, ya viejas, rosado grisáceas; nunca marrones", "Sin anillo", "En prados, a menudo en corros"],
+   no_confundir_con=[
+     {"id": "agaricus_campestris", "diferencias": ["El champiñón tiene las láminas libres, rosa vivo y luego marrón oscuro", "Tiene anillo en el pie", "Su esporada es marrón oscura"]},
+     {"id": "pleurotus_eryngii", "diferencias": ["La seta de cardo tiene la cutícula más oscura, el pie más excéntrico y las láminas más decurrentes (AmanitaCesarea.com)", "Nace de las raíces del cardo corredor"]}],
+   fuentes=[fn("clitocybe-rivulosa", "Clitocybe rivulosa (= C. dealbata)"), TOX, DON, sf(216184, "Clitocybe dealbata"), gbif(2531052, "Clitocybe rivulosa (= C. dealbata)")])
 
 # ---------- fotos ----------
 import re as _re
@@ -627,8 +767,18 @@ DESC = {
  "fotos/scleroderma_citrinum_1.jpg": "Ejemplar maduro abierto: interior pardo y pulverulento",
  "fotos/scleroderma_citrinum_2.jpg": "Corte: interior negro violáceo",
  "fotos/scleroderma_citrinum_3.jpg": "S. verrucosum: interior oscuro al corte",
+ "fotos/morchella_spp_1.jpg": "Entera y cortada de arriba abajo: una sola cavidad",
+ "fotos/gyromitra_esculenta_1.jpg": "Cortadas de arriba abajo: pliegues y cámaras por dentro",
+ "fotos/tricholoma_equestre_1.jpg": "Láminas y pie amarillos",
+ "fotos/tricholoma_pardinum_1.jpg": "Escamas oscuras en círculos sobre fondo claro",
+ "fotos/tricholoma_terreum_3.jpg": "Láminas blanquecinas y grises, nunca amarillas",
+ "fotos/suillus_bellinii_3.jpg": "S. collinitus: micelio rosado en la base del pie",
+ "fotos/lactarius_deliciosus_3.jpg": "L. sanguifluus: láminas y carne del pie de tono rojo vino",
 }
 for e in E:
+    if e["toxicidad_nota"].startswith(AV):
+        e["toxicidad_nota"] = AV_GRUPO[e["grupo"]] + e["toxicidad_nota"][len(AV):]
+    assert AV not in e["toxicidad_nota"], e["id"]
     fs = []
     for f in FOTOS[e["id"]]:
         g = {"archivo": f["archivo"], "autor": limpia_autor(f["autor"]), "licencia": f["licencia"], "url_fuente": f["url_fuente"]}

@@ -22,6 +22,23 @@ NUEVAS = {
     "scleroderma_citrinum": ["File:Dickschaliger Kartoffelbovist (Scleroderma citrinum)-Reife Sporenmasse im Querschnitt.jpg",
                              "File:Gemeiner Kartoffelbovist Scleroderma citrinum.jpg",
                              "File:Braunwarzige-Hartbovist-Scleroderma-verrucosum.jpg"],
+    # Fase D1 (Alicante): ver docs/investigacion/2026-10-15-fichas-alicante.md §4
+    "tricholoma_terreum": ["File:Erd-Ritterling Tricholoma terreum.jpg", "File:Tricholoma terreum (Haute-Loire, France).jpg",
+                           "File:Tricholoma terreum - lamelles et pied (Haute-Loire, France).jpg"],
+    "hygrophorus_latitabundus": ["File:Hygrophorus latitabundus1a.JPG", "File:Hygrophorus latitabundus2.JPG",
+                                 "File:Hygrophorus latitabundus.JPG"],
+    "morchella_spp": ["File:Morchella esculenta 9622.jpg", "File:Morchella esculenta 270408.jpg",
+                      "File:2026-04-04 Z5-3750E Achim-Lammerts Morchella-esculenta.jpg"],
+    "tricholoma_pardinum": ["File:Tricholoma pardinum 112561 cropped.jpg", "File:Tricholoma pardinum (1).JPG",
+                            "File:Tricholoma pardinum a1.JPG"],
+    "tricholoma_equestre": ["File:Tricholoma equestre G6.JPG", "File:Zaldun ziza.jpg", "File:Tricholoma equestre 97146631.jpg"],
+    "gyromitra_esculenta": ["File:Gyromitra esculenta vertical cut.jpg", "File:Frühjahrs-Giftlorchel, LSG Seppenser Bach, 2019-04.jpg",
+                            "File:Gyromitra esculenta RPN1 (2).jpg"],
+    "clitocybe_dealbata": ["File:Clitocybe dealbata (32275792405).jpg", "File:2007-08-29 Clitocybe rivulosa.jpg"],
+    "suillus_bellinii": ["File:Suillus bellinii profile.jpg", "File:Suillus bellinii cropped regrouped.jpg",
+                         "File:Suillus collinitus pink mycelium.jpg"],
+    "lactarius_deliciosus": ["File:Lactarius deliciosus cut.jpg", "File:Echte Reizker Lactarius deliciosus.JPG",
+                             "File:Lactarius sanguifluus 186490.jpg"],
 }
 
 

@@ -114,9 +114,9 @@
   },
   {
    "archivo": "fotos/lactarius_deliciosus_3.jpg",
-   "autor": "Retama",
+   "autor": "zaca",
    "licencia": "CC BY-SA 3.0",
-   "url_fuente": "https://commons.wikimedia.org/wiki/File:Lactarius_deliciosus,_Spain.jpg"
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Lactarius_sanguifluus_186490.jpg"
   }
  ],
  "cantharellus_cibarius": [
@@ -174,9 +174,9 @@
   },
   {
    "archivo": "fotos/suillus_bellinii_3.jpg",
-   "autor": "zaca",
-   "licencia": "CC BY-SA 4.0",
-   "url_fuente": "https://commons.wikimedia.org/wiki/File:Suillus_bellinii_4.jpg"
+   "autor": "danielhartley",
+   "licencia": "CC0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Suillus_collinitus_pink_mycelium.jpg"
   }
  ],
  "hydnum_repandum": [
@@ -597,6 +597,140 @@
    "autor": "Holger Krisp",
    "licencia": "CC BY 3.0",
    "url_fuente": "https://commons.wikimedia.org/wiki/File:Braunwarzige-Hartbovist-Scleroderma-verrucosum.jpg"
+  }
+ ],
+ "tricholoma_terreum": [
+  {
+   "archivo": "fotos/tricholoma_terreum_1.jpg",
+   "autor": "Holger Krisp",
+   "licencia": "CC BY 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Erd-Ritterling_Tricholoma_terreum.jpg"
+  },
+  {
+   "archivo": "fotos/tricholoma_terreum_2.jpg",
+   "autor": "Adrien BENOIT à la GUILLAUME",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Tricholoma_terreum_(Haute-Loire,_France).jpg"
+  },
+  {
+   "archivo": "fotos/tricholoma_terreum_3.jpg",
+   "autor": "Adrien BENOIT à la GUILLAUME",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Tricholoma_terreum_-_lamelles_et_pied_(Haute-Loire,_France).jpg"
+  }
+ ],
+ "hygrophorus_latitabundus": [
+  {
+   "archivo": "fotos/hygrophorus_latitabundus_1.jpg",
+   "autor": "Benutzer:Paffka",
+   "licencia": "CC BY 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Hygrophorus_latitabundus1a.JPG"
+  },
+  {
+   "archivo": "fotos/hygrophorus_latitabundus_2.jpg",
+   "autor": "Paffka",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Hygrophorus_latitabundus2.JPG"
+  },
+  {
+   "archivo": "fotos/hygrophorus_latitabundus_3.jpg",
+   "autor": "Pau Cabot",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Hygrophorus_latitabundus.JPG"
+  }
+ ],
+ "morchella_spp": [
+  {
+   "archivo": "fotos/morchella_spp_1.jpg",
+   "autor": "Amada44",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Morchella_esculenta_9622.jpg"
+  },
+  {
+   "archivo": "fotos/morchella_spp_2.jpg",
+   "autor": "Bernd Haynold",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Morchella_esculenta_270408.jpg"
+  },
+  {
+   "archivo": "fotos/morchella_spp_3.jpg",
+   "autor": "Achim Lammerts (Syntaxys)",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:2026-04-04_Z5-3750E_Achim-Lammerts_Morchella-esculenta.jpg"
+  }
+ ],
+ "tricholoma_pardinum": [
+  {
+   "archivo": "fotos/tricholoma_pardinum_1.jpg",
+   "autor": "Sava Krstic (sava)",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Tricholoma_pardinum_112561_cropped.jpg"
+  },
+  {
+   "archivo": "fotos/tricholoma_pardinum_2.jpg",
+   "autor": "Jerzy Opioła",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Tricholoma_pardinum_(1).JPG"
+  },
+  {
+   "archivo": "fotos/tricholoma_pardinum_3.jpg",
+   "autor": "Jerzy Opioła",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Tricholoma_pardinum_a1.JPG"
+  }
+ ],
+ "tricholoma_equestre": [
+  {
+   "archivo": "fotos/tricholoma_equestre_1.jpg",
+   "autor": "Jerzy Opioła",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Tricholoma_equestre_G6.JPG"
+  },
+  {
+   "archivo": "fotos/tricholoma_equestre_2.jpg",
+   "autor": "Jose Angel Urquia Goitia",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Zaldun_ziza.jpg"
+  },
+  {
+   "archivo": "fotos/tricholoma_equestre_3.jpg",
+   "autor": "Viktoria Bilous",
+   "licencia": "CC BY 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Tricholoma_equestre_97146631.jpg"
+  }
+ ],
+ "gyromitra_esculenta": [
+  {
+   "archivo": "fotos/gyromitra_esculenta_1.jpg",
+   "autor": "virn",
+   "licencia": "CC BY 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Gyromitra_esculenta_vertical_cut.jpg"
+  },
+  {
+   "archivo": "fotos/gyromitra_esculenta_2.jpg",
+   "autor": "ChristianSW",
+   "licencia": "CC0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Fr%C3%BChjahrs-Giftlorchel,_LSG_Seppenser_Bach,_2019-04.jpg"
+  },
+  {
+   "archivo": "fotos/gyromitra_esculenta_3.jpg",
+   "autor": "Jerzy Opioła",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Gyromitra_esculenta_RPN1_(2).jpg"
+  }
+ ],
+ "clitocybe_dealbata": [
+  {
+   "archivo": "fotos/clitocybe_dealbata_1.jpg",
+   "autor": "Dick Culbert from Gibsons, B.C., Canada",
+   "licencia": "CC BY 2.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Clitocybe_dealbata_(32275792405).jpg"
+  },
+  {
+   "archivo": "fotos/clitocybe_dealbata_2.jpg",
+   "autor": "Andreas Kunze",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:2007-08-29_Clitocybe_rivulosa.jpg"
   }
  ]
 }

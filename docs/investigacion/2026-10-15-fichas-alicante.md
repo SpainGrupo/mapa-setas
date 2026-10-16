@@ -179,7 +179,36 @@ Ids de taxón (Index Fungorum `RECORD_NUMBER` del nombre aceptado; GBIF `usageKe
 Texto fijo en esas fichas (decisión 2, tras humanizer): ver `build.py` (`SIN_CONF`).
 
 ## 4. Fotos elegidas
-(se completa con Task 2)
+| ficha | n | título Commons | licencia | autor | por qué |
+|---|---|---|---|---|---|
+| tricholoma_terreum | 1 | File:Erd-Ritterling_Tricholoma_terreum.jpg | CC BY 3.0 | Holger Krisp | gris como de fieltro; otro ejemplar tumbado enseña láminas y pie |
+| tricholoma_terreum | 2 | File:Tricholoma_terreum_(Haute-Loire,_France).jpg | CC BY-SA 4.0 | Adrien BENOIT à la GUILLAUME | un ejemplar en musgo y acículas |
+| tricholoma_terreum | 3 | File:Tricholoma_terreum_-_lamelles_et_pied_(Haute-Loire,_France).jpg | CC BY-SA 4.0 | Adrien BENOIT à la GUILLAUME | láminas blanquecinas y grises y pie blanco |
+| hygrophorus_latitabundus | 1 | File:Hygrophorus_latitabundus1a.JPG | CC BY 3.0 | Benutzer:Paffka | sombreros brillantes y viscosos entre acículas |
+| hygrophorus_latitabundus | 2 | File:Hygrophorus_latitabundus2.JPG | CC BY-SA 3.0 | Paffka | dos ejemplares, centro del sombrero más oscuro |
+| hygrophorus_latitabundus | 3 | File:Hygrophorus_latitabundus.JPG | CC BY-SA 3.0 | Pau Cabot | ejemplar volcado (Mallorca): láminas blancas |
+| morchella_spp | 1 | File:Morchella_esculenta_9622.jpg | CC BY-SA 3.0 | Amada44 | entera y cortada: una sola cavidad (rasgo que decide) |
+| morchella_spp | 2 | File:Morchella_esculenta_270408.jpg | CC BY-SA 3.0 | Bernd Haynold | en hierba: sombrero de celdas, pie blanco |
+| morchella_spp | 3 | File:2026-04-04_Z5-3750E_Achim-Lammerts_Morchella-esculenta.jpg | CC BY-SA 4.0 | Achim Lammerts (Syntaxys) | detalle de las celdas y la unión con el pie |
+| tricholoma_pardinum | 1 | File:Tricholoma_pardinum_112561_cropped.jpg | CC BY-SA 3.0 | Sava Krstic (sava) | escamas oscuras en círculos sobre fondo claro (rasgo que decide; ejemplar norteamericano) |
+| tricholoma_pardinum | 2 | File:Tricholoma_pardinum_(1).JPG | CC BY-SA 3.0 | Jerzy Opioła | sombrero escamoso en musgo |
+| tricholoma_pardinum | 3 | File:Tricholoma_pardinum_a1.JPG | CC BY-SA 3.0 | Jerzy Opioła | láminas blanquecinas de cerca (Europa) |
+| tricholoma_equestre | 1 | File:Tricholoma_equestre_G6.JPG | CC BY-SA 3.0 | Jerzy Opioła | láminas y pie amarillo azufre (rasgo que decide) |
+| tricholoma_equestre | 2 | File:Zaldun_ziza.jpg | CC BY-SA 4.0 | Jose Angel Urquia Goitia | grupo en pinar: sombreros oliva, láminas amarillas |
+| tricholoma_equestre | 3 | File:Tricholoma_equestre_97146631.jpg | CC BY 4.0 | Viktoria Bilous | láminas y pie amarillos de cerca (foto muy saturada) |
+| gyromitra_esculenta | 1 | File:Gyromitra_esculenta_vertical_cut.jpg | CC BY 4.0 | virn | cortadas a lo largo: pliegues y cámaras (rasgo que decide) |
+| gyromitra_esculenta | 2 | File:Fr%C3%BChjahrs-Giftlorchel,_LSG_Seppenser_Bach,_2019-04.jpg | CC0 | ChristianSW | sombrero como un cerebro, pardo rojizo |
+| gyromitra_esculenta | 3 | File:Gyromitra_esculenta_RPN1_(2).jpg | CC BY-SA 4.0 | Jerzy Opioła | detalle del sombrero y del pie irregular |
+| clitocybe_dealbata | 1 | File:Clitocybe_dealbata_(32275792405).jpg | CC BY 2.0 | Dick Culbert from Gibsons, B.C., Canada | grupo de sombreros blancos como escarchados (Canadá) |
+| clitocybe_dealbata | 2 | File:2007-08-29_Clitocybe_rivulosa.jpg | CC BY-SA 3.0 | Andreas Kunze | C. rivulosa: cuatro ejemplares, láminas decurrentes crema |
+| suillus_bellinii | 3 | File:Suillus_collinitus_pink_mycelium.jpg | CC0 | danielhartley | S. collinitus: micelio rosa en la base del pie (rasgo que decide) |
+| lactarius_deliciosus | 3 | File:Lactarius_sanguifluus_186490.jpg | CC BY-SA 3.0 | zaca | L. sanguifluus: láminas y carne del pie rojo vino (Lisboa) |
+
+Todas se miraron una a una (miniatura de 400 px por el agente de búsqueda y hoja de contacto de los JPEG finales de
+1200 px en la ejecución). *C. dealbata* se queda con 2 fotos: Commons solo tiene una de *C. dealbata* y una válida de
+*C. rivulosa*; la de iNaturalist (Kurt Miller, CC BY-SA, obs. 62173562) no se usa porque el script solo baja de Commons.
+Fotos descartadas: *T. equestre* 5771554 (un ejemplar de pie blanco), *L. sanguifluus* «Veririisikas1» (carne naranja,
+identificación dudosa), *H. latitabundus* de Krisp (sombrero tapado de barro).
 
 ## 5. PENDIENTE
 - Hábitat de *T. pardinum* en el levante: FN describe Gran Bretaña (frondosas); sin fuente local.

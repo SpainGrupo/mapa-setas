@@ -27,6 +27,7 @@ TOLERANCIA_BBOX_E7 = 1000
 MANIFEST = "app/manifest.json"
 MANIFEST_NUEVAS = ("region", "legal", "atribuciones", "ccaa", "avisos")
 MANIFEST_ESPECIE_NUEVAS = ("sin_habitat", "calibrado")
+MANIFEST_FUERA = ("modelo",)            # clave del reconocedor (modelo/construir.py): no es del pipeline, como SIN_HUELLA
 # No los produce ningún paso re-ejecutable sin red (base = Protomaps) o no son del pipeline actual.
 NO_REGENERADOS = {"region_base.geojson", "base_build.txt", "vista_arbol.png", "vista_suelo.png", "app/base.pmtiles"}
 SIN_HUELLA = ("app/modelo/",)            # paquete del reconocedor (modelo/construir.py), no es del pipeline
@@ -60,7 +61,7 @@ def _canonico(o) -> bytes:
 
 def normalizar_manifest(m: dict) -> dict:
     m = sin_generado(m)
-    n = {k: v for k, v in m.items() if k not in MANIFEST_NUEVAS and k != "total_bytes"}
+    n = {k: v for k, v in m.items() if k not in MANIFEST_NUEVAS + MANIFEST_FUERA and k != "total_bytes"}
     if "especies" in n:
         n["especies"] = [{k: v for k, v in e.items() if k not in MANIFEST_ESPECIE_NUEVAS} for e in n["especies"]]
     if "archivos" in n:
@@ -166,7 +167,7 @@ def comparar(dorado: dict, actual: dict, solo: list[str] | None = None) -> list[
                 difs.append(f"{rel}: distinto ({cat})")
     if filtro(MANIFEST) and (dorado.get("manifest") is not None or actual.get("manifest") is not None):
         dm, am = dorado.get("manifest") or {}, actual.get("manifest") or {}
-        for k in sorted(set(dm) | set(am)):
+        for k in sorted((set(dm) | set(am)) - set(MANIFEST_FUERA)):
             if dm.get(k) != am.get(k):
                 difs.append(f"{MANIFEST}: clave '{k}' distinta")
         if not _cerca(actual.get("manifest_total_bytes"), dorado.get("manifest_total_bytes")):

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { aTensor, banda, decodificarTexto, f16, promediar, recorteCentral, topK, UMBRAL_NO_RECONOCIDO, type MetaModelo } from './reconocer-nucleo';
+import { aTensor, banda, decodificarTexto, f16, promediar, recorteCentral, topK, UMBRAL_MEDIO, UMBRAL_NO_RECONOCIDO, type MetaModelo } from './reconocer-nucleo';
+import ref from '../../modelo/referencia.json';
 
 describe('preproceso', () => {
   it('recorte central del lado corto', () => {
@@ -80,4 +81,17 @@ describe('bandas y media', () => {
     expect(m[0]).toBeCloseTo(Math.SQRT1_2, 6); expect(m[1]).toBeCloseTo(Math.SQRT1_2, 6);
     expect(Array.from(promediar([new Float32Array([0, 0])]))).toEqual([0, 0]);
   });
+});
+
+describe('umbral «no reconocido» calibrado con modelo/referencia.json', () => {
+  it('deja pasar al menos el 95 % de las fotos de la guía', () => {
+    expect(UMBRAL_NO_RECONOCIDO).toBeLessThanOrEqual(ref.coseno_max_fotos_guia.p05);
+  });
+  it('queda por encima del ruido, de la imagen azul y de todas las fotos reales sin setas medidas', () => {
+    expect(UMBRAL_NO_RECONOCIDO).toBeGreaterThan(ref.coseno_max_ajenas.ruido);
+    expect(UMBRAL_NO_RECONOCIDO).toBeGreaterThan(ref.coseno_max_ajenas.azul);
+    expect(ref.coseno_max_ajenas_reales.n).toBeGreaterThanOrEqual(30);
+    expect(UMBRAL_NO_RECONOCIDO).toBeGreaterThan(ref.coseno_max_ajenas_reales.max);
+  });
+  it('por debajo de la banda «medio»', () => expect(UMBRAL_NO_RECONOCIDO).toBeLessThan(UMBRAL_MEDIO));
 });

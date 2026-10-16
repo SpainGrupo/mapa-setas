@@ -57,13 +57,19 @@
  },
  "coseno_max_fotos_guia": {
   "min": 0.2384,
-  "p05": 0.2928,
+  "p05": 0.2929,
   "mediana": 0.339,
-  "n": 90
+  "n": 110
  },
  "coseno_max_ajenas": {
   "ruido": 0.2616,
   "gris": 0.3099,
   "azul": 0.2472
+ },
+ "coseno_max_ajenas_reales": {
+  "n": 37,
+  "max": 0.2719,
+  "p95": 0.2716,
+  "nota": "fotos locales sin setas (paisajes, piscinas, jardines, interiores); no versionadas"
  }
 }

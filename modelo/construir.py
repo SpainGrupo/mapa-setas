@@ -4,8 +4,9 @@
     uv run python construir.py --solo-paquete          # solo rehace paquete.json y el manifest
     uv run python construir.py --solo-texto            # vocabulario nuevo: rehace texto_f16.bin, etiquetas.json y
                                                        # referencia.json con la misma torre de visión ya exportada
+    uv run python construir.py --solo-texto --ajenas <fotos…>   # y calibra «no reconocido» con fotos sin setas
 
-Salida en pipeline/data/marbella/out/app/modelo/ (no versionada):
+Salida en pipeline/data/modelo/ (no versionada; compartida por todas las regiones desde la fase D1):
   vision_int8.onnx            torre de visión de BioCLIP (ViT-B/16), int8 solo en MatMul/Gemm (onnxruntime-web
                               no implementa ConvInteger), entrada [1,3,224,224] → embedding L2-normalizado [1,512]
   texto_f16.bin               embeddings de texto («a photo of <especie>.») N×512 en float16 little-endian
@@ -13,7 +14,8 @@ Salida en pipeline/data/marbella/out/app/modelo/ (no versionada):
   ort-wasm-simd-threaded.wasm binario de onnxruntime-web copiado de app/node_modules (misma versión que el .mjs
                               que empaqueta Vite; se comprueba)
   paquete.json                lista de archivos y bytes para la descarga opcional a OPFS
-y añade la clave `modelo` al manifest.json de la app (descarga aparte, no entra en total_bytes de los mapas).
+y añade la clave `modelo` al manifest.json de cada región de pipeline/data/regiones.json (descarga aparte, no entra
+en total_bytes de los mapas).
 
 Además escribe modelo/referencia.json (versionado): top-5 en Python de las fotos de prueba de la guía, para
 comparar con el navegador en el e2e.
@@ -29,8 +31,15 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent
 REPO = RAIZ.parent
-SALIDA = REPO / "pipeline/data/marbella/out/app/modelo"
-MANIFEST = REPO / "pipeline/data/marbella/out/app/manifest.json"
+DATOS = REPO / "pipeline/data"
+SALIDA = DATOS / "modelo"                                   # compartido (fase D1); antes, data/marbella/out/app/modelo
+
+
+def manifests() -> list[Path]:
+    """manifest.json de cada región del índice data/regiones.json (todas llevan el mismo modelo)."""
+    indice = DATOS / "regiones.json"
+    ids = [r["id"] for r in json.loads(indice.read_text())] if indice.exists() else []
+    return [DATOS / i / "out/app/manifest.json" for i in ids]
 ORT_APP = REPO / "app/node_modules/onnxruntime-web"
 ORT_VERSION = "1.20.1"
 HF_REPO = "imageomics/bioclip"
@@ -77,7 +86,7 @@ def version_ort() -> Path:
     return ORT_APP / "dist/ort-wasm-simd-threaded.wasm"
 
 
-def construir(solo_texto: bool = False):
+def construir(solo_texto: bool = False, ajenas: list[Path] | None = None):
     import numpy as np
     import onnx
     import open_clip
@@ -151,11 +160,11 @@ def construir(solo_texto: bool = False):
         "etiquetas": etiquetas,
     }
     (SALIDA / "etiquetas.json").write_text(json.dumps(meta, ensure_ascii=False, separators=(",", ":")))
-    referencia(i8, preprocess, texto, meta)
+    referencia(i8, preprocess, texto, meta, ajenas or [])
     shutil.rmtree(tmp, ignore_errors=True)
 
 
-def referencia(onnx_path, preprocess, texto, meta):
+def referencia(onnx_path, preprocess, texto, meta, ajenas_reales: list[Path] = ()):
     """Top-5 en Python (ORT CPU) de las fotos de prueba + estadística de coseno máximo (calibrar «no reconocido»)."""
     import numpy as np
     import onnxruntime as ort
@@ -189,7 +198,16 @@ def referencia(onnx_path, preprocess, texto, meta):
     ref["coseno_max_fotos_guia"] = {"min": round(maximos[0], 4), "p05": round(maximos[len(maximos) // 20], 4),
                                     "mediana": round(maximos[len(maximos) // 2], 4), "n": len(maximos)}
     ref["coseno_max_ajenas"] = {k: round(float((T @ emb(v)).max()), 4) for k, v in ajenas.items()}
-    print("coseno máx fotos guía:", ref["coseno_max_fotos_guia"], "ajenas:", ref["coseno_max_ajenas"])
+    previa = json.loads((RAIZ / "referencia.json").read_text()) if (RAIZ / "referencia.json").exists() else {}
+    if ajenas_reales:
+        m = sorted(float((T @ emb(Image.open(p))).max()) for p in ajenas_reales)
+        ref["coseno_max_ajenas_reales"] = {
+            "n": len(m), "max": round(m[-1], 4), "p95": round(m[min(len(m) - 1, int(len(m) * 0.95))], 4),
+            "nota": "fotos locales sin setas (paisajes, piscinas, jardines, interiores); no versionadas"}
+    elif "coseno_max_ajenas_reales" in previa:
+        ref["coseno_max_ajenas_reales"] = previa["coseno_max_ajenas_reales"]
+    print("coseno máx fotos guía:", ref["coseno_max_fotos_guia"], "ajenas:", ref["coseno_max_ajenas"],
+          "ajenas reales:", ref.get("coseno_max_ajenas_reales"))
     (RAIZ / "referencia.json").write_text(json.dumps(ref, ensure_ascii=False, indent=1) + "\n")
 
 
@@ -207,13 +225,17 @@ def paquete():
     paq = {"version": h.hexdigest()[:16], "ort_version": meta["ort_version"], "etiquetas": len(meta["etiquetas"]),
            "dir": "modelo/", "archivos": archivos, "total_bytes": sum(a["bytes"] for a in archivos)}
     (SALIDA / "paquete.json").write_text(json.dumps(paq, indent=1))
-    if MANIFEST.exists():
-        m = json.loads(MANIFEST.read_text())
-        m["modelo"] = paq
-        MANIFEST.write_text(json.dumps(m, ensure_ascii=False, indent=1))
-        print("manifest.json: clave «modelo» actualizada")
-    else:
-        print("aviso: no existe manifest.json (ejecuta el pipeline); el paquete se añadirá al exportar")
+    rutas = manifests()
+    for ruta in rutas:
+        if ruta.exists():
+            m = json.loads(ruta.read_text())
+            m["modelo"] = paq
+            ruta.write_text(json.dumps(m, ensure_ascii=False, indent=1))
+            print(f"{ruta.relative_to(DATOS)}: clave «modelo» actualizada")
+        else:
+            print(f"aviso: no existe {ruta} (ejecuta el pipeline); el paquete se añadirá al exportar")
+    if not rutas:
+        print("aviso: no hay pipeline/data/regiones.json; el paquete se añadirá al exportar")
     print(f"paquete {paq['version']}: {paq['total_bytes'] / 1e6:.1f} MB")
 
 
@@ -221,7 +243,9 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--solo-paquete", action="store_true")
     ap.add_argument("--solo-texto", action="store_true")
+    ap.add_argument("--ajenas", nargs="*", type=Path, default=[],
+                    help="fotos reales sin setas para calibrar «no reconocido» (solo se guardan n, máx y p95)")
     a = ap.parse_args()
     if not a.solo_paquete:
-        construir(solo_texto=a.solo_texto)
+        construir(solo_texto=a.solo_texto, ajenas=a.ajenas)
     paquete()

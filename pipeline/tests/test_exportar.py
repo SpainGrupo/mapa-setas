@@ -159,6 +159,25 @@ def test_modelo_solo_si_existen_sus_archivos(tmp_path, capsys):
     assert modelo_disponible(tmp_path) is None
 
 
+def test_modelo_compartido_entre_regiones(tmp_path):
+    """Fase D1: el reconocedor vive en data/modelo/ (compartido); se prefiere al de la región."""
+    import json
+    from setas_pipeline.exportar import modelo_disponible
+    out, comun = tmp_path / "alicante" / "out" / "app", tmp_path / "modelo"
+    out.mkdir(parents=True)
+    comun.mkdir()
+    paq = {"version": "comun", "dir": "modelo/", "archivos": [{"nombre": "a.onnx", "bytes": 3}]}
+    (comun / "paquete.json").write_text(json.dumps(paq))
+    assert modelo_disponible(out, comun) is None          # faltan sus archivos en la carpeta compartida
+    (comun / "a.onnx").write_bytes(b"abc")
+    assert modelo_disponible(out, comun) == paq
+    (out / "modelo").mkdir()
+    (out / "modelo" / "paquete.json").write_text(json.dumps({**paq, "version": "viejo"}))
+    (out / "modelo" / "a.onnx").write_bytes(b"abc")
+    assert modelo_disponible(out, comun)["version"] == "comun"
+    assert modelo_disponible(out, tmp_path / "no-existe")["version"] == "viejo"
+
+
 def test_fiabilidad_segun_n_y_lift_de_validacion():
     from setas_pipeline.exportar import fiabilidad
     assert fiabilidad(47, 2.57) == "buena"

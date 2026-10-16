@@ -145,3 +145,14 @@ def test_nombre_pmtiles_con_ruta_absoluta_se_guarda_relativo_a_out(tmp_path):
         hs.append(D.huella(out))
     assert hs[0]["pmtiles"]["app/x.pmtiles"]["nombre"] == "<out>/app/x.pmtiles"
     assert hs[1]["pmtiles"]["app/x.pmtiles"]["nombre"] == "<out>/app/x.pmtiles"   # (el tamaño cambia con la ruta)
+
+
+def test_la_clave_modelo_del_manifest_no_cuenta():
+    """El reconocedor (modelo/construir.py) no es del pipeline: cambiarlo no rompe la regresión de Marbella."""
+    from setas_pipeline import dorado as D
+    base = {"version": 1, "tif": {}, "json": {}, "sha": {}, "tamano": {}, "pmtiles": {}, "manifest_total_bytes": 10}
+    viejo = {**base, "manifest": {"bbox": [1], "modelo": {"version": "a"}}}
+    nuevo = {**base, "manifest": D.normalizar_manifest({"bbox": [1], "modelo": {"version": "b"}, "total_bytes": 10})}
+    assert "modelo" not in nuevo["manifest"]
+    assert D.comparar(viejo, nuevo) == []
+    assert D.comparar(viejo, {**base, "manifest": {"bbox": [2]}}) == ["app/manifest.json: clave 'bbox' distinta"]

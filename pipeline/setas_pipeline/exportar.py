@@ -656,7 +656,7 @@ def escribir_manifest(region: Region, out: Path | None = None) -> dict:
         "total_bytes": sum(a["bytes"] for a in archivos),
     }
     # Reconocedor (modelo/construir.py): descarga opcional aparte; no cuenta en archivos ni en total_bytes.
-    modelo = modelo_disponible(out)
+    modelo = modelo_disponible(out, region.datos / "modelo")
     if modelo:
         m["modelo"] = modelo
     (out / "manifest.json").write_text(json.dumps(m, ensure_ascii=False, indent=1))
@@ -700,22 +700,24 @@ def sitios_manifest(out: Path) -> dict | None:
             "n_por_especie": {k: len(v) for k, v in d["especies"].items()}}
 
 
-def modelo_disponible(out: Path) -> dict | None:
-    """Clave `modelo` del manifest (reconocedor): de modelo/paquete.json o, si no está, del manifest anterior
-    (escrito por modelo/construir.py). Solo si existen todos los archivos que cita; si no, aviso y None."""
-    paquete = out / "modelo" / "paquete.json"
+def modelo_disponible(out: Path, compartido: Path | None = None) -> dict | None:
+    """Clave `modelo` del manifest (reconocedor): de paquete.json de la carpeta compartida data/modelo/ (fase D1,
+    la escribe modelo/construir.py) o de la antigua out/modelo/; si no hay, del manifest anterior. Solo si existen
+    todos los archivos que cita; si no, aviso y None."""
+    carpetas = [c for c in (compartido, out / "modelo") if c is not None and c.exists()]
     previo = out / "manifest.json"
-    if paquete.exists():
-        modelo = json.loads(paquete.read_text())
+    con_paquete = [c for c in carpetas if (c / "paquete.json").exists()]
+    if con_paquete:
+        carpeta = con_paquete[0]
+        modelo = json.loads((carpeta / "paquete.json").read_text())
     elif previo.exists() and "modelo" in (anterior := json.loads(previo.read_text())):
+        carpeta = carpetas[0] if carpetas else out / "modelo"
         modelo = anterior["modelo"]
     else:
         return None
-    faltan = [a["nombre"] for a in modelo.get("archivos", [])
-              if not (out / modelo.get("dir", "modelo/") / a["nombre"]).exists()]
+    faltan = [a["nombre"] for a in modelo.get("archivos", []) if not (carpeta / a["nombre"]).exists()]
     if faltan:
-        print(f"  WARNING: el reconocedor no se publica en el manifest; faltan en {out / modelo.get('dir', 'modelo/')}: "
-              f"{', '.join(faltan)}", flush=True)
+        print(f"  WARNING: el reconocedor no se publica en el manifest; faltan en {carpeta}: {', '.join(faltan)}", flush=True)
         return None
     return modelo
 

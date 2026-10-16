@@ -14,6 +14,15 @@
     "Lactarius deterrimus": "lactarius_deliciosus",
     "Amanita vidua": "amanita_verna",
     "Amanita curtipes": "amanita_ponderosa",
-    "Terfezia leptoderma": "terfezia_arenaria"
+    "Terfezia leptoderma": "terfezia_arenaria",
+    "Lactarius semisanguifluus": "lactarius_deliciosus",
+    "Suillus collinitus": "suillus_bellinii",
+    "Tricholoma auratum": "tricholoma_equestre",
+    "Tricholoma flavovirens": "tricholoma_equestre",
+    "Hygrophorus limacinus": "hygrophorus_latitabundus",
+    "Morchella conica": "morchella_spp",
+    "Morchella elata": "morchella_spp",
+    "Gyromitra gigas": "gyromitra_esculenta",
+    "Clitocybe rivulosa": "clitocybe_dealbata"
   }
 }

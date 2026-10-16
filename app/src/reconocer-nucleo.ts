@@ -22,15 +22,18 @@ export interface ResultadoModelo { candidatos: Candidato[]; noReconocido: boolea
 
 /**
  * Bandas de parecido sobre el coseno imagen-texto. Calibradas con modelo/referencia.json: el coseno máximo en las
- * 78 fotos de la guía va de 0,29 a ~0,40 (mediana 0,34); el top-1 correcto suele pasar de 0,33.
+ * 110 fotos de la guía va de 0,24 a ~0,40 (p05 0,29, mediana 0,34); el top-1 correcto suele pasar de 0,33.
  */
 export const UMBRAL_ALTO = 0.33;
 export const UMBRAL_MEDIO = 0.29;
 /**
- * Por debajo, «no reconocido» (sin top-5 forzado). Ruido aleatorio da 0,26 y una imagen azul 0,25; ojo: una
- * imagen gris lisa da 0,31, así que esto NO garantiza detectar fotos que no son setas.
+ * Por debajo, «no reconocido» (sin top-5 forzado). Calibrado con modelo/referencia.json (1611 etiquetas): queda por
+ * encima de todas las fotos reales sin setas medidas (37, máx 0,272; con el vocabulario anterior, 0,276), del ruido
+ * (0,26) y de una imagen azul (0,25), y deja fuera 3 de las 110 fotos de la guía (las criadillas y una seta de cardo,
+ * por debajo del p05 de 0,293). Ojo: una imagen gris lisa da 0,31, así que esto NO garantiza detectar fotos que no son
+ * setas. Con «no reconocido» las mortales se siguen listando todas (seguridad.ts).
  */
-export const UMBRAL_NO_RECONOCIDO = 0.27;
+export const UMBRAL_NO_RECONOCIDO = 0.28;
 
 export function banda(coseno: number): Banda {
   return coseno >= UMBRAL_ALTO ? 'alto' : coseno >= UMBRAL_MEDIO ? 'medio' : 'bajo';

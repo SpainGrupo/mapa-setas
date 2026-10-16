@@ -595,7 +595,7 @@
       "nízcalo"
     ],
     "grupo": "apreciada",
-    "toxicidad_nota": "Apreciada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). Especies próximas que se recolectan igual: L. sanguifluus (carne y látex que viran a rojo vino) y L. semisanguifluus. L. vinosus es para Index Fungorum sinónimo de L. sanguifluus.",
+    "toxicidad_nota": "Apreciada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). Especies próximas: L. sanguifluus (carne y látex que viran a rojo vino) y L. semisanguifluus. L. vinosus es para Index Fungorum sinónimo de L. sanguifluus.",
     "sombrero": "De 4 a 20 cm (hasta 25). Naranja con círculos concéntricos más claros y más oscuros, margen enrollado. Con la edad se hunde en embudo y aparecen manchas verdes.",
     "himenio": "Láminas naranjas, apretadas, que se vuelven verdes donde se dañan.",
     "pie": "Corto, hueco con la edad, quebradizo, con hoyuelos o manchas más oscuras.",
@@ -880,7 +880,7 @@
     "nombre_cientifico": "Suillus bellinii (Inzenga) Kuntze",
     "nombres_comunes": [],
     "grupo": "comestible_menor",
-    "toxicidad_nota": "Poco valorada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). Se aconseja retirar la cutícula viscosa. Las fuentes consultadas no documentan confusiones con setas tóxicas. Eso no garantiza nada: confírmalo con un experto.",
+    "toxicidad_nota": "Poco valorada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). Se aconseja retirar la cutícula viscosa. Las fuentes consultadas no citan una seta tóxica concreta con la que se confunda; el reconocedor sigue listando las peligrosas de su grupo. Eso no garantiza nada: confírmalo con un experto.",
     "sombrero": "Hasta 15 cm. Pardo, con zonas blanquecinas hacia el borde, muy viscoso. S. collinitus, frecuente en los pinares de Alicante, tiene el sombrero pardo amarillento, de 4 a 12 cm, también viscoso.",
     "himenio": "Tubos cortos; poros pequeños, blanquecinos a beige y luego amarillentos.",
     "pie": "Corto y robusto, blanquecino, con granulaciones rojizas. En S. collinitus el pie es amarillo, con granulaciones pardo rojizas y la base rosada por su micelio rosa.",
@@ -964,7 +964,7 @@
       "lengua de vaca"
     ],
     "grupo": "comestible_menor",
-    "toxicidad_nota": "Poco valorada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). Sabor algo amargo, más en ejemplares viejos. Las fuentes consultadas no documentan confusiones con setas tóxicas. Eso no garantiza nada: confírmalo con un experto.",
+    "toxicidad_nota": "Poco valorada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). Sabor algo amargo, más en ejemplares viejos. Las fuentes consultadas no citan una seta tóxica concreta con la que se confunda; el reconocedor sigue listando las peligrosas de su grupo. Eso no garantiza nada: confírmalo con un experto.",
     "sombrero": "De 3 a 15 cm. Crema, blanquecino o amarillento, irregular y lobulado, aterciopelado y seco.",
     "himenio": "Aguijones (pinchos) crema, apretados, que se desprenden con facilidad. No tiene láminas ni poros.",
     "pie": "Corto, macizo, a veces descentrado, del color del sombrero o más claro.",
@@ -1041,7 +1041,7 @@
       "pie azul"
     ],
     "grupo": "comestible_menor",
-    "toxicidad_nota": "Poco valorada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). Las fuentes consultadas no documentan confusiones con setas tóxicas. Eso no garantiza nada: confírmalo con un experto. AmanitaCesarea.com y First Nature avisan de que se puede confundir con Cortinarius de tonos violetas, que tienen cortina en el pie y esporada marrón herrumbre.",
+    "toxicidad_nota": "Poco valorada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). Las fuentes consultadas no citan una seta tóxica concreta con la que se confunda; el reconocedor sigue listando las peligrosas de su grupo. Eso no garantiza nada: confírmalo con un experto. AmanitaCesarea.com y First Nature avisan de que se puede confundir con Cortinarius de tonos violetas, que tienen cortina en el pie y esporada marrón herrumbre.",
     "sombrero": "De 5 a 15 cm. Violeta, azul violeta o marrón violáceo; con la edad o la sequedad pasa a crema u ocre. Liso, sin estrías.",
     "himenio": "Láminas lila violáceas, apretadas, un poco decurrentes en adultos; se separan fácilmente del sombrero.",
     "pie": "Violáceo, fibroso, con la base algo bulbosa y micelio blanco violáceo pegado a hojas y tierra.",
@@ -2432,7 +2432,7 @@
       "apagador menor"
     ],
     "grupo": "toxica",
-    "toxicidad_nota": "TÓXICA O DUDOSA. C. brunneum se considera tóxica (gastroenteritis). C. rhacodes se recolectaba, pero hoy hay dudas porque resulta indigesta para algunas personas y su clasificación es confusa. C. molybdites, de láminas verdosas, también es tóxica.",
+    "toxicidad_nota": "TÓXICA O DUDOSA. C. brunneum se considera tóxica (gastroenteritis). Sobre C. rhacodes hay dudas, porque resulta indigesta para algunas personas y su clasificación es confusa. C. molybdites, de láminas verdosas, también es tóxica.",
     "sombrero": "Hasta 20 cm. Globoso y luego extendido, sin mamelón o con uno muy leve. Escamas grandes pardo grisáceas sobre fondo blanco rosado.",
     "himenio": "Láminas libres, blancas, luego ocres; color herrumbre donde se dañan.",
     "pie": "Liso, sin dibujo de piel de serpiente, blanquecino arriba y ocre óxido abajo. Base engrosada poco a poco (C. rhacodes) o bruscamente bulbosa y marginada (C. brunneum).",
@@ -2685,7 +2685,7 @@
       "patata de tierra"
     ],
     "grupo": "apreciada",
-    "toxicidad_nota": "Apreciada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). Crece bajo tierra y se reconoce peor que una seta con sombrero. Según Cesta y Setas, la confusión más peligrosa es con las falsas trufas blancas del género Choiromyces (C. meandriformis es tóxica y tiene la carne con venas blancas en forma de meandro). La criadilla jarera (Choiromyces magnusii), asociada a las jaras, es otra especie que se recolecta. Las Scleroderma, tóxicas, también se han confundido con trufas.",
+    "toxicidad_nota": "Apreciada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). Crece bajo tierra y se reconoce peor que una seta con sombrero. Según Cesta y Setas, la confusión más peligrosa es con las falsas trufas blancas del género Choiromyces (C. meandriformis es tóxica y tiene la carne con venas blancas en forma de meandro). La criadilla jarera (Choiromyces magnusii), asociada a las jaras, es otra especie parecida. Las Scleroderma, tóxicas, también se han confundido con trufas.",
     "sombrero": "No tiene sombrero ni pie. Cuerpo redondeado como una patata, de 3 a 10 cm (hasta 14 según el MITECO). Piel (peridio) blanco amarillenta de joven, luego rojiza y al final parda; lisa al principio y agrietada con la edad, a veces con manchas negras.",
     "himenio": "No tiene láminas ni poros: las esporas se forman dentro de la carne (gleba).",
     "pie": "No tiene.",
@@ -2864,8 +2864,8 @@
       "llenega gris",
       "mocosa"
     ],
-    "grupo": "comestible_menor",
-    "toxicidad_nota": "Poco valorada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). Las fuentes consultadas no documentan confusiones con setas tóxicas. Eso no garantiza nada: confírmalo con un experto.",
+    "grupo": "apreciada",
+    "toxicidad_nota": "Apreciada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). Las fuentes consultadas no citan una seta tóxica concreta con la que se confunda; el reconocedor sigue listando las peligrosas de su grupo. Eso no garantiza nada: confírmalo con un experto.",
     "sombrero": "De 3 a 12 cm (hasta 13). Gris pardo a pardo negruzco, más oscuro en el centro. Muy viscoso con humedad y pegajoso mucho tiempo después. Borde enrollado y mamelón ancho y bajo.",
     "himenio": "Láminas blancas, gruesas y céreas, algo decurrentes y medianamente separadas; con la edad se manchan de pardo.",
     "pie": "Blanco, más grueso hacia la mitad y viscoso, con fibrillas pardas arriba; abajo lo oscurecen los restos de mucílago.",
@@ -2932,7 +2932,7 @@
       "múrgula"
     ],
     "grupo": "apreciada",
-    "toxicidad_nota": "Apreciada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). Cruda o poco cocinada es tóxica. Saviuc et al. (2010) describen además un síndrome neurológico (temblor, mareo, falta de equilibrio) tras comer colmenillas, más frecuente con cantidades grandes.",
+    "toxicidad_nota": "Apreciada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). En crudo o poco cocinada causa trastornos digestivos, y Saviuc et al. (2010) describen además un síndrome neurológico (temblor, mareo, falta de equilibrio) en personas que la habían comido.",
     "sombrero": "De 3 a 8 cm de ancho y de 5 a 12 de alto; globoso, ovalado o cónico. Celdas hundidas e irregulares separadas por costillas, como un panal. De crema a ocre o pardo. M. elata es más oscura y puntiaguda, con las celdas en columnas.",
     "himenio": "No tiene láminas ni poros: la superficie fértil está dentro de las celdas.",
     "pie": "Blanco cremoso, granuloso, hueco y engrosado en la base. El borde del sombrero se une a él.",
@@ -2955,7 +2955,7 @@
         "diferencias": [
           "Gyromitra tiene el sombrero con pliegues como un cerebro, sin celdas",
           "Por dentro tiene cámaras irregulares; la colmenilla es una sola cavidad",
-          "Su sombrero es pardo rojizo oscuro"
+          "Su sombrero suele ser pardo rojizo (G. gigas, más clara)"
         ]
       }
     ],
@@ -3068,7 +3068,7 @@
         "autor": "Adrien BENOIT à la GUILLAUME",
         "licencia": "CC BY-SA 4.0",
         "url_fuente": "https://commons.wikimedia.org/wiki/File:Tricholoma_terreum_-_lamelles_et_pied_(Haute-Loire,_France).jpg",
-        "descripcion": "Láminas blanquecinas y grises, nunca amarillas"
+        "descripcion": "Láminas blanquecinas y grises"
       }
     ],
     "fuentes": [
@@ -3265,7 +3265,7 @@
     ],
     "grupo": "mortal",
     "toxicidad_nota": "MORTAL. Contiene giromitrina. Entre 6 y 24 horas después de comerla aparecen vómitos y diarrea y, en los casos graves, daño en el sistema nervioso, el hígado y el riñón; puede causar la muerte a los pocos días. Ni secarla ni cocinarla elimina el riesgo. La tabla de toxicidad incluye también G. gigas.",
-    "sombrero": "De 3 a 10 cm (hasta 15). Irregular y lobulado, con pliegues como un cerebro; pardo rojizo oscuro a casi negro. No tiene celdas.",
+    "sombrero": "De 3 a 10 cm (hasta 15). Irregular y lobulado, con pliegues como un cerebro; pardo rojizo oscuro a casi negro. G. gigas es más grande y más clara, de rojiza a avellana. No tiene celdas.",
     "himenio": "No tiene láminas ni poros: la superficie fértil es la del sombrero.",
     "pie": "Corto, blanco rosado o crema, con surcos y frágil.",
     "volva": "No tiene.",
@@ -3274,12 +3274,12 @@
     "olor_sabor": "Olor suave. No se debe probar.",
     "esporada": "Amarillenta pálida.",
     "habitat": "Bosques de coníferas con humus, en suelo arenoso bajo pinos; prefiere más de 800 m de altitud. GBIF no tiene registros en la zona de Alicante: la ficha está porque se confunde con la colmenilla.",
-    "temporada": "Primavera, como las colmenillas.",
+    "temporada": "Primavera, como las colmenillas. AmanitaCesarea.com sitúa G. gigas en otoño.",
     "rasgos_clave": [
       "Sombrero como un cerebro, sin celdas",
       "Por dentro tiene cámaras; no está hueca de arriba abajo",
-      "Color pardo rojizo oscuro",
-      "Sale en primavera, como las colmenillas"
+      "Color pardo rojizo; G. gigas, más clara",
+      "Puede salir a la vez que las colmenillas"
     ],
     "no_confundir_con": [
       {

@@ -8,7 +8,7 @@ export const AVISO = "No consumas ninguna seta sin la confirmación de un expert
 export const PROHIBIDO_GUIA = /se puede comer|apta para el consumo|comestible segur|sin peligro/i;
 // Ampliación para texto libre de un modelo: cualquier afirmación directa de que algo se come.
 export const PROHIBIDO_EXTRA =
-  /\b(?:es|son|muy|buen[ao]?s?|excelente|exquisit[ao]s?|apreciad[ao]s?)\s+comestibles?\b|\bse\s+pueden\s+comer\b|\bpuedes\s+comer(?:la|lo|las|los)?\b|\bsegur[ao]s?\s+(?:para|de)\s+comer\b|\bapt[ao]s?\s+para\s+(?:comer|el\s+consumo)\b|\binofensiv[ao]s?\b/i;
+  /\b(?:es|son|muy|buen[ao]?s?|excelente|exquisit[ao]s?|apreciad[ao]s?)\s+comestibles?\b|\bcomestibilidad\b|\bse\s+pueden?\s+comer\w*|\bse\s+comen?\b|\bpuedes\s+comer(?:la|lo|las|los)?\b|\bsegur[ao]s?\s+(?:para|de)\s+comer\b|\b(?:es|son)\s+segur[ao]s?\b|\bapt[ao]s?\s+para\s+(?:comer|(?:el\s+)?consumo)\b|(?<!\bno\s)\b(?:es|son)\s+inofensiv[ao]s?\b|^\s*inofensiv[ao]s?\b/i;
 
 export const SUSTITUTO = "[Afirmación sobre consumo eliminada. " + AVISO + "]";
 
@@ -188,7 +188,7 @@ export function aplicarRedSeguridad(r: Resultado, respuestas: Record<string, unk
     for (const regla of REGLAS) if (regla.si.test(c.nombre_cientifico)) regla.añadir.forEach(añade);
   }
   // Si la persona marcó volva o un huevo, las amanitas mortales van siempre.
-  const v = respuestas.volva;
+  const v = respuestas.volva ?? respuestas.volva_saco;
   if (v === true || (typeof v === "string" && /^s[ií]/i.test(v)) || respuestas.interior_huevo != null) {
     REGLAS[0]!.añadir.forEach(añade);
   }

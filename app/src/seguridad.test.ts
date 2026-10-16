@@ -399,6 +399,38 @@ describe('champiñón, senderuela y Clitocybe (grupo clitociboide)', () => {
   });
 });
 
+describe('hallazgos del code-review max de D1', () => {
+  it('las mortales nuevas siguen siendo mortales (se listan siempre)', () => {
+    expect(MORTALES).toEqual(expect.arrayContaining(['tricholoma_equestre', 'gyromitra_esculenta', 'clitocybe_dealbata']));
+    expect(noDescartadas(evaluar([{ nombre: 'Trametes versicolor' }], fichas, {}))).toContain('clitocybe_dealbata');
+  });
+  it('láminas blancas y sombrero verdoso o blanco → alerta MORTAL: el huevo naranja ya no descarta phalloides ni verna', () => {
+    for (const color of ['amarillo_verdoso', 'blanco']) {
+      const e = evaluar(cand('amanita_caesarea'), fichas, { interior_huevo: 'naranja_amarillo', laminas_pie_color: 'blancos', color_sombrero: color });
+      expect(e.alertas.some((a) => a.nivel === 'mortal' && a.especies.includes('amanita_phalloides')), color).toBe(true);
+      expect(noDescartadas(e)).toEqual(expect.arrayContaining(['amanita_phalloides', 'amanita_verna']));
+    }
+  });
+  it('láminas amarillas con sombrero pardo u otro color → alerta de T. equestre, que ya no cae por volva', () => {
+    for (const color of ['pardo', 'otro', 'amarillo_verdoso']) {
+      const e = evaluar(cand('amanita_caesarea'), fichas, { laminas_pie_color: 'amarillos', color_sombrero: color, volva_saco: 'si' });
+      expect(e.alertas.some((a) => a.especies.includes('tricholoma_equestre')), color).toBe(true);
+      expect(noDescartadas(e)).toContain('tricholoma_equestre');
+    }
+  });
+  it('una alerta trae su especie aunque ningún candidato la active (T. pardinum sin Tricholoma en el top-5)', () => {
+    const e = evaluar([{ nombre: 'Limacella guttata' }], fichas, { superficie_sombrero: 'escamas_oscuras' });
+    const p = e.peligrosas.find((x) => x.id === 'tricholoma_pardinum');
+    expect(p).toMatchObject({ descartada: false, alerta: true, origen: ['tus respuestas apuntan a ella'] });
+  });
+  it('láminas blancas y sin anillo → alerta MORTAL de C. dealbata; el champiñón con anillo y láminas rosa vivo la descarta', () => {
+    const c = cand('agaricus_campestris');
+    const e = evaluar(c, fichas, { laminas_pie_color: 'blancos', anillo_pie: 'no' });
+    expect(e.alertas.find((a) => a.especies.includes('clitocybe_dealbata'))?.nivel).toBe('mortal');
+    expect(PREGUNTA.laminas_pie_color.opciones.find((o) => o.v === 'rosas_marrones')!.t).toMatch(/rosa vivo/);
+  });
+});
+
 describe('cada regla de descarte exige todas sus condiciones; «no sé» en cualquiera la anula', () => {
   for (const r of DESCARTES) {
     it(`${r.especie}: ${r.motivo}`, () => {
@@ -428,6 +460,9 @@ describe('textos para fuera', () => {
   it('sinComestible borra afirmaciones de comestibilidad', () => {
     expect(sinComestible('Buen comestible, se puede comer. Apta para el consumo.')).not.toMatch(/comestible|se puede comer|consumo/i);
     expect(sinComestible('Láminas amarillas')).toBe('Láminas amarillas');
+    const malas = 'Comestibilidad excelente. Es apto para consumo. Se pueden comerlas cocinadas. Tóxica en crudo; se come cocinada. Es segura.';
+    expect(sinComestible(malas)).not.toMatch(/comestib|apt[oa] para|se pueden? comer|se come|es segura/i);
+    expect(sinComestible('Se confunde con la colmenilla')).toBe('Se confunde con la colmenilla');
   });
 });
 

@@ -86,11 +86,25 @@ export interface PeligrosaFusionada {
 }
 
 /**
+ * Binomios que nombra una ficha: el suyo y los que incluye («(incluye G. gigas)», «y C. brunneum», «(= B. aestivalis)»,
+ * «(Index Fungorum: Collybia nuda)»), con el género abreviado desarrollado. Así una segunda opinión que diga
+ * «Gyromitra gigas» se reconoce como la ficha mortal de Gyromitra y no como «desconocida».
+ */
+export function binomiosDeFicha(nombre: string): string[] {
+  const genero = nombre.split(/\s+/)[0];
+  const out = [binomio(nombre)];
+  for (const m of nombre.matchAll(/\b([A-Z][a-z]+|[A-Z]\.)\s([a-z]{3,})\b/g))
+    out.push(binomio(`${m[1].endsWith('.') && genero.startsWith(m[1][0]) ? genero : m[1]} ${m[2]}`));
+  return [...new Set(out)];
+}
+
+/**
  * Unión de las peligrosas locales NO descartadas y las que señala Gemini. Si Gemini señala una especie que las
  * respuestas locales habían descartado, vuelve a la lista (gana la cautela).
  */
 export function fusionarPeligrosas(locales: Peligrosa[], remotas: RespuestaGemini['peligrosas_posibles'], fichas: FichaNombre[]): PeligrosaFusionada[] {
-  const porBinomio = new Map(fichas.map((f) => [binomio(f.nombre_cientifico), f]));
+  const porBinomio = new Map<string, FichaNombre>();
+  for (const f of fichas) for (const b of binomiosDeFicha(f.nombre_cientifico)) if (!porBinomio.has(b)) porBinomio.set(b, f);
   const porId = new Map(fichas.map((f) => [f.id, f]));
   const out = new Map<string, PeligrosaFusionada>();
   for (const p of locales) {

@@ -58,6 +58,15 @@ describe('fusionarPeligrosas (unión)', () => {
     expect(f.map((p) => p.id)).not.toContain('amanita_verna');   // descartada en local y Gemini no la propone
     expect(f.find((p) => p.nombre === 'Amanita virosa')!.nivel).toBe('desconocido');
   });
+  it('los taxones que una ficha incluye (G. gigas, C. rivulosa, T. auratum) se reconocen como esa ficha', () => {
+    const f = fusionarPeligrosas([], [
+      { nombre_cientifico: 'Gyromitra gigas', motivo: 'x' }, { nombre_cientifico: 'Clitocybe rivulosa', motivo: 'y' },
+      { nombre_cientifico: 'Tricholoma auratum', motivo: 'z' }, { nombre_cientifico: 'Collybia nuda', motivo: 'w' },
+    ], fichas);
+    expect(f.map((p) => [p.id, p.nivel])).toEqual(expect.arrayContaining([
+      ['gyromitra_esculenta', 'mortal'], ['clitocybe_dealbata', 'mortal'], ['tricholoma_equestre', 'mortal']]));
+    expect(f.find((p) => p.id === 'lepista_nuda')).toBeDefined();
+  });
   it('una peligrosa ya local acumula el motivo de Gemini', () => {
     const loc = evaluar(c, fichas, {}).peligrosas;
     const f = fusionarPeligrosas(loc, [{ nombre_cientifico: 'Amanita verna', motivo: '' }], fichas);

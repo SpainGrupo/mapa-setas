@@ -367,6 +367,15 @@ describe("seguridad: comestibilidad y aviso", () => {
   });
   it("no toca texto inocuo", () => {
     expect(limpiarTexto("Láminas libres, blancas")).toBe("Láminas libres, blancas");
+    expect(limpiarTexto("Mortal: no es inofensiva.")).toBe("Mortal: no es inofensiva.");
+  });
+  it("code-review D1: más formas de afirmar que se come", () => {
+    for (const t of ["Comestibilidad excelente.", "Es apto para consumo.", "Se pueden comerlas cocinadas.", "Tóxica en crudo; se come cocinada.", "Es segura."])
+      expect(limpiarTexto(t), t).toContain(SUSTITUTO);
+  });
+  it("la volva marcada en la app (volva_saco) también trae las amanitas mortales", async () => {
+    const j = await (await llamar(peticion({ ...valida, respuestas_guiadas: { volva_saco: "Sí" } }))).json();
+    expect(j.peligrosas_posibles.map((p: any) => p.nombre_cientifico)).toContain("Amanita phalloides");
   });
   it("añade amanitas mortales si hay un candidato Amanita", async () => {
     fetchMock.mockResolvedValueOnce(

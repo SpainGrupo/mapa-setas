@@ -94,3 +94,14 @@ describe('especies del mapa ↔ fichas', () => {
     expect(textoFichaDe({ ...f('boletus_edulis'), nombres_comunes: ['las negras'] })).toBe('En la ficha de las negras');
   });
 });
+
+describe('notaSinAviso (ficha abierta con mortales sin descartar)', () => {
+  it('quita el aviso del grupo y deja el resto de la nota', async () => {
+    const { notaSinAviso } = await import('./guia');
+    const m = fichas.find((x) => x.id === 'morchella_spp')!;
+    expect(notaSinAviso(m.toxicidad_nota)).toMatch(/^En crudo/);
+    expect(notaSinAviso(m.toxicidad_nota)).not.toMatch(/Apreciada/);
+    expect(notaSinAviso(fichas.find((x) => x.id === 'boletus_edulis')!.toxicidad_nota)).toBe('');
+    expect(notaSinAviso('Otra cosa.')).toBe('Otra cosa.');
+  });
+});

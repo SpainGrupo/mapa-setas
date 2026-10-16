@@ -9,7 +9,7 @@ import { cargarGuia, fichasGuia, insignia, urlFotoGuia } from './guia-ui';
 import { binomio, nombreComun, type Ficha } from './guia';
 import { TEXTO_BANDA, type Candidato, type ResultadoModelo } from './reconocer-nucleo';
 import { AVISO_EXPERTO, evaluar, NO_SE, respuestasParaWorker, sinComestible, type Evaluacion, type Respuestas } from './seguridad';
-import { construirPares, nombreConComun, type FilaRasgo, type Par } from './comparar';
+import { construirPares, nombreConComun, RASGOS, type FilaRasgo, type Par } from './comparar';
 import { dibujoAnatomia, tituloAnatomia } from './anatomia';
 import {
   CALIDAD, fechaHoy, fusionarPeligrosas, MAX_BYTES_FOTO, MAX_LADO, pedirSegundaOpinion, urlWorker,
@@ -233,7 +233,8 @@ function lineaPeligrosa(p: PeligrosaFusionada): HTMLLIElement {
   li.dataset.nivel = p.nivel;
   const f = fichaDe(p.id);
   const cab = el('div', 'peligrosa-cab');
-  if (f) cab.append(insignia(f.grupo));
+  // Spec §2: en la lista de peligrosas nunca «Apreciada»; una ficha buscada que señala Gemini sale como peligro posible.
+  if (f && (f.grupo === 'mortal' || f.grupo === 'toxica')) cab.append(insignia(f.grupo));
   else cab.append(el('span', 'insignia g-toxica', 'Peligro posible'));
   const nom = el('b', '');
   nom.append(el('i', '', f ? binomio(f) : p.nombre));
@@ -337,12 +338,8 @@ function irAPregunta(fila: FilaRasgo) {
   fs.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true });
 }
 /** Rasgo de la tabla al que responde cada pregunta (la primera fila donde aparece). */
-const PREGUNTAS_RASGO: Record<string, string> = {
-  interior_huevo: 'fase_huevo', laminas_pie_color: 'himenio', color_poros: 'himenio', himenio_cantarelo: 'himenio',
-  color_reticulo: 'pie', pie_serpiente: 'pie', volva_saco: 'volva', anillo_doble_movil: 'anillo',
-  azulea_al_corte: 'carne_y_corte', carne_enrojece: 'carne_y_corte', color_latex: 'carne_y_corte', interior_gleba: 'carne_y_corte',
-  sombrero_mayor_10cm: 'sombrero', piel_dura_escamosa: 'sombrero', en_matas_madera: 'habitat', cordones_base: 'habitat',
-};
+const PREGUNTAS_RASGO: Record<string, string> = {};
+for (const r of RASGOS) for (const q of r.preguntas) PREGUNTAS_RASGO[q] ??= r.clave;
 
 function pintarComparar() {
   const sec = $('#rec-comparar');

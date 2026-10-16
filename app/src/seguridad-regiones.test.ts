@@ -21,7 +21,7 @@ const EXCEPCIONES_APROBADAS: Record<string, string> = {
   lepista_nuda: 'las fuentes citan Cortinarius violetas, sin ficha ni toxicidad concreta',
   hygrophorus_latitabundus: 'First Nature cita H. hypothejus, sin toxicidad',
 };
-const SIN_CONF = /Las fuentes consultadas no documentan confusiones con setas tóxicas/;
+const SIN_CONF = /Las fuentes consultadas no citan una seta tóxica concreta con la que se confunda/;
 
 /** `especies.activas` de una YAML de región, en flujo ([a, b], también en varias líneas) o en bloque (- a). Sin dependencias. */
 function activasDeYaml(texto: string): string[] {

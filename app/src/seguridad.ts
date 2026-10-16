@@ -50,8 +50,9 @@ asignar('lactarioide', 'Lactarius Lactifluus');
 // lobo con los que también se confunde. Pleurotus (seta de cardo) va a «otros»; sus parecidas salen por «No confundir con…».
 asignar('hipogeo', 'Terfezia Tirmania Picoa Tuber Choiromyces Balsamia Genea Hydnotrya Elaphomyces Rhizopogon '
   + 'Melanogaster Hymenogaster Scleroderma Pisolithus Lycoperdon Bovista Calvatia Handkea Apioperdon');
-// Alicante (fase D1): la negrilla se confunde con T. pardinum y T. equestre; la colmenilla con Gyromitra (y Verpa,
-// Helvella); el champiñón, la senderuela y Lepista con las Clitocybe blancas de prado.
+// Alicante (fase D1). Con fuente: la negrilla se confunde con T. pardinum y T. equestre, la colmenilla con Gyromitra
+// (docs/investigacion/2026-10-15-fichas-alicante.md). Por precaución, sin fuente que nombre el par: Verpa, Helvella y
+// Disciotis (aspecto de colmenilla) y el champiñón, la senderuela y Lepista (prados y corros, el hábitat de C. dealbata).
 asignar('tricolomoide', 'Tricholoma');
 asignar('morcheloide', 'Morchella Mitrophora Gyromitra Verpa Helvella Disciotis');
 asignar('clitociboide', 'Clitocybe Infundibulicybe Marasmius Lepista Collybia Agaricus');
@@ -87,7 +88,7 @@ export const PREGUNTAS: Pregunta[] = [
     ayuda: 'Haz también una foto del interior. El de la oronja deja ver el sombrero naranja y las láminas y el pie amarillos; el de A. phalloides y A. verna es blanco.',
     opciones: [op('naranja_amarillo', 'Naranja y amarillo'), op('blanco', 'Blanco'), op('no_es_huevo', 'No es un huevo'), op(NO_SE, 'No sé')] },
   { id: 'laminas_pie_color', grupo: 'amanitoide', texto: '¿De qué color son las láminas y el pie?',
-    opciones: [op('amarillos', 'Amarillos'), op('blancos', 'Blancos o grisáceos'), op('rosas_marrones', 'Láminas rosas o marrones'),
+    opciones: [op('amarillos', 'Amarillos'), op('blancos', 'Blancos o grisáceos'), op('rosas_marrones', 'Láminas rosa vivo o marrón oscuro'),
       op('otro', 'Otro color'), op(NO_SE, 'No sé')] },
   { id: 'color_sombrero', grupo: 'amanitoide', texto: '¿De qué color es el sombrero?',
     ayuda: 'Míralo con luz de día. Si tiene escamas o verrugas, fíjate en el color del fondo.',
@@ -201,8 +202,9 @@ export const DESCARTES: Regla[] = [
   { especie: 'gyromitra_esculenta', si: { superficie_sombrero: ['alveolos'], morchella_interior: ['hueca'] },
     motivo: 'sombrero con celdas como un panal y hueca por dentro en una sola cavidad' },
 
-  // Clitocybe blancas de prado (mortal según la tabla de toxicidad): dos rasgos del champiñón, láminas rosas o
-  // marrones (las de Clitocybe son blancas o crema) y anillo en el pie (Clitocybe no tiene).
+  // Clitocybe blancas de prado (mortal según la tabla de toxicidad): dos rasgos del champiñón, láminas rosa vivo o
+  // marrón oscuro (las de C. dealbata son blancas y, ya viejas, rosado grisáceas) y anillo en el pie (no tiene).
+  // Láminas blancas sin anillo disparan su alerta.
   { especie: 'clitocybe_dealbata', si: { laminas_pie_color: ['rosas_marrones'], anillo_pie: ['si'] }, motivo: 'láminas rosas o marrones y anillo en el pie' },
 ];
 
@@ -221,8 +223,12 @@ export const ALERTAS: ReglaAlerta[] = [
     texto: 'Interior negro violáceo o pardo púrpura: rasgo de Scleroderma, TÓXICA.' },
   { nivel: 'toxica', especies: ['scleroderma_citrinum'], si: { piel_dura_escamosa: ['si'], cordones_base: ['si'] },
     texto: 'Piel dura y escamosa y unida al suelo por cordones: rasgos de Scleroderma, TÓXICA.' },
-  { nivel: 'mortal', especies: ['tricholoma_equestre'], si: { laminas_pie_color: ['amarillos'], color_sombrero: ['amarillo_verdoso'] },
-    texto: 'Láminas amarillas y sombrero amarillo verdoso: rasgos de Tricholoma equestre, que ha causado intoxicaciones musculares MORTALES.' },
+  { nivel: 'mortal', especies: ['tricholoma_equestre'], si: { laminas_pie_color: ['amarillos'], color_sombrero: ['amarillo_verdoso', 'pardo', 'otro'] },
+    texto: 'Láminas amarillas y sombrero amarillento, pardo u ocre: rasgos de Tricholoma equestre, que ha causado intoxicaciones musculares MORTALES.' },
+  { nivel: 'mortal', especies: ['amanita_phalloides', 'amanita_verna'], si: { laminas_pie_color: ['blancos'], color_sombrero: ['amarillo_verdoso', 'blanco'] },
+    texto: 'Láminas blancas y sombrero verdoso, amarillento o blanco: rasgos de Amanita phalloides o Amanita verna, MORTALES.' },
+  { nivel: 'mortal', especies: ['clitocybe_dealbata'], si: { laminas_pie_color: ['blancos'], anillo_pie: ['no'] },
+    texto: 'Láminas blancas y sin anillo: en una seta blanca de prado son rasgos de Clitocybe dealbata, MORTAL.' },
   { nivel: 'toxica', especies: ['tricholoma_pardinum'], si: { superficie_sombrero: ['escamas_oscuras'] },
     texto: 'Escamas oscuras y gruesas sobre fondo claro: rasgo de Tricholoma pardinum, TÓXICA.' },
   { nivel: 'mortal', especies: ['gyromitra_esculenta'], si: { superficie_sombrero: ['cerebro'] },
@@ -282,6 +288,9 @@ export function evaluar(candidatos: CandidatoMin[], fichas: FichaMin[], respuest
   // géneros «otros». Solo las respuestas guiadas las descartan.
   const porque = noReconocido || !candidatos.length ? 'no se ha reconocido la seta' : 'mortal: el reconocedor puede fallar';
   for (const f of fichas) if (f.grupo === 'mortal') anadir(f.id, porque);
+  // Una respuesta que apunta a una peligrosa la trae aunque ningún candidato active su grupo (p. ej. escamas oscuras
+  // de T. pardinum con un top-5 sin Tricholoma): la pregunta sale por otra especie y la respuesta no se pierde.
+  for (const a of ALERTAS) if (cumple(a.si, respuestas)) for (const e of a.especies) anadir(e, 'tus respuestas apuntan a ella');
 
   const alertas: Alerta[] = ALERTAS.filter((a) => cumple(a.si, respuestas) && a.especies.some((e) => origen.has(e)))
     .map((a) => ({ nivel: a.nivel, texto: a.texto, especies: a.especies.filter((e) => origen.has(e)) }));
@@ -316,7 +325,7 @@ export function respuestasParaWorker(preguntas: Pregunta[], r: Respuestas): Reco
   return out;
 }
 
-const PROHIBIDO = /\b(comestibles?|se puede[n]? comer|apta?s? para (el )?consumo|buen comestible|excelente comestible)\b/gi;
+const PROHIBIDO = /\b(comestib\w*|se pueden? comer\w*|se comen?|apt[oa]s? para (el )?consumo|es segur[ao]s?|son segur[ao]s)\b/gi;
 /** Defensa en profundidad para textos que vienen de fuera (Gemini): nunca mostrar «comestible». */
 export function sinComestible(t: string): string {
   return t.replace(PROHIBIDO, '[consulta a un experto]');

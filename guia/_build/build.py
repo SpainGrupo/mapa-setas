@@ -12,7 +12,7 @@ EXPERTO = "No la consumas sin la confirmación de un experto (micólogo, socieda
 AV_GRUPO = {"apreciada": "Apreciada en la bibliografía micológica. " + EXPERTO,
             "comestible_menor": "Poco valorada en la bibliografía micológica. " + EXPERTO}
 # Decisión 2 de Alexander (2026-10-15): especies buscables sin parecida tóxica documentada en las fuentes.
-SIN_CONF = "Las fuentes consultadas no documentan confusiones con setas tóxicas. Eso no garantiza nada: confírmalo con un experto."
+SIN_CONF = "Las fuentes consultadas no citan una seta tóxica concreta con la que se confunda; el reconocedor sigue listando las peligrosas de su grupo. Eso no garantiza nada: confírmalo con un experto."
 
 # ---------- fuentes ----------
 def ac(slug, nombre):
@@ -164,7 +164,7 @@ sp(id="amanita_caesarea", nombre_cientifico="Amanita caesarea (Scop.) Pers.", no
    fuentes=[ac("amanita-caesarea", "Amanita caesarea"), GUIA, EFI, NAT, fn("amanita-caesarea", "Amanita caesarea"), wp("es", "Amanita_caesarea", "Amanita caesarea"), sf(208468, "Amanita caesarea")])
 
 sp(id="lactarius_deliciosus", nombre_cientifico="Lactarius deliciosus (L.) Gray", nombres_comunes=["níscalo", "mízcalo", "guíscano", "nízcalo"],
-   grupo="apreciada", toxicidad_nota=AV + " Especies próximas que se recolectan igual: L. sanguifluus (carne y látex que viran a rojo vino) y L. semisanguifluus. L. vinosus es para Index Fungorum sinónimo de L. sanguifluus.",
+   grupo="apreciada", toxicidad_nota=AV + " Especies próximas: L. sanguifluus (carne y látex que viran a rojo vino) y L. semisanguifluus. L. vinosus es para Index Fungorum sinónimo de L. sanguifluus.",
    sombrero="De 4 a 20 cm (hasta 25). Naranja con círculos concéntricos más claros y más oscuros, margen enrollado. Con la edad se hunde en embudo y aparecen manchas verdes.",
    himenio="Láminas naranjas, apretadas, que se vuelven verdes donde se dañan.",
    pie="Corto, hueco con la edad, quebradizo, con hoyuelos o manchas más oscuras.",
@@ -519,7 +519,7 @@ sp(id="lactarius_chrysorrheus", nombre_cientifico="Lactarius chrysorrheus Fr.", 
 
 sp(id="chlorophyllum_rhacodes", nombre_cientifico="Chlorophyllum rhacodes (Vittad.) Vellinga y C. brunneum (Farl. & Burt) Vellinga", nombres_comunes=["apagador menor"],
    grupo="toxica",
-   toxicidad_nota="TÓXICA O DUDOSA. C. brunneum se considera tóxica (gastroenteritis). C. rhacodes se recolectaba, pero hoy hay dudas porque resulta indigesta para algunas personas y su clasificación es confusa. C. molybdites, de láminas verdosas, también es tóxica.",
+   toxicidad_nota="TÓXICA O DUDOSA. C. brunneum se considera tóxica (gastroenteritis). Sobre C. rhacodes hay dudas, porque resulta indigesta para algunas personas y su clasificación es confusa. C. molybdites, de láminas verdosas, también es tóxica.",
    sombrero="Hasta 20 cm. Globoso y luego extendido, sin mamelón o con uno muy leve. Escamas grandes pardo grisáceas sobre fondo blanco rosado.",
    himenio="Láminas libres, blancas, luego ocres; color herrumbre donde se dañan.",
    pie="Liso, sin dibujo de piel de serpiente, blanquecino arriba y ocre óxido abajo. Base engrosada poco a poco (C. rhacodes) o bruscamente bulbosa y marginada (C. brunneum).",
@@ -575,7 +575,7 @@ sp(id="pleurotus_eryngii", nombre_cientifico="Pleurotus eryngii (DC.) Quél.", n
 
 sp(id="terfezia_arenaria", nombre_cientifico="Terfezia arenaria (Moris) Trappe y T. claveryi Chatin", nombres_comunes=["criadilla de tierra", "turma", "turma de tierra", "patata de tierra"],
    grupo="apreciada",
-   toxicidad_nota=AV + " Crece bajo tierra y se reconoce peor que una seta con sombrero. Según Cesta y Setas, la confusión más peligrosa es con las falsas trufas blancas del género Choiromyces (C. meandriformis es tóxica y tiene la carne con venas blancas en forma de meandro). La criadilla jarera (Choiromyces magnusii), asociada a las jaras, es otra especie que se recolecta. Las Scleroderma, tóxicas, también se han confundido con trufas.",
+   toxicidad_nota=AV + " Crece bajo tierra y se reconoce peor que una seta con sombrero. Según Cesta y Setas, la confusión más peligrosa es con las falsas trufas blancas del género Choiromyces (C. meandriformis es tóxica y tiene la carne con venas blancas en forma de meandro). La criadilla jarera (Choiromyces magnusii), asociada a las jaras, es otra especie parecida. Las Scleroderma, tóxicas, también se han confundido con trufas.",
    sombrero="No tiene sombrero ni pie. Cuerpo redondeado como una patata, de 3 a 10 cm (hasta 14 según el MITECO). Piel (peridio) blanco amarillenta de joven, luego rojiza y al final parda; lisa al principio y agrietada con la edad, a veces con manchas negras.",
    himenio="No tiene láminas ni poros: las esporas se forman dentro de la carne (gleba).",
    pie="No tiene.",
@@ -609,7 +609,7 @@ sp(id="scleroderma_citrinum", nombre_cientifico="Scleroderma citrinum Pers. y S.
 
 # ================= ALICANTE (fase D1): docs/investigacion/2026-10-15-fichas-alicante.md =================
 sp(id="hygrophorus_latitabundus", nombre_cientifico="Hygrophorus latitabundus Britzelm.", nombres_comunes=["llenega negra", "llenega gris", "mocosa"],
-   grupo="comestible_menor", toxicidad_nota=AV + " " + SIN_CONF,
+   grupo="apreciada", toxicidad_nota=AV + " " + SIN_CONF,
    sombrero="De 3 a 12 cm (hasta 13). Gris pardo a pardo negruzco, más oscuro en el centro. Muy viscoso con humedad y pegajoso mucho tiempo después. Borde enrollado y mamelón ancho y bajo.",
    himenio="Láminas blancas, gruesas y céreas, algo decurrentes y medianamente separadas; con la edad se manchan de pardo.",
    pie="Blanco, más grueso hacia la mitad y viscoso, con fibrillas pardas arriba; abajo lo oscurecen los restos de mucílago.",
@@ -625,7 +625,7 @@ sp(id="hygrophorus_latitabundus", nombre_cientifico="Hygrophorus latitabundus Br
 
 sp(id="morchella_spp", nombre_cientifico="Morchella esculenta (L.) Pers. y especies próximas (M. elata, M. conica)", nombres_comunes=["colmenilla", "cagarria", "morilla", "múrgula"],
    grupo="apreciada",
-   toxicidad_nota=AV + " Cruda o poco cocinada es tóxica. Saviuc et al. (2010) describen además un síndrome neurológico (temblor, mareo, falta de equilibrio) tras comer colmenillas, más frecuente con cantidades grandes.",
+   toxicidad_nota=AV + " En crudo o poco cocinada causa trastornos digestivos, y Saviuc et al. (2010) describen además un síndrome neurológico (temblor, mareo, falta de equilibrio) en personas que la habían comido.",
    sombrero="De 3 a 8 cm de ancho y de 5 a 12 de alto; globoso, ovalado o cónico. Celdas hundidas e irregulares separadas por costillas, como un panal. De crema a ocre o pardo. M. elata es más oscura y puntiaguda, con las celdas en columnas.",
    himenio="No tiene láminas ni poros: la superficie fértil está dentro de las celdas.",
    pie="Blanco cremoso, granuloso, hueco y engrosado en la base. El borde del sombrero se une a él.",
@@ -637,7 +637,7 @@ sp(id="morchella_spp", nombre_cientifico="Morchella esculenta (L.) Pers. y espec
    temporada="Primavera, desde finales de marzo.",
    rasgos_clave=["Sombrero con celdas hundidas, como un panal", "Hueca de arriba abajo, en una sola cavidad", "Borde del sombrero unido al pie", "Sale en primavera"],
    no_confundir_con=[
-     {"id": "gyromitra_esculenta", "diferencias": ["Gyromitra tiene el sombrero con pliegues como un cerebro, sin celdas", "Por dentro tiene cámaras irregulares; la colmenilla es una sola cavidad", "Su sombrero es pardo rojizo oscuro"]}],
+     {"id": "gyromitra_esculenta", "diferencias": ["Gyromitra tiene el sombrero con pliegues como un cerebro, sin celdas", "Por dentro tiene cámaras irregulares; la colmenilla es una sola cavidad", "Su sombrero suele ser pardo rojizo (G. gigas, más clara)"]}],
    fuentes=[ac("morchella-esculenta", "Morchella esculenta"), fn("morchella-esculenta", "Morchella esculenta"), MORCH, sf(247978, "Morchella esculenta"), gbif(2594602, "Morchella esculenta"), gbif(2594626, "Morchella elata")])
 
 sp(id="tricholoma_terreum", nombre_cientifico="Tricholoma terreum (Schaeff.) P. Kumm.", nombres_comunes=["negrilla", "fredolic", "ratonera"],
@@ -695,7 +695,7 @@ sp(id="tricholoma_equestre", nombre_cientifico="Tricholoma equestre (L.) P. Kumm
 sp(id="gyromitra_esculenta", nombre_cientifico="Gyromitra esculenta (Pers.) Fr. (incluye G. gigas)", nombres_comunes=["falsa colmenilla", "bonete"],
    grupo="mortal",
    toxicidad_nota="MORTAL. Contiene giromitrina. Entre 6 y 24 horas después de comerla aparecen vómitos y diarrea y, en los casos graves, daño en el sistema nervioso, el hígado y el riñón; puede causar la muerte a los pocos días. Ni secarla ni cocinarla elimina el riesgo. La tabla de toxicidad incluye también G. gigas.",
-   sombrero="De 3 a 10 cm (hasta 15). Irregular y lobulado, con pliegues como un cerebro; pardo rojizo oscuro a casi negro. No tiene celdas.",
+   sombrero="De 3 a 10 cm (hasta 15). Irregular y lobulado, con pliegues como un cerebro; pardo rojizo oscuro a casi negro. G. gigas es más grande y más clara, de rojiza a avellana. No tiene celdas.",
    himenio="No tiene láminas ni poros: la superficie fértil es la del sombrero.",
    pie="Corto, blanco rosado o crema, con surcos y frágil.",
    volva="No tiene.", anillo="No tiene.",
@@ -703,8 +703,8 @@ sp(id="gyromitra_esculenta", nombre_cientifico="Gyromitra esculenta (Pers.) Fr. 
    olor_sabor="Olor suave. No se debe probar.",
    esporada="Amarillenta pálida.",
    habitat="Bosques de coníferas con humus, en suelo arenoso bajo pinos; prefiere más de 800 m de altitud. GBIF no tiene registros en la zona de Alicante: la ficha está porque se confunde con la colmenilla.",
-   temporada="Primavera, como las colmenillas.",
-   rasgos_clave=["Sombrero como un cerebro, sin celdas", "Por dentro tiene cámaras; no está hueca de arriba abajo", "Color pardo rojizo oscuro", "Sale en primavera, como las colmenillas"],
+   temporada="Primavera, como las colmenillas. AmanitaCesarea.com sitúa G. gigas en otoño.",
+   rasgos_clave=["Sombrero como un cerebro, sin celdas", "Por dentro tiene cámaras; no está hueca de arriba abajo", "Color pardo rojizo; G. gigas, más clara", "Puede salir a la vez que las colmenillas"],
    no_confundir_con=[
      {"id": "morchella_spp", "diferencias": ["La colmenilla tiene celdas hundidas como un panal, no pliegues", "Cortada de arriba abajo, la colmenilla es una sola cavidad"]}],
    fuentes=[ac("gyromitra-esculenta", "Gyromitra esculenta"), fn("gyromitra-esculenta", "Gyromitra esculenta"), TOX, DON, sf(236690, "Gyromitra esculenta")])
@@ -771,7 +771,7 @@ DESC = {
  "fotos/gyromitra_esculenta_1.jpg": "Cortadas de arriba abajo: pliegues y cámaras por dentro",
  "fotos/tricholoma_equestre_1.jpg": "Láminas y pie amarillos",
  "fotos/tricholoma_pardinum_1.jpg": "Escamas oscuras en círculos sobre fondo claro",
- "fotos/tricholoma_terreum_3.jpg": "Láminas blanquecinas y grises, nunca amarillas",
+ "fotos/tricholoma_terreum_3.jpg": "Láminas blanquecinas y grises",
  "fotos/suillus_bellinii_3.jpg": "S. collinitus: micelio rosado en la base del pie",
  "fotos/lactarius_deliciosus_3.jpg": "L. sanguifluus: láminas y carne del pie de tono rojo vino",
 }

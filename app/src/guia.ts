@@ -31,6 +31,13 @@ export const ETIQUETA_GRUPO: Record<Grupo, string> = {
 export const TITULO_GRUPO: Record<Grupo, string> = {
   apreciada: 'Muy apreciadas', comestible_menor: 'De poco valor', toxica: 'Tóxicas', mortal: 'Mortales',
 };
+/**
+ * Nota de una ficha buscada sin el aviso de su grupo (lo sustituye el aviso rojo cuando hay mortales sin descartar):
+ * lo que queda son avisos propios de la especie (p. ej. la colmenilla, tóxica en crudo), que no se deben perder.
+ */
+export function notaSinAviso(nota: string): string {
+  return nota.replace(/^(Apreciada|Poco valorada) en la bibliografía micológica\. No la consumas sin la confirmación de un experto( \([^)]*\))?\.\s*/, '');
+}
 export const COMESTIBLES: ReadonlySet<Grupo> = new Set(['apreciada', 'comestible_menor']);
 /**
  * Aviso fijo de las fichas que se buscan para recolectar (decisión de Alexander, 2026-10-15): etiqueta neutra del grupo,

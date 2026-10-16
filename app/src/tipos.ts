@@ -20,7 +20,9 @@ export interface Especie { id: string; nombre: string; tiempo?: Reglas; fiabilid
   /** Citas de la zona con precisión ≤ 1 km que usó la calibración (calibracion.json → exportar.especies). */
   n_citas?: number | null;
   /** Multi-región: la especie está en la guía pero sin hábitat en esta región (sin pmtiles de idoneidad). */
-  sin_habitat?: boolean }
+  sin_habitat?: boolean;
+  /** false: el perfil no está validado con citas en esta región (exportar.calibrado). Ausente en manifests antiguos. */
+  calibrado?: boolean }
 
 export interface Manifest {
   generado: string;

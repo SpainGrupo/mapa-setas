@@ -153,7 +153,9 @@ try {
   await p.waitForFunction(() => navigator.serviceWorker?.controller, null, { timeout: 30000 });
   ok('carga en línea con el service worker activo');
   const reg = await p.evaluate(() => window.__setas.region());
-  comprobar(reg.activa === 'marbella' && await p.locator('#btn-region').isHidden(), `región activa marbella y sin chip con una sola región (${reg.regiones})`);
+  // Con una sola región no hay chip; con más (datos de Alicante), el chip se ve y el GPS del e2e elige Marbella.
+  comprobar(reg.activa === 'marbella' && (reg.regiones.length > 1) === await p.locator('#btn-region').isVisible(),
+    `región activa marbella; chip ${reg.regiones.length > 1 ? 'visible' : 'oculto'} (${reg.regiones})`);
   await reposo();
   await captura('01-inicio.png');
   // Conteos de la guía servida (la guía puede crecer; no se fijan números).

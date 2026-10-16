@@ -27,6 +27,11 @@ export function textoFiabilidad(f: unknown, nCitas?: number | null): string {
   return TEXTO[n];
 }
 
+/** Aviso cuando el pipeline marca la especie como no calibrada en la región (manifest.especies[].calibrado === false). */
+export const TEXTO_SIN_CALIBRAR = 'Modelo sin validar en esta zona';
+/** Solo con `calibrado: false` explícito: un manifest antiguo sin el campo no dice nada. */
+export const sinCalibrar = (e: { calibrado?: unknown }) => e.calibrado === false;
+
 /** Insignia de texto (con la explicación como tooltip). */
 export function insigniaFiabilidad(f: unknown, nCitas?: number | null): HTMLSpanElement {
   const s = document.createElement('span');

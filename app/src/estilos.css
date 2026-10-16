@@ -771,6 +771,7 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .se-divisor { list-style: none; margin: 10px 10px 2px; padding: 8px 0 0; border-top: 1px solid var(--regla); font-size: 13px; font-weight: 800; letter-spacing: 0.06em;
   text-transform: uppercase; color: var(--tinta-2); }
 .lista-especies .inactiva { opacity: 0.72; }
+.lista-especies .se-sin-calibrar, .aviso-calibrado { font-size: 14px; font-weight: 700; color: var(--ambar-tx); }
 .lista-especies .sin-habitat { cursor: default; }
 .lista-especies .sin-habitat .miniatura-especie { filter: grayscale(1); opacity: 0.5; }
 .lista-especies .sin-habitat .se-texto b, .lista-especies .sin-habitat .se-texto i { color: var(--tinta-2); }

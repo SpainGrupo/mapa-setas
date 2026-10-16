@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
-import { EXPLICACION_FIABILIDAD, insigniaFiabilidad, nivelFiabilidad, textoFiabilidad } from './fiabilidad';
+import { EXPLICACION_FIABILIDAD, sinCalibrar, TEXTO_SIN_CALIBRAR, insigniaFiabilidad, nivelFiabilidad, textoFiabilidad } from './fiabilidad';
 
 describe('fiabilidad por especie', () => {
   it('texto de cada nivel', () => {
@@ -31,5 +31,15 @@ describe('citas que faltan', () => {
     expect(textoFiabilidad('sin_validar')).toBe('Mapa sin comprobar');
     expect(textoFiabilidad('buena', 40)).toBe('Mapa comprobado: acierta bien');
     expect(insigniaFiabilidad('sin_validar', 2).textContent).toBe('Mapa sin comprobar (2 citas, hacen falta 10)');
+  });
+});
+
+describe('calibrado', () => {
+  it('solo calibrado:false explícito avisa «Modelo sin validar en esta zona»', () => {
+    expect(TEXTO_SIN_CALIBRAR).toBe('Modelo sin validar en esta zona');
+    expect(sinCalibrar({ calibrado: false })).toBe(true);
+    expect(sinCalibrar({ calibrado: true })).toBe(false);
+    expect(sinCalibrar({})).toBe(false);
+    expect(`${TEXTO_SIN_CALIBRAR}`).not.toMatch(/comestible/i);
   });
 });

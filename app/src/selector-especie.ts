@@ -5,7 +5,7 @@
 import { binomio, DESCRITA_EN_OTRA_FICHA, fichaDeEspecieMapa, miniaturaEspecie, nombreComun } from './guia';
 import { fichaGuia, indiceGuia } from './guia-ui';
 import type { Especie } from './tipos';
-import { EXPLICACION_FIABILIDAD, insigniaFiabilidad, nivelFiabilidad, textoFiabilidad } from './fiabilidad';
+import { EXPLICACION_FIABILIDAD, insigniaFiabilidad, nivelFiabilidad, sinCalibrar, textoFiabilidad, TEXTO_SIN_CALIBRAR } from './fiabilidad';
 import type { ResultadoSemaforo } from './semaforo';
 import { ordenarSelector, type EtiquetaInactiva } from './ventana-especie';
 import { NOMBRE_ESTADO } from './zona';
@@ -71,6 +71,8 @@ export function pintarSelectorEspecie() {
       leyenda.className = `insignia-fiabilidad fiab-${nivelFiabilidad(actual.fiabilidad)}`;
       leyenda.dataset.fiabilidad = nivelFiabilidad(actual.fiabilidad);
       $('#txt-fiabilidad-expl').textContent = EXPLICACION_FIABILIDAD;
+      const cal = $('#txt-calibrado');
+      if (cal) { cal.hidden = !sinCalibrar(actual); cal.textContent = TEXTO_SIN_CALIBRAR; }
     }
   }
   const ul = $('#lista-especies');
@@ -117,6 +119,7 @@ export function pintarSelectorEspecie() {
       if (donde) { const l = document.createElement('span'); l.className = 'se-lugar'; l.textContent = `activa cerca de ${donde}`; pie.append(l); }
     }
     pie.append(insigniaFiabilidad(e.fiabilidad, e.n_citas));
+    if (sinCalibrar(e)) { const s = document.createElement('span'); s.className = 'se-sin-calibrar'; s.textContent = TEXTO_SIN_CALIBRAR; pie.append(s); }
     txt.append(pie);
     const marca = document.createElement('span'); marca.className = 'se-marca'; marca.setAttribute('aria-hidden', 'true');
     if (elegida) marca.innerHTML = '<svg class="ico"><use href="#i-check"/></svg>';

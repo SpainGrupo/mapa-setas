@@ -147,6 +147,25 @@ def test_nombre_pmtiles_con_ruta_absoluta_se_guarda_relativo_a_out(tmp_path):
     assert hs[1]["pmtiles"]["app/x.pmtiles"]["nombre"] == "<out>/app/x.pmtiles"   # (el tamaño cambia con la ruta)
 
 
+def test_nombre_pmtiles_generado_en_otro_arbol_y_copiado_se_guarda_relativo_a_out(tmp_path):
+    """Datos copiados de otro worktree (2026-10-16): tippecanoe dejó en `name` la ruta absoluta del árbol donde se
+    generaron, que no está bajo el out actual. La huella no debe depender de dónde se generó el archivo."""
+    from pmtiles.tile import TileType
+    from setas_pipeline.exportar import _Salida
+    out = tmp_path / "aqui" / "marbella" / "out"; (out / "app").mkdir(parents=True)
+    otro = tmp_path / "otro-worktree" / "pipeline" / "data" / "marbella" / "out" / "app" / "x.pmtiles"
+    s = _Salida(out / "app" / "x.pmtiles", TileType.PNG, str(otro), "d")
+    s.poner(8, 120, 100, b"png")
+    s.cerrar((-5.0, 36.0, -4.0, 37.0), 8, 8, "IGN")
+    assert D.huella(out)["pmtiles"]["app/x.pmtiles"]["nombre"] == "<out>/app/x.pmtiles"
+    # una ruta absoluta que no acaba en la del propio archivo no se toca (sería otro dato, no la ruta de -o)
+    out2 = tmp_path / "b" / "out"; (out2 / "app").mkdir(parents=True)
+    s = _Salida(out2 / "app" / "x.pmtiles", TileType.PNG, "/otra/cosa/y.pmtiles", "d")
+    s.poner(8, 120, 100, b"png")
+    s.cerrar((-5.0, 36.0, -4.0, 37.0), 8, 8, "IGN")
+    assert D.huella(out2)["pmtiles"]["app/x.pmtiles"]["nombre"] == "/otra/cosa/y.pmtiles"
+
+
 def test_la_clave_modelo_del_manifest_no_cuenta():
     """El reconocedor (modelo/construir.py) no es del pipeline: cambiarlo no rompe la regresión de Marbella."""
     from setas_pipeline import dorado as D

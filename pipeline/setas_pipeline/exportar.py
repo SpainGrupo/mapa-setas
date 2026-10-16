@@ -354,6 +354,12 @@ def fiabilidad(n: int | None, lift_validacion: float | None) -> str:
     return "media" if lift_validacion >= 1.3 else "baja"
 
 
+def calibrado(n: int | None, lift_validacion: float | None) -> bool:
+    """La validación confirma el modelo: fiabilidad «media» o «buena». Con «baja» (lift retenido < 1,3,
+    p. ej. P. eryngii 0,0 o Agaricus 1,01 en Alicante) el mapa no supera al azar: la app dice «sin validar»."""
+    return fiabilidad(n, lift_validacion) in ("buena", "media")
+
+
 def _calibracion(region: Region) -> dict:
     ruta = region.out / "calibracion.json"
     return json.loads(ruta.read_text()) if ruta.exists() else {}
@@ -368,7 +374,7 @@ def especies(region: Region) -> list[dict]:
              "fiabilidad": fiabilidad(cal.get(k, {}).get("n"), cal.get(k, {}).get("lift_validacion")),
              "n_citas": cal.get(k, {}).get("n"),
              # Fase C: false = perfil heurístico sin validar con citas en esta zona (n < MIN_OBS o sin lift).
-             "calibrado": fiabilidad(cal.get(k, {}).get("n"), cal.get(k, {}).get("lift_validacion")) != "sin_validar",
+             "calibrado": calibrado(cal.get(k, {}).get("n"), cal.get(k, {}).get("lift_validacion")),
              "sin_habitat": k in region.especies_sin_habitat}
             for k, v in perfiles.items()]
 

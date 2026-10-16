@@ -364,3 +364,12 @@ def test_salida_sin_teselas_escribe_una_transparente(tmp_path):
     with open(tmp_path / "v.pmtiles", "rb") as f:
         h = Reader(MmapSource(f)).header()
     assert h["min_zoom"] == 8
+
+
+def test_calibrado_exige_lift_validado():
+    from setas_pipeline.exportar import calibrado
+    assert calibrado(65, 2.5) is True
+    assert calibrado(25, 1.3) is True
+    assert calibrado(11, 0.0) is False      # P. eryngii en Alicante
+    assert calibrado(29, 1.01) is False     # Agaricus en Alicante
+    assert calibrado(5, None) is False

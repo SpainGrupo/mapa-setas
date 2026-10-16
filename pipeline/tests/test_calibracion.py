@@ -103,3 +103,21 @@ def test_decidir_borde_urbano():
     assert decidir_borde_urbano(res) == (True, [])
     res["c"] = {"celda": {"n": 12}, "variantes": v(3.0, 2.9)}
     assert decidir_borde_urbano(res) == (False, ["c"])
+
+
+def test_clave_taxon_no_acepta_el_genero(monkeypatch):
+    # GBIF, si no reconoce la especie, devuelve el género (matchType HIGHERRANK, rank GENUS): no vale esa clave
+    monkeypatch.setattr(calibracion.requests, "get", lambda *a, **k: _R(
+        {"matchType": "HIGHERRANK", "rank": "GENUS", "usageKey": 8187, "genusKey": 8187}))
+    assert calibracion.clave_taxon("Boletus inventadus") is None
+    monkeypatch.setattr(calibracion.requests, "get", lambda *a, **k: _R(
+        {"matchType": "EXACT", "rank": "GENUS", "usageKey": 8187}))
+    assert calibracion.clave_taxon("Boletus") is None
+
+
+def test_clave_taxon_sinonimo_da_la_aceptada(monkeypatch):
+    # regla B. aestivalis = B. reticulatus: el sinónimo resuelve a la clave del aceptado
+    monkeypatch.setattr(calibracion.requests, "get", lambda *a, **k: _R(
+        {"matchType": "EXACT", "rank": "SPECIES", "status": "SYNONYM", "usageKey": 5954988,
+         "acceptedUsageKey": 5954691, "speciesKey": 5954691}))
+    assert calibracion.clave_taxon("Boletus aestivalis") == 5954691

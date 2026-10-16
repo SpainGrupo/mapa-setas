@@ -115,9 +115,24 @@ def _cache(raw: Path, nombre, refrescar, fn):
 
 
 # ---------------------------------------------------------------- GBIF
-def gbif_claves(nombre: str) -> int | None:
-    j = _get(f"{GBIF}/species/match", {"name": nombre, "kingdom": "Fungi"})
+RANGOS_ESPECIE = ("SPECIES", "SUBSPECIES", "VARIETY", "FORM")   # rangos aceptables de un species/match
+
+
+def clave_especie(j: dict, nombre: str) -> int | None:
+    """Clave GBIF de una respuesta de species/match, solo si casa con una especie (o rango inferior).
+    Un sinónimo da la clave del aceptado (B. aestivalis → B. reticulatus). Si GBIF solo reconoce un rango
+    superior (matchType HIGHERRANK, rank GENUS…) o nada (NONE) → None con aviso: la clave del género
+    traería las citas de todo el género."""
+    tipo, rango = j.get("matchType"), j.get("rank")
+    if tipo in (None, "NONE") or tipo == "HIGHERRANK" or rango not in RANGOS_ESPECIE:
+        print(f"  WARNING: GBIF no reconoce la especie {nombre!r} (matchType={tipo}, rank={rango}); se omite",
+              flush=True)
+        return None
     return j.get("acceptedUsageKey") or j.get("usageKey")
+
+
+def gbif_claves(nombre: str) -> int | None:
+    return clave_especie(_get(f"{GBIF}/species/match", {"name": nombre, "kingdom": "Fungi"}), nombre)
 
 
 def gbif_ocurrencias(clave: int, wkt: str) -> list[dict]:

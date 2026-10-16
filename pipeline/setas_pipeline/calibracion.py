@@ -58,12 +58,13 @@ def wkt_redondeado(wkt: str, precision: float = 0.001) -> str:
 
 def clave_taxon(nombre: str) -> int | None:
     """Clave GBIF aceptada (un sinónimo, p. ej. B. aestivalis → B. reticulatus, da la del aceptado).
-    None si GBIF no reconoce el nombre (matchType NONE)."""
+    None si GBIF no reconoce la especie (matchType NONE) o solo un rango superior (HIGHERRANK, GENUS…)."""
+    from .citas import clave_especie
     j = requests.get(f"{GBIF}/species/match", params={"name": nombre}, timeout=30).json()
-    clave = j.get("acceptedUsageKey") or j.get("usageKey")
+    clave = clave_especie(j, nombre)
     if clave is None:
-        log.warning("GBIF no reconoce el taxón %r (matchType=%s)", nombre, j.get("matchType"))
-        print(f"  WARNING: GBIF no reconoce el taxón {nombre!r}; se omite")
+        log.warning("GBIF no reconoce la especie %r (matchType=%s, rank=%s)", nombre, j.get("matchType"),
+                    j.get("rank"))
     return clave
 
 

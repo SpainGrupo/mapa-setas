@@ -58,3 +58,11 @@ def test_taxa_extra_por_region_sin_tocar_las_demas():
     a = dataclasses.replace(m, citas={**m.citas, "taxa": {"morchella_spp": ["Morchella esculenta"]}})
     t = C.taxa_region(a)
     assert t["morchella_spp"] == ["Morchella esculenta"] and "morchella_spp" not in C.TAXA
+
+
+def test_gbif_claves_no_acepta_el_genero(monkeypatch):
+    monkeypatch.setattr(citas, "_get", lambda url, p: {"matchType": "HIGHERRANK", "rank": "GENUS", "usageKey": 8187})
+    assert citas.gbif_claves("Terfezia inventada") is None
+    monkeypatch.setattr(citas, "_get", lambda url, p: {"matchType": "EXACT", "rank": "SPECIES", "status": "SYNONYM",
+                                                       "usageKey": 5954988, "acceptedUsageKey": 5954691})
+    assert citas.gbif_claves("Boletus aestivalis") == 5954691

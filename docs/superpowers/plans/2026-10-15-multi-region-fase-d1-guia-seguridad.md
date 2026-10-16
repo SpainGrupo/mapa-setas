@@ -65,7 +65,7 @@ Ningún texto de ficha se escribe sin pasar antes por aquí. El dosier fija cada
 - Consumes: INV §2 (lista de especies y registros GBIF), constantes de fuentes de `guia/_build/build.py:9-34` (`GUIA`, `TOX`, `DON`, `ac()`, `fn()`, `sf()`, `wp()`).
 - Produces: para cada id (`tricholoma_terreum`, `hygrophorus_latitabundus`, `morchella_spp`, `tricholoma_pardinum`, `tricholoma_equestre`, `gyromitra_esculenta`, `clitocybe_dealbata`, más las variantes *S. collinitus*, *L. sanguifluus*, *L. vinosus* y *L. semisanguifluus*) una tabla «campo | texto | fuente (URL)», la decisión `grupo` con su cita, la tabla de confusiones y 3 títulos de archivo de Commons por ficha. La usan las Tasks 2, 3 y 5.
 
-- [ ] **Step 1: Fuentes de cada taxón**
+- [x] **Step 1: Fuentes de cada taxón**
 
 Para cada taxón, comprueba que cada URL responde con 200 antes de citarla:
 
@@ -97,7 +97,7 @@ curl -s "http://www.indexfungorum.org/ixfwebservice/fungus.asmx/NameSearch?Searc
 
 Saca el `RECORD_NUMBER` del nombre aceptado. Si el servicio falla, usa `https://api.gbif.org/v1/species/match?name=Tricholoma%20terreum` y cita `https://www.gbif.org/species/<usageKey>` como «GBIF, ficha taxonómica de <nombre>». Anota también el `usageKey` de GBIF de cada especie que vaya a decir «registros en la zona de Alicante» en su hábitat. Son las 7 nuevas y, de las existentes, `lactarius_deliciosus` (por *L. sanguifluus*), `suillus_bellinii` (por *S. collinitus*), `lepista_nuda`, `agaricus_campestris`, `hydnum_repandum`, `pleurotus_eryngii`, `macrolepiota_procera`, `boletus_aereus`, `amanita_phalloides`, `amanita_verna`, `lepiota_brunneoincarnata`, `omphalotus_olearius`, `rubroboletus_satanas`, `lactarius_chrysorrheus`, `amanita_pantherina` y `amanita_muscaria` (INV §2 da registros de todas en la zona).
 
-- [ ] **Step 2: Clasificación tóxica o mortal, con cita**
+- [x] **Step 2: Clasificación tóxica o mortal, con cita**
 
 Regla: `mortal` si una fuente toxicológica citada (TOX, DON o un artículo revisado) documenta muertes o un síndrome potencialmente mortal. Si no, `toxica`. Hay que comprobar estos puntos y anotar la cita exacta:
 
@@ -113,7 +113,7 @@ Comprueba también estos puntos, que van al dosier aunque no cambien el grupo:
 - *Morchella*: tóxica en crudo y síndrome neurológico (Saviuc et al., Clin. Toxicol. 2010;48:365-372, «Can morels (*Morchella* sp.) induce a toxic neurological syndrome?»). Comprueba que el artículo existe y anota la URL de PubMed.
 - *G. gigas*: ¿documenta alguna fuente su toxicidad? Si no, el dosier dice `PENDIENTE` y la ficha dice que se trata igual que *G. esculenta* «por precaución», sin atribuirle hechos.
 
-- [ ] **Step 3: Confusiones de cada comestible activa**
+- [x] **Step 3: Confusiones de cada comestible activa**
 
 Las comestibles activas en alguna región (plan A `marbella.yaml` y spec §1.3/§3.5) cuya ficha hoy no tiene una confusión tóxica o mortal son `suillus_bellinii` (también por *S. collinitus*), `lepista_nuda`, `hydnum_repandum`, `pleurotus_eryngii` y, cuando exista, `hygrophorus_latitabundus` (salida de `python3 guia/validar.py`, 4 avisos «comestible sin parecido tóxico/mortal»). Para cada una, busca en las fuentes de su ficha y en AmanitaCesarea.com o First Nature si citan una confusión con alguna de las tóxicas o mortales de la guía, incluidas las cuatro nuevas. Hipótesis que hay que comprobar, sin darlas por hechas:
 - `lepista_nuda` ↔ `clitocybe_dealbata` (Lepista y Clitocybe son géneros próximos; *L. nuda* se llamó *Clitocybe nuda*).
@@ -168,7 +168,7 @@ Para las variantes:
 
 Así la miniatura y la ficha muestran también la especie de Alicante.
 
-- [ ] **Step 5: Escribir el dosier y hacer commit**
+- [x] **Step 5: Escribir el dosier y hacer commit**
 
 Estructura obligatoria de `docs/investigacion/2026-10-15-fichas-alicante.md`:
 

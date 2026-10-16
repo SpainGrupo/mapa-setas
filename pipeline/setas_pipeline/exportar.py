@@ -591,6 +591,11 @@ def exportar_citas(region: Region, out: Path | None = None) -> dict:
     return res
 
 
+def zoom_base_max(region: Region) -> int:
+    """Zoom máximo del mapa base de la región. Alicante usa 14: a 15 su base pasa de 100 MB (límite de GitHub)."""
+    return int(region.zona.get("base_maxzoom", ZOOM_BASE_MAX))
+
+
 def exportar_base(region: Region, out: Path | None = None, maxzoom: int = ZOOM_BASE_MAX, build: str | None = None):
     """Extracto del build diario de Protomaps recortado a la zona (+ margen)."""
     import requests
@@ -631,7 +636,7 @@ def escribir_manifest(region: Region, out: Path | None = None) -> dict:
         "especies": especies(region),
         "umbrales": list(UMBRALES),
         "zoom": {"idoneidad": list(ZOOM_IDONEIDAD), "sombreado": list(ZOOM_SOMBREADO),
-                 "base_max": ZOOM_BASE_MAX},
+                 "base_max": zoom_base_max(region)},
         "base": build.read_text().strip() if build.exists() else None,
         "meteo": ({"puntos": "meteo_puntos.json", "zonas": "meteo_zonas.pmtiles"}
                   if (out / "meteo_puntos.json").exists() else None),
@@ -727,7 +732,8 @@ def main(argv=None):
     ap.add_argument("pasos", nargs="+", choices=["capas", "restricciones", "ccaa", "titularidad", "citas", "lugares", "base",
                                                  "meteo", "acceso", "altitud", "rutas", "sitios", "manifest",
                                                  "respaldo", "regiones", "todo"])
-    ap.add_argument("--maxzoom", type=int, default=ZOOM_BASE_MAX)
+    ap.add_argument("--maxzoom", type=int, default=None,
+                    help="zoom máximo del mapa base (por defecto zona.base_maxzoom de la región, o 15)")
     argumento_region(ap)
     a = ap.parse_args(argv)
     pasos = set(a.pasos)
@@ -755,7 +761,7 @@ def main(argv=None):
     if pasos & {"citas", "capas", "todo"}:
         print("citas…", flush=True); exportar_citas(region)
     if pasos & {"base", "todo"}:
-        exportar_base(region, maxzoom=a.maxzoom)
+        exportar_base(region, maxzoom=a.maxzoom or zoom_base_max(region))
     if pasos & {"meteo", "todo"}:
         print("meteo…", flush=True); exportar_meteo(region)
     elif "lugares" in pasos:

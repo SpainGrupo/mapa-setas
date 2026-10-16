@@ -392,3 +392,10 @@ def test_calibrado_exige_lift_validado():
     assert calibrado(11, 0.0) is False      # P. eryngii en Alicante
     assert calibrado(29, 1.01) is False     # Agaricus en Alicante
     assert calibrado(5, None) is False
+
+
+def test_zoom_base_max_por_region():
+    from setas_pipeline.exportar import zoom_base_max
+    from setas_pipeline.region import cargar_region
+    assert zoom_base_max(cargar_region("marbella")) == 15
+    assert zoom_base_max(cargar_region("alicante")) == 14

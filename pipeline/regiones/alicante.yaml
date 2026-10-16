@@ -8,6 +8,7 @@ origen: {lon: -0.4810, lat: 38.3452}            # INV §1 (centro de Alicante)
 
 zona:                                           # mismo método y cierre morfológico que Marbella (zona.py)
   radio_m: 230000                               # INV §1: lo alcanzable en 2 h cabe en 230 km
+  base_maxzoom: 14                              # a z15 base.pmtiles pesa 161 MB (> 100 MB de GitHub)
   paso_m: 5000
   max_s: 7200
   max_snap_m: 5000

@@ -118,6 +118,15 @@ def en_lo_edificado(geoms, malla, edificado) -> "np.ndarray":
     return res
 
 
+def n_montes(m, clase: str) -> int:
+    """Montes (no piezas) de una clase: un monte en varios recintos comparte código (adaptadores
+    sin_repetidos); los recintos sin código cuentan uno a uno."""
+    if not len(m):
+        return 0
+    cod = m.loc[m["clase"] == clase, "codigo"]
+    return int(cod.nunique() + cod.isna().sum())
+
+
 def construir(region, out: Path | None = None) -> dict:
     import geopandas as gpd
     import pandas as pd
@@ -179,8 +188,7 @@ def construir(region, out: Path | None = None) -> dict:
                         f"--attribution={region.atribuciones['titularidad']}"], check=True)
     cuenta = poli["clase"].value_counts().to_dict()
     res = {"poligonos": cuenta, "lineas": lin["tipo"].value_counts().to_dict() if len(lin) else {},
-           "montes_junta": int((m["clase"] == "monte_junta").sum()) if len(m) else 0,
-           "montes_municipales": int((m["clase"] == "monte_municipal").sum()) if len(m) else 0,
+           "montes_junta": n_montes(m, "monte_junta"), "montes_municipales": n_montes(m, "monte_municipal"),
            "ha_publicas": round(float(m.geometry.union_all().intersection(zona).area) / 1e4) if len(m) else 0,
            "cotos": len(c), "senales_osm": len(osm), "senales_osm_urbanas_descartadas": n_osm - len(osm)}
     (OUT / "titularidad_resumen.json").write_text(json.dumps(res, ensure_ascii=False, indent=1))

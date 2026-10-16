@@ -111,3 +111,13 @@ def test_montes_mismo_codigo_poligonos_distintos_no_se_pierden(monkeypatch):
     r = rediam.rediam_montes(cfg, Contexto(raw=".", zona=box(0, 0, 1000, 1000)))
     assert len(r) == 3 and r.area.sum() == 30000
     assert sorted(r["codigo"]) == ["MA-1", "MA-1", "MA-2"]
+
+
+def test_resumen_cuenta_montes_no_piezas():
+    import geopandas as gpd
+    from shapely.geometry import box
+    from setas_pipeline.titularidad import n_montes
+    m = gpd.GeoDataFrame({"clase": ["monte_junta"] * 3 + ["monte_municipal"] * 2,
+                          "codigo": ["A", "A", "B", None, None]}, geometry=[box(0, 0, 1, 1)] * 5)
+    assert n_montes(m, "monte_junta") == 2 and n_montes(m, "monte_municipal") == 2
+    assert n_montes(m.iloc[:0], "monte_junta") == 0

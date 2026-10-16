@@ -11,7 +11,7 @@
 # Fuera de la regresión (necesitan red sin caché): `ejecutar zona` (OSRM) y `exportar base` (Protomaps).
 # `citas` (citas.py) no se rehace: citas.geojson es una entrada (desde 2026-10-16 citas.py funciona sin red con caché).
 # zona.geojson, malla.json, citas.geojson y base.pmtiles se reutilizan tal cual (ENTRADAS y NO_REGENERADOS en dorado.py).
-# Desde la fusión de main (2026-10-15) el dorado sale del código de main en ea16d66 (edificado, titularidad, citas).
+# El dorado sale de este script tras los arreglos de 2026-10-16 (cercanía exacta a edificios, atribución del Catastro).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 MODO="${1:?uso: regresion_marbella.sh antes|despues}"

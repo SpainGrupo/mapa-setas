@@ -121,3 +121,9 @@ def test_clave_taxon_sinonimo_da_la_aceptada(monkeypatch):
         {"matchType": "EXACT", "rank": "SPECIES", "status": "SYNONYM", "usageKey": 5954988,
          "acceptedUsageKey": 5954691, "speciesKey": 5954691}))
     assert calibracion.clave_taxon("Boletus aestivalis") == 5954691
+
+
+def test_descargar_ocurrencias_sin_clave_no_pide_todo(monkeypatch):
+    monkeypatch.setattr(calibracion, "clave_taxon", lambda n: None)
+    monkeypatch.setattr(calibracion.requests, "get", lambda *a, **k: pytest.fail("sin taxonKey no se pide nada"))
+    assert calibracion.descargar_ocurrencias("Terfezia inventada", "POLYGON((0 0,1 0,1 1,0 0))") == []

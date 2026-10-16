@@ -132,7 +132,7 @@ def leer_edificios(zip_path: Path):
 def huella_y_cerca(geoms, malla: Malla, sub: int = SUB, radio_m: float = RADIO_CERCA_M,
                    tesela: int = TESELA_CELDAS) -> tuple[np.ndarray, np.ndarray]:
     """→ (huella: fracción edificada 0..1 por celda, cerca: edificio a ≤ radio_m del centro de la celda).
-    Huella: rasteriza a celda/sub por teselas. Cerca: distancia exacta centro–huella (STRtree dwithin)."""
+    Huella: rasteriza a celda/sub por teselas. Cerca: distancia exacta centro–huella (STRtree query_nearest)."""
     from rasterio.features import rasterize
     from rasterio.transform import from_origin
     import shapely
@@ -164,7 +164,7 @@ def huella_y_cerca(geoms, malla: Malla, sub: int = SUB, radio_m: float = RADIO_C
             pts = shapely.points(malla.x0 + (cc.ravel() + 0.5) * malla.celda,
                                  malla.y1 - (ff.ravel() + 0.5) * malla.celda)
             sub_cerca = np.zeros(pts.shape, bool)
-            sub_cerca[arbol.query(pts, predicate="dwithin", distance=radio_m)[0]] = True
+            sub_cerca[arbol.query_nearest(pts, max_distance=radio_m, all_matches=False)[0]] = True   # una por punto
             cerca[f0:f1, c0:c1] = sub_cerca.reshape(f1 - f0, c1 - c0)
     return huella, cerca
 

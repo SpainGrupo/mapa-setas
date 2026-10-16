@@ -17,6 +17,7 @@ from shapely.geometry.polygon import orient
 from shapely.ops import transform as sh_transform
 from .malla import Malla, CRS, NODATA_F, leer_tif
 from .descargas import cargar_zona
+from .citas import clave_especie
 
 GBIF = "https://api.gbif.org/v1"
 UMBRAL = 50
@@ -59,17 +60,14 @@ def wkt_redondeado(wkt: str, precision: float = 0.001) -> str:
 def clave_taxon(nombre: str) -> int | None:
     """Clave GBIF aceptada (un sinónimo, p. ej. B. aestivalis → B. reticulatus, da la del aceptado).
     None si GBIF no reconoce la especie (matchType NONE) o solo un rango superior (HIGHERRANK, GENUS…)."""
-    from .citas import clave_especie
     j = requests.get(f"{GBIF}/species/match", params={"name": nombre}, timeout=30).json()
-    clave = clave_especie(j, nombre)
-    if clave is None:
-        log.warning("GBIF no reconoce la especie %r (matchType=%s, rank=%s)", nombre, j.get("matchType"),
-                    j.get("rank"))
-    return clave
+    return clave_especie(j, nombre)            # avisa ella si no hay clave de especie
 
 
 def descargar_ocurrencias(nombre: str, wkt: str, max_registros=5000, clave: int | None = None):
     clave = clave or clave_taxon(nombre)
+    if clave is None:                     # sin taxonKey GBIF devolvería las ocurrencias de todos los taxones
+        return []
     out, offset = [], 0
     while offset < max_registros:
         r = requests.get(f"{GBIF}/occurrence/search", timeout=60, params={

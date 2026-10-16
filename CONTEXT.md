@@ -20,5 +20,6 @@ This file answers "where do I go?" Given what the user wants, route to the stage
 - `_config/design-system.md` — brand colors, document/PDF conventions.
 
 ## Routing notes
+- Conceptos estables en `knowledge/reference/`: multi-región, edificado, titularidad y acceso, calibración con citas, normativa de recolección, vistas y Puntuación del día.
 - A request usually enters at one stage and flows forward. The human reviews each stage's `output/` before the next runs.
 - To re-run only part of the pipeline, start at the stage whose inputs changed; earlier outputs stay as they are.

@@ -15,9 +15,9 @@ export const RASGOS: DefRasgo[] = [
   { clave: 'himenio', titulo: 'Láminas o poros', preguntas: ['laminas_pie_color', 'color_poros', 'himenio_cantarelo'] },
   { clave: 'pie', titulo: 'Pie', preguntas: ['laminas_pie_color', 'color_reticulo', 'pie_serpiente'] },
   { clave: 'volva', titulo: 'Volva (base)', preguntas: ['volva_saco'] },
-  { clave: 'anillo', titulo: 'Anillo', preguntas: ['anillo_doble_movil'] },
-  { clave: 'carne_y_corte', titulo: 'Carne y corte', preguntas: ['azulea_al_corte', 'carne_enrojece', 'color_latex', 'interior_gleba'] },
-  { clave: 'sombrero', titulo: 'Sombrero', preguntas: ['sombrero_mayor_10cm', 'piel_dura_escamosa'] },
+  { clave: 'anillo', titulo: 'Anillo', preguntas: ['anillo_doble_movil', 'anillo_pie'] },
+  { clave: 'carne_y_corte', titulo: 'Carne y corte', preguntas: ['azulea_al_corte', 'carne_enrojece', 'color_latex', 'interior_gleba', 'morchella_interior'] },
+  { clave: 'sombrero', titulo: 'Sombrero', preguntas: ['color_sombrero', 'superficie_sombrero', 'sombrero_mayor_10cm', 'piel_dura_escamosa'] },
   { clave: 'habitat', titulo: 'Dónde crece', preguntas: ['en_matas_madera', 'cordones_base'] },
 ];
 
@@ -25,6 +25,10 @@ export const RASGOS: DefRasgo[] = [
 export const FOTO_PREGUNTA: Record<string, string> = {
   interior_huevo: 'el huevo cortado de arriba abajo, por dentro, con luz de día',
   laminas_pie_color: 'las láminas desde abajo y el pie entero',
+  color_sombrero: 'el sombrero desde arriba, con luz de día',
+  superficie_sombrero: 'la superficie del sombrero, de cerca',
+  morchella_interior: 'el corte de arriba abajo, por dentro',
+  anillo_pie: 'la parte alta del pie, de cerca',
   volva_saco: 'la base entera, desenterrada y de lado',
   color_poros: 'los poros, desde abajo',
   azulea_al_corte: 'la carne cortada, un minuto después',

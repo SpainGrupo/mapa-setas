@@ -2,7 +2,8 @@
 //
 // Reglas:
 // 1. El modelo solo propone. La ausencia de una especie en el top-5 (o en el vocabulario) NO la descarta.
-// 2. Cada candidato activa su grupo morfológico (amanitoide, boletoide, cantareloide, lepiotoide, lactarioide, hipogeo).
+// 2. Cada candidato activa su grupo morfológico (amanitoide, boletoide, cantareloide, lepiotoide, lactarioide, hipogeo,
+//    tricolomoide, morcheloide, clitociboide).
 //    Las peligrosas (mortales y tóxicas de la guía) de cada grupo activo se listan SIEMPRE como «no descartadas»,
 //    más las peligrosas que la guía cita en «No confundir con…» de cada candidato.
 // 3. Una peligrosa solo sale de la lista cuando las respuestas guiadas cumplen una regla de descarte basada en
@@ -15,7 +16,8 @@ import { genero } from './reconocer-nucleo';
 
 export const AVISO_EXPERTO = 'No consumas ninguna seta sin la confirmación de un experto.';
 
-export type GrupoMorfo = 'amanitoide' | 'boletoide' | 'cantareloide' | 'lepiotoide' | 'lactarioide' | 'hipogeo' | 'otros';
+export type GrupoMorfo = 'amanitoide' | 'boletoide' | 'cantareloide' | 'lepiotoide' | 'lactarioide' | 'hipogeo'
+  | 'tricolomoide' | 'morcheloide' | 'clitociboide' | 'otros';
 export type Nivel = 'mortal' | 'toxica';
 
 export const NOMBRE_GRUPO: Record<GrupoMorfo, string> = {
@@ -25,6 +27,9 @@ export const NOMBRE_GRUPO: Record<GrupoMorfo, string> = {
   lepiotoide: 'Parasoles y lepiotas',
   lactarioide: 'Níscalos y otros Lactarius (látex)',
   hipogeo: 'Criadillas, trufas y bolas (sin sombrero ni pie)',
+  tricolomoide: 'Negrillas y otros Tricholoma (láminas, sin anillo ni volva)',
+  morcheloide: 'Colmenillas y falsas colmenillas',
+  clitociboide: 'Setas de prado de láminas claras (Clitocybe, senderuela, champiñón)',
   otros: 'Otras setas',
 };
 
@@ -42,9 +47,14 @@ asignar('cantareloide', 'Cantharellus Craterellus Pseudocraterellus Omphalotus H
 asignar('lepiotoide', 'Macrolepiota Lepiota Chlorophyllum Leucoagaricus Leucocoprinus Echinoderma Cystolepiota');
 asignar('lactarioide', 'Lactarius Lactifluus');
 // Bola o trufa, sin sombrero ni pie: criadillas y trufas (bajo tierra), falsas trufas, Scleroderma y los pedos de
-// lobo con los que también se confunde. Pleurotus (seta de cardo) no tiene parecidas peligrosas en la guía: «otros».
+// lobo con los que también se confunde. Pleurotus (seta de cardo) va a «otros»; sus parecidas salen por «No confundir con…».
 asignar('hipogeo', 'Terfezia Tirmania Picoa Tuber Choiromyces Balsamia Genea Hydnotrya Elaphomyces Rhizopogon '
   + 'Melanogaster Hymenogaster Scleroderma Pisolithus Lycoperdon Bovista Calvatia Handkea Apioperdon');
+// Alicante (fase D1): la negrilla se confunde con T. pardinum y T. equestre; la colmenilla con Gyromitra (y Verpa,
+// Helvella); el champiñón, la senderuela y Lepista con las Clitocybe blancas de prado.
+asignar('tricolomoide', 'Tricholoma');
+asignar('morcheloide', 'Morchella Mitrophora Gyromitra Verpa Helvella Disciotis');
+asignar('clitociboide', 'Clitocybe Infundibulicybe Marasmius Lepista Collybia Agaricus');
 
 export function gruposDe(nombreCientifico: string): GrupoMorfo[] {
   return GENEROS[genero(nombreCientifico)] ?? ['otros'];
@@ -58,6 +68,9 @@ export const PELIGROSAS_GRUPO: Record<GrupoMorfo, string[]> = {
   lepiotoide: ['lepiota_brunneoincarnata', 'chlorophyllum_rhacodes', 'amanita_pantherina'],
   lactarioide: ['lactarius_torminosus', 'lactarius_chrysorrheus'],
   hipogeo: ['scleroderma_citrinum'],
+  tricolomoide: ['tricholoma_terreum', 'tricholoma_pardinum', 'tricholoma_equestre'],
+  morcheloide: ['gyromitra_esculenta'],
+  clitociboide: ['clitocybe_dealbata'],
   otros: [],
 };
 
@@ -74,7 +87,12 @@ export const PREGUNTAS: Pregunta[] = [
     ayuda: 'Haz también una foto del interior. El de la oronja deja ver el sombrero naranja y las láminas y el pie amarillos; el de A. phalloides y A. verna es blanco.',
     opciones: [op('naranja_amarillo', 'Naranja y amarillo'), op('blanco', 'Blanco'), op('no_es_huevo', 'No es un huevo'), op(NO_SE, 'No sé')] },
   { id: 'laminas_pie_color', grupo: 'amanitoide', texto: '¿De qué color son las láminas y el pie?',
-    opciones: [op('amarillos', 'Amarillos'), op('blancos', 'Blancos'), op('otro', 'Otro color'), op(NO_SE, 'No sé')] },
+    opciones: [op('amarillos', 'Amarillos'), op('blancos', 'Blancos o grisáceos'), op('rosas_marrones', 'Láminas rosas o marrones'),
+      op('otro', 'Otro color'), op(NO_SE, 'No sé')] },
+  { id: 'color_sombrero', grupo: 'amanitoide', texto: '¿De qué color es el sombrero?',
+    ayuda: 'Míralo con luz de día. Si tiene escamas o verrugas, fíjate en el color del fondo.',
+    opciones: [op('naranja_rojo', 'Naranja o rojo'), op('amarillo_verdoso', 'Amarillo, verdoso o verde oliva'), op('blanco', 'Blanco'),
+      op('gris', 'Gris'), op('pardo', 'Pardo o marrón'), op('otro', 'Otro color'), op(NO_SE, 'No sé')] },
   { id: 'volva_saco', grupo: 'amanitoide', texto: '¿Tiene en la base una volva blanca en forma de saco?',
     ayuda: 'Saca la seta entera, sin cortarla: la volva suele quedar enterrada.', opciones: SI_NO },
 
@@ -108,6 +126,20 @@ export const PREGUNTAS: Pregunta[] = [
   { id: 'piel_dura_escamosa', grupo: 'hipogeo', texto: '¿La piel es dura y gruesa, con escamas o verrugas?', opciones: SI_NO },
   { id: 'cordones_base', grupo: 'hipogeo', texto: '¿Estaba sobre el suelo, unida por cordones blancos o por un falso pie?',
     ayuda: 'La criadilla crece enterrada: se nota porque agrieta y abulta el suelo.', opciones: SI_NO },
+
+  // Una sola pregunta para la superficie del sombrero (negrillas y colmenillas): el Worker admite 20 claves como máximo.
+  { id: 'superficie_sombrero', grupo: 'tricolomoide', texto: 'Mira la superficie del sombrero de cerca: ¿cómo es?',
+    opciones: [op('fieltro_gris', 'Gris ratón, como de fieltro o con fibras finas'),
+      op('escamas_oscuras', 'Con escamas oscuras y gruesas sobre fondo más claro'),
+      op('alveolos', 'Con celdas hundidas, como un panal'), op('cerebro', 'Con pliegues, como un cerebro'),
+      op('otro', 'Otra cosa'), op(NO_SE, 'No sé')] },
+  { id: 'morchella_interior', grupo: 'morcheloide', texto: 'Córtala de arriba abajo: ¿cómo es por dentro?',
+    ayuda: 'Haz una foto del corte.',
+    opciones: [op('hueca', 'Hueca, una sola cavidad de arriba abajo'), op('tabiques', 'Con cámaras, tabiques o relleno como de algodón'),
+      op(NO_SE, 'No sé')] },
+
+  { id: 'anillo_pie', grupo: 'clitociboide', texto: '¿Tiene un anillo (una falda o un resto de tela) en el pie?',
+    ayuda: 'En el champiñón es fino y puede caerse; mira con cuidado la parte alta del pie.', opciones: SI_NO },
 ];
 export const PREGUNTA = Object.fromEntries(PREGUNTAS.map((p) => [p.id, p])) as Record<string, Pregunta>;
 
@@ -119,10 +151,12 @@ interface ReglaAlerta { nivel: Nivel; especies: string[]; si: Condicion; texto: 
 
 /** Basadas en rasgos_clave, fase_huevo y no_confundir_con de guia/especies.json. Varias reglas = cualquiera basta. */
 export const DESCARTES: Regla[] = [
-  // Amanitas: huevo naranja/amarillo por dentro, o láminas y pie amarillos (oronja) → no es phalloides/verna/pantherina.
+  // Amanitas: huevo naranja/amarillo por dentro, o DOS rasgos de la oronja: láminas y pie amarillos y sombrero naranja
+  // o rojo (A. phalloides es verde oliva o amarillento, A. verna blanca y A. pantherina parda). Hallazgo del traspaso:
+  // «láminas amarillas» sola descartaba las mortales.
   ...['amanita_phalloides', 'amanita_verna', 'amanita_pantherina'].flatMap((especie): Regla[] => [
     { especie, si: { interior_huevo: ['naranja_amarillo'] }, motivo: 'interior del huevo naranja y amarillo' },
-    { especie, si: { laminas_pie_color: ['amarillos'] }, motivo: 'láminas y pie amarillos' },
+    { especie, si: { laminas_pie_color: ['amarillos'], color_sombrero: ['naranja_rojo'] }, motivo: 'láminas y pie amarillos y sombrero naranja o rojo' },
   ]),
   // A. muscaria tiene láminas blancas; el interior del huevo no la distingue de la oronja (sombrero también naranja/rojo).
   { especie: 'amanita_muscaria', si: { laminas_pie_color: ['amarillos'] }, motivo: 'láminas y pie amarillos' },
@@ -154,6 +188,22 @@ export const DESCARTES: Regla[] = [
   // Scleroderma frente a criadilla: hacen falta los tres rasgos de la guía (interior, piel y cómo crece).
   { especie: 'scleroderma_citrinum', si: { interior_gleba: ['crema_vetas'], piel_dura_escamosa: ['no'], cordones_base: ['no'] },
     motivo: 'interior crema rosado con vetas claras, piel sin escamas duras y crecía enterrada' },
+
+  // Tricholoma (Alicante). T. equestre (mortal): dos rasgos. T. pardinum (tóxica): su sombrero de escamas gruesas.
+  // T. terreum (tóxica, decisión de 2026-10-15) no se descarta: si hay un Tricholoma gris, puede ser ella.
+  { especie: 'tricholoma_equestre', si: { laminas_pie_color: ['blancos', 'rosas_marrones'], color_sombrero: ['gris', 'blanco'] },
+    motivo: 'láminas no amarillas y sombrero gris o blanco' },
+  { especie: 'tricholoma_equestre', si: { volva_saco: ['si'], color_sombrero: ['naranja_rojo'] },
+    motivo: 'volva en saco y sombrero naranja o rojo (los Tricholoma no tienen volva)' },
+  { especie: 'tricholoma_pardinum', si: { superficie_sombrero: ['fieltro_gris'] }, motivo: 'sombrero gris de fieltro, sin escamas gruesas' },
+
+  // Gyromitra (mortal) frente a colmenilla: celdas como un panal y hueca en una sola cavidad.
+  { especie: 'gyromitra_esculenta', si: { superficie_sombrero: ['alveolos'], morchella_interior: ['hueca'] },
+    motivo: 'sombrero con celdas como un panal y hueca por dentro en una sola cavidad' },
+
+  // Clitocybe blancas de prado (mortal según la tabla de toxicidad): dos rasgos del champiñón, láminas rosas o
+  // marrones (las de Clitocybe son blancas o crema) y anillo en el pie (Clitocybe no tiene).
+  { especie: 'clitocybe_dealbata', si: { laminas_pie_color: ['rosas_marrones'], anillo_pie: ['si'] }, motivo: 'láminas rosas o marrones y anillo en el pie' },
 ];
 
 export const ALERTAS: ReglaAlerta[] = [
@@ -171,6 +221,14 @@ export const ALERTAS: ReglaAlerta[] = [
     texto: 'Interior negro violáceo o pardo púrpura: rasgo de Scleroderma, TÓXICA.' },
   { nivel: 'toxica', especies: ['scleroderma_citrinum'], si: { piel_dura_escamosa: ['si'], cordones_base: ['si'] },
     texto: 'Piel dura y escamosa y unida al suelo por cordones: rasgos de Scleroderma, TÓXICA.' },
+  { nivel: 'mortal', especies: ['tricholoma_equestre'], si: { laminas_pie_color: ['amarillos'], color_sombrero: ['amarillo_verdoso'] },
+    texto: 'Láminas amarillas y sombrero amarillo verdoso: rasgos de Tricholoma equestre, que ha causado intoxicaciones musculares MORTALES.' },
+  { nivel: 'toxica', especies: ['tricholoma_pardinum'], si: { superficie_sombrero: ['escamas_oscuras'] },
+    texto: 'Escamas oscuras y gruesas sobre fondo claro: rasgo de Tricholoma pardinum, TÓXICA.' },
+  { nivel: 'mortal', especies: ['gyromitra_esculenta'], si: { superficie_sombrero: ['cerebro'] },
+    texto: 'Sombrero con pliegues como un cerebro: rasgo de Gyromitra, la falsa colmenilla, MORTAL.' },
+  { nivel: 'mortal', especies: ['gyromitra_esculenta'], si: { morchella_interior: ['tabiques'] },
+    texto: 'Por dentro tiene cámaras o tabiques: rasgo de Gyromitra, la falsa colmenilla, MORTAL. La colmenilla es hueca.' },
 ];
 
 // ---------------------------------------------------------------- evaluación

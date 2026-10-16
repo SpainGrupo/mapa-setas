@@ -43,7 +43,7 @@ describe('limpiarRespuesta', () => {
 describe('fusionarPeligrosas (unión)', () => {
   const c = [{ nombre: 'Amanita caesarea Pers.', idGuia: 'amanita_caesarea' }];
   it('suma las de Gemini a las locales no descartadas; las desconocidas van por nombre', () => {
-    const loc = evaluar(c, fichas, { laminas_pie_color: 'amarillos' }).peligrosas;   // muscaria/pantherina descartadas; las mortales siguen
+    const loc = evaluar(c, fichas, { laminas_pie_color: 'amarillos', color_sombrero: 'naranja_rojo' }).peligrosas;   // amanitas descartadas; las mortales de otros grupos siguen
     const noDesc = loc.filter((p) => !p.descartada).map((p) => p.id);
     expect(noDesc).toContain('lepiota_brunneoincarnata');   // láminas amarillas no descartan a la lepiota
     expect(loc.find((p) => p.id === 'amanita_phalloides')?.descartada).toBe(true);   // aquí sí; Gemini la reactiva
@@ -64,8 +64,9 @@ describe('fusionarPeligrosas (unión)', () => {
     const verna = f.find((p) => p.id === 'amanita_verna')!;
     expect(verna.motivos.at(-1)).toBe('segunda opinión: posible confusión');
     expect(f.length).toBe(loc.length);   // verna ya estaba: no se duplica
-    expect(f.slice(0, 3).every((p) => p.nivel === 'mortal')).toBe(true);
-    expect(f.slice(0, 3).map((p) => p.id).sort()).toEqual(['amanita_phalloides', 'amanita_verna', 'lepiota_brunneoincarnata']);
+    const mortales = fichas.filter((x) => x.grupo === 'mortal').map((x) => x.id).sort();
+    expect(f.slice(0, mortales.length).every((p) => p.nivel === 'mortal')).toBe(true);
+    expect(f.slice(0, mortales.length).map((p) => p.id).sort()).toEqual(mortales);
     expect(f.at(-1)!.nivel).toBe('toxica');
   });
 });

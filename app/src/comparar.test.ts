@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import datos from '../../guia/especies.json';
 import { construirPares, dibujoDe, FOTO_PREGUNTA, nombreConComun, preguntasQueDeciden, RASGOS } from './comparar';
 import { CLAVES_ANATOMIA } from './anatomia';
-import { AVISO_COMESTIBLE, bannerFicha, type Ficha } from './guia';
+import { AVISO_BUSCADA, bannerFicha, type Ficha } from './guia';
 import { AVISO_EXPERTO, evaluar, NO_SE, PREGUNTAS, type Respuestas } from './seguridad';
 
 const fichas = datos as Ficha[];
@@ -34,7 +34,8 @@ describe('comparación por pares', () => {
     expect(huevo.decide).toBe(true);
     expect(huevo.tu).toEqual({ texto: 'Sin responder', falta: true });
     expect(huevo.dibujos).toEqual({ candidata: 'huevo-caesarea', peligrosa: 'huevo-mortal' });
-    expect(phal.filas.find((f) => f.clave === 'sombrero')!.tu).toEqual({ texto: 'Sin responder', falta: false });   // no decide: sin trazo
+    expect(phal.filas.find((f) => f.clave === 'sombrero')!.tu).toEqual({ texto: 'Sin responder', falta: true });    // color del sombrero: decide
+    expect(phal.filas.find((f) => f.clave === 'anillo')!.tu).toEqual({ texto: 'Sin responder', falta: false });     // no decide: sin trazo
     expect(phal.falsoPositivo.fiarte).toMatch(/^Todavía nada la separa: faltan \d+ de \d+ rasgos que deciden\.$/);
     expect(phal.falsoPositivo.fotos).toContain(FOTO_PREGUNTA.interior_huevo);
     expect(phal.falsoPositivo.separa[0]).toMatch(/En huevo, A\. phalloides/);
@@ -80,7 +81,7 @@ describe('comparación por pares', () => {
       const k = dibujoDe(d.clave, String(f[d.clave] ?? ''));
       if (k) expect(CLAVES_ANATOMIA, `${f.id}.${d.clave}`).toContain(k);
     }
-    expect(preguntasQueDeciden('amanita_phalloides')).toEqual(new Set(['interior_huevo', 'laminas_pie_color', 'volva_saco', 'interior_gleba']));
+    expect(preguntasQueDeciden('amanita_phalloides')).toEqual(new Set(['interior_huevo', 'laminas_pie_color', 'color_sombrero', 'volva_saco', 'interior_gleba']));
   });
 
   it('heurística de dibujos: negaciones y verrugas', () => {
@@ -104,8 +105,10 @@ describe('comparación por pares', () => {
 });
 
 describe('aviso de la ficha (spec §2)', () => {
-  it('comestible sin contexto: aviso de comestible', () => {
-    expect(bannerFicha(caesarea, [], AVISO_EXPERTO)).toEqual({ clase: 'banner-comestible', texto: AVISO_COMESTIBLE, rol: 'alert' });
+  it('buscada sin contexto: aviso neutro de su grupo, sin «comestible»', () => {
+    expect(bannerFicha(caesarea, [], AVISO_EXPERTO)).toEqual({ clase: 'banner-comestible', texto: AVISO_BUSCADA.apreciada, rol: 'alert' });
+    expect(bannerFicha(porId.get('agaricus_campestris')!, [], AVISO_EXPERTO).texto).toBe(AVISO_BUSCADA.comestible_menor);
+    for (const t of Object.values(AVISO_BUSCADA)) { expect(t).not.toMatch(/comestib/i); expect(t).toMatch(/experto/); }
   });
   it('desde el reconocedor con mortales sin descartar: aviso rojo que las nombra y nunca «comestible»', () => {
     const b = bannerFicha(caesarea, ['Amanita phalloides (oronja verde)', 'Amanita verna (cicuta blanca)'], AVISO_EXPERTO);

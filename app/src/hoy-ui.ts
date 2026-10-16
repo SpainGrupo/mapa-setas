@@ -70,6 +70,8 @@ function cargarSitios(): Promise<SitiosJson | null> {
 }
 
 const nombre = (id: string) => ctx.manifest()?.especies.find((e) => e.id === id)?.nombre ?? id;
+// Nombre común (como en el selector); si no hay ficha, el científico.
+const nombreComunId = (id: string) => { const e = ctx.manifest()?.especies.find((x) => x.id === id); return e ? datosEspecie(e).comun : id; };
 const fiab = (id: string): Fiabilidad => nivelFiabilidad(ctx.manifest()?.especies.find((e) => e.id === id)?.fiabilidad);
 
 function textoLejania(p: { lat: number; lon: number }): string {
@@ -348,8 +350,8 @@ function pintarTemporada(): FilaTemporada[] {
     tr.dataset.tipo = f.ventana?.tipo ?? 'sin_datos';
     tr.onclick = () => ctx.elegirEnMapa(f.id);
     const cN = document.createElement('th'); cN.scope = 'row'; cN.className = 'tt-nombre';
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'tt-elegir'; b.textContent = nombre(f.id);
-    b.setAttribute('aria-label', `${nombre(f.id)}, ${f.fin}. Ver en el mapa`);
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'tt-elegir'; b.textContent = nombreComunId(f.id);
+    b.setAttribute('aria-label', `${nombreComunId(f.id)}, ${f.fin}. Ver en el mapa`);
     b.onclick = (ev) => { ev.stopPropagation(); ctx.elegirEnMapa(f.id); };
     cN.append(b); tr.append(cN);
     const vistas = fechas.map((fe) => { const d = f.dias.find((x) => x.fecha === fe); return d ? VISTA_ESTADO[d.estado] : 'gris'; });

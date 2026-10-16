@@ -205,7 +205,7 @@ export const DESCARTES: Regla[] = [
   // Clitocybe blancas de prado (mortal según la tabla de toxicidad): dos rasgos del champiñón, láminas rosa vivo o
   // marrón oscuro (las de C. dealbata son blancas y, ya viejas, rosado grisáceas) y anillo en el pie (no tiene).
   // Láminas blancas sin anillo disparan su alerta.
-  { especie: 'clitocybe_dealbata', si: { laminas_pie_color: ['rosas_marrones'], anillo_pie: ['si'] }, motivo: 'láminas rosas o marrones y anillo en el pie' },
+  { especie: 'clitocybe_dealbata', si: { laminas_pie_color: ['rosas_marrones'], anillo_pie: ['si'] }, motivo: 'láminas rosa vivo o marrón oscuro y anillo en el pie' },
 ];
 
 export const ALERTAS: ReglaAlerta[] = [
@@ -227,6 +227,8 @@ export const ALERTAS: ReglaAlerta[] = [
     texto: 'Láminas amarillas y sombrero amarillento, pardo u ocre: rasgos de Tricholoma equestre, que ha causado intoxicaciones musculares MORTALES.' },
   { nivel: 'mortal', especies: ['amanita_phalloides', 'amanita_verna'], si: { laminas_pie_color: ['blancos'], color_sombrero: ['amarillo_verdoso', 'blanco'] },
     texto: 'Láminas blancas y sombrero verdoso, amarillento o blanco: rasgos de Amanita phalloides o Amanita verna, MORTALES.' },
+  { nivel: 'mortal', especies: ['amanita_phalloides', 'amanita_verna'], si: { interior_huevo: ['naranja_amarillo'], color_sombrero: ['amarillo_verdoso', 'blanco'] },
+    texto: 'Huevo naranja por dentro pero sombrero verdoso, amarillento o blanco: no cuadra con la oronja y puede ser Amanita phalloides o Amanita verna, MORTALES.' },
   { nivel: 'mortal', especies: ['clitocybe_dealbata'], si: { laminas_pie_color: ['blancos'], anillo_pie: ['no'] },
     texto: 'Láminas blancas y sin anillo: en una seta blanca de prado son rasgos de Clitocybe dealbata, MORTAL.' },
   { nivel: 'toxica', especies: ['tricholoma_pardinum'], si: { superficie_sombrero: ['escamas_oscuras'] },
@@ -325,7 +327,7 @@ export function respuestasParaWorker(preguntas: Pregunta[], r: Respuestas): Reco
   return out;
 }
 
-const PROHIBIDO = /\b(comestib\w*|se pueden? comer\w*|se comen?|apt[oa]s? para (el )?consumo|es segur[ao]s?|son segur[ao]s)\b/gi;
+const PROHIBIDO = /\b(comestib\w*|comible\w*|se pueden? (comer|consumir)\w*|pueden? comerse|se (comen?|consumen?)|apt[oa]s? para (el )?(consumo|comer|consumir)|(es|son) (\w+ )?segur[ao]s?)\b|(?<!\bno (es |son )?)\binofensiv\w*/gi;
 /** Defensa en profundidad para textos que vienen de fuera (Gemini): nunca mostrar «comestible». */
 export function sinComestible(t: string): string {
   return t.replace(PROHIBIDO, '[consulta a un experto]');

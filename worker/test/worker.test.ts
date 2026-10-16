@@ -370,7 +370,9 @@ describe("seguridad: comestibilidad y aviso", () => {
     expect(limpiarTexto("Mortal: no es inofensiva.")).toBe("Mortal: no es inofensiva.");
   });
   it("code-review D1: más formas de afirmar que se come", () => {
-    for (const t of ["Comestibilidad excelente.", "Es apto para consumo.", "Se pueden comerlas cocinadas.", "Tóxica en crudo; se come cocinada.", "Es segura."])
+    for (const t of ["Comestibilidad excelente.", "Es apto para consumo.", "Se pueden comerlas cocinadas.", "Tóxica en crudo; se come cocinada.", "Es segura.",
+      "Se puede consumir cocinada.", "Puede comerse cocinada.", "Apta para consumir.", "Se consume cocinada.", "Es completamente segura.", "Es comible.",
+      "Parece inofensiva.", "Una especie inofensiva.", "Es totalmente inofensiva."])
       expect(limpiarTexto(t), t).toContain(SUSTITUTO);
   });
   it("la volva marcada en la app (volva_saco) también trae las amanitas mortales", async () => {

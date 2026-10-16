@@ -8,7 +8,7 @@ export const AVISO = "No consumas ninguna seta sin la confirmación de un expert
 export const PROHIBIDO_GUIA = /se puede comer|apta para el consumo|comestible segur|sin peligro/i;
 // Ampliación para texto libre de un modelo: cualquier afirmación directa de que algo se come.
 export const PROHIBIDO_EXTRA =
-  /\b(?:es|son|muy|buen[ao]?s?|excelente|exquisit[ao]s?|apreciad[ao]s?)\s+comestibles?\b|\bcomestibilidad\b|\bse\s+pueden?\s+comer\w*|\bse\s+comen?\b|\bpuedes\s+comer(?:la|lo|las|los)?\b|\bsegur[ao]s?\s+(?:para|de)\s+comer\b|\b(?:es|son)\s+segur[ao]s?\b|\bapt[ao]s?\s+para\s+(?:comer|(?:el\s+)?consumo)\b|(?<!\bno\s)\b(?:es|son)\s+inofensiv[ao]s?\b|^\s*inofensiv[ao]s?\b/i;
+  /\b(?:es|son|muy|buen[ao]?s?|excelente|exquisit[ao]s?|apreciad[ao]s?)\s+comestibles?\b|\bcomestibilidad\b|\bse\s+pueden?\s+comer\w*|\bse\s+comen?\b|\bpuedes\s+comer(?:la|lo|las|los)?\b|\bsegur[ao]s?\s+(?:para|de)\s+comer\b|\b(?:es|son)\s+segur[ao]s?\b|\bapt[ao]s?\s+para\s+(?:comer|(?:el\s+)?consumo)\b|\bcomible\w*|\bse\s+pueden?\s+consumir\w*|\bpueden?\s+comerse\b|\bse\s+consumen?\b|\bapt[ao]s?\s+para\s+consumir\b|\b(?:es|son)\s+\w+\s+segur[ao]s?\b|(?<!\bno\s(?:es\s|son\s)?)\binofensiv[ao]s?\b/i;
 
 export const SUSTITUTO = "[Afirmación sobre consumo eliminada. " + AVISO + "]";
 

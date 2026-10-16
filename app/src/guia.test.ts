@@ -99,9 +99,17 @@ describe('notaSinAviso (ficha abierta con mortales sin descartar)', () => {
   it('quita el aviso del grupo y deja el resto de la nota', async () => {
     const { notaSinAviso } = await import('./guia');
     const m = fichas.find((x) => x.id === 'morchella_spp')!;
-    expect(notaSinAviso(m.toxicidad_nota)).toMatch(/^En crudo/);
+    expect(notaSinAviso(m.toxicidad_nota)).toMatch(/^Es tóxica/);
     expect(notaSinAviso(m.toxicidad_nota)).not.toMatch(/Apreciada/);
     expect(notaSinAviso(fichas.find((x) => x.id === 'boletus_edulis')!.toxicidad_nota)).toBe('');
     expect(notaSinAviso('Otra cosa.')).toBe('Otra cosa.');
+    // la regex depende del texto de build.py: si cambia, este test lo detecta
+    for (const x of fichas.filter((y) => y.grupo === 'apreciada' || y.grupo === 'comestible_menor')) expect(notaSinAviso(x.toxicidad_nota), x.id).not.toMatch(/bibliografía micológica/);
+  });
+  it('notaBajoPeligro: con mortales sin descartar solo queda el aviso de que la especie es tóxica', async () => {
+    const { notaBajoPeligro } = await import('./guia');
+    const n = (id: string) => notaBajoPeligro(fichas.find((x) => x.id === id)!.toxicidad_nota);
+    expect(n('morchella_spp')).toMatch(/^Es tóxica/);
+    for (const id of ['pleurotus_eryngii', 'hydnum_repandum', 'lepista_nuda', 'suillus_bellinii', 'agaricus_campestris', 'boletus_edulis']) expect(n(id), id).toBe('');
   });
 });

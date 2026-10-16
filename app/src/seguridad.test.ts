@@ -423,6 +423,13 @@ describe('hallazgos del code-review max de D1', () => {
     const p = e.peligrosas.find((x) => x.id === 'tricholoma_pardinum');
     expect(p).toMatchObject({ descartada: false, alerta: true, origen: ['tus respuestas apuntan a ella'] });
   });
+  it('huevo naranja por dentro con sombrero verdoso o blanco → alerta MORTAL: phalloides y verna no se descartan', () => {
+    for (const color of ['amarillo_verdoso', 'blanco']) {
+      const e = evaluar(cand('amanita_caesarea'), fichas, { interior_huevo: 'naranja_amarillo', color_sombrero: color });
+      expect(noDescartadas(e), color).toEqual(expect.arrayContaining(['amanita_phalloides', 'amanita_verna']));
+      expect(e.alertas.some((a) => a.nivel === 'mortal'), color).toBe(true);
+    }
+  });
   it('láminas blancas y sin anillo → alerta MORTAL de C. dealbata; el champiñón con anillo y láminas rosa vivo la descarta', () => {
     const c = cand('agaricus_campestris');
     const e = evaluar(c, fichas, { laminas_pie_color: 'blancos', anillo_pie: 'no' });
@@ -463,6 +470,10 @@ describe('textos para fuera', () => {
     const malas = 'Comestibilidad excelente. Es apto para consumo. Se pueden comerlas cocinadas. Tóxica en crudo; se come cocinada. Es segura.';
     expect(sinComestible(malas)).not.toMatch(/comestib|apt[oa] para|se pueden? comer|se come|es segura/i);
     expect(sinComestible('Se confunde con la colmenilla')).toBe('Se confunde con la colmenilla');
+    const mas = ['Se puede consumir cocinada.', 'Puede comerse cocinada.', 'Apta para consumir.', 'Se consume cocinada.',
+      'Es completamente segura.', 'Es comible.', 'Parece inofensiva.', 'Una especie inofensiva.'];
+    for (const m of mas) expect(sinComestible(m), m).toContain('[consulta a un experto]');
+    expect(sinComestible('Mortal: no es inofensiva.')).toBe('Mortal: no es inofensiva.');
   });
 });
 

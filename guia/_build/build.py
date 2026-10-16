@@ -625,7 +625,7 @@ sp(id="hygrophorus_latitabundus", nombre_cientifico="Hygrophorus latitabundus Br
 
 sp(id="morchella_spp", nombre_cientifico="Morchella esculenta (L.) Pers. y especies próximas (M. elata, M. conica)", nombres_comunes=["colmenilla", "cagarria", "morilla", "múrgula"],
    grupo="apreciada",
-   toxicidad_nota=AV + " En crudo o poco cocinada causa trastornos digestivos, y Saviuc et al. (2010) describen además un síndrome neurológico (temblor, mareo, falta de equilibrio) en personas que la habían comido.",
+   toxicidad_nota=AV + " Es tóxica: cruda o poco cocinada causa trastornos digestivos, y Saviuc et al. (2010) describen además un síndrome neurológico (temblor, mareo, falta de equilibrio) en personas que la habían comido.",
    sombrero="De 3 a 8 cm de ancho y de 5 a 12 de alto; globoso, ovalado o cónico. Celdas hundidas e irregulares separadas por costillas, como un panal. De crema a ocre o pardo. M. elata es más oscura y puntiaguda, con las celdas en columnas.",
    himenio="No tiene láminas ni poros: la superficie fértil está dentro de las celdas.",
    pie="Blanco cremoso, granuloso, hueco y engrosado en la base. El borde del sombrero se une a él.",

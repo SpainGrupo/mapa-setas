@@ -8,7 +8,7 @@
 // cobertura. Tampoco van en la descarga OPFS de mapas: esa la decide el usuario (cientos de MB) y la guía debe
 // funcionar aunque nunca descargue mapas; además un <img> no puede leer OPFS sin crear blob URLs a mano.
 import {
-  agrupar, bannerFicha, binomio, COMESTIBLES, ETIQUETA_GRUPO, filtrar, nombreComun, notaSinAviso, TITULO_GRUPO, urlFoto,
+  agrupar, bannerFicha, binomio, COMESTIBLES, ETIQUETA_GRUPO, filtrar, nombreComun, notaBajoPeligro, TITULO_GRUPO, urlFoto,
   type Ficha, type Foto, type Grupo, type IndiceGuia,
 } from './guia';
 import { AVISO_EXPERTO } from './seguridad';
@@ -249,8 +249,8 @@ function pintarFicha(id: string) {
   const cuando = peligroAbierto ? null : bloqueTiempo?.(f.id);
   if (cuando) cuerpo.append(cuando);
   cuerpo.append(carrusel(f));
-  // Con mortales sin descartar se quita el aviso del grupo, pero no los avisos propios de la especie (colmenilla en crudo).
-  const nota = COMESTIBLES.has(f.grupo) ? (peligroAbierto ? notaSinAviso(f.toxicidad_nota) : f.toxicidad_nota) : '';
+  // Con mortales sin descartar se quita el aviso del grupo, pero no el de que la propia especie es tóxica (colmenilla).
+  const nota = COMESTIBLES.has(f.grupo) ? (peligroAbierto ? notaBajoPeligro(f.toxicidad_nota) : f.toxicidad_nota) : '';
   if (nota) cuerpo.append(caja('caja-nota', 'Precaución', nota));
 
   const rasgos = el('section', 'rasgos');

@@ -92,6 +92,7 @@ Ids de taxón (Index Fungorum `RECORD_NUMBER` del nombre aceptado; GBIF `usageKe
 | hábitat | Bajo pinos, en suelo calizo; en La Rioja en pinares de *P. nigra* y *P. halepensis*, junto al níscalo. | FN, La Rioja |
 | temporada | Otoño; de noviembre a enero en el sur de Portugal. | FN |
 | confusiones | *H. hypothejus* (láminas amarillas, sin ficha). Ninguna tóxica citada → excepción aprobada. | FN |
+| grupo | `apreciada`: el PDF del Gobierno de La Rioja dice que «es una seta muy apreciada en Cataluña» (code-review D1). | La Rioja |
 
 ### morchella_spp
 | campo | texto | fuente |

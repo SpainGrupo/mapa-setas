@@ -38,6 +38,14 @@ export const TITULO_GRUPO: Record<Grupo, string> = {
 export function notaSinAviso(nota: string): string {
   return nota.replace(/^(Apreciada|Poco valorada) en la bibliografía micológica\. No la consumas sin la confirmación de un experto( \([^)]*\))?\.\s*/, '');
 }
+/**
+ * Lo que se enseña de esa nota cuando hay mortales sin descartar: solo si dice que la propia especie es tóxica
+ * (colmenilla). Nada que tranquilice («difícil de confundir», «sin confusiones citadas») ni consejos de cocina.
+ */
+export function notaBajoPeligro(nota: string): string {
+  const resto = notaSinAviso(nota);
+  return /^Es tóxica\b/.test(resto) ? resto : '';
+}
 export const COMESTIBLES: ReadonlySet<Grupo> = new Set(['apreciada', 'comestible_menor']);
 /**
  * Aviso fijo de las fichas que se buscan para recolectar (decisión de Alexander, 2026-10-15): etiqueta neutra del grupo,

@@ -10,7 +10,7 @@
 // Así un punto lejano (su mejor sitio a 50 km) ya no decide por la zona que se está mirando.
 import type { Dia, PuntoMeteo } from './meteo';
 import { ddmm, diasEntre, semaforo, sumarDias, type Estado, type Reglas, type ResultadoSemaforo } from './semaforo';
-import { confianza, DIAS_MAX, diasHastaTemporada, finTemporada, type Confianza } from './calendario';
+import { confianza, DIAS_MAX, diasHastaTemporada, finTemporada, MESES_CORTOS, type Confianza } from './calendario';
 import { calidad, distanciaM, type SitioCandidato } from './ranking';
 import { puntoMasCercano } from './zona';
 import type { Fiabilidad } from './fiabilidad';
@@ -165,27 +165,35 @@ export function ventanaEspecie(dias: DiaVentana[], meses: number[], hoy: string)
 // ---------------------------------------------------------------- selector de especie del mapa
 
 export interface OpcionSelector { id: string; fiabilidad: Fiabilidad; resultado: ResultadoSemaforo | null; meses: number[] }
-export type EtiquetaInactiva = 'seco' | 'sin datos' | 'fuera de temporada';
+export type EtiquetaInactiva = 'seco' | 'pasó su lluvia' | 'sin datos' | 'fuera de temporada';
 export interface Inactiva<T> { item: T; etiqueta: EtiquetaInactiva }
 
 const RANGO_FIAB: Record<Fiabilidad, number> = { buena: 0, media: 1, sin_validar: 2, baja: 3 };
-const RANGO_ETIQUETA: Record<EtiquetaInactiva, number> = { seco: 0, 'sin datos': 1, 'fuera de temporada': 2 };
+const RANGO_ETIQUETA: Record<EtiquetaInactiva, number> = { seco: 0, 'pasó su lluvia': 1, 'sin datos': 2, 'fuera de temporada': 3 };
 
-/** Por qué una especie no está activa hoy (null si lo está: verde o amarillo). */
+/** El motivo de una especie no activa, en llano y corto (selector del mapa, «Ver más»). */
+export const TEXTO_INACTIVA: Record<EtiquetaInactiva, string> = {
+  seco: 'seco', 'pasó su lluvia': 'ya pasó su lluvia', 'sin datos': 'sin datos del tiempo', 'fuera de temporada': 'fuera de temporada',
+};
+
+/** Por qué una especie no está activa hoy (null si lo está: verde o amarillo). Sale del motivo del semáforo. */
 export function etiquetaInactiva(o: OpcionSelector, hoy: string): EtiquetaInactiva | null {
   const e = o.resultado?.estado;
   if (e === 'verde' || e === 'amarillo') return null;
-  if (/^fuera de temporada/.test(o.resultado?.motivo ?? '') || (o.meses.length && !o.meses.includes(+hoy.slice(5, 7)))) return 'fuera de temporada';
-  return e === 'rojo' ? 'seco' : 'sin datos';
+  const motivo = o.resultado?.motivo ?? '';
+  if (/^fuera de temporada/.test(motivo) || (o.meses.length && !o.meses.includes(+hoy.slice(5, 7)))) return 'fuera de temporada';
+  if (e === 'rojo') return /^ventana pasada/.test(motivo) ? 'pasó su lluvia' : 'seco';
+  return 'sin datos';
 }
 
 /**
  * Orden del selector: arriba las activas hoy (verde y luego amarillo; dentro, mejor fiabilidad), abajo las demás
- * (seco, sin datos, fuera de temporada; dentro, fiabilidad). Empates: el orden del manifest. Sin ningún resultado
- * del tiempo (todavía no hay datos) no se separa nada: todas en «activas», en el orden del manifest.
+ * (seco, pasó su lluvia, sin datos, fuera de temporada; dentro, fiabilidad). Empates: el orden del manifest. Sin ningún
+ * resultado del tiempo (todavía no hay datos) no se separa nada: todas en «activas», en el orden del manifest, y
+ * `sinTiempo` lo dice para no rotularlas como activas.
  */
-export function ordenarSelector<T extends OpcionSelector>(xs: T[], hoy: string): { activas: T[]; inactivas: Inactiva<T>[] } {
-  if (!xs.some((x) => x.resultado)) return { activas: [...xs], inactivas: [] };
+export function ordenarSelector<T extends OpcionSelector>(xs: T[], hoy: string): { activas: T[]; inactivas: Inactiva<T>[]; sinTiempo: boolean } {
+  if (!xs.some((x) => x.resultado)) return { activas: [...xs], inactivas: [], sinTiempo: true };
   const idx = new Map(xs.map((x, i) => [x, i]));
   const activas: T[] = [], inactivas: Inactiva<T>[] = [];
   for (const x of xs) {
@@ -196,5 +204,30 @@ export function ordenarSelector<T extends OpcionSelector>(xs: T[], hoy: string):
   activas.sort((a, b) => rEst(a) - rEst(b) || RANGO_FIAB[a.fiabilidad] - RANGO_FIAB[b.fiabilidad] || idx.get(a)! - idx.get(b)!);
   inactivas.sort((a, b) => RANGO_ETIQUETA[a.etiqueta] - RANGO_ETIQUETA[b.etiqueta]
     || RANGO_FIAB[a.item.fiabilidad] - RANGO_FIAB[b.item.fiabilidad] || idx.get(a.item)! - idx.get(b.item)!);
-  return { activas, inactivas };
+  return { activas, inactivas, sinTiempo: false };
+}
+
+// ---------------------------------------------------------------- tabla «Temporada» (pestaña Hoy)
+
+/** «20 oct» (día sin cero y mes corto). */
+export const fechaCorta = (iso: string) => `${+iso.slice(8, 10)} ${MESES_CORTOS[+iso.slice(5, 7) - 1]}`;
+
+/** Lo que va al final de la fila: hasta cuándo dura la ventana activa o cuándo empieza. */
+export function textoFinVentana(v: Ventana | null): string {
+  if (!v) return 'sin datos';
+  if (v.tipo === 'activa' && v.hasta) return `hasta ~${fechaCorta(v.hasta)}`;
+  if (v.tipo === 'pronto' && v.desde) return `empieza ~${fechaCorta(v.desde)}`;
+  if (v.tipo === 'fuera' && v.desde) return `empieza ~${MESES_CORTOS[+v.desde.slice(5, 7) - 1]}`;
+  if (v.tipo === 'espera') return 'sin lluvia a la vista';
+  return 'sin datos';
+}
+
+export interface FilaTemporadaBase { id: string; ventana: Ventana | null }
+/** Orden de la tabla: primero las activas hoy; luego, todas por fecha de inicio (las que no tienen fecha, al final).
+ * Empates: el orden del manifest. */
+export function ordenarTemporada<T extends FilaTemporadaBase>(xs: T[]): T[] {
+  const idx = new Map(xs.map((x, i) => [x, i]));
+  const activa = (x: T) => (x.ventana?.tipo === 'activa' ? 0 : 1);
+  const inicio = (x: T) => x.ventana?.desde ?? '9999-99-99';
+  return [...xs].sort((a, b) => activa(a) - activa(b) || inicio(a).localeCompare(inicio(b)) || idx.get(a)! - idx.get(b)!);
 }

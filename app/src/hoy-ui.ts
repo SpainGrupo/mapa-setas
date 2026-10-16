@@ -11,6 +11,8 @@ import { NOMBRE_DIFICULTAD, type Dificultad } from './ruta';
 import { textoSubida, textoTiempo } from './acceso';
 import { NOMBRE_ESTADO } from './zona';
 import { datosEspecie } from './selector-especie';
+import { ordenarTemporada, textoFinVentana, type DiaVentana, type Ventana } from './ventana-especie';
+import type { Estado } from './semaforo';
 import { detallesTitularidad, esPublico, normaTitularidad, textoTitularidad } from './titularidad';
 
 /** Explicación de la cifra del Top (2026-10-15: antes «Calidad del monte», que no decía que entra el tiempo). */
@@ -33,6 +35,10 @@ export interface ContextoHoy {
   hayFicha: (especie: string) => Promise<boolean>;
   verFicha: (especie: string) => void;
   irZona: () => void;
+  /** Hoy … +15 y la estimación de la ventana de una seta en su punto de referencia (null sin reglas del tiempo). */
+  cuando: (especie: string) => { dias: DiaVentana[]; ventana: Ventana } | null;
+  /** Elige la especie en el mapa y cambia a la pestaña Mapa. */
+  elegirEnMapa: (especie: string) => void;
   /** Interruptor «solo montes públicos» (compartido con el mapa). */
   soloPublicos: () => boolean;
 }
@@ -45,7 +51,7 @@ const escribir = (k: string, v: string) => { try { localStorage.setItem(k, v); }
 let ctx: ContextoHoy;
 let sitios: Promise<SitiosJson | null> | null = null;
 let fechaSel: string | null = null;
-let ultimo: { fecha: string; confianza: string; general: FilaGeneral[]; especie: string; top: Entrada[]; calendario: FilaCalendario[]; sinSitios: boolean } | null = null;
+let ultimo: { fecha: string; confianza: string; general: FilaGeneral[]; especie: string; top: Entrada[]; calendario: FilaCalendario[]; sinSitios: boolean; temporada: FilaTemporada[] } | null = null;
 
 export const maxDificultad = (): Dificultad | null => {
   const v = leer(CLAVE_DIF);
@@ -289,6 +295,97 @@ function pintarCalendario(datos: SitiosJson | null, fecha: string): FilaCalendar
   return filas;
 }
 
+// ---------------------------------------------------------------- tabla «Temporada»
+
+interface FilaTemporada { id: string; dias: DiaVentana[]; ventana: Ventana | null; fin: string }
+const SEMANA = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+/** En la tabla el rojo se pinta en gris: solo importa si está activa (verde/amarillo) o no. */
+const VISTA_ESTADO: Record<Estado, 'verde' | 'amarillo' | 'gris'> = { verde: 'verde', amarillo: 'amarillo', rojo: 'gris', gris: 'gris' };
+const TEXTO_CELDA: Record<'verde' | 'amarillo' | 'gris', string> = { verde: 'buen momento', amarillo: 'esperar', gris: 'no activa' };
+
+function pintarTemporada(): FilaTemporada[] {
+  const m = ctx.manifest();
+  const caja = $('#temporada');
+  caja.replaceChildren();
+  if (!m) return [];
+  const filas = ordenarTemporada(m.especies.flatMap((e) => {
+    const c = ctx.cuando(e.id);
+    if (!c) return [];
+    const ventana = c.dias.length ? c.ventana : null;
+    return [{ id: e.id, dias: c.dias, ventana, fin: textoFinVentana(ventana) }];
+  }));
+  const conDias = filas.find((f) => f.dias.length);
+  if (!conDias) {
+    const p = document.createElement('p'); p.className = 'nota temporada-sin';
+    p.textContent = 'Sin datos del tiempo guardados. Con conexión, la app los descarga sola y aquí verás cada seta en los próximos 16 días.';
+    caja.append(p);
+    return filas;
+  }
+  const fechas = conDias.dias.map((d) => d.fecha);
+  const scroll = document.createElement('div'); scroll.className = 'temporada-scroll';
+  scroll.setAttribute('role', 'region'); scroll.setAttribute('aria-labelledby', 'tit-temporada'); scroll.tabIndex = 0;
+  const tabla = document.createElement('table'); tabla.className = 'temporada-tabla';
+  const cap = document.createElement('caption'); cap.className = 'sr';
+  cap.textContent = `Estado de cada seta del ${fechas[0].slice(8)} al ${fechas.at(-1)!.slice(8)}: verde, buen momento; amarillo, esperar; gris, no activa.`;
+  tabla.append(cap);
+  const thead = tabla.createTHead(), cab = thead.insertRow();
+  const th = (texto: string, clase = '') => { const x = document.createElement('th'); x.scope = 'col'; if (clase) x.className = clase; x.textContent = texto; return x; };
+  cab.append(th('Seta', 'tt-nombre'));
+  fechas.forEach((f, i) => {
+    const x = th('', i === 0 ? 'tt-dia hoy' : 'tt-dia');
+    const dia = new Date(f + 'T12:00:00Z');
+    x.setAttribute('aria-label', i === 0 ? 'hoy' : `${SEMANA[dia.getUTCDay()]} ${+f.slice(8, 10)}`);
+    const sem = document.createElement('small'); sem.textContent = i === 0 ? 'hoy' : SEMANA[dia.getUTCDay()][0].toUpperCase();
+    const n = document.createElement('b'); n.textContent = String(+f.slice(8, 10));
+    x.append(sem, n);
+    cab.append(x);
+  });
+  cab.append(th('Hasta', 'tt-fin'));
+  const thF = th('', 'tt-ficha'); const srF = document.createElement('span'); srF.className = 'sr'; srF.textContent = 'Ficha'; thF.append(srF); cab.append(thF);
+  const tbody = tabla.createTBody();
+  for (const f of filas) {
+    const tr = tbody.insertRow(); tr.className = 'tt-fila'; tr.dataset.especie = f.id;
+    tr.dataset.tipo = f.ventana?.tipo ?? 'sin_datos';
+    tr.onclick = () => ctx.elegirEnMapa(f.id);
+    const cN = document.createElement('th'); cN.scope = 'row'; cN.className = 'tt-nombre';
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'tt-elegir'; b.textContent = nombre(f.id);
+    b.setAttribute('aria-label', `${nombre(f.id)}, ${f.fin}. Ver en el mapa`);
+    b.onclick = (ev) => { ev.stopPropagation(); ctx.elegirEnMapa(f.id); };
+    cN.append(b); tr.append(cN);
+    const vistas = fechas.map((fe) => { const d = f.dias.find((x) => x.fecha === fe); return d ? VISTA_ESTADO[d.estado] : 'gris'; });
+    vistas.forEach((v, i) => {
+      const td = tr.insertCell(); td.className = i === 0 ? 'tt-dia hoy' : 'tt-dia';
+      td.dataset.estado = v;
+      // Tramos seguidos del mismo estado: una sola línea con los extremos redondeados.
+      if (i === 0 || vistas[i - 1] !== v) td.classList.add('ini');
+      if (i === vistas.length - 1 || vistas[i + 1] !== v) td.classList.add('fin');
+      const barra = document.createElement('i'); barra.setAttribute('aria-hidden', 'true');
+      const sr = document.createElement('span'); sr.className = 'sr'; sr.textContent = TEXTO_CELDA[v];
+      td.append(barra, sr);
+    });
+    const cF = tr.insertCell(); cF.className = 'tt-fin'; cF.textContent = f.fin;
+    const cB = tr.insertCell(); cB.className = 'tt-ficha';
+    const bf = document.createElement('button'); bf.type = 'button'; bf.className = 'tt-ver-ficha'; bf.hidden = true;
+    bf.dataset.especie = f.id;
+    bf.setAttribute('aria-label', `Ficha de ${nombre(f.id)}`);
+    bf.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-libro"/></svg>';
+    bf.onclick = (ev) => { ev.stopPropagation(); ctx.verFicha(f.id); };
+    ctx.hayFicha(f.id).then((ok) => { bf.hidden = !ok; });
+    cB.append(bf);
+  }
+  scroll.append(tabla);
+  const ley = document.createElement('p'); ley.className = 'temporada-leyenda'; ley.setAttribute('aria-hidden', 'true');
+  for (const [e, t] of [['verde', NOMBRE_ESTADO.verde], ['amarillo', NOMBRE_ESTADO.amarillo], ['gris', 'No activa']] as const) {
+    const s = document.createElement('span'); s.dataset.estado = e;
+    const i = document.createElement('i'); s.append(i, t); ley.append(s);
+  }
+  const hoyL = document.createElement('span'); hoyL.className = 'tl-hoy'; hoyL.append(document.createElement('i'), 'Hoy'); ley.append(hoyL);
+  const nota = document.createElement('p'); nota.className = 'nota temporada-nota';
+  nota.textContent = 'Es una estimación según la lluvia y la temperatura previstas en la zona de referencia. Más allá de una semana, solo tendencia.';
+  caja.append(scroll, ley, nota);
+  return filas;
+}
+
 export async function pintarHoy() {
   const m = ctx.manifest();
   const hoy = ctx.hoy();
@@ -316,7 +413,8 @@ export async function pintarHoy() {
   else if (!general.length) vacio(ul, o.soloPublicos ? 'Ese día ningún sitio en monte público cumple los filtros.'
     : 'Ese día todas las setas están en rojo o ningún sitio cumple la dificultad elegida.');
   general.forEach((f, i) => ul.append(fila(f.principal, f.entradas, i + 1)));
-  ultimo = { fecha, confianza: confianza(hoy, fecha), general, especie: sel.value, top: [], calendario: [], sinSitios: !datos };
+  ultimo = { fecha, confianza: confianza(hoy, fecha), general, especie: sel.value, top: [], calendario: [], sinSitios: !datos, temporada: [] };
+  ultimo.temporada = pintarTemporada();
   await pintarTopEspecie(datos, o);
   ultimo.calendario = pintarCalendario(datos, fecha);
   document.body.dataset.hoy = fecha;
@@ -329,7 +427,8 @@ export function resumenHoy() {
     titularidad: x.sitio.titularidad?.clase ?? 'privado' });
   return { fecha: ultimo.fecha, confianza: ultimo.confianza, sinSitios: ultimo.sinSitios,
     general: ultimo.general.map((f) => ({ ...e(f.principal), especies: f.especies })), especie: ultimo.especie, top: ultimo.top.map(e),
-    calendario: ultimo.calendario.map((f) => ({ id: f.id, clase: f.estado.clase, texto: f.estado.texto })) };
+    calendario: ultimo.calendario.map((f) => ({ id: f.id, clase: f.estado.clase, texto: f.estado.texto })),
+    temporada: ultimo.temporada.map((f) => ({ id: f.id, tipo: f.ventana?.tipo ?? null, fin: f.fin, estados: f.dias.map((d) => d.estado) })) };
 }
 
 export function iniciarHoy(c: ContextoHoy) {

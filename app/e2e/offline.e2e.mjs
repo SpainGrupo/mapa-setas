@@ -131,7 +131,9 @@ const fichaAcceso = async (origenEsperado) => {
 const elegirEspecie = async (id) => {
   await p.locator('#btn-especie').click();
   await p.locator('#dlg-especie[open]').waitFor();
-  await p.locator(`#lista-especies [role=option][data-especie=${id}]`).click();
+  const opc = p.locator(`#lista-especies [role=option][data-especie=${id}]`);
+  if (!(await opc.isVisible())) await p.locator('#btn-ver-mas').click();   // no activa: está tras «Ver más»
+  await opc.click();
   await p.locator('#dlg-especie').waitFor({ state: 'hidden' });
 };
 const miniaturasCargadas = () => p.$$eval('#lista-especies [role=option]', (os) => os.map((o) => {
@@ -170,13 +172,14 @@ try {
     'el <select> de especie queda oculto tras un botón con miniatura');
   await p.locator('#btn-especie').click();
   await p.locator('#dlg-especie[open]').waitFor();
+  const focoAlAbrir = await p.locator('#lista-especies [aria-selected=true]').evaluate((o) => o === document.activeElement);
+  if (await p.locator('#btn-ver-mas[aria-expanded=false]').count()) await p.locator('#btn-ver-mas').click();   // todas a la vista
   await p.waitForFunction(() => [...document.querySelectorAll('#lista-especies img')].every((i) => i.complete));
   const minis = await miniaturasCargadas();
   const alturas = await p.$$eval('#lista-especies [role=option]', (os) => os.map((o) => o.getBoundingClientRect().height));
   comprobar(minis.length === idsMapa.length && minis.every((m) => m.ok) && alturas.every((h) => h >= 48),
     `hoja de especies: ${minis.length} filas con miniatura (${minis.map((m) => m.id).join(', ')}), filas ≥ 48 px`);
-  comprobar(await p.locator('#lista-especies [aria-selected=true]').evaluate((o) => o === document.activeElement),
-    'al abrir, el foco está en la especie elegida (aria-selected)');
+  comprobar(focoAlAbrir, 'al abrir, el foco está en la especie elegida (aria-selected)');
   comprobar(/Boletus reticulatus|Boletus aestivalis/.test(await p.locator('#lista-especies [data-especie=boletus_aestivalis]').textContent()),
     'B. aestivalis muestra la foto y el nombre de la ficha de B. reticulatus');
   const sang = await p.locator('#lista-especies [data-especie=lactarius_sanguifluus]').evaluate((o) => ({ t: o.textContent, src: o.querySelector('img')?.getAttribute('src') ?? '' }));
@@ -570,29 +573,52 @@ try {
   await p.locator('#zona-grafico').scrollIntoViewIfNeeded();
   await captura('09-zona-grafico.png');
 
-  // Selector de especie del mapa con el tiempo de hoy (fixture): activas arriba, «No activas ahora» y debajo atenuadas.
+  // Selector de especie del mapa con el tiempo de hoy (fixture): «Activas ahora» arriba con estado y «hasta ~…»;
+  // «Ver más · N no activas ahora» plegado, que al abrirse enseña las demás en gris con su motivo (y se recuerda).
   await p.getByRole('button', { name: /Mapa/ }).click();
+  await elegirEspecie('boletus_edulis');
+  await p.evaluate(() => localStorage.setItem('setas:selector-ver-mas', '0'));
   await p.locator('#btn-especie').click();
   await p.locator('#dlg-especie[open]').waitFor();
-  const selHoy = await p.evaluate(() => ({ orden: window.__setas.selector(),
-    dom: [...document.querySelectorAll('#lista-especies > li')].map((li) => li.classList.contains('se-divisor') ? '|' : li.dataset.especie),
-    divisor: document.querySelector('#lista-especies .se-divisor')?.textContent,
-    inact: [...document.querySelectorAll('#lista-especies .inactiva')].map((li) => ({ id: li.dataset.especie,
-      et: li.querySelector('.se-inactiva')?.textContent, op: +getComputedStyle(li).opacity, gris: getComputedStyle(li.querySelector('.miniatura-especie')).filter })) }));
+  const leerSel = () => p.evaluate(() => ({ orden: window.__setas.selector(),
+    grupo: document.querySelector('#se-tit-activas')?.textContent,
+    act: [...document.querySelectorAll('#lista-activas [role=option]')].map((li) => li.dataset.especie),
+    chips: [...document.querySelectorAll('#lista-activas [role=option]')].map((li) => li.querySelector('.se-estado')?.textContent ?? ''),
+    hasta: [...document.querySelectorAll('#lista-activas .se-hasta')].map((x) => x.textContent),
+    btn: document.querySelector('#btn-ver-mas')?.textContent, exp: document.querySelector('#btn-ver-mas')?.getAttribute('aria-expanded'),
+    masVisible: !!document.querySelector('#lista-mas') && !document.querySelector('#lista-mas').hidden,
+    guardado: localStorage.getItem('setas:selector-ver-mas'),
+    inact: [...document.querySelectorAll('#lista-mas .inactiva')].map((li) => ({ id: li.dataset.especie, motivo: li.dataset.motivo,
+      et: li.querySelector('.se-inactiva')?.textContent, op: +getComputedStyle(li).opacity, gris: getComputedStyle(li.querySelector('.miniatura-especie')).filter,
+      alto: li.getBoundingClientRect().height })) }));
+  const selHoy = await leerSel();
   const esperadoAct = Object.keys(FIXTURE.esperado).filter((k) => /verde|amarillo/.test(FIXTURE.esperado[k]));
   const rangoEst = (id) => (FIXTURE.esperado[id] === 'verde' ? 0 : 1);
-  comprobar(selHoy.divisor === 'No activas ahora' && selHoy.orden.activas.length === esperadoAct.length
+  comprobar(selHoy.grupo === 'Activas ahora' && selHoy.orden.activas.length === esperadoAct.length
     && selHoy.orden.activas.every((id) => esperadoAct.includes(id))
     && selHoy.orden.activas.every((id, i, a) => !i || rangoEst(a[i - 1]) <= rangoEst(id))
-    && selHoy.dom.join(',') === [...selHoy.orden.activas, '|', ...selHoy.orden.inactivas.map((x) => x.id)].join(',')
-    && selHoy.inact.length === 1 && selHoy.inact[0].id === 'amanita_caesarea' && /^seco( \(mirado cerca de \S.*\))?$/.test(selHoy.inact[0].et)
-    && selHoy.inact[0].op < 1 && /grayscale/.test(selHoy.inact[0].gris),
-    `selector: ${selHoy.orden.activas.length} activas hoy (verde → amarillo), «No activas ahora» y A. caesarea atenuada «seco»: ${selHoy.dom.join(' ')}`);
-  await p.locator('#lista-especies .se-divisor').scrollIntoViewIfNeeded();
+    && selHoy.act.join(',') === selHoy.orden.activas.join(',') && selHoy.chips.every((c) => /^(Buen momento|Esperar)$/.test(c))
+    && selHoy.hasta.length > 0 && selHoy.hasta.every((t) => /^(hasta|empieza) ~\d{1,2} [a-z]{3}$/.test(t)),
+    `selector: «Activas ahora» con ${selHoy.act.length} setas (verde → amarillo), estado y «${selHoy.hasta[0]}»`);
+  comprobar(selHoy.btn === 'Ver más · 1 no activa ahora' && selHoy.exp === 'false' && !selHoy.masVisible && selHoy.orden.inactivas.length === 1,
+    `«${selHoy.btn}» plegado`);
   await captura('selector-activas.png');
+  await p.locator('#btn-ver-mas').click();
+  const selMas = await leerSel();
+  comprobar(selMas.exp === 'true' && selMas.masVisible && selMas.guardado === '1'
+    && selMas.inact.length === 1 && selMas.inact[0].id === 'amanita_caesarea' && selMas.inact[0].alto >= 48
+    && /^(seco|ya pasó su lluvia|fuera de temporada)( \(mirado cerca de \S.*\))?$/.test(selMas.inact[0].et)
+    && selMas.inact[0].op < 1 && /grayscale/.test(selMas.inact[0].gris) && !PROHIBIDO.test(selMas.inact[0].et),
+    `«Ver más» se abre (y se recuerda): A. caesarea en gris con su motivo «${selMas.inact[0].et}»`);
+  await p.locator('#lista-mas [data-especie=amanita_caesarea]').scrollIntoViewIfNeeded();
+  await captura('selector-ver-mas.png');
   await p.locator('#lista-especies [data-especie=amanita_caesarea]').click();
   await p.locator('#dlg-especie').waitFor({ state: 'hidden' });
   comprobar(await p.locator('#sel-especie').inputValue() === 'amanita_caesarea', 'una especie «no activa» se puede elegir igual');
+  await p.locator('#btn-especie').click();
+  await p.locator('#dlg-especie[open]').waitFor();
+  comprobar(await p.locator('#btn-ver-mas').getAttribute('aria-expanded') === 'true', '«Ver más» sigue abierto al volver (localStorage)');
+  await p.locator('#dlg-especie').evaluate((d) => d.close());
   await elegirEspecie('boletus_edulis');
 
   // Selector sin GPS con el centro del mapa en Marbella (2026-10-15): el estado sale de los puntos meteo de la vista,
@@ -715,6 +741,70 @@ try {
     await p.locator(`#guia-ficha[data-id=${id}] .btn-volver`).click();
   }
   await p.locator('#guia-vista-lista').waitFor();
+  await p.locator('.pestanas [data-p=p-hoy]').click();
+  await p.waitForSelector('#top-general .top-fila');
+  // «Temporada»: una fila por seta, 16 días con el semáforo, marca de hoy, «hasta ~…/empieza ~…»; activas primero.
+  const temp = await p.evaluate(() => ({ datos: window.__setas.tops().temporada,
+    filas: [...document.querySelectorAll('#temporada .tt-fila')].map((tr) => ({ id: tr.dataset.especie, tipo: tr.dataset.tipo,
+      dias: [...tr.querySelectorAll('.tt-dia')].map((td) => td.dataset.estado), hoy: tr.querySelector('.tt-dia.hoy') === tr.querySelector('.tt-dia'),
+      fin: tr.querySelector('.tt-fin').textContent, nombre: tr.querySelector('.tt-elegir').textContent })),
+    cab: document.querySelector('#temporada thead .tt-dia.hoy')?.textContent,
+    region: document.querySelector('#temporada .temporada-scroll')?.getAttribute('role'),
+    ancho: document.documentElement.scrollWidth <= window.innerWidth,
+    texto: document.querySelector('#temporada').innerText,
+    antesTop: document.querySelector('#tit-temporada').compareDocumentPosition(document.querySelector('#tit-top-especie')) & Node.DOCUMENT_POSITION_FOLLOWING }));
+  const nEsp = (await p.evaluate(async () => (await (await fetch('data/marbella/manifest.json')).json()).especies.filter((e) => e.tiempo).length));
+  const iPrimeraNoActiva = temp.filas.findIndex((f) => f.tipo !== 'activa');
+  comprobar(temp.filas.length === nEsp && temp.filas.every((f) => f.dias.length === 16 && f.hoy && f.dias.every((e) => /^(verde|amarillo|gris)$/.test(e)))
+    && temp.cab === `hoy${+HOY_E2E.slice(8)}` && temp.region === 'region' && temp.ancho && temp.antesTop
+    && temp.filas.slice(0, iPrimeraNoActiva < 0 ? undefined : iPrimeraNoActiva).every((f) => f.tipo === 'activa' && /^hasta ~\d{1,2} [a-z]{3}$/.test(f.fin))
+    && (iPrimeraNoActiva < 0 || temp.filas.slice(iPrimeraNoActiva).every((f) => f.tipo !== 'activa'))
+    && temp.filas.filter((f) => f.tipo === 'pronto').every((f) => /^empieza ~/.test(f.fin))
+    && temp.datos.length === temp.filas.length && /Es una estimación según la lluvia y la temperatura previstas/.test(temp.texto) && !PROHIBIDO.test(temp.texto),
+    `Temporada: ${temp.filas.length} filas × 16 días, hoy marcado, activas primero (${temp.filas.map((f) => `${f.id.split('_')[1]} «${f.fin}»`).join(', ')})`);
+  await p.locator('#tit-temporada').scrollIntoViewIfNeeded();
+  await captura('temporada-hoy.png');
+  const selAntes = await p.locator('#sel-especie').inputValue();
+  const filaT = temp.filas.find((f) => f.id !== selAntes && f.tipo === 'activa') ?? temp.filas.find((f) => f.id !== selAntes);
+  await p.locator(`#temporada .tt-fila[data-especie=${filaT.id}] .tt-dia`).nth(3).click();
+  await p.locator('#p-mapa.activa').waitFor();
+  await reposo();
+  comprobar(await p.locator('#sel-especie').inputValue() === filaT.id && (await p.evaluate(() => window.__setas.mapa.getSource('idoneidad').url)).includes(`idoneidad_${filaT.id}_`)
+    && await p.locator('#btn-especie').getAttribute('data-especie') === filaT.id,
+    `tocar la fila de ${filaT.id} en Temporada elige esa seta en el mapa y cambia a la pestaña Mapa`);
+  await p.locator('.pestanas [data-p=p-hoy]').click();
+  await p.waitForSelector('#temporada .tt-fila');
+  await p.locator('#temporada .tt-ver-ficha:not([hidden])').first().waitFor({ timeout: 10000 });
+  const fichaT = await p.locator('#temporada .tt-ver-ficha:not([hidden])').first().getAttribute('data-especie');
+  await p.locator(`#temporada .tt-ver-ficha[data-especie=${fichaT}]`).click();
+  await p.locator('#guia-ficha[data-id]').waitFor({ timeout: 10000 });
+  comprobar(await p.locator('#p-guia.activa').count() === 1, `el botón de ficha de Temporada abre la ficha (${fichaT})`);
+  await p.locator('#guia-ficha .btn-volver').first().click();
+  await p.locator('#guia-vista-lista').waitFor();
+  // Capturas a 375 px, en claro y en oscuro, del selector (con «Ver más» abierto) y de la tabla.
+  const vpPrevio = p.viewportSize();
+  await p.setViewportSize({ width: 375, height: 812 });
+  for (const tema of ['light', 'dark']) {
+    await p.emulateMedia({ colorScheme: tema });
+    const sufijo = tema === 'light' ? 'claro' : 'oscuro';
+    await p.locator('.pestanas [data-p=p-hoy]').click();
+    await p.waitForSelector('#temporada .tt-fila');
+    comprobar(await p.evaluate(() => document.documentElement.scrollWidth <= 375 && document.querySelector('#temporada .temporada-scroll').scrollWidth > document.querySelector('#temporada .temporada-scroll').clientWidth),
+      `375 px (${sufijo}): la tabla se desliza dentro de su caja y la página no se desborda`);
+    await p.locator('#tit-temporada').evaluate((h) => { const pan = h.closest('.pantalla'); pan.scrollTo(0, h.getBoundingClientRect().top + pan.scrollTop - 90); });
+    await p.waitForTimeout(200);
+    await captura(`temporada-375-${sufijo}.png`);
+    await p.locator('.pestanas [data-p=p-mapa]').click();
+    await p.locator('#btn-especie').click();
+    await p.locator('#dlg-especie[open]').waitFor();
+    await p.locator('#btn-ver-mas').scrollIntoViewIfNeeded();
+    await p.waitForTimeout(200);
+    await captura(`selector-375-${sufijo}.png`);
+    await p.locator('#dlg-especie').evaluate((d) => d.close());
+  }
+  await p.emulateMedia({ colorScheme: null });
+  await p.setViewportSize(vpPrevio);
+  await elegirEspecie('boletus_edulis');
   await p.locator('.pestanas [data-p=p-hoy]').click();
   await p.waitForSelector('#top-general .top-fila');
   // +4 días: confianza media y el orden cambia (los níscalos entran en ventana).

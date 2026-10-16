@@ -91,6 +91,8 @@ try {
   comprobar(JSON.stringify(enPrueba.sel) === '["amanita_caesarea"]' && JSON.stringify(enPrueba.sh) === '["terfezia_arenaria"]', 'solo la especie activa tiene capa; terfezia sin hábitat');
   comprobar(/boletus_edulis/.test(enPrueba.capaM), 'la capa de Marbella sigue guardada aparte');
   await p.locator('#btn-especie').click();
+  await p.locator('#dlg-especie[open]').waitFor();
+  if (await p.locator('#btn-ver-mas[aria-expanded=false]').count()) await p.locator('#btn-ver-mas').click();   // sin hábitat: tras «Ver más»
   const fila = p.locator('#lista-especies [data-sin-habitat=terfezia_arenaria]');
   comprobar(await fila.isVisible() && /Sin hábitat en esta zona/.test(await fila.textContent()) && (await fila.getAttribute('aria-disabled')) === 'true',
     'fila gris «Sin hábitat en esta zona», no elegible');

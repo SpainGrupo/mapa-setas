@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { semaforo, sumarDias, type Reglas, type ResultadoSemaforo } from './semaforo';
 import type { Dia, PuntoMeteo } from './meteo';
 import type { SitioCandidato } from './ranking';
-import { DIAS_VENTANA, diasEspecie, esActivo, etiquetaInactiva, ordenarSelector, puntoReferencia, puntosEnVista, referenciaVista, ventanaEspecie,
-  type DiaVentana, type OpcionSelector } from './ventana-especie';
+import { DIAS_VENTANA, diasEspecie, esActivo, etiquetaInactiva, fechaCorta, ordenarSelector, ordenarTemporada, textoFinVentana, TEXTO_INACTIVA, puntoReferencia, puntosEnVista, referenciaVista, ventanaEspecie,
+  type DiaVentana, type OpcionSelector, type Ventana } from './ventana-especie';
 
 const HOY = '2026-10-14';
 const AEREUS: Reglas = { episodio_mm: 25, ventana_dias: [8, 20], tmin_media: [8, 18], tmax_media: [15, 27], meses: [9, 10, 11, 12] };
@@ -115,6 +115,20 @@ describe('selector: activas primero', () => {
     ], HOY);
     expect(r.activas.map((x) => x.id)).toEqual(['d', 'c', 'a']);
     expect(r.inactivas.map((x) => `${x.item.id}:${x.etiqueta}`)).toEqual(['e:seco', 'f:sin datos', 'b:fuera de temporada', 'g:fuera de temporada']);
+    expect(r.sinTiempo).toBe(false);
+  });
+  it('agrupa: verde y amarillo (también «esperar») arriba; «ventana pasada» abajo como «ya pasó su lluvia»', () => {
+    const r = ordenarSelector([o('v', 'rojo', 'buena', [10], 'ventana pasada: la última lluvia buena fue el 01/09, hace 43 días'),
+      o('w', 'amarillo', 'baja', [10], 'lluvia prevista el 20/10 (30 mm): esperar, la ventana suele abrir el 28/10'), o('s', 'rojo', 'buena', [10], 'seco: sin lluvia')], HOY);
+    expect(r.activas.map((x) => x.id)).toEqual(['w']);
+    expect(r.inactivas.map((x) => `${x.item.id}:${x.etiqueta}`)).toEqual(['s:seco', 'v:pasó su lluvia']);
+    expect(TEXTO_INACTIVA['pasó su lluvia']).toBe('ya pasó su lluvia');
+  });
+  it('ninguna activa: todas en no activas, sin perder ninguna', () => {
+    const xs = [o('a', 'rojo', 'media', [10], 'seco: x'), o('b', 'gris'), o('c', 'rojo', 'media', [3], 'fuera de temporada (sale en mar)')];
+    const r = ordenarSelector(xs, HOY);
+    expect(r.activas).toEqual([]);
+    expect(r.inactivas.map((x) => x.item.id).sort()).toEqual(['a', 'b', 'c']);
   });
   it('amarillo «fuera de temporada, pero…» cuenta como activa', () => {
     expect(etiquetaInactiva(o('t', 'amarillo', 'media', [3, 4], 'fuera de temporada (…), pero llovió fuerte'), HOY)).toBeNull();
@@ -123,6 +137,7 @@ describe('selector: activas primero', () => {
     const r = ordenarSelector([o('x', null), o('y', null, 'buena')], HOY);
     expect(r.activas.map((x) => x.id)).toEqual(['x', 'y']);
     expect(r.inactivas).toEqual([]);
+    expect(r.sinTiempo).toBe(true);
   });
   it('empates: orden del manifest', () => {
     expect(ordenarSelector([o('p', 'verde'), o('q', 'verde'), o('r', 'verde')], HOY).activas.map((x) => x.id)).toEqual(['p', 'q', 'r']);
@@ -158,5 +173,32 @@ describe('referencia por la vista del mapa (sin GPS)', () => {
     const viejo = puntoReferencia(P, { sitios });
     expect(viejo).toEqual({ id: 20, origen: 'sitio' });
     expect(estado(P[1])!.estado).toBe('rojo');
+  });
+});
+
+describe('tabla «Temporada»', () => {
+  const v = (tipo: Ventana['tipo'], desde?: string, hasta?: string): Ventana => ({ tipo, texto: '', desde, hasta });
+  it('fecha corta y texto del final de la fila', () => {
+    expect(fechaCorta('2026-10-05')).toBe('5 oct');
+    expect(textoFinVentana(v('activa', HOY, '2026-10-20'))).toBe('hasta ~20 oct');
+    expect(textoFinVentana(v('pronto', '2026-10-22'))).toBe('empieza ~22 oct');
+    expect(textoFinVentana(v('fuera', '2027-03-01'))).toBe('empieza ~mar');
+    expect(textoFinVentana(v('espera'))).toBe('sin lluvia a la vista');
+    expect(textoFinVentana(v('sin_datos'))).toBe('sin datos');
+    expect(textoFinVentana(null)).toBe('sin datos');
+  });
+  it('activas primero; luego por fecha de inicio; sin fecha al final; empates en el orden del manifest', () => {
+    const filas = [
+      { id: 'sin', ventana: v('espera') }, { id: 'fuera', ventana: v('fuera', '2027-03-01') }, { id: 'pronto2', ventana: v('pronto', '2026-10-25') },
+      { id: 'act2', ventana: v('activa', HOY, '2026-10-30') }, { id: 'pronto1', ventana: v('pronto', '2026-10-18') },
+      { id: 'act1', ventana: v('activa', '2026-10-10', '2026-10-20') }, { id: 'nula', ventana: null }, { id: 'pronto1b', ventana: v('pronto', '2026-10-18') },
+    ];
+    expect(ordenarTemporada(filas).map((x) => x.id)).toEqual(['act1', 'act2', 'pronto1', 'pronto1b', 'pronto2', 'fuera', 'sin', 'nula']);
+  });
+  it('con días reales: la que está activa hoy va antes que la que empieza luego', () => {
+    const activa = diasEspecie(serie({ [-12]: 30 }), AEREUS, HOY), luego = diasEspecie(serie({ [2]: 30 }), AEREUS, HOY);
+    const filas = [{ id: 'luego', ventana: ventanaEspecie(luego, [10], HOY) }, { id: 'hoy', ventana: ventanaEspecie(activa, [10], HOY) }];
+    expect(ordenarTemporada(filas).map((x) => x.id)).toEqual(['hoy', 'luego']);
+    expect(textoFinVentana(filas[1].ventana)).toMatch(/^hasta ~\d+ oct$/);
   });
 });

@@ -159,7 +159,7 @@ if (quiere('ventana')) {
   await tab('p-mapa');
   await p.locator('#btn-especie').click();
   await p.locator('#dlg-especie[open]').waitFor();
-  await p.locator('#lista-especies .se-divisor').scrollIntoViewIfNeeded();
+  await p.locator('#btn-ver-mas').scrollIntoViewIfNeeded();
   await cap('selector-activas');
   await p.keyboard.press('Escape');
 }

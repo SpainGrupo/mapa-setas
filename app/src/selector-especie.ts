@@ -7,7 +7,7 @@ import { fichaGuia, indiceGuia } from './guia-ui';
 import type { Especie } from './tipos';
 import { EXPLICACION_FIABILIDAD, insigniaFiabilidad, nivelFiabilidad, sinCalibrar, textoFiabilidad, TEXTO_SIN_CALIBRAR } from './fiabilidad';
 import type { ResultadoSemaforo } from './semaforo';
-import { ordenarSelector, type EtiquetaInactiva } from './ventana-especie';
+import { ordenarSelector, textoFinVentana, TEXTO_INACTIVA, type EtiquetaInactiva, type Ventana } from './ventana-especie';
 import { NOMBRE_ESTADO } from './zona';
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
@@ -19,6 +19,8 @@ let hoy: () => string = () => new Date().toISOString().slice(0, 10);
 let lugar: (id: string) => string | null = () => null;
 /** Especies de la guía sin hábitat en la región activa (manifest.especies_sin_habitat): grises y no elegibles. */
 let sinHabitat: () => Especie[] = () => [];
+/** Estimación de la ventana de cada seta en su punto de referencia (main.ts): «hasta ~20 oct». */
+let ventana: (id: string) => Ventana | null = () => null;
 let ultimoOrden: { activas: string[]; inactivas: { id: string; etiqueta: EtiquetaInactiva }[]; lugares: Record<string, string | null>; sinHabitat: string[] } =
   { activas: [], inactivas: [], lugares: {}, sinHabitat: [] };
 /** Orden de la última lista pintada (e2e: window.__setas.selector()). */
@@ -73,23 +75,18 @@ export function pintarSelectorEspecie() {
       if (cal) { cal.hidden = !sinCalibrar(actual); cal.textContent = TEXTO_SIN_CALIBRAR; }
     }
   }
-  const ul = $('#lista-especies');
-  ul.replaceChildren();
-  // Arriba las especies activas hoy (verde/amarillo en su punto de referencia); debajo, atenuadas pero elegibles, el resto.
+  const caja = $('#lista-especies');
+  caja.replaceChildren();
+  // Arriba «Activas ahora» (verde/amarillo en su punto de referencia); debajo, tras «Ver más», las demás en gris
+  // con su motivo, elegibles igual, y las que no tienen hábitat en la región (no elegibles).
   const orden = ordenarSelector(lista.map((e) => ({ id: e.id, especie: e, fiabilidad: nivelFiabilidad(e.fiabilidad),
     resultado: estadoHoy(e.id), meses: e.tiempo?.meses ?? [] })), hoy());
   const lugares: Record<string, string | null> = Object.fromEntries(lista.map((e) => [e.id, lugar(e.id)]));
-  ultimoOrden = { activas: orden.activas.map((x) => x.id), inactivas: orden.inactivas.map((x) => ({ id: x.item.id, etiqueta: x.etiqueta })), lugares, sinHabitat: [] };
-  const filas: { e: Especie; estado: ResultadoSemaforo | null; etiqueta: EtiquetaInactiva | null }[] = [
-    ...orden.activas.map((x) => ({ e: x.especie, estado: x.resultado, etiqueta: null })),
-    ...orden.inactivas.map((x) => ({ e: x.item.especie, estado: x.item.resultado, etiqueta: x.etiqueta })),
-  ];
-  for (const { e, estado, etiqueta } of filas) {
-    if (etiqueta && e.id === orden.inactivas[0].item.id) {
-      const sep = document.createElement('li');
-      sep.className = 'se-divisor'; sep.setAttribute('role', 'presentation'); sep.textContent = 'No activas ahora';
-      ul.append(sep);
-    }
+  const sh = sinHabitat();
+  ultimoOrden = { activas: orden.activas.map((x) => x.id), inactivas: orden.inactivas.map((x) => ({ id: x.item.id, etiqueta: x.etiqueta })), lugares,
+    sinHabitat: sh.map((e) => e.id) };
+
+  const opcion = (e: Especie) => {
     const d = datosEspecie(e);
     const li = document.createElement('li');
     li.setAttribute('role', 'option');
@@ -98,57 +95,127 @@ export function pintarSelectorEspecie() {
     const elegida = e.id === actual?.id;
     li.setAttribute('aria-selected', String(elegida));
     li.tabIndex = elegida ? 0 : -1;
-    const caja = document.createElement('span'); caja.className = 'miniatura-especie'; caja.setAttribute('aria-hidden', 'true');
-    miniatura(caja, d.miniatura);
+    const mini = document.createElement('span'); mini.className = 'miniatura-especie'; mini.setAttribute('aria-hidden', 'true');
+    miniatura(mini, d.miniatura);
     const txt = document.createElement('span'); txt.className = 'se-texto';
     const b = document.createElement('b'); b.textContent = d.comun;
     const i = document.createElement('i'); i.textContent = d.cientifico;
     txt.append(b, i);
     const pie = document.createElement('span'); pie.className = 'se-pie';
-    const donde = lugares[e.id];
-    if (etiqueta) {
-      li.classList.add('inactiva');
-      const x = document.createElement('span'); x.className = 'se-inactiva';
-      x.textContent = (etiqueta === 'sin datos' ? 'sin datos del tiempo' : etiqueta) + (donde && etiqueta === 'seco' ? ` (mirado cerca de ${donde})` : '');
-      pie.append(x);
-    } else if (estado) {
-      const x = document.createElement('span'); x.className = 'chip-estado se-estado'; x.dataset.estado = estado.estado; x.textContent = NOMBRE_ESTADO[estado.estado];
-      pie.append(x);
-      if (donde) { const l = document.createElement('span'); l.className = 'se-lugar'; l.textContent = `activa cerca de ${donde}`; pie.append(l); }
-    }
-    pie.append(insigniaFiabilidad(e.fiabilidad, e.n_citas));
-    if (sinCalibrar(e)) { const s = document.createElement('span'); s.className = 'se-sin-calibrar'; s.textContent = TEXTO_SIN_CALIBRAR; pie.append(s); }
     txt.append(pie);
     const marca = document.createElement('span'); marca.className = 'se-marca'; marca.setAttribute('aria-hidden', 'true');
     if (elegida) marca.innerHTML = '<svg class="ico"><use href="#i-check"/></svg>';
-    li.append(caja, txt, marca);
-    ul.append(li);
+    li.append(mini, txt, marca);
+    return { li, pie, elegida };
+  };
+  const insignias = (e: Especie, pie: HTMLElement) => {
+    pie.append(insigniaFiabilidad(e.fiabilidad, e.n_citas));
+    if (sinCalibrar(e)) { const s = document.createElement('span'); s.className = 'se-sin-calibrar'; s.textContent = TEXTO_SIN_CALIBRAR; pie.append(s); }
+  };
+  const lista_ = (id: string, etiqueta: string) => {
+    const ul = document.createElement('ul'); ul.id = id; ul.className = 'se-lista'; ul.setAttribute('role', 'listbox');
+    ul.setAttribute('aria-labelledby', etiqueta);
+    return ul;
+  };
+  const titulo = (id: string, texto: string) => {
+    const h = document.createElement('p'); h.id = id; h.className = 'se-grupo'; h.textContent = texto;
+    return h;
+  };
+
+  // 1. Activas ahora (o, sin datos del tiempo, todas sin rotular como activas)
+  const tAct = titulo('se-tit-activas', orden.sinTiempo ? 'Todas las especies' : 'Activas ahora');
+  const ulAct = lista_('lista-activas', 'se-tit-activas');
+  caja.append(tAct);
+  if (orden.sinTiempo) {
+    const n = document.createElement('p'); n.className = 'se-nota'; n.textContent = 'Sin datos del tiempo todavía: no se sabe cuáles están activas.';
+    caja.append(n);
   }
-  // Especies de la guía sin hábitat en esta región (spec §4.4): grises, sin capa y no elegibles. La guía sigue teniendo su ficha.
-  const sh = sinHabitat();
-  ultimoOrden.sinHabitat = sh.map((e) => e.id);
-  if (sh.length) {
-    const sep = document.createElement('li');
-    sep.className = 'se-divisor'; sep.setAttribute('role', 'presentation'); sep.textContent = 'Sin hábitat en esta zona';
-    ul.append(sep);
+  let elegidaEnMas = false;
+  for (const x of orden.activas) {
+    const e = x.especie, estado = x.resultado;
+    const { li, pie } = opcion(e);
+    if (estado) {
+      const c = document.createElement('span'); c.className = 'chip-estado se-estado'; c.dataset.estado = estado.estado; c.textContent = NOMBRE_ESTADO[estado.estado];
+      pie.append(c);
+      const donde = lugares[e.id];
+      if (donde) { const l = document.createElement('span'); l.className = 'se-lugar'; l.textContent = `activa cerca de ${donde}`; pie.append(l); }
+      const fin = ventana(e.id);
+      const t = fin && (fin.tipo === 'activa' || fin.tipo === 'pronto') ? textoFinVentana(fin) : '';
+      if (t) { const h = document.createElement('span'); h.className = 'se-hasta'; h.textContent = t; pie.append(h); }
+    }
+    insignias(e, pie);
+    ulAct.append(li);
   }
-  for (const e of sh) {
-    const d = datosEspecie(e);
-    const li = document.createElement('li');
-    li.setAttribute('role', 'option'); li.setAttribute('aria-disabled', 'true'); li.setAttribute('aria-selected', 'false');
-    li.tabIndex = -1; li.className = 'sin-habitat'; li.dataset.sinHabitat = e.id;
-    const caja = document.createElement('span'); caja.className = 'miniatura-especie'; caja.setAttribute('aria-hidden', 'true');
-    miniatura(caja, d.miniatura);
-    const txt = document.createElement('span'); txt.className = 'se-texto';
-    const b = document.createElement('b'); b.textContent = d.comun;
-    const i = document.createElement('i'); i.textContent = d.cientifico;
-    const pie = document.createElement('span'); pie.className = 'se-pie';
-    const x = document.createElement('span'); x.className = 'se-inactiva'; x.textContent = 'Sin hábitat en esta zona';
-    pie.append(x); txt.append(b, i, pie);
-    li.append(caja, txt);
-    ul.append(li);
+  if (orden.activas.length) caja.append(ulAct);
+  else {
+    const n = document.createElement('p'); n.className = 'se-ninguna'; n.id = 'se-ninguna';
+    n.textContent = 'Ahora ninguna está activa en la zona que miras. Las tienes todas abajo, en gris: se pueden elegir igual.';
+    caja.append(n);
+  }
+
+  // 2. «Ver más»: no activas (gris, con su motivo) y sin hábitat en esta zona
+  if (orden.inactivas.length || sh.length) {
+    const ulMas = lista_('lista-mas', 'se-tit-mas');
+    for (const { item, etiqueta } of orden.inactivas) {
+      const e = item.especie;
+      const { li, pie, elegida } = opcion(e);
+      if (elegida) elegidaEnMas = true;
+      li.classList.add('inactiva');
+      li.dataset.motivo = etiqueta;
+      const x = document.createElement('span'); x.className = 'se-inactiva';
+      const donde = lugares[e.id];
+      x.textContent = TEXTO_INACTIVA[etiqueta] + (donde && (etiqueta === 'seco' || etiqueta === 'pasó su lluvia') ? ` (mirado cerca de ${donde})` : '');
+      pie.append(x);
+      insignias(e, pie);
+      ulMas.append(li);
+    }
+    // Especies de la guía sin hábitat en esta región (spec §4.4): grises, sin capa y no elegibles. La guía sigue teniendo su ficha.
+    if (sh.length) {
+      const sep = document.createElement('li');
+      sep.className = 'se-divisor'; sep.setAttribute('role', 'presentation'); sep.textContent = 'Sin hábitat en esta zona';
+      ulMas.append(sep);
+    }
+    for (const e of sh) {
+      const d = datosEspecie(e);
+      const li = document.createElement('li');
+      li.setAttribute('role', 'option'); li.setAttribute('aria-disabled', 'true'); li.setAttribute('aria-selected', 'false');
+      li.tabIndex = -1; li.className = 'sin-habitat'; li.dataset.sinHabitat = e.id;
+      const mini = document.createElement('span'); mini.className = 'miniatura-especie'; mini.setAttribute('aria-hidden', 'true');
+      miniatura(mini, d.miniatura);
+      const txt = document.createElement('span'); txt.className = 'se-texto';
+      const b = document.createElement('b'); b.textContent = d.comun;
+      const i = document.createElement('i'); i.textContent = d.cientifico;
+      const pie = document.createElement('span'); pie.className = 'se-pie';
+      const x = document.createElement('span'); x.className = 'se-inactiva'; x.textContent = 'Sin hábitat en esta zona';
+      pie.append(x); txt.append(b, i, pie);
+      li.append(mini, txt);
+      ulMas.append(li);
+    }
+    const n = orden.inactivas.length;
+    const btn = document.createElement('button'); btn.type = 'button'; btn.id = 'btn-ver-mas'; btn.className = 'se-ver-mas';
+    btn.setAttribute('aria-controls', 'lista-mas');
+    const tMas = document.createElement('span'); tMas.id = 'se-tit-mas';
+    tMas.textContent = n ? `Ver más · ${n} no ${n === 1 ? 'activa' : 'activas'} ahora` : `Ver más · ${sh.length} sin hábitat en esta zona`;
+    btn.append(tMas);
+    btn.insertAdjacentHTML('beforeend', '<svg class="ico" aria-hidden="true"><use href="#i-abajo"/></svg>');
+    // Abierto si lo dejó abierto, si no hay ninguna activa o si la especie elegida está aquí abajo.
+    const abierto = verMasGuardado() || (!orden.activas.length && !orden.sinTiempo) || elegidaEnMas;
+    btn.setAttribute('aria-expanded', String(abierto));
+    ulMas.hidden = !abierto;
+    btn.onclick = () => {
+      const abrir = btn.getAttribute('aria-expanded') !== 'true';
+      ulMas.hidden = !abrir;
+      btn.setAttribute('aria-expanded', String(abrir));
+      guardarVerMas(abrir);
+      if (abrir) ulMas.querySelector<HTMLElement>('[role=option]')?.scrollIntoView({ block: 'nearest' });
+    };
+    caja.append(btn, ulMas);
   }
 }
+
+const CLAVE_VER_MAS = 'setas:selector-ver-mas';
+function verMasGuardado(): boolean { try { return localStorage.getItem(CLAVE_VER_MAS) === '1'; } catch { return false; } }
+function guardarVerMas(v: boolean) { try { localStorage.setItem(CLAVE_VER_MAS, v ? '1' : '0'); } catch { /* solo esta sesión */ } }
 
 function elegir(id: string) {
   const sel = $<HTMLSelectElement>('#sel-especie');
@@ -159,8 +226,9 @@ function elegir(id: string) {
 }
 
 export function iniciarSelectorEspecie(deManifest: () => Especie[], o: { estadoHoy?: (id: string) => ResultadoSemaforo | null; hoy?: () => string;
-  lugar?: (id: string) => string | null; sinHabitat?: () => Especie[] } = {}) {
+  lugar?: (id: string) => string | null; sinHabitat?: () => Especie[]; ventana?: (id: string) => Ventana | null } = {}) {
   especies = deManifest;
+  if (o.ventana) ventana = o.ventana;
   if (o.sinHabitat) sinHabitat = o.sinHabitat;
   if (o.lugar) lugar = o.lugar;
   if (o.estadoHoy) estadoHoy = o.estadoHoy;
@@ -168,7 +236,7 @@ export function iniciarSelectorEspecie(deManifest: () => Especie[], o: { estadoH
   const btn = $('#btn-especie');
   const dlg = $<HTMLDialogElement>('#dlg-especie');
   const ul = $('#lista-especies');
-  const opciones = () => [...ul.querySelectorAll<HTMLLIElement>('[role=option]')];
+  const opciones = () => [...ul.querySelectorAll<HTMLLIElement>('[role=option]')].filter((o) => !o.closest('[hidden]'));
   const enfocar = (li: HTMLLIElement | undefined) => {
     if (!li) return;
     for (const o of opciones()) o.tabIndex = o === li ? 0 : -1;

@@ -16,7 +16,7 @@ import { altitudes, aparcamiento, centroCelda, consultar, nombreVia, simplificar
 import { dificultad, NOMBRE_DIFICULTAD, perfil, seguir, textoDistancia, type Dificultad, type Perfil, type Seguimiento } from './ruta';
 import { pintarPerfil } from './perfil-grafico';
 import { iniciarHoy, pintarHoy, resumenHoy, sitiosCandidatos } from './hoy-ui';
-import { diasEspecie, puntoReferencia, referenciaVista, ventanaEspecie, type PuntoRef, type Vista } from './ventana-especie';
+import { diasEspecie, puntoReferencia, referenciaVista, ventanaEspecie, type DiaVentana, type PuntoRef, type Ventana, type Vista } from './ventana-especie';
 import { detallesTitularidad, esPublico, normaTitularidad, notaTitularidad, ponerTextosTitularidad, TEXTO_TITULARIDAD, textoTitularidad, type Titularidad } from './titularidad';
 import { AVISO_CITAS, COLOR_ORIGEN, NOMBRE_ORIGEN, ORIGENES_CITA } from './citas';
 import { bloqueCuando } from './ventana-ui';
@@ -179,7 +179,7 @@ async function iniciarMapa() {
   $('#leyenda-monte-municipal').textContent = TEXTO_TITULARIDAD.monte_municipal;
   for (const e of manifest.especies) nombres[e.id] = e.nombre;
   iniciarSelectorEspecie(() => manifest?.especies ?? [], { estadoHoy: estadoHoyRef, hoy: hoyZona, lugar: lugarRef,
-    sinHabitat: () => manifest?.especies_sin_habitat ?? [] });
+    sinHabitat: () => manifest?.especies_sin_habitat ?? [], ventana: (id) => cuandoRef(id)?.ventana ?? null });
   cargarGuia().then((ok) => { if (ok) for (const f of fichasGuia()) nombres[f.id] ??= binomio(f); pintarSelectorEspecie(); });
   rellenarEspecies($<HTMLSelectElement>('#sel-especie'));
   rellenarEspecies($<HTMLSelectElement>('#filtro-especie'), ['', 'Todas']);
@@ -946,17 +946,25 @@ function estadoHoyRef(especie: string): ResultadoSemaforo | null {
 }
 
 /** Bloque «Cuándo está activa» de una ficha: la especie del mapa que describe, sus meses y los próximos 16 días. */
-ponerBloqueTiempo((idFicha) => {
-  const ids = (manifest?.especies ?? []).map((e) => e.id);
-  const id = especieMapaDeFicha(idFicha, ids);
+/** Hoy … +15 y la estimación de la ventana de una seta en su punto de referencia (ficha, selector del mapa y tabla
+ * «Temporada» de Hoy: un solo cálculo). null si la especie no tiene reglas del tiempo. */
+function cuandoRef(id: string): { dias: DiaVentana[]; ventana: Ventana; meses: number[]; origen: PuntoRef['origen'] | null } | null {
   const e = manifest?.especies.find((x) => x.id === id);
-  if (!e?.tiempo) return null;     // solo guía, o sin reglas del tiempo: sin meses estructurados que enseñar
+  if (!e?.tiempo) return null;
   const hoy = hoyZona();
   const ref = refPunto(id);
   const serie = ref && meteo ? meteo.puntos[String(ref.id)] : null;
   const dias = diasEspecie(serie, e.tiempo, hoy, meteo ? edadHoras(meteo) : 0);
   const meses = e.tiempo.meses ?? [];
-  const bloque = bloqueCuando({ hoy, meses, conTiempo: true, dias, ventana: ventanaEspecie(dias, meses, hoy), origen: ref?.origen ?? null });
+  return { dias, ventana: ventanaEspecie(dias, meses, hoy), meses, origen: ref?.origen ?? null };
+}
+
+ponerBloqueTiempo((idFicha) => {
+  const ids = (manifest?.especies ?? []).map((e) => e.id);
+  const id = especieMapaDeFicha(idFicha, ids);
+  const c = cuandoRef(id);
+  if (!c) return null;     // solo guía, o sin reglas del tiempo: sin meses estructurados que enseñar
+  const bloque = bloqueCuando({ hoy: hoyZona(), meses: c.meses, conTiempo: true, dias: c.dias, ventana: c.ventana, origen: c.origen });
   if (bloque) bloque.dataset.especie = id;
   return bloque;
 });
@@ -1312,6 +1320,12 @@ iniciarHoy({
   hayFicha: async (especie) => !!(await cargarGuia()) && hayFicha(fichaDeEspecieMapa(especie)),
   verFicha: (especie) => { irA('p-guia'); abrirFicha(fichaDeEspecieMapa(especie)); },
   irZona: () => irA('p-zona'),
+  cuando: (especie) => cuandoRef(especie),
+  elegirEnMapa: (especie) => {
+    irA('p-mapa');
+    const sel = $<HTMLSelectElement>('#sel-especie');
+    if (sel.value !== especie) { sel.value = especie; sel.dispatchEvent(new Event('change')); }
+  },
   soloPublicos,
 });
 $<HTMLInputElement>('#hoy-solo-publicos').checked = soloPublicos();

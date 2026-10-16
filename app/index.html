@@ -226,8 +226,11 @@
         <ol id="top-general" class="tops"></ol>
         <p id="hoy-general-nota" class="nota"></p>
         <nav class="saltos" aria-label="Secciones de Hoy">
-          <a href="#tit-top-especie">Por seta</a><a href="#tit-calendario">Calendario</a>
+          <a href="#tit-temporada">Temporada</a><a href="#tit-top-especie">Por seta</a><a href="#tit-calendario">Calendario</a>
         </nav>
+        <h2 id="tit-temporada">Temporada</h2>
+        <p class="nota">Cada seta en los próximos 16 días. Toca una para verla en el mapa.</p>
+        <div id="temporada" class="temporada"></div>
         <h2 id="tit-top-especie">Los 10 mejores por seta</h2>
         <div class="fila-especie-hoy">
           <label class="campo"><span class="etq">Seta</span><select id="hoy-especie"></select></label>
@@ -465,7 +468,7 @@
       <h2 id="tit-especies">Elige especie</h2>
       <form method="dialog"><button class="btn-x" value="cerrar"><svg class="ico" aria-hidden="true"><use href="#i-cerrar"/></svg><span class="sr">Cerrar</span></button></form>
     </div>
-    <ul id="lista-especies" class="lista-especies" role="listbox" aria-labelledby="tit-especies"></ul>
+    <div id="lista-especies" class="lista-especies"></div>
   </dialog>
 
   <dialog id="dlg-region" class="dlg dlg-hoja hoja-regiones" aria-labelledby="tit-regiones">

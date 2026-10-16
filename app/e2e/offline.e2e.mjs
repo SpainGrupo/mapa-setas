@@ -3,7 +3,7 @@
 // Entre medias: «Volver a descargar» abortada a mitad (un .pmtiles cortado) → los mapas antiguos siguen.
 // Fase 3: Open-Meteo interceptado con un fixture fijo (e2e/fixtures/open-meteo.json) → tocar el mapa → tarjeta →
 // pestaña Zona con los estados esperados; y sin conexión, tras recargar, la Zona muestra la caché («actualizado hace»).
-// Fase 4: Guía → buscar «cesar» → ficha de A. caesarea (aviso de comestible y caja de huevo) → comparativa con
+// Fase 4: Guía → buscar «cesar» → ficha de A. caesarea (aviso fijo de la ficha y caja de huevo) → comparativa con
 // A. phalloides → su ficha dice MORTAL; sin conexión y tras recargar, la guía y sus fotos siguen cargando.
 // Fase 5: descarga aparte del reconocedor (OPFS) → sin conexión, foto CC de A. caesarea → top-5 offline → A. phalloides
 // y A. verna «no descartadas» hasta la pregunta del huevo; interior blanco → alerta roja; «Guardar sitio» rellena especie,
@@ -644,7 +644,7 @@ try {
   await fila0.locator('.tf-especie').first().click();
   await p.locator(`#guia-ficha[data-id=${espFila}]`).waitFor({ timeout: 10000 });
   const banTop = await p.locator('#guia-ficha .banner-comestible').allTextContents();
-  comprobar(banTop.every((t) => t === 'Considerada comestible por la bibliografía. No la consumas sin la confirmación de un experto.'), `Top → ficha de ${espFila} (solo el aviso fijo de la Guía, ${banTop.length} banner)`);
+  comprobar(banTop.every((t) => /^(Apreciada|Poco valorada) en la bibliografía micológica\. No la consumas sin la confirmación de un experto\.$/.test(t)), `Top → ficha de ${espFila} (solo el aviso fijo de la Guía, ${banTop.length} banner)`);
   await p.locator(`#guia-ficha[data-id=${espFila}] .btn-volver`).click();
   await p.locator('#guia-vista-lista').waitFor();
   await p.locator('.pestanas [data-p=p-hoy]').click();
@@ -809,22 +809,22 @@ try {
   await p.locator('.tarjeta-guia[data-id=amanita_caesarea]').click();
   await p.locator('#guia-ficha[data-id=amanita_caesarea]').waitFor();
   const banner = p.locator('#guia-ficha .banner-comestible');
-  comprobar(await banner.isVisible() && (await banner.textContent()) === 'Considerada comestible por la bibliografía. No la consumas sin la confirmación de un experto.',
-    'ficha de A. caesarea con el aviso fijo de comestible');
+  comprobar(await banner.isVisible() && (await banner.textContent()) === 'Apreciada en la bibliografía micológica. No la consumas sin la confirmación de un experto.',
+    'ficha de A. caesarea con el aviso fijo, sin «comestible»');
   comprobar(await p.locator('#guia-ficha .caja-huevo').isVisible() && /huevo/i.test(await p.locator('#guia-ficha .caja-huevo').textContent()),
     'caja «En fase de huevo» visible');
   comprobar(await p.locator('#guia-ficha .checklist li').count() >= 3, 'rasgos clave como lista de comprobación');
   await captura('guia-ficha-caesarea.png');
   const comp = p.locator('#guia-ficha .comparar[data-id=amanita_phalloides]');
   await comp.scrollIntoViewIfNeeded();
-  comprobar(await banner.isVisible(), 'el aviso de comestible sigue visible al bajar por la ficha');
+  comprobar(await banner.isVisible(), 'el aviso fijo sigue visible al bajar por la ficha');
   comprobar(/MORTAL/.test(await comp.locator('.insignia').last().textContent()), 'la comparativa marca A. phalloides como MORTAL');
   await captura('guia-no-confundir.png');
   await comp.click();
   await p.locator('#guia-ficha[data-id=amanita_phalloides]').waitFor();
   const peligro = p.locator('#guia-ficha .caja-peligro.mortal');
   comprobar(await peligro.isVisible() && /MORTAL/.test(await peligro.textContent()) && await p.locator('#guia-ficha .banner-comestible').count() === 0,
-    'ficha de A. phalloides: caja MORTAL arriba y sin aviso de comestible');
+    'ficha de A. phalloides: caja MORTAL arriba y sin el aviso de las buscadas');
   await captura('guia-ficha-phalloides.png');
   await p.goBack();
   await p.locator('#guia-ficha[data-id=amanita_caesarea]').waitFor();
@@ -886,12 +886,12 @@ try {
     && cmp.falta > 0 && cmp.fotos === 3 && cmp.dibujos > 0
     && /Por qué se parecen/.test(cmp.fp) && /Qué las separa/.test(cmp.fp) && /Cuánto fiarte/.test(cmp.fp) && /Qué foto falta/.test(cmp.fp),
     `comparación: ${cmp.pares.length} pares (${cmp.pares.slice(0, 3).join(', ')}…), ${cmp.marcas.length} rasgos numerados con los que deciden delante, ${cmp.falta} sin comprobar, 3 fotos y dibujos, bloque de falso positivo`);
-  // Spec §2: la ficha de la oronja abierta desde este resultado no dice «Considerada comestible…» sino que nombra las mortales.
+  // Spec §2: la ficha de la oronja abierta desde este resultado no dice «Apreciada…» sino que nombra las mortales.
   await p.locator('.rec-cand').first().locator('button', { hasText: 'Ver ficha' }).click();
   await p.locator('#guia-ficha[data-id=amanita_caesarea]').waitFor();
   const avisoRec = await p.locator('#guia-ficha .ficha-fija').evaluate((e) => ({ t: e.innerText, rojo: !!e.querySelector('.banner-peligro'), com: !!e.querySelector('.banner-comestible') }));
   comprobar(avisoRec.rojo && !avisoRec.com && /Amanita phalloides/.test(avisoRec.t) && /Amanita verna/.test(avisoRec.t) && !/comestible/i.test(avisoRec.t),
-    `ficha de la oronja desde Reconocer: aviso rojo «${avisoRec.t.replace(/\s+/g, ' ').slice(0, 120)}…» en vez del de comestible`);
+    `ficha de la oronja desde Reconocer: aviso rojo «${avisoRec.t.replace(/\s+/g, ' ').slice(0, 120)}…» en vez del aviso fijo`);
   await captura('reconocer-ficha-aviso-rojo.png');
   await p.getByRole('button', { name: /Reconocer/ }).click();
   await p.locator('#rec-resultado').waitFor();

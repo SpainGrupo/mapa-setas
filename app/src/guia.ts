@@ -32,7 +32,14 @@ export const TITULO_GRUPO: Record<Grupo, string> = {
   apreciada: 'Muy apreciadas', comestible_menor: 'De poco valor', toxica: 'Tóxicas', mortal: 'Mortales',
 };
 export const COMESTIBLES: ReadonlySet<Grupo> = new Set(['apreciada', 'comestible_menor']);
-export const AVISO_COMESTIBLE = 'Considerada comestible por la bibliografía. No la consumas sin la confirmación de un experto.';
+/**
+ * Aviso fijo de las fichas que se buscan para recolectar (decisión de Alexander, 2026-10-15): etiqueta neutra del grupo,
+ * sin la palabra «comestible», y siempre la confirmación de un experto.
+ */
+export const AVISO_BUSCADA: Record<'apreciada' | 'comestible_menor', string> = {
+  apreciada: 'Apreciada en la bibliografía micológica. No la consumas sin la confirmación de un experto.',
+  comestible_menor: 'Poco valorada en la bibliografía micológica. No la consumas sin la confirmación de un experto.',
+};
 
 /** Minúsculas, sin tildes ni diéresis, espacios colapsados. «Amanita de los Césares» → «amanita de los cesares». */
 export function normalizar(t: string): string {
@@ -126,12 +133,12 @@ export interface BannerFicha { clase: 'banner-peligro' | 'banner-comestible' | '
 
 /**
  * Aviso fijo de la ficha. Si la ficha es de una especie comestible y se abre desde un resultado del reconocedor que
- * aún tiene mortales sin descartar, el aviso de comestible se sustituye por uno rojo que las nombra (spec §2):
- * nunca «Considerada comestible…» mientras una mortal parecida siga en la lista.
+ * aún tiene mortales sin descartar, el aviso de la ficha se sustituye por uno rojo que las nombra (spec §2):
+ * nunca «Apreciada…» mientras una mortal parecida siga en la lista.
  */
 export function bannerFicha(f: Ficha, mortalesSinDescartar: readonly string[], avisoExperto: string): BannerFicha {
   if (!COMESTIBLES.has(f.grupo)) return { clase: 'banner-experto', texto: avisoExperto, rol: 'note' };
-  if (!mortalesSinDescartar.length) return { clase: 'banner-comestible', texto: AVISO_COMESTIBLE, rol: 'alert' };
+  if (!mortalesSinDescartar.length) return { clase: 'banner-comestible', texto: AVISO_BUSCADA[f.grupo as keyof typeof AVISO_BUSCADA], rol: 'alert' };
   const lista = mortalesSinDescartar.length === 1 ? mortalesSinDescartar[0]
     : `${mortalesSinDescartar.slice(0, -1).join(', ')} y ${mortalesSinDescartar.at(-1)}`;
   const una = mortalesSinDescartar.length === 1;

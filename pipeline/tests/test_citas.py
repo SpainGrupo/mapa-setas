@@ -1,3 +1,4 @@
+import pytest
 from setas_pipeline import citas
 
 
@@ -66,3 +67,21 @@ def test_gbif_claves_no_acepta_el_genero(monkeypatch):
     monkeypatch.setattr(citas, "_get", lambda url, p: {"matchType": "EXACT", "rank": "SPECIES", "status": "SYNONYM",
                                                        "usageKey": 5954988, "acceptedUsageKey": 5954691})
     assert citas.gbif_claves("Boletus aestivalis") == 5954691
+
+
+def test_construir_sin_red_con_cache(tmp_path, monkeypatch):
+    # con las respuestas crudas en caché, citas no debe tocar la red (ni para resolver las claves GBIF)
+    import dataclasses, json
+    from setas_pipeline.region import cargar_region
+    m = cargar_region("marbella")
+    r = dataclasses.replace(m, citas={**m.citas, "sitios_csv": None, "taxa": {}}, datos=tmp_path)
+    raw = r.raw / "citas"
+    raw.mkdir(parents=True)
+    for esp in citas.TAXA:
+        (raw / f"gbif_{esp}.json").write_text("[]")
+        (raw / f"inat_{esp}.json").write_text("[]")
+    (raw / "gbif_boletus_edulis.json").write_text(json.dumps([{
+        "key": 1, "decimalLatitude": 36.51, "decimalLongitude": -4.88, "datasetKey": "x", "eventDate": "2020-10-10"}]))
+    monkeypatch.setattr(citas, "_get", lambda *a, **k: pytest.fail("no debe pedir nada a la red"))
+    regs, _ = citas.construir(r)
+    assert [x["especie"] for x in regs] == ["boletus_edulis"]

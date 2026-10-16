@@ -336,8 +336,10 @@ def construir(region, refrescar=False) -> tuple[list[dict], dict]:
     wkt = poligono_wkt(centro, radio_km)
     todos, stats = [], {}
     for esp, nombres in taxa_region(region).items():
-        claves = {c for c in (gbif_claves(n) for n in nombres) if c}
-        brutos = _cache(raw, f"gbif_{esp}", refrescar, lambda: [o for c in sorted(claves) for o in gbif_ocurrencias(c, wkt)])
+        def pide_gbif():          # las claves solo se resuelven si hay que pedir (sin red con la caché)
+            claves = {c for c in (gbif_claves(n) for n in nombres) if c}
+            return [o for c in sorted(claves) for o in gbif_ocurrencias(c, wkt)]
+        brutos = _cache(raw, f"gbif_{esp}", refrescar, pide_gbif)
         for x in {o["key"]: o for o in brutos}.values():
             r = normaliza_gbif(esp, x)
             if r and dentro_radio(r["lat"], r["lon"], centro, radio_km):

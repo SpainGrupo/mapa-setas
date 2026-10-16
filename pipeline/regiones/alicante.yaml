@@ -247,7 +247,7 @@ legal:
     aviso: "No hay datos abiertos fiables de vallas ni de quién es dueño de cada finca. Fuera de los montes públicos marcados, asume que es privado y pide permiso. Ley 43/2003 de Montes, art. 36.1: el titular del monte es el propietario de sus frutos espontáneos."
 
 atribuciones:
-  idoneidad: "IGN CC BY 4.0 · ICV CC BY 4.0 (MFE50) · © MITECO MFE · IGME · © OpenStreetMap ODbL"
+  idoneidad: "IGN CC BY 4.0 · ICV CC BY 4.0 (MFE50) · © MITECO MFE · IGME · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL"
   protegidos: "ICV CC BY 4.0 · IDERM (Región de Murcia) · MITECO BDN"
   restricciones: "ICV CC BY 4.0 (espacios protegidos) · IDERM · MITECO BDN"
   rutas: "© OpenStreetMap (ODbL); ICV, Generalitat Valenciana (CC BY 4.0)"

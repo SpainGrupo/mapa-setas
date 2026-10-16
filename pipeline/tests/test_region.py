@@ -24,7 +24,7 @@ def test_marbella_recoge_exactamente_los_valores_que_estaban_en_el_codigo():
     assert r.osm_extractos == ("https://download.geofabrik.de/europe/spain/andalucia-latest.osm.pbf",)
     assert r.legal["aviso"] == AVISO and r.legal["tipos_restriccion"] == TEXTOS
     assert [c["id"] for c in r.legal["ccaa"]] == ["AND"] and r.legal["ccaa"][0]["texto"] == AVISO
-    assert r.atribuciones["idoneidad"] == "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL"
+    assert r.atribuciones["idoneidad"] == "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL"
     assert r.atribuciones["rutas"] == "© OpenStreetMap (ODbL); REDIAM, Junta de Andalucía (CC BY 4.0)"
     assert [f["adaptador"] for f in r.capas["incendios"]] == ["rediam_por_anio", "effis"]
     assert r.capas["restricciones"][0]["tipos_zona_reserva"] == ["A", "ARE", "R"]
@@ -103,6 +103,7 @@ def _copia(tmp_path, cambio):
     (lambda d: d["edificado"].__setitem__("catastro_provincias", [29]), "catastro_provincias"),
     (lambda d: d["citas"].__setitem__("radio_km", 0), "radio_km"),
     (lambda d: d["citas"].pop("centro"), "citas.centro"),
+    (lambda d: d["atribuciones"].__setitem__("idoneidad", "IGN CC BY 4.0"), "Catastro"),
 ])
 def test_validacion_rechaza_configs_rotas(tmp_path, cambio, mensaje):
     regiones = _copia(tmp_path, cambio)
@@ -145,3 +146,9 @@ def test_validacion_no_revienta_con_nulos_y_tipos_raros(tmp_path, cambio, mensaj
     else:
         with pytest.raises(R.RegionInvalida, match=mensaje):
             R.cargar_region("marbella", regiones=regiones)
+
+
+def test_idoneidad_cita_al_catastro_si_usa_su_mascara():
+    # la máscara de edificado (Catastro BU) entra en la idoneidad: su atribución debe citar al Catastro
+    for r in ("marbella", "alicante"):
+        assert "Catastro" in R.cargar_region(r).atribuciones["idoneidad"], r

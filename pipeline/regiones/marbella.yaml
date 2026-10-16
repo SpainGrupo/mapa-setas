@@ -149,7 +149,7 @@ legal:
     aviso: "No hay datos abiertos fiables de vallas ni de quién es dueño de cada finca. Fuera de los montes públicos marcados, asume que es privado y pide permiso. Ley 43/2003 de Montes, art. 36.1: el titular del monte es el propietario de sus frutos espontáneos. Resolución de 23-09-2026 (BOJA 196), punto 8: en terrenos particulares hace falta la autorización del propietario para recoger setas."
 
 atribuciones:
-  idoneidad: "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · © OpenStreetMap ODbL"   # exportar.py:353, respaldo.py:40
+  idoneidad: "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL"   # exportar.py:353, respaldo.py:40
   protegidos: "REDIAM CC BY 4.0"                                                              # exportar.py:423
   restricciones: "REDIAM CC BY 4.0 (zonificación PORN, RENPA)"                                # exportar.py:488
   rutas: "© OpenStreetMap (ODbL); REDIAM, Junta de Andalucía (CC BY 4.0)"                     # rutas.py:141

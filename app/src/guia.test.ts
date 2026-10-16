@@ -78,4 +78,19 @@ describe('especies del mapa ↔ fichas', () => {
     expect(especieMapaDeFicha('lactarius_deliciosus', ['lactarius_sanguifluus', 'lactarius_deliciosus'])).toBe('lactarius_deliciosus');
     expect(especieMapaDeFicha('lactarius_deliciosus', ['lactarius_sanguifluus'])).toBe('lactarius_sanguifluus');
   });
+  it('especies del mapa de Alicante descritas en otra ficha', async () => {
+    const { fichaDeEspecieMapa, DESCRITA_EN_OTRA_FICHA } = await import('./guia');
+    expect(fichaDeEspecieMapa('suillus_collinitus')).toBe('suillus_bellinii');
+    expect(fichaDeEspecieMapa('terfezia_claveryi')).toBe('terfezia_arenaria');
+    for (const id of ['lactarius_sanguifluus', 'suillus_collinitus', 'terfezia_claveryi']) expect(DESCRITA_EN_OTRA_FICHA.has(id), id).toBe(true);
+  });
+  it('textoFichaDe: artículo según el nombre común y binomio sin pasar a minúsculas', async () => {
+    const { textoFichaDe } = await import('./guia');
+    const f = (id: string) => fichas.find((x) => x.id === id)!;
+    expect(textoFichaDe(f('lactarius_deliciosus'))).toBe('En la ficha del níscalo');
+    expect(textoFichaDe(f('terfezia_arenaria'))).toBe('En la ficha de la criadilla de tierra');
+    expect(textoFichaDe(f('suillus_bellinii'))).toBe('En la ficha de Suillus bellinii');
+    expect(textoFichaDe({ ...f('boletus_edulis'), nombres_comunes: ['el hongo'] })).toBe('En la ficha del hongo');
+    expect(textoFichaDe({ ...f('boletus_edulis'), nombres_comunes: ['las negras'] })).toBe('En la ficha de las negras');
+  });
 });

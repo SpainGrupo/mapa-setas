@@ -2,7 +2,7 @@
 // El valor vive en el <select id="sel-especie"> oculto, que sigue siendo la fuente de verdad para el resto de
 // la app: elegir aquí cambia su valor y lanza «change»; cualquier otro cambio se refleja con pintarSelectorEspecie().
 // Teclado: ↑/↓/Inicio/Fin mueven el foco, Intro/Espacio eligen, Esc cierra (el propio <dialog>).
-import { binomio, DESCRITA_EN_OTRA_FICHA, fichaDeEspecieMapa, miniaturaEspecie, nombreComun } from './guia';
+import { binomio, DESCRITA_EN_OTRA_FICHA, fichaDeEspecieMapa, miniaturaEspecie, nombreComun, textoFichaDe } from './guia';
 import { fichaGuia, indiceGuia } from './guia-ui';
 import type { Especie } from './tipos';
 import { EXPLICACION_FIABILIDAD, insigniaFiabilidad, nivelFiabilidad, sinCalibrar, textoFiabilidad, TEXTO_SIN_CALIBRAR } from './fiabilidad';
@@ -28,9 +28,7 @@ export const ordenSelector = () => ultimoOrden;
 export function datosEspecie(e: Especie): { comun: string; cientifico: string; miniatura: string | null } {
   const ficha = fichaGuia(fichaDeEspecieMapa(e.id));
   if (ficha && DESCRITA_EN_OTRA_FICHA.has(e.id)) {
-    const de = nombreComun(ficha) || binomio(ficha);
-    return { comun: e.nombre, cientifico: `En la ficha de${/^el /i.test(de) ? '' : 'l'} ${de.toLocaleLowerCase('es-ES')}`,
-      miniatura: miniaturaEspecie(e.id, indiceGuia()) };
+    return { comun: e.nombre, cientifico: textoFichaDe(ficha), miniatura: miniaturaEspecie(e.id, indiceGuia()) };
   }
   const comun = ficha ? nombreComun(ficha) : '';
   return { comun: comun || e.nombre, cientifico: comun ? e.nombre : (ficha ? binomio(ficha) : ''),

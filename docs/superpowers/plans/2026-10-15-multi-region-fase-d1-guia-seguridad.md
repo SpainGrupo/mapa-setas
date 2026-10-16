@@ -536,7 +536,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Consumes: ids `suillus_bellinii` y `terfezia_arenaria` (existen).
 - Produces: `FICHA_DE_ESPECIE_MAPA` con `suillus_collinitus → suillus_bellinii` y `terfezia_claveryi → terfezia_arenaria`; `DESCRITA_EN_OTRA_FICHA` con las dos; `export function textoFichaDe(f: Ficha): string`. Task 6 importa `fichaDeEspecieMapa`.
 
-- [ ] **Step 1: Test que falla**
+- [x] **Step 1: Test que falla**
 
 Añade al final del `describe` de `guia.test.ts` que contiene el test de `lactarius_sanguifluus`:
 
@@ -558,12 +558,12 @@ Añade al final del `describe` de `guia.test.ts` que contiene el test de `lactar
 
 (`fichas` ya está definido al principio de `guia.test.ts`. Si se llama distinto, usa ese nombre.)
 
-- [ ] **Step 2: Comprobar que falla**
+- [x] **Step 2: Comprobar que falla**
 
 Run: `cd app && npx vitest run src/guia.test.ts`
 Expected: FAIL (`expected 'suillus_collinitus' to be 'suillus_bellinii'` y `textoFichaDe is not a function`).
 
-- [ ] **Step 3: Implementación**
+- [x] **Step 3: Implementación**
 
 En `guia.ts`, sustituye el bloque de las líneas 79-92 por:
 
@@ -607,12 +607,12 @@ En `selector-especie.ts`, sustituye las líneas 25-27 por:
 
 y añade `textoFichaDe` al `import` desde `./guia` de ese archivo. Si `nombreComun` o `binomio` se quedan sin uso en `selector-especie.ts`, quítalos del import (`noUnusedLocals`).
 
-- [ ] **Step 4: Comprobar que pasa**
+- [x] **Step 4: Comprobar que pasa**
 
 Run: `cd app && npx vitest run src/guia.test.ts && npx tsc --noEmit`
 Expected: PASS y tsc sin errores. El e2e sigue esperando «En la ficha del níscalo» (`offline.e2e.mjs:172`), que no cambia.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add app/src/guia.ts app/src/selector-especie.ts app/src/guia.test.ts

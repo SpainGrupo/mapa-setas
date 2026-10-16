@@ -78,18 +78,33 @@ export function urlFoto(archivo: string, indice: IndiceGuia | null): string {
 
 /**
  * Especies del mapa (manifest) cuya ficha tiene otro id. GBIF trata Boletus aestivalis como sinónimo de
- * B. reticulatus, y la guía la describe como «Boletus reticulatus (= B. aestivalis)».
+ * B. reticulatus, y la guía la describe como «Boletus reticulatus (= B. aestivalis)». Las de Alicante
+ * (S. collinitus, T. claveryi) van en la ficha de su especie próxima.
  */
 export const FICHA_DE_ESPECIE_MAPA: Record<string, string> = {
   boletus_aestivalis: 'boletus_reticulatus',
   lactarius_sanguifluus: 'lactarius_deliciosus',
+  suillus_collinitus: 'suillus_bellinii',
+  terfezia_claveryi: 'terfezia_arenaria',
 };
 /**
  * Especies del mapa sin ficha propia que la guía describe dentro de la ficha de otra especie (no son sinónimos):
  * el selector las muestra con su nombre científico y la foto de esa ficha. L. sanguifluus va en la del níscalo.
  */
-export const DESCRITA_EN_OTRA_FICHA: ReadonlySet<string> = new Set(['lactarius_sanguifluus']);
+export const DESCRITA_EN_OTRA_FICHA: ReadonlySet<string> = new Set(['lactarius_sanguifluus', 'suillus_collinitus', 'terfezia_claveryi']);
 export const fichaDeEspecieMapa = (id: string) => FICHA_DE_ESPECIE_MAPA[id] ?? id;
+const CON_ARTICULO: Record<string, string> = { el: 'del', la: 'de la', los: 'de los', las: 'de las' };
+/**
+ * «En la ficha del níscalo» / «de la criadilla de tierra» (femenino si la primera palabra acaba en -a; si el nombre
+ * ya lleva artículo, se respeta). Sin nombre común, el binomio tal cual: «En la ficha de Suillus bellinii».
+ */
+export function textoFichaDe(f: Ficha): string {
+  const comun = nombreComun(f).toLocaleLowerCase('es-ES');
+  if (!comun) return `En la ficha de ${binomio(f)}`;
+  const art = /^(el|la|los|las) (.+)$/.exec(comun);
+  if (art) return `En la ficha ${CON_ARTICULO[art[1]]} ${art[2]}`;
+  return `En la ficha ${/^\S*a(\s|$)/.test(comun) ? 'de la' : 'del'} ${comun}`;
+}
 /** Al revés: id de especie del mapa para una ficha de la guía (si el mapa la tiene), o la propia ficha. */
 export function especieMapaDeFicha(idFicha: string, idsMapa: string[]): string {
   if (idsMapa.includes(idFicha)) return idFicha;

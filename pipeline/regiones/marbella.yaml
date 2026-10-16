@@ -154,6 +154,7 @@ atribuciones:
   restricciones: "REDIAM CC BY 4.0 (zonificación PORN, RENPA)"                                # exportar.py:488
   rutas: "© OpenStreetMap (ODbL); REDIAM, Junta de Andalucía (CC BY 4.0)"                     # rutas.py:141
   respaldo_protegidos: "Espacios protegidos: REDIAM (Junta de Andalucía), CC BY 4.0"          # respaldo.py:346
+  mapa: "IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, Catastro INSPIRE (D. G. del Catastro), © OpenStreetMap ODbL, Protomaps"   # control del mapa en la app (antes LEGADO_MARBELLA de app/src/manifest-region.ts)
   titularidad: "REDIAM, Junta de Andalucía (montes públicos, vías pecuarias, senderos, cotos) · © OpenStreetMap ODbL"  # titularidad.py ATRIBUCION
 
 notas_fuentes:

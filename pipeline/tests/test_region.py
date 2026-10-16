@@ -104,6 +104,7 @@ def _copia(tmp_path, cambio):
     (lambda d: d["citas"].__setitem__("radio_km", 0), "radio_km"),
     (lambda d: d["citas"].pop("centro"), "citas.centro"),
     (lambda d: d["atribuciones"].__setitem__("idoneidad", "IGN CC BY 4.0"), "Catastro"),
+    (lambda d: d["atribuciones"].__setitem__("mapa", "IGN CC BY 4.0, Protomaps"), "atribuciones.mapa"),
 ])
 def test_validacion_rechaza_configs_rotas(tmp_path, cambio, mensaje):
     regiones = _copia(tmp_path, cambio)
@@ -152,3 +153,13 @@ def test_idoneidad_cita_al_catastro_si_usa_su_mascara():
     # la máscara de edificado (Catastro BU) entra en la idoneidad: su atribución debe citar al Catastro
     for r in ("marbella", "alicante"):
         assert "Catastro" in R.cargar_region(r).atribuciones["idoneidad"], r
+
+
+def test_cita_al_catastro_sin_mayusculas_y_sin_doble_error(tmp_path):
+    ok = _copia(tmp_path, lambda d: d["atribuciones"].__setitem__("idoneidad", "IGN · Dirección General del CATASTRO"))
+    assert "CATASTRO" in R.cargar_region("marbella", regiones=ok).atribuciones["idoneidad"]
+    d = yaml.safe_load((R.REGIONES / "marbella.yaml").read_text())
+    d["atribuciones"].pop("idoneidad")
+    from setas_pipeline.idoneidad import cargar_perfiles
+    errores = R.validar(d, R.REGIONES / "marbella.yaml", cargar_perfiles(R.ESPECIES))
+    assert [e for e in errores if "idoneidad" in e] == ["falta atribuciones.idoneidad"]

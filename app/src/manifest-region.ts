@@ -48,7 +48,7 @@ const OSM = { osm: 'OpenStreetMap' };
 /** Lo que estaba fijo en el código para Marbella y su manifest todavía no trae (atribuciones, normas sin `legal`). */
 export const LEGADO_MARBELLA = {
   region: { id: 'marbella', nombre: 'Marbella', origen: { lat: 36.5101, lon: -4.8825 }, etiqueta_origen: 'de Marbella' } as RegionManifest,
-  atribuciones: { mapa: 'IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, © OpenStreetMap ODbL, Protomaps',
+  atribuciones: { mapa: 'IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, Catastro INSPIRE (D. G. del Catastro), © OpenStreetMap ODbL, Protomaps',
     fuentes: { rediam: 'REDIAM (Junta de Andalucía)', ...OSM }, capas: {} } as Atribuciones,
   texto_protegido: TEXTO_PROTEGIDO,
   chip_sitio_restringido: CHIP_RESTRINGIDO,

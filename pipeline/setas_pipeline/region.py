@@ -189,9 +189,13 @@ def validar(d: dict, ruta: Path, catalogo: dict) -> list[str]:
     prov = ed.get("catastro_provincias", [])
     if not (isinstance(prov, list) and all(isinstance(p, str) and len(p) == 2 and p.isdigit() for p in prov)):
         e.append("edificado.catastro_provincias debe ser una lista de códigos INE de provincia ('29', …)")
-    elif prov and "Catastro" not in str(d["atribuciones"].get("idoneidad", "")):
-        # la máscara de edificado (huellas Catastro BU) entra en la idoneidad: hay que citar al Catastro
-        e.append("atribuciones.idoneidad debe citar al Catastro (la máscara de edificado usa Catastro BU)")
+    elif prov:
+        # la máscara de edificado (huellas Catastro BU) entra en la idoneidad: hay que citar al Catastro en su
+        # atribución y en la del control del mapa (`mapa`), si la región la declara
+        for k in ("idoneidad", "mapa"):
+            v = d["atribuciones"].get(k)
+            if isinstance(v, str) and "catastro" not in v.lower():
+                e.append(f"atribuciones.{k} debe citar al Catastro (la máscara de edificado usa Catastro BU)")
     ci = d.get("citas") if isinstance(d.get("citas"), dict) else {}
     if ci:
         c = ci.get("centro")

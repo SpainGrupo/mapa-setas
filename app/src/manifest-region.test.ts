@@ -12,7 +12,7 @@ describe('prepararManifest: manifest antiguo de Marbella (sin campos nuevos)', (
   const m = prepararManifest(base({ especies: [{ id: 'a', nombre: 'A' }] }), 'marbella');
   it('rellena con los textos de hoy', () => {
     expect(m.region).toEqual({ id: 'marbella', nombre: 'Marbella', origen: { lat: 36.5101, lon: -4.8825 }, etiqueta_origen: 'de Marbella' });
-    expect(m.atribuciones.mapa).toBe('IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, © OpenStreetMap ODbL, Protomaps');
+    expect(m.atribuciones.mapa).toBe('IGN CC BY 4.0, © MITECO MFE, IGME, REDIAM CC BY 4.0, Catastro INSPIRE (D. G. del Catastro), © OpenStreetMap ODbL, Protomaps');
     expect(m.atribuciones.fuentes).toEqual({ rediam: 'REDIAM (Junta de Andalucía)', osm: 'OpenStreetMap' });
     expect(m.texto_protegido).toBe('Consulta la normativa de recolección del espacio.');
     expect(m.chip_sitio_restringido).toBe('Recoger aquí exige autorización');

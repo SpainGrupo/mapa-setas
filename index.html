@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#eef1ec" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#141a17" media="(prefers-color-scheme: dark)" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="description" content="Mapa offline de zonas favorables para setas." />
+  <link rel="icon" href="iconos/icono-192.png" />
+  <link rel="apple-touch-icon" href="iconos/apple-touch-icon.png" />
+  <title>Mapa de setas</title>
+  <script>try { const t = localStorage.getItem('setas:tema'); if (t === 'claro' || t === 'oscuro') document.documentElement.dataset.tema = t; } catch {}</script>
+  <script type="module" crossorigin src="./assets/index-BKC_vxYa.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-ctHJVRlv.css">
+<link rel="manifest" href="./manifest.webmanifest"></head>
+<body>
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-mapa" viewBox="0 0 24 24"><path d="M9 4 3 6.2v13.6L9 18l6 2 6-2.2V4.2L15 6 9 4z"/><path d="M9 4v14M15 6v14"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.5s-7-6.3-7-12a7 7 0 0 1 14 0c0 5.7-7 12-7 12z"/><circle cx="12" cy="9.5" r="2.6"/></symbol>
+    <symbol id="i-semaforo" viewBox="0 0 24 24"><path d="M7 14.5a4.5 4.5 0 0 1 .4-9A6 6 0 0 1 18.6 8 4 4 0 0 1 18 16H8"/><path d="M8 19l-1 2M12 19l-1 2M16 19l-1 2"/></symbol>
+    <symbol id="i-libro" viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v15H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h14v-4"/><path d="M8 7h8"/></symbol>
+    <symbol id="i-camara" viewBox="0 0 24 24"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.6-2.2h5.8L16.5 6h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.6"/></symbol>
+    <symbol id="i-ajustes" viewBox="0 0 24 24"><path d="M4 6h9M19 6h1M4 12h3M13 12h7M4 18h11M21 18h-1"/><circle cx="16" cy="6" r="2.4"/><circle cx="10" cy="12" r="2.4"/><circle cx="18" cy="18" r="2.4"/></symbol>
+    <symbol id="i-centrar" viewBox="0 0 24 24"><path d="M3 11 21 3l-8 18-2-8z"/></symbol>
+    <symbol id="i-mas" viewBox="0 0 24 24"><path d="M12 21.5s-7-6.3-7-12a7 7 0 0 1 14 0c0 5.7-7 12-7 12z"/><path d="M12 6.5v6M9 9.5h6"/></symbol>
+    <symbol id="i-seta" viewBox="0 0 24 24"><path d="M3 12.5C3 7.3 7 4 12 4s9 3.3 9 8.5z"/><path d="M9.5 12.5v5.2a2.5 2.5 0 0 0 5 0v-5.2"/></symbol>
+    <symbol id="i-calendario" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-fotos" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="m21 15.5-4.5-4.5L7 20"/></symbol>
+    <symbol id="i-capas" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></symbol>
+    <symbol id="i-cerrar" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-mira" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></symbol>
+    <symbol id="i-caminar" viewBox="0 0 24 24"><circle cx="13" cy="4.2" r="1.8"/><path d="M10.5 21l2-6.5L15 17v4M7 12.5l2-4 4-1 3 3.5 3 1M12.5 14.5l-1-6"/></symbol>
+    <symbol id="i-coche" viewBox="0 0 24 24"><path d="M4 16.5V12l2-5h12l2 5v4.5"/><path d="M3 16.5h18M4 12h16"/><circle cx="7.5" cy="16.5" r="1.8"/><circle cx="16.5" cy="16.5" r="1.8"/></symbol>
+    <symbol id="i-marcador" viewBox="0 0 24 24"><path d="M6 3.5h12v17l-6-4.2-6 4.2z"/></symbol>
+    <symbol id="i-puntos" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></symbol>
+    <symbol id="i-abajo" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-atras" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+    <symbol id="i-espera" viewBox="0 0 24 24"><path d="M7 3.5h10M7 20.5h10M8 3.5v2.2a4 4 0 0 0 1.8 3.3L12 10.5l2.2-1.5A4 4 0 0 0 16 5.7V3.5M8 20.5v-2.2a4 4 0 0 1 1.8-3.3l2.2-1.5 2.2 1.5a4 4 0 0 1 1.8 3.3v2.2"/></symbol>
+    <symbol id="i-guion" viewBox="0 0 24 24"><path d="M6.5 12h11"/></symbol>
+    <symbol id="i-alerta" viewBox="0 0 24 24"><path d="M12 3 2.5 20h19z"/><path d="M12 10v4.5M12 17.2v.3"/></symbol>
+  </svg>
+
+  <main id="pantallas">
+    <section id="p-mapa" class="pantalla activa" aria-label="Mapa">
+      <div id="mapa"></div>
+      <div id="mira" class="mira" aria-hidden="true" hidden><svg class="ico"><use href="#i-mira"/></svg></div>
+
+      <header class="mapa-cab">
+        <div class="fila-especie">
+          <span class="sr" id="etq-especie">Especie</span>
+          <!-- El <select> oculto guarda el valor (lo leen el mapa, la Zona y los sitios); se elige con el selector con fotos. -->
+          <select id="sel-especie" hidden aria-hidden="true" tabindex="-1"></select>
+          <button id="btn-especie" class="selector-especie vidrio" type="button" aria-haspopup="dialog" aria-expanded="false"
+            aria-controls="dlg-especie" aria-labelledby="etq-especie btn-especie-nombre">
+            <span class="miniatura-especie" aria-hidden="true"></span>
+            <span class="se-texto"><b id="btn-especie-nombre"></b><i id="btn-especie-cientifico"></i></span>
+            <svg class="ico se-flecha" aria-hidden="true"><use href="#i-abajo"/></svg>
+          </button>
+          <button id="btn-ver-ficha" class="btn-redondo vidrio" type="button" hidden><svg class="ico" aria-hidden="true"><use href="#i-libro"/></svg><span class="sr">Ver ficha</span></button>
+          <button id="btn-capas" class="btn-redondo vidrio" type="button" aria-controls="capas" aria-expanded="false"><svg class="ico" aria-hidden="true"><use href="#i-capas"/></svg><span class="sr">Capas del mapa</span></button>
+        </div>
+        <button id="btn-region" class="chip-region vidrio" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="dlg-region" hidden>
+          <svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg><span id="btn-region-nombre"></span><svg class="ico se-flecha" aria-hidden="true"><use href="#i-abajo"/></svg>
+        </button>
+        <p id="pista-acceso" class="pista-mapa vidrio" hidden><svg class="ico" aria-hidden="true"><use href="#i-mira"/></svg><span>Mantén pulsado el mapa o pulsa <b>Aquí</b> para ver el acceso a pie</span></p>
+      </header>
+
+      <div id="capas" class="hoja hoja-capas vidrio" role="dialog" aria-labelledby="tit-capas" hidden>
+        <div class="hoja-asa"><span class="asa" aria-hidden="true"></span><h2 id="tit-capas">Capas del mapa</h2>
+          <button id="capas-cerrar" class="btn-x" type="button"><svg class="ico" aria-hidden="true"><use href="#i-cerrar"/></svg><span class="sr">Cerrar capas</span></button></div>
+        <div class="hoja-cuerpo">
+          <fieldset class="base-mapa segmentado">
+            <legend class="sr">Fondo</legend>
+            <label><input type="radio" name="base" value="mapa" checked /><span>Mapa</span></label>
+            <label><input type="radio" name="base" value="satelite" /><span>Satélite</span></label>
+          </fieldset>
+          <label class="campo deslizador">
+            <span class="etq">Zonas lejos de pistas y carreteras <b id="txt-umbral">≥ 0 m</b></span>
+            <input id="rng-umbral" type="range" min="0" max="1000" step="200" value="0" />
+          </label>
+          <div class="leyenda"><span>Zonas favorables</span><span class="rampa" id="rampa"></span><span class="leyenda-ext"><span>menos</span><span>más</span></span></div>
+          <details class="fiabilidad">
+            <summary><span id="txt-fiabilidad" class="insignia-fiabilidad">Mapa sin comprobar</span></summary>
+            <p id="txt-fiabilidad-expl" class="nota"></p>
+            <p id="txt-calibrado" class="nota aviso-calibrado" hidden></p>
+          </details>
+          <div class="interruptores" role="group" aria-label="Capas">
+            <label><input type="checkbox" data-capa="idoneidad" checked /><span>Zonas favorables</span></label>
+            <label id="capa-restricciones"><input type="checkbox" data-capa="restricciones" checked /><span><span class="muestra-restriccion" aria-hidden="true"></span>Recogida con autorización</span></label>
+            <label id="capa-titularidad"><input type="checkbox" data-capa="titularidad" /><span><span class="muestra-titularidad" aria-hidden="true"></span>Montes públicos y pasos</span></label>
+            <label id="capa-solo-publicos"><input type="checkbox" data-capa="solo_publicos" /><span><span class="muestra-velo" aria-hidden="true"></span>Solo montes públicos</span></label>
+            <label><input type="checkbox" data-capa="protegidos" checked /><span><span class="muestra-enp" aria-hidden="true"></span>Espacios protegidos</span></label>
+            <label id="capa-citas"><input type="checkbox" data-capa="citas" /><span><span class="muestra-citas" aria-hidden="true"></span>Citas y sitios conocidos</span></label>
+            <label id="citas-opciones" class="sub-opcion" hidden><input type="checkbox" id="citas-todas" /><span>Citas de todas las especies (si no, solo la seta del mapa)</span></label>
+            <label id="capa-rutas"><input type="checkbox" data-capa="rutas" /><span><span class="muestra-rutas" aria-hidden="true"><i data-t="GR"></i><i data-t="PR"></i><i data-t="SL"></i></span>Rutas y caminos</span></label>
+            <label><input type="checkbox" data-capa="semaforo" /><span><span class="muestra-semaforo" aria-hidden="true"></span>Buen momento hoy (por zonas)</span></label>
+            <label><input type="checkbox" data-capa="sombreado" checked /><span>Sombreado del relieve</span></label>
+            <label><input type="checkbox" data-capa="curvas" checked /><span>Curvas de nivel (20 m)</span></label>
+          </div>
+          <details id="leyenda-titularidad" class="leyenda-titularidad" hidden>
+            <summary>Leyenda: quién es el dueño del monte</summary>
+            <p><span class="muestra-monte" data-clase="monte_junta" aria-hidden="true"></span><span id="leyenda-monte-junta"></span></p>
+            <p><span class="muestra-monte" data-clase="monte_municipal" aria-hidden="true"></span><span id="leyenda-monte-municipal"></span></p>
+            <p><span class="muestra-paso" aria-hidden="true"></span>Vía pecuaria o sendero de uso público: paso público, no recoger fuera</p>
+            <p><span class="muestra-privado" aria-hidden="true"></span>Lo demás: probablemente privado, necesitas permiso del dueño para recoger</p>
+            <p id="leyenda-titularidad-nota" class="nota"></p>
+          </details>
+          <details id="leyenda-citas" class="leyenda-citas" hidden>
+            <summary>Leyenda: citas por origen</summary>
+            <ul id="leyenda-citas-lista"></ul>
+            <p id="leyenda-citas-nota" class="nota"></p>
+          </details>
+          <p class="nota">Zonas estimadas con reglas de terreno y bosque. No indican que haya setas ni qué setas son. No se pintan las zonas por debajo de 30 de 100.</p>
+        </div>
+      </div>
+
+      <div class="fabs">
+        <button id="btn-aqui" class="fab vidrio" type="button" aria-label="Guardar sitio aquí"><svg class="ico" aria-hidden="true"><use href="#i-mas"/></svg><span aria-hidden="true">Guardar</span></button>
+        <button id="btn-centrar" class="fab vidrio" type="button" aria-label="Centrar en mí"><svg class="ico" aria-hidden="true"><use href="#i-centrar"/></svg><span aria-hidden="true">Centrar</span></button>
+        <button id="btn-mira" class="fab fab-acento" type="button" aria-label="Aquí: ver cómo llegar a pie a un punto"><svg class="ico" aria-hidden="true"><use href="#i-mira"/></svg><span>Aquí</span></button>
+      </div>
+
+      <div id="barra-mira" class="barra-mira vidrio" role="region" aria-label="Elegir punto" hidden>
+        <p>Mueve el mapa hasta poner la cruz en el punto.</p>
+        <div class="ta-botones">
+          <button id="mira-cancelar" class="btn" type="button">Cancelar</button>
+          <button id="mira-ver" class="btn btn-primario" type="button"><svg class="ico" aria-hidden="true"><use href="#i-caminar"/></svg>Ver acceso aquí</button>
+        </div>
+      </div>
+
+      <div id="tarjeta-zona" class="tarjeta-zona vidrio" role="region" aria-label="Cómo va la zona tocada" hidden>
+        <div class="tz-texto"><b id="tz-estado"></b><span id="tz-motivo"></span><p id="tz-titularidad" class="chip-titularidad tz-titularidad" role="note" hidden></p></div>
+        <button id="tz-ver" class="btn btn-primario" type="button">Ver zona</button>
+        <button id="tz-cerrar" class="btn-x" type="button"><svg class="ico" aria-hidden="true"><use href="#i-cerrar"/></svg><span class="sr">Cerrar</span></button>
+      </div>
+
+      <div id="tarjeta-acceso" class="hoja tarjeta-acceso vidrio" role="region" aria-label="Acceso a pie desde el coche" hidden>
+        <div class="hoja-asa"><span class="asa" aria-hidden="true"></span>
+          <div class="ta-cab"><h2>Acceso a pie</h2><span id="ta-coord" class="ta-coord"></span></div>
+          <button id="ta-guardar" class="btn-x" type="button"><svg class="ico" aria-hidden="true"><use href="#i-marcador"/></svg><span class="sr">Guardar sitio</span></button>
+          <button id="ta-cerrar" class="btn-x" type="button"><svg class="ico" aria-hidden="true"><use href="#i-cerrar"/></svg><span class="sr">Cerrar</span></button>
+        </div>
+        <div class="hoja-cuerpo">
+          <p id="ta-restriccion" class="chip-restriccion" role="note" hidden></p>
+          <p id="ta-titularidad" class="chip-titularidad" role="note" hidden></p>
+          <p id="ta-estado" class="ta-estado" role="status"></p>
+          <dl id="ta-datos" class="ta-datos" hidden>
+            <div class="ta-via"><dt>Aparcar en</dt><dd id="ta-via"></dd></div>
+            <div class="cifra"><dd id="ta-tiempo"></dd><dt>a pie</dt></div>
+            <div class="cifra"><dd id="ta-subida"></dd><dt>de subida</dt></div>
+          </dl>
+          <p class="ta-aviso">Estimación: puede haber fincas privadas, vallas o barrancos.</p>
+          <div class="ta-botones">
+            <button id="ta-coche" class="btn" type="button"><svg class="ico" aria-hidden="true"><use href="#i-coche"/></svg>En coche</button>
+            <button id="ta-ruta" class="btn btn-primario" type="button"><svg class="ico" aria-hidden="true"><use href="#i-caminar"/></svg>Ruta a pie</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="tarjeta-ruta" class="hoja tarjeta-acceso tarjeta-ruta vidrio" role="region" aria-label="Ruta a pie" hidden>
+        <div class="hoja-asa"><span class="asa" aria-hidden="true"></span>
+          <div class="ta-cab"><h2>Ruta a pie</h2><span id="ru-via" class="ta-coord"></span></div>
+          <button id="ru-cerrar" class="btn-x" type="button"><svg class="ico" aria-hidden="true"><use href="#i-cerrar"/></svg><span class="sr">Cerrar ruta</span></button>
+        </div>
+        <div class="hoja-cuerpo">
+          <div id="ru-seguir" class="ru-seguir" hidden>
+            <p class="ru-quedan"><span>Te quedan</span><b id="ru-restante">—</b></p>
+            <p id="ru-fuera" class="ru-fuera" role="alert" hidden></p>
+            <p id="ru-gps" class="ta-estado" role="status"></p>
+          </div>
+          <p id="ru-estado" class="ta-estado" role="status"></p>
+          <dl id="ru-datos" class="ta-datos ru-datos" hidden>
+            <div class="cifra"><dd id="ru-tiempo"></dd><dt>a pie</dt></div>
+            <div class="cifra"><dd id="ru-subida"></dd><dt>de subida</dt></div>
+            <div class="cifra"><dd id="ru-distancia"></dd><dt>de camino</dt></div>
+            <div class="cifra"><dd><span id="ru-dificultad" class="insignia-dif"></span></dd><dt>dificultad</dt></div>
+          </dl>
+          <div class="ta-botones ru-botones">
+            <button id="ru-coche" class="btn" type="button"><svg class="ico" aria-hidden="true"><use href="#i-coche"/></svg>En coche</button>
+            <button id="ru-seguir-btn" class="btn btn-primario" type="button">Seguir con GPS</button>
+          </div>
+          <div id="ru-perfil" class="ru-perfil"></div>
+          <p id="ru-perfil-dato" class="grafico-dato" aria-live="polite"></p>
+          <p class="ta-aviso">Trazado aproximado (rejilla de 100 m). Puede cruzar fincas, vallas o barrancos: manda lo que veas.</p>
+        </div>
+      </div>
+      <p id="sin-datos" class="sin-datos vidrio" role="status" hidden>No hay mapas. Conéctate a internet o descárgalos en Ajustes.</p>
+    </section>
+
+    <section id="p-sitios" class="pantalla" aria-label="Mis sitios">
+      <header class="cab"><h1>Mis sitios</h1></header>
+      <div class="cuerpo">
+        <label class="campo"><span class="etq">Ver solo</span><select id="filtro-especie"></select></label>
+        <ul id="lista-sitios" class="lista"></ul>
+        <h2>Exportar e importar</h2>
+        <div class="fila-botones">
+          <button id="btn-gpx" class="btn" type="button">Exportar GPX</button>
+          <button id="btn-json" class="btn" type="button">Exportar JSON</button>
+          <label class="btn">Importar<input id="inp-importar" type="file" accept=".gpx,.json,application/gpx+xml,application/json" hidden /></label>
+        </div>
+      </div>
+    </section>
+
+    <section id="p-hoy" class="pantalla" aria-label="Hoy">
+      <header class="cab"><h1>Dónde ir hoy</h1><p id="hoy-meteo" class="estado"></p></header>
+      <div class="cuerpo">
+        <span class="sr" id="etq-dia">Día</span>
+        <div id="hoy-dias" class="chips-dias" role="group" aria-labelledby="etq-dia"></div>
+        <p id="hoy-confianza" class="confianza" role="status"></p>
+        <div class="filtros">
+          <label class="campo"><span class="etq">Dificultad</span>
+            <select id="hoy-dificultad">
+              <option value="">Cualquiera</option>
+              <option value="dificil">Hasta difícil</option>
+              <option value="moderada">Hasta moderada</option>
+              <option value="facil">Solo fácil</option>
+            </select>
+          </label>
+          <label class="campo"><span class="etq">Otro día (hasta +15)</span><input id="hoy-fecha" type="date" /></label>
+          <label id="hoy-solo-publicos-campo" class="campo interruptor-hoy"><input id="hoy-solo-publicos" type="checkbox" /><span>Solo montes públicos</span></label>
+        </div>
+        <h2 id="tit-top-general">Mejores sitios</h2>
+        <p id="hoy-explicacion-puntos" class="nota explicacion-puntos"><b>Puntuación del día</b>: hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa × citas cercanas (si la región lo aplica). «Citado: …» dice qué citas publicadas hay junto al sitio.</p>
+        <ol id="top-general" class="tops"></ol>
+        <p id="hoy-general-nota" class="nota"></p>
+        <nav class="saltos" aria-label="Secciones de Hoy">
+          <a href="#tit-temporada">Temporada</a><a href="#tit-top-especie">Por seta</a><a href="#tit-calendario">Calendario</a>
+        </nav>
+        <h2 id="tit-temporada">Temporada</h2>
+        <p class="nota">Cada seta en los próximos 16 días. Toca una para verla en el mapa.</p>
+        <div id="temporada" class="temporada"></div>
+        <h2 id="tit-top-especie">Los 10 mejores por seta</h2>
+        <div class="fila-especie-hoy">
+          <label class="campo"><span class="etq">Seta</span><select id="hoy-especie"></select></label>
+          <button id="hoy-ver-ficha" class="btn" type="button" hidden><svg class="ico" aria-hidden="true"><use href="#i-libro"/></svg>Ficha</button>
+        </div>
+        <ol id="top-especie" class="tops"></ol>
+        <h2 id="tit-calendario">Calendario</h2>
+        <p class="nota">Meses de temporada de cada seta y cómo va el día elegido. Toca una seta para ver su ficha y cuándo sale; «Sitios» te lleva a sus mejores sitios.</p>
+        <div id="calendario" class="calendario"></div>
+        <button id="hoy-zona" class="btn btn-ancho" type="button"><svg class="ico" aria-hidden="true"><use href="#i-semaforo"/></svg>Lluvia y temperaturas de la zona del mapa</button>
+        <p class="nota fija">Orientativo: reglas de aficionado, no ciencia exacta. La puntuación mide lo bueno que es el monte, no si hay setas.</p>
+        <div class="aviso-seguridad" role="note"><svg class="ico" aria-hidden="true"><use href="#i-alerta"/></svg>No consumas ninguna seta sin confirmación de un experto</div>
+      </div>
+    </section>
+
+    <section id="p-zona" class="pantalla" aria-label="Zona">
+      <header class="cab cab-volver"><button id="zona-volver" class="btn-atras" type="button"><svg class="ico" aria-hidden="true"><use href="#i-atras"/></svg>Hoy</button><h1>Zona: cuándo ir</h1></header>
+      <div class="cuerpo">
+        <div class="fila-estado">
+          <p id="estado-meteo" class="estado">Sin datos del tiempo.</p>
+          <button id="btn-meteo" class="btn" type="button">Actualizar tiempo</button>
+        </div>
+        <p id="zona-punto" class="nota">Toca el mapa para elegir una zona.</p>
+        <button id="zona-ir-mapa" class="btn" type="button" hidden><svg class="ico" aria-hidden="true"><use href="#i-mapa"/></svg>Ir al mapa</button>
+        <div id="zona-humedad" class="humedad" hidden>
+          <ul class="indicadores">
+            <li id="ind-balance" title="Lo que ha llovido en 30 días menos lo que se evapora del suelo y las plantas. Si sale negativo, el suelo ha perdido más agua de la que le ha entrado."><span>Balance 30 días</span><b></b></li>
+            <li id="ind-dias" title="Días con 1 mm o más en el último mes. Varios días de lluvia empapan más que una tormenta suelta."><span>Días de lluvia</span><b></b></li>
+            <li id="ind-suelo" title="Agua en la tierra entre 9 y 27 cm, según el modelo de Open-Meteo. Cuanto más alto, más húmeda. Por debajo de 0,15 suele estar seca."><span>Humedad del suelo</span><b></b></li>
+          </ul>
+          <details class="ayuda-humedad"><summary>Qué significan</summary>
+            <p><b>Balance 30 días:</b> lo que ha llovido en 30 días menos lo que se evapora del suelo y las plantas. Si sale negativo, el suelo ha perdido más agua de la que le ha entrado.</p>
+            <p><b>Días de lluvia:</b> días con 1 mm o más en el último mes. Varios días de lluvia empapan más que una tormenta suelta.</p>
+            <p><b>Humedad del suelo:</b> agua en la tierra entre 9 y 27 cm, según el modelo de Open-Meteo, en m³ de agua por m³ de tierra. Cuanto más alto, más húmeda. Por debajo de 0,15 suele estar seca.</p>
+          </details>
+          <p id="zona-banda" class="pista-altitud" hidden></p>
+        </div>
+        <ul id="lista-semaforo" class="lista-semaforo"></ul>
+        <div id="zona-grafico" class="grafico" hidden>
+          <div class="leyenda-grafico" aria-hidden="true">
+            <span><i class="k-barra"></i>Lluvia</span><span><i class="k-linea k-tmax"></i>Máx.</span>
+            <span><i class="k-linea k-tmin"></i>Mín.</span><span id="ley-suelo" hidden><i class="k-linea k-suelo"></i>Suelo</span><span><i class="k-banda"></i>Ventana</span><span><i class="k-prev"></i>Previsión</span>
+          </div>
+          <div id="grafico"></div>
+          <p id="grafico-dato" class="grafico-dato" aria-live="polite"></p>
+          <details class="tabla-dias"><summary>Ver tabla de días</summary><table id="tabla-dias"></table></details>
+        </div>
+        <p class="nota fija">Orientativo: reglas de aficionado, no ciencia exacta.</p>
+      </div>
+    </section>
+
+    <section id="p-guia" class="pantalla" aria-label="Guía de especies">
+      <div id="guia-vista-lista">
+        <header class="cab"><h1>Guía de especies</h1></header>
+        <div class="cuerpo">
+          <label class="campo buscar"><span class="etq">Buscar por nombre común o científico</span>
+            <input id="guia-buscar" type="search" placeholder="Ej.: oronja, níscalo, phalloides" autocomplete="off" enterkeyhint="search" /></label>
+          <div class="chips" role="group" aria-label="Filtrar por grupo">
+            <button class="chip activa" data-grupo="" aria-pressed="true" type="button">Todas</button>
+            <button class="chip g-apreciada" data-grupo="apreciada" aria-pressed="false" type="button">Apreciadas</button>
+            <button class="chip g-comestible_menor" data-grupo="comestible_menor" aria-pressed="false" type="button">Poco valor</button>
+            <button class="chip g-toxica" data-grupo="toxica" aria-pressed="false" type="button">Tóxicas</button>
+            <button class="chip g-mortal" data-grupo="mortal" aria-pressed="false" type="button">Mortales</button>
+          </div>
+          <p id="guia-error" class="sin-guia" hidden>No se pudo cargar la guía. Conéctate a internet una vez para guardarla.</p>
+          <div id="guia-lista"></div>
+          <div class="aviso-seguridad" role="note"><svg class="ico" aria-hidden="true"><use href="#i-alerta"/></svg>No consumas ninguna seta sin confirmación de un experto</div>
+        </div>
+      </div>
+      <div id="guia-ficha" class="ficha" hidden></div>
+    </section>
+
+    <section id="p-reconocer" class="pantalla" aria-label="Reconocer">
+      <header class="cab"><h1>Reconocer una seta</h1></header>
+      <div class="cuerpo">
+        <p class="nota">El reconocedor busca setas parecidas a tus fotos. No confirma nada y nunca dice si una seta se come.</p>
+        <p id="rec-estado" class="estado">Comprobando…</p>
+        <button id="rec-ir-ajustes" class="btn" type="button" hidden>Ir a la descarga</button>
+        <div class="captura">
+          <label class="btn btn-primario"><svg class="ico" aria-hidden="true"><use href="#i-camara"/></svg>Hacer foto<input id="rec-camara" type="file" accept="image/*" capture="environment" hidden /></label>
+          <label class="btn"><svg class="ico" aria-hidden="true"><use href="#i-fotos"/></svg>Elegir fotos<input id="rec-galeria" type="file" accept="image/*" multiple hidden /></label>
+        </div>
+        <p id="rec-num-fotos" class="nota"></p>
+        <div id="rec-miniaturas" class="miniaturas"></div>
+        <button id="rec-analizar" class="btn btn-primario btn-ancho" type="button" disabled>Comparar con la guía</button>
+        <p id="rec-progreso" class="nota" hidden>Comparando… La primera vez tarda unos segundos en cargar el reconocedor.</p>
+        <div id="rec-resultado" class="rec-resultado" hidden>
+          <div id="rec-alertas"></div>
+          <h2 class="titulo-peligro">Peligrosas sin descartar</h2>
+          <p class="nota">Siguen aquí hasta que tus respuestas las descarten con rasgos claros. «No sé» nunca descarta.</p>
+          <ul id="rec-peligrosas" class="rec-peligrosas"></ul>
+          <p id="rec-sin-peligrosas" class="nota" hidden>Ninguna de la guía en estos grupos. Eso no significa que la seta sea segura.</p>
+          <details id="rec-descartadas" class="creditos" hidden><summary>Descartadas por tus respuestas</summary><ul class="lista-descartadas"></ul></details>
+          <h2>Se parecen a tu foto</h2>
+          <p id="rec-no-reconocido" class="caja-nota" hidden>No se reconoce la seta en las fotos. Prueba con otras fotos más cercanas y nítidas.</p>
+          <ol id="rec-candidatos" class="rec-candidatos"></ol>
+          <section id="rec-comparar" class="rec-comparar" aria-labelledby="tit-comparar" hidden>
+            <h2 id="tit-comparar">Compáralas tú</h2>
+            <p class="nota">Cada número señala el mismo rasgo en la tabla, en el dibujo y en lo que debes buscar en tus fotos. Un recuadro de trazos es un rasgo que aún no has comprobado.</p>
+            <div id="rec-pares" class="rec-pares" role="tablist" aria-label="Peligrosa con la que comparar"></div>
+            <div id="rec-par" class="rec-par" role="tabpanel"></div>
+          </section>
+          <h2 id="tit-preguntas">Comprueba tú</h2>
+          <p id="rec-sin-preguntas" class="nota" hidden>No hay preguntas para estos candidatos.</p>
+          <div id="rec-preguntas" class="rec-preguntas"></div>
+          <div class="fila-botones">
+            <button id="rec-gemini" class="btn" type="button" hidden>Segunda opinión (Gemini)</button>
+            <button id="rec-guardar" class="btn" type="button"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>Guardar sitio</button>
+          </div>
+          <p id="rec-gemini-nota" class="nota"></p>
+          <div id="rec-gemini-resultado" class="rec-gemini" hidden></div>
+          <div id="rec-aviso-final" class="aviso-fijo" role="note">No consumas ninguna seta sin la confirmación de un experto.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="p-ajustes" class="pantalla" aria-label="Ajustes">
+      <header class="cab"><h1>Ajustes y descargas</h1></header>
+      <div class="cuerpo">
+        <section id="ajustes-region" class="grupo-ajustes" aria-labelledby="tit-ajustes-region" hidden>
+          <h2 id="tit-ajustes-region">Región</h2>
+          <p class="nota">Cada región se descarga aparte. Puedes tener varias en el teléfono.</p>
+          <ul id="ajustes-lista-regiones" class="lista-regiones lista-regiones-ajustes"></ul>
+        </section>
+        <section class="grupo-ajustes">
+          <h2 id="tit-mapas-offline">Mapas sin conexión</h2>
+          <p id="estado-descarga" class="estado">Comprobando…</p>
+          <progress id="prog-descarga" max="1" value="0" hidden></progress>
+          <button id="btn-descargar" class="btn btn-primario btn-ancho" type="button">Descargar mapas para usar sin conexión</button>
+          <button id="btn-borrar-mapas" class="btn btn-peligro" type="button" hidden>Borrar mapas descargados</button>
+          <p id="estado-almacen" class="nota"></p>
+        </section>
+        <section class="grupo-ajustes">
+          <h2>Reconocedor sin conexión</h2>
+          <p id="estado-modelo" class="estado">Comprobando…</p>
+          <progress id="prog-modelo" max="1" value="0" hidden></progress>
+          <button id="btn-modelo" class="btn btn-primario btn-ancho" type="button">Descargar reconocedor para usar sin conexión</button>
+          <button id="btn-borrar-modelo" class="btn btn-peligro" type="button" hidden>Borrar reconocedor</button>
+          <p class="nota">Descarga aparte y opcional. Reconocedor: BioCLIP (Imageomics, licencia MIT), con ONNX Runtime Web (MIT).</p>
+        </section>
+        <section class="grupo-ajustes">
+          <h2>Guía de especies sin conexión</h2>
+          <p id="estado-guia" class="estado">Comprobando…</p>
+          <button id="btn-guia-fotos" class="btn" type="button" hidden>Guardar las fotos que faltan</button>
+        </section>
+        <section class="grupo-ajustes">
+          <h2>Pestaña Hoy</h2>
+          <label class="campo"><span class="etq">Sitios por seta en «Mejores sitios»</span>
+            <select id="ajuste-top-n"><option value="2">2 por seta</option><option value="3">3 por seta</option></select>
+          </label>
+        </section>
+        <section class="grupo-ajustes">
+          <h2>Pantalla</h2>
+          <label class="campo"><span class="etq">Colores</span>
+            <select id="ajuste-tema"><option value="">Como el teléfono</option><option value="claro">Claros (al sol)</option><option value="oscuro">Oscuros (al anochecer)</option></select>
+          </label>
+        </section>
+        <section class="grupo-ajustes">
+          <h2>Segunda opinión (Gemini)</h2>
+          <p id="estado-gemini" class="estado">Pendiente de configurar</p>
+        </section>
+        <section id="normativa" class="grupo-ajustes normativa" aria-labelledby="tit-normativa" hidden>
+          <h2 id="tit-normativa">Normativa de recogida</h2>
+          <p id="normativa-ambito" class="nota" hidden></p>
+          <div id="normativa-ccaa" class="normativa-ccaa"></div>
+          <p id="normativa-aviso"></p>
+          <p id="normativa-tipos-intro" class="nota">En el mapa, con rayado rojo (capa «Recogida con autorización»):</p>
+          <ul id="normativa-tipos" class="normativa-tipos"></ul>
+          <p id="normativa-orientativo" class="aviso-normativa"></p>
+        </section>
+        <section class="grupo-ajustes">
+          <h2>Datos</h2>
+          <p class="nota" id="info-datos"></p>
+          <div id="avisos-datos" class="avisos-datos" role="note" hidden>
+            <p class="nota"><b>Avisos de estos datos</b></p>
+            <ul id="avisos-datos-lista"></ul>
+          </div>
+          <p class="atribucion" id="atrib-datos"></p>
+          <p class="atribucion">Datos meteorológicos: Open-Meteo.com (CC BY 4.0)</p>
+          <p class="atribucion">Letra: Atkinson Hyperlegible Next y Mono (Braille Institute, SIL OFL 1.1)</p>
+          <details id="creditos-fotos" class="creditos">
+            <summary>Créditos de fotos</summary>
+            <p class="nota">Fotos de la guía de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-SA o dominio público), redimensionadas.</p>
+            <div id="lista-creditos"></div>
+          </details>
+        </section>
+        <div class="aviso-seguridad" role="note"><svg class="ico" aria-hidden="true"><use href="#i-alerta"/></svg>No consumas ninguna seta sin confirmación de un experto</div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="pestanas vidrio" aria-label="Secciones">
+    <button data-p="p-mapa" class="activa" aria-current="page" type="button"><svg class="ico" aria-hidden="true"><use href="#i-mapa"/></svg><span>Mapa</span></button>
+    <button data-p="p-hoy" type="button"><svg class="ico" aria-hidden="true"><use href="#i-calendario"/></svg><span>Hoy</span></button>
+    <button data-p="p-sitios" type="button"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg><span>Mis sitios</span></button>
+    <button data-p="p-guia" type="button"><svg class="ico" aria-hidden="true"><use href="#i-libro"/></svg><span>Guía</span></button>
+    <button data-p="p-reconocer" type="button"><svg class="ico" aria-hidden="true"><use href="#i-camara"/></svg><span>Reconocer</span></button>
+    <button data-p="p-ajustes" type="button"><svg class="ico" aria-hidden="true"><use href="#i-ajustes"/></svg><span>Ajustes</span></button>
+  </nav>
+
+  <dialog id="dlg-inicio" class="dlg">
+    <h2>Antes de empezar</h2>
+    <p>El mapa marca zonas con buenas condiciones según reglas de terreno, bosque y tiempo. No garantiza que haya setas ni identifica especies.</p>
+    <div class="aviso-seguridad" role="note"><svg class="ico" aria-hidden="true"><use href="#i-alerta"/></svg>No consumas ninguna seta sin confirmación de un experto</div>
+    <p class="atribucion" id="atrib-inicio"></p>
+    <form method="dialog"><button class="btn btn-primario btn-ancho" value="ok">Entendido</button></form>
+  </dialog>
+
+  <dialog id="dlg-sitio" class="dlg dlg-hoja">
+    <form id="frm-sitio" method="dialog">
+      <h2 id="tit-sitio">Nuevo sitio</h2>
+      <p id="coord-sitio" class="nota"></p>
+      <p id="acceso-sitio" class="nota acceso-sitio" role="status" hidden></p>
+      <p id="sitio-restriccion" class="chip-restriccion" role="note" hidden></p>
+      <fieldset class="estrellas">
+        <legend>Valoración</legend>
+        <label><input type="radio" name="estrellas" value="1" checked /><span>★</span></label>
+        <label><input type="radio" name="estrellas" value="2" /><span>★★</span></label>
+        <label><input type="radio" name="estrellas" value="3" /><span>★★★</span></label>
+      </fieldset>
+      <label class="campo"><span class="etq">Especie</span><select name="especie" id="sitio-especie"></select></label>
+      <label class="campo"><span class="etq">Nota</span><textarea name="nota" rows="3" maxlength="2000"></textarea></label>
+      <label class="campo"><span class="etq">Foto (opcional)</span><input name="foto" type="file" accept="image/*" capture="environment" /></label>
+      <img id="foto-sitio" class="foto" alt="" hidden />
+      <div class="fila-botones">
+        <button type="button" id="btn-sitio-borrar" class="btn btn-peligro" hidden>Borrar</button>
+        <button type="button" id="btn-sitio-cancelar" class="btn">Cancelar</button>
+        <button type="submit" id="btn-sitio-guardar" class="btn btn-primario">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-especie" class="dlg dlg-hoja hoja-especies" aria-labelledby="tit-especies">
+    <div class="hoja-cab">
+      <h2 id="tit-especies">Elige especie</h2>
+      <form method="dialog"><button class="btn-x" value="cerrar"><svg class="ico" aria-hidden="true"><use href="#i-cerrar"/></svg><span class="sr">Cerrar</span></button></form>
+    </div>
+    <div id="lista-especies" class="lista-especies"></div>
+  </dialog>
+
+  <dialog id="dlg-region" class="dlg dlg-hoja hoja-regiones" aria-labelledby="tit-regiones">
+    <div class="hoja-cab">
+      <h2 id="tit-regiones">Elige región</h2>
+      <form method="dialog"><button class="btn-x" value="cerrar"><svg class="ico" aria-hidden="true"><use href="#i-cerrar"/></svg><span class="sr">Cerrar</span></button></form>
+    </div>
+    <p id="regiones-intro" class="nota regiones-intro" hidden>No sabemos dónde estás. Elige la zona donde vas a buscar setas; puedes cambiarla cuando quieras.</p>
+    <ul id="lista-regiones" class="lista-regiones" role="listbox" aria-labelledby="tit-regiones"></ul>
+  </dialog>
+
+  <div id="aviso" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

@@ -14,9 +14,10 @@ import { datosEspecie } from './selector-especie';
 import { ordenarTemporada, textoFinVentana, type DiaVentana, type Ventana } from './ventana-especie';
 import type { Estado } from './semaforo';
 import { detallesTitularidad, esPublico, normaTitularidad, textoTitularidad } from './titularidad';
+import { AVISO_CITAS, filaRefCita, textoCitado, type CitasSitio } from './citas';
 
 /** Explicación de la cifra del Top (2026-10-15: antes «Calidad del monte», que no decía que entra el tiempo). */
-export const EXPLICACION_PUNTUACION = 'Hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa.';
+export const EXPLICACION_PUNTUACION = 'Hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa (× citas cercanas, si la región lo aplica).';
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 
@@ -51,7 +52,7 @@ const escribir = (k: string, v: string) => { try { localStorage.setItem(k, v); }
 let ctx: ContextoHoy;
 let sitios: Promise<SitiosJson | null> | null = null;
 let fechaSel: string | null = null;
-let ultimo: { fecha: string; confianza: string; general: FilaGeneral[]; especie: string; top: Entrada[]; calendario: FilaCalendario[]; sinSitios: boolean; temporada: FilaTemporada[] } | null = null;
+let ultimo: { fecha: string; confianza: string; general: FilaGeneral[]; especie: string; top: Entrada[]; calendario: FilaCalendario[]; sinSitios: boolean; temporada: FilaTemporada[]; factorCitas: boolean } | null = null;
 
 export const maxDificultad = (): Dificultad | null => {
   const v = leer(CLAVE_DIF);
@@ -100,6 +101,38 @@ function miniatura(id: string): HTMLElement {
     img.onerror = () => { img.remove(); caja.classList.add('sin-foto'); caja.innerHTML = '<svg class="ico"><use href="#i-seta"/></svg>'; };
     img.src = url; caja.append(img);
   } else { caja.classList.add('sin-foto'); caja.innerHTML = '<svg class="ico"><use href="#i-seta"/></svg>'; }
+  return caja;
+}
+
+/** Etiqueta «Citado: …» de un sitio y, al pulsarla, la lista de fuentes (origen, fecha, precisión, distancia, enlace y
+ * atribución · licencia) con el aviso de las citas. Solo se enlaza y se atribuye: no se copia nada de la fuente. */
+function bloqueCitas(c: CitasSitio, prefijo: string): HTMLElement {
+  const caja = document.createElement('div'); caja.className = 'tf-citas'; caja.dataset.nivel = c.nivel;
+  const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'tf-citado'; bt.setAttribute('aria-expanded', 'false');
+  bt.textContent = prefijo + textoCitado(c);
+  const lista = document.createElement('div'); lista.className = 'tf-fuentes'; lista.hidden = true;
+  const ul = document.createElement('ul');
+  for (const r of c.refs) {
+    const f = filaRefCita(r);
+    const li = document.createElement('li'); li.className = 'tf-fuente';
+    const cab = document.createElement('p'); cab.className = 'tf-fuente-cab';
+    const b = document.createElement('b'); b.textContent = f.origen;
+    cab.append(b, ` · ${f.fecha} · ${f.precision} · ${f.distancia}`);
+    const fu = document.createElement('p'); fu.className = 'tf-fuente-enlace';
+    if (f.enlace) {
+      const a = document.createElement('a'); a.href = f.enlace; a.target = '_blank'; a.rel = 'noopener'; a.textContent = f.fuente;
+      fu.append(a);
+    } else fu.textContent = f.fuente;
+    const at = document.createElement('p'); at.className = 'tf-fuente-atrib'; at.textContent = f.atribucion;
+    li.append(cab, fu, at); ul.append(li);
+  }
+  const resto = c.n - c.refs.length;
+  const pie = document.createElement('p'); pie.className = 'nota tf-aviso-citas';
+  pie.textContent = (resto > 0 ? `Y ${resto} ${resto === 1 ? 'cita más' : 'citas más'} en la capa «Citas y sitios conocidos» del mapa. ` : '')
+    + (c.nivel === 'paraje' ? 'Citas de paraje: la posición es aproximada. ' : '') + AVISO_CITAS;
+  lista.append(ul, pie);
+  bt.onclick = () => { lista.hidden = !lista.hidden; bt.setAttribute('aria-expanded', String(!lista.hidden)); };
+  caja.append(bt, lista);
   return caja;
 }
 
@@ -159,6 +192,10 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIEleme
   ti.title = [...detallesTitularidad(tl), normaTitularidad()].join(' ');
   li.dataset.titularidad = tl.clase;
   li.append(ti);
+  // Citas reales cerca del sitio (de cada seta de la fila; en filas con varias, con su nombre delante).
+  const conCitas = entradas.filter((e) => e.sitio.citas);
+  for (const e of conCitas) li.append(bloqueCitas(e.sitio.citas!, entradas.length > 1 ? `${nombre(e.especie)} · ` : ''));
+  if (conCitas.length) li.dataset.citas = conCitas.map((e) => e.sitio.citas!.nivel).join(' ');
   if (s.restringido) {
     const r = document.createElement('p'); r.className = 'chip-restriccion tf-restr';
     r.textContent = ctx.manifest()?.chip_sitio_restringido ?? '';
@@ -415,7 +452,8 @@ export async function pintarHoy() {
   else if (!general.length) vacio(ul, o.soloPublicos ? 'Ese día ningún sitio en monte público cumple los filtros.'
     : 'Ese día todas las setas están en rojo o ningún sitio cumple la dificultad elegida.');
   general.forEach((f, i) => ul.append(fila(f.principal, f.entradas, i + 1)));
-  ultimo = { fecha, confianza: confianza(hoy, fecha), general, especie: sel.value, top: [], calendario: [], sinSitios: !datos, temporada: [] };
+  ultimo = { fecha, confianza: confianza(hoy, fecha), general, especie: sel.value, top: [], calendario: [], sinSitios: !datos, temporada: [],
+    factorCitas: datos?.factor_citas === true };
   ultimo.temporada = pintarTemporada();
   await pintarTopEspecie(datos, o);
   ultimo.calendario = pintarCalendario(datos, fecha);
@@ -426,8 +464,8 @@ export async function pintarHoy() {
 export function resumenHoy() {
   if (!ultimo) return null;
   const e = (x: Entrada) => ({ especie: x.especie, id: x.sitio.id, puntuacion: x.puntuacion, estado: x.estado, dificultad: x.dificultad, score: x.score,
-    titularidad: x.sitio.titularidad?.clase ?? 'privado' });
-  return { fecha: ultimo.fecha, confianza: ultimo.confianza, sinSitios: ultimo.sinSitios,
+    titularidad: x.sitio.titularidad?.clase ?? 'privado', citas: x.sitio.citas ? { n: x.sitio.citas.n, nivel: x.sitio.citas.nivel } : null });
+  return { fecha: ultimo.fecha, confianza: ultimo.confianza, sinSitios: ultimo.sinSitios, factorCitas: ultimo.factorCitas,
     general: ultimo.general.map((f) => ({ ...e(f.principal), especies: f.especies })), especie: ultimo.especie, top: ultimo.top.map(e),
     calendario: ultimo.calendario.map((f) => ({ id: f.id, clase: f.estado.clase, texto: f.estado.texto })),
     temporada: ultimo.temporada.map((f) => ({ id: f.id, tipo: f.ventana?.tipo ?? null, fin: f.fin, estados: f.dias.map((d) => d.estado) })) };

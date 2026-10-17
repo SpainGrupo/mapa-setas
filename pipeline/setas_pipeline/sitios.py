@@ -22,6 +22,8 @@ estén a < 1,5 km de otra ya elegida.
 id = índice plano de la celda representativa en la malla (fila·ancho + col): estable entre ejecuciones
 mientras no cambie la malla, y sirve para consultar acceso.bin directamente.
 Coordenadas: centro de la celda representativa, WGS84, 5 decimales.
+Versión 2 (2026-10-17): campo opcional `citas` por sitio (citas reales cercanas de su especie) y `factor_citas`
+(¿aplica la app el factor «citado» en esta región?); ambos de citas_sitios.anotar (asignación y validación por bloques).
 """
 from __future__ import annotations
 import json
@@ -30,7 +32,7 @@ from pathlib import Path
 import numpy as np
 
 
-VERSION = 1
+VERSION = 2
 UMBRAL = 60          # idoneidad mínima de una celda de mancha
 MIN_HA = 2.0         # área mínima de la mancha
 MAXIMO = 150         # sitios por especie
@@ -193,6 +195,8 @@ def calcular(region, out: Path | None = None, verbose: bool = True) -> dict:
         datos["especies"][e["id"]] = geo
         if verbose:
             print(f"  sitios {e['id']}: {len(lista)}", flush=True)
+    from .citas_sitios import anotar
+    anotar(region, datos, malla, verbose=verbose)
     out.mkdir(parents=True, exist_ok=True)
     (out / "sitios.json").write_text(json.dumps(datos, ensure_ascii=False, separators=(",", ":")))
     return datos

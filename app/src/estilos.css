@@ -944,6 +944,23 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .chip-titularidad small { font-size: 12px; color: var(--tinta-2); }
 .tz-titularidad { margin-top: 6px; }
 .tf-titularidad { font-size: 14px; font-weight: 700; padding: 6px 10px; }
+/* Citas reales cerca del sitio (Top de «Hoy»): etiqueta que despliega la lista de fuentes. */
+.tf-citas { display: grid; gap: 6px; }
+.tf-citado { all: unset; box-sizing: border-box; cursor: pointer; min-height: var(--toque); display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 10px; border: 1.5px solid var(--regla); border-left: 4px solid #2e7d32; background: var(--hoja); font-size: 14px; font-weight: 700; color: var(--tinta); overflow-wrap: anywhere; }
+.tf-citas[data-nivel=paraje] .tf-citado { border-left-color: #6a1b9a; }
+.tf-citado::after { content: '▾'; margin-left: auto; color: var(--tinta-2); }
+.tf-citado[aria-expanded=true]::after { content: '▴'; }
+.tf-citado:focus-visible { outline: 3px solid var(--ruta); outline-offset: 2px; }
+.tf-fuentes { display: grid; gap: 8px; padding: 8px 10px; border-radius: 12px; border: 1.5px solid var(--regla); background: var(--hoja); animation: materializar 160ms var(--entrada) both; }
+.tf-fuentes ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.tf-fuente { display: grid; gap: 2px; padding-bottom: 8px; border-bottom: 1px solid oklch(62% 0.017 158 / 0.35); font-size: 14px; }
+.tf-fuente:last-child { border-bottom: 0; padding-bottom: 0; }
+.tf-fuente p { margin: 0; overflow-wrap: anywhere; }
+.tf-fuente-cab { color: var(--tinta-2); }
+.tf-fuente-cab b { color: var(--tinta); }
+.tf-fuente-enlace a { color: var(--ruta); font-weight: 700; display: inline-block; min-height: 24px; }
+.tf-fuente-atrib { color: var(--tinta-2); font-size: 13px; }
+.tf-aviso-citas { font-size: 13px; }
 .interruptor-hoy { display: flex; align-items: center; gap: 10px; font-weight: 700; grid-column: 1 / -1; }
 .interruptor-hoy input { width: 22px; height: 22px; accent-color: var(--bosque); }
 .explicacion-puntos { margin-top: -4px; }

@@ -112,6 +112,27 @@ describe('semaforo', () => {
   it('hoy fuera de la serie → gris', () => {
     expect(semaforo(serie(), AEREUS, '2026-12-01').estado).toBe('gris');
   });
+
+  it('lluvia fuerte hoy con una ventana abierta por una lluvia anterior → sigue verde y anuncia la nueva ventana', () => {
+    const r = semaforo(serie({ [-14]: 30, 0: 36 }), AEREUS, HOY);
+    expect(r.estado).toBe('verde');
+    expect(r.episodio).toBe(sumarDias(HOY, -14));
+    expect(r.motivo).toMatch(/ventana abierta por 30 mm el 29\/09/);
+    expect(r.motivo).toMatch(/nueva lluvia el 13\/10 abrirá otra hacia el 21\/10/);
+    expect(r.motivo).toMatch(/barro/);
+  });
+
+  it('lluvia reciente sin ninguna ventana abierta (la anterior ya pasó) → amarillo «esperar»', () => {
+    const r = semaforo(serie({ [-28]: 30, [-2]: 30 }), AEREUS, HOY);
+    expect(r.estado).toBe('amarillo');
+    expect(r.motivo).toMatch(/esperar/);
+  });
+
+  it('ventana anterior abierta pero temperatura fuera de rango → amarillo, no verde', () => {
+    const r = semaforo(serie({ [-14]: 30, 0: 36 }, 2, 10), AEREUS, HOY);
+    expect(r.estado).toBe('amarillo');
+  });
+
 });
 
 describe('semaforo — hallazgos de revisión', () => {

@@ -97,6 +97,7 @@ function faltaHumedad(h: Humedad, r: Reglas): string | null {
   return `lluvia puntual, suelo aún seco: ${datos}`;
 }
 
+export const AGUACERO_MM = 30;          // lluvia del día a partir de la cual se avisa de barro (solo aviso, no cambia el color)
 export const SUBIDA_CALOR = 8;          // °C sobre la media de máximas de los 10 días previos (Salerni et al. 2023)
 export const HR_SECA = 30;              // % de humedad relativa mínima diaria
 /** Golpe de calor o aire seco entre el día siguiente al episodio y hoy (null si no hay). */
@@ -184,7 +185,20 @@ export function semaforo(serie: Dia[], reglas: Reglas, hoy: string, opciones: { 
   };
 
   const hum = humedadAcumulada(serie, hoy);
-  const actual = evaluar(pasado);
+  // Una lluvia nueva abre otra ventana futura, no cierra la actual: si un episodio anterior tiene la ventana
+  // abierta hoy, se evalúa ese (con temperatura, humedad y estrés) y la lluvia nueva solo se anota.
+  const abierto = pasado && hoyI - pasado.i < vmin
+    ? eps.find((e) => e.i < pasado.i && hoyI - e.i >= vmin && hoyI - e.i <= vmax) : undefined;
+  let actual = evaluar(abierto ?? pasado);
+  if (abierto && pasado) {
+    const f = serie[pasado.i].fecha;
+    const nueva = `nueva lluvia el ${ddmm(f)} abrirá otra hacia el ${ddmm(sumarDias(f, vmin))}`;
+    const motivo = actual.estado === 'verde'
+      ? `ventana abierta por ${abierto.mm} mm el ${ddmm(serie[abierto.i].fecha)}, hace ${hoyI - abierto.i} días; ${nueva}`
+      : `${actual.motivo}; ${nueva}`;
+    const barro = serie[hoyI].lluvia >= AGUACERO_MM ? `; aguacero hoy (${Math.round(serie[hoyI].lluvia)} mm): barro y accesos difíciles` : '';
+    actual = { ...actual, motivo: motivo + barro };
+  }
   // Si la lluvia pasada aún cuenta (ventana abierta o por abrir), la prevista solo completa el motivo;
   // solo cuando lo pasado no sirve (rojo) manda el episodio previsto.
   const res = !previsto ? actual

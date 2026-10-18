@@ -95,6 +95,16 @@ function irA(id: string) {
   if (id === 'p-reconocer') mostrarReconocer();
 }
 
+// Alto real de la cabecera fija de cada pantalla (incluye el notch): la usa el CSS para que lo que se trae a la vista
+// con scroll no quede debajo (scroll-padding-top en .pantalla).
+const altoCabeceras = new ResizeObserver(() => document.querySelectorAll<HTMLElement>('.pantalla').forEach((p) => {
+  const alto = Math.max(0, ...[...p.querySelectorAll<HTMLElement>('.cab, .ficha-fija')].map((c) => c.offsetHeight));
+  if (alto) p.style.setProperty('--cab-alto', `${alto}px`);
+}));
+const vigilarCabeceras = () => document.querySelectorAll<HTMLElement>('.pantalla .cab, .pantalla .ficha-fija').forEach((c) => altoCabeceras.observe(c));
+vigilarCabeceras();
+new MutationObserver(vigilarCabeceras).observe($('#p-guia'), { childList: true, subtree: true });
+
 document.querySelectorAll<HTMLButtonElement>('.pestanas button').forEach((b) =>
   b.addEventListener('click', () => (b.dataset.p ? irA(b.dataset.p) : avisar(`${b.dataset.prox}: próximamente`))));
 

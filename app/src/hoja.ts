@@ -40,6 +40,7 @@ export class Hoja {
     new MutationObserver(() => (this.el.hidden ? this.parar() : this.entrar())).observe(el, { attributes: true, attributeFilter: ['hidden'] });
     new ResizeObserver(() => this.reajustar()).observe(el);
     this.instalarGesto(asa);
+    this.instalarExpansion();
     if (!el.hidden) requestAnimationFrame(() => this.entrar());
   }
 
@@ -107,6 +108,27 @@ export class Hoja {
       this.raf = requestAnimationFrame(paso);
     };
     this.raf = requestAnimationFrame(paso);
+  }
+
+  /**
+   * En un retén bajo, la parte de abajo de la hoja queda fuera de la pantalla: hacer scroll en el contenido no llegaría
+   * nunca al final («se queda a medio scroll»). Como en iOS, el primer gesto de scroll hacia arriba dentro del
+   * contenido (dedo, rueda o teclado) sube la hoja a su retén más alto y a partir de ahí el contenido hace scroll entero.
+   */
+  private instalarExpansion() {
+    const cuerpo = this.el.querySelector<HTMLElement>('.hoja-cuerpo');
+    if (!cuerpo) return;
+    let y0 = NaN;
+    cuerpo.addEventListener('touchstart', (e) => { y0 = e.touches[0]?.clientY ?? NaN; }, { passive: true });
+    cuerpo.addEventListener('touchmove', (e) => { if ((e.touches[0]?.clientY ?? y0) - y0 < -8) this.expandir(); }, { passive: true });
+    cuerpo.addEventListener('wheel', (e) => { if (e.deltaY > 0) this.expandir(); }, { passive: true });
+    cuerpo.addEventListener('focusin', () => this.expandir());
+  }
+  /** Sube al retén más alto si no está ya (no interrumpe un arrastre en curso). */
+  expandir() {
+    if (this.el.hidden || this.el.classList.contains('arrastrando')) return;
+    const tope = this.ys().length - 1;
+    if (this.reten >= 0 && this.reten < tope) this.ir(tope);
   }
 
   private instalarGesto(asa: HTMLElement) {

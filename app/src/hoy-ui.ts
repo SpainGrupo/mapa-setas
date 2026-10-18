@@ -10,7 +10,7 @@ import { acotarDia, confianza, diasChips, estadoCalendario, etiquetaDia, mejorRe
 import { NOMBRE_DIFICULTAD, type Dificultad } from './ruta';
 import { textoSubida, textoTiempo } from './acceso';
 import { NOMBRE_ESTADO } from './zona';
-import { datosEspecie } from './selector-especie';
+import { datosEspecie, fotoMini } from './selector-especie';
 import { ordenarTemporada, textoFinVentana, type DiaVentana, type Ventana } from './ventana-especie';
 import type { Estado } from './semaforo';
 import { detallesTitularidad, esPublico, normaTitularidad, textoTitularidad } from './titularidad';
@@ -404,6 +404,7 @@ function pintarCalendario(datos: SitiosJson | null, fecha: string): FilaCalendar
     b.dataset.especie = f.id; b.dataset.clase = f.estado.clase;
     const txt = document.createElement('span'); txt.className = 'cal-texto';
     const n = document.createElement('b'); n.textContent = nombre(f.id);
+    const fm = fotoMini(f.id, nombre(f.id)); if (fm) n.prepend(fm);
     const st = document.createElement('span'); st.className = 'cal-estado'; st.textContent = f.estado.texto;
     txt.append(n, st);
     const tira = document.createElement('span'); tira.className = 'cal-meses';
@@ -492,6 +493,7 @@ function pintarTemporada(): FilaTemporada[] {
     tr.onclick = () => ctx.elegirEnMapa(f.id);
     const cN = document.createElement('th'); cN.scope = 'row'; cN.className = 'tt-nombre';
     const b = document.createElement('button'); b.type = 'button'; b.className = 'tt-elegir'; b.textContent = nombreComunId(f.id);
+    const fmT = fotoMini(f.id, nombreComunId(f.id)); if (fmT) b.prepend(fmT);
     b.setAttribute('aria-label', `${nombreComunId(f.id)}, ${f.fin}. Ver en el mapa`);
     b.onclick = (ev) => { ev.stopPropagation(); ctx.elegirEnMapa(f.id); };
     cN.append(b); tr.append(cN);
@@ -685,7 +687,11 @@ function abrirExportar() {
   bComp.id = 'exportar-compartir';
   acc.append(aRuta, bKml, bComp);
   const ol = document.createElement('ul'); ol.className = 'exportar-lista';
-  sitiosX.forEach((x, i) => { const li = document.createElement('li'); li.append(enlace(nombrePlacemark(x, i + 1), urlSitioGoogle(x))); ol.append(li); });
+  sitiosX.forEach((x, i) => {
+    const li = document.createElement('li');
+    for (const e of items[i].entradas.slice(0, 2)) { const fm = fotoMini(e.especie, nombreComunId(e.especie)); if (fm) li.append(fm); }
+    li.append(enlace(nombrePlacemark(x, i + 1), urlSitioGoogle(x))); ol.append(li);
+  });
   const ayuda = document.createElement('p'); ayuda.className = 'nota exportar-ayuda'; ayuda.textContent = AYUDA_MY_MAPS;
   panel.append(nota, acc, estado, ol, ayuda);
 }

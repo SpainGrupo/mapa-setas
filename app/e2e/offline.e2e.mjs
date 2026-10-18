@@ -550,7 +550,7 @@ try {
   await p.mouse.click(caja.x + caja.width / 2, caja.y + caja.height / 2);
   await p.locator('#tarjeta-zona').waitFor();
   const tarjeta = await p.locator('#tarjeta-zona').textContent();
-  comprobar(/Boletus aereus: Buen momento/.test(tarjeta) && /ventana abierta/.test(tarjeta), `tarjeta al tocar el mapa: «${tarjeta.trim().replace(/\s+/g, ' ')}»`);
+  comprobar(/Boletus aereus: Buen momento/.test(tarjeta) && /Ventana actual \(lluvia del \d\d\/\d\d, \d+ mm, hace \d+ días\): hasta ~\d\d\/\d\d\./.test(tarjeta) && await p.locator("#tz-estado img.foto-mini").count() === 1, `tarjeta al tocar el mapa: «${tarjeta.trim().replace(/\s+/g, ' ')}»`);
   await p.locator('[data-capa=semaforo]').evaluate((c) => { c.checked = true; c.dispatchEvent(new Event('change')); });
   await reposo();
   await captura('07-mapa-semaforo.png');
@@ -559,10 +559,12 @@ try {
   const est1 = await estadosZona();
   comprobar(Object.keys(est1).length === 22 && igual(est1, FIXTURE.esperado), `Zona con el fixture (hoy ${HOY_E2E}), 22 especies: ${JSON.stringify(est1)}`);
   const fuera = await p.locator('[data-especie=terfezia_arenaria] .mot').textContent();
+  const ponderosa = await p.locator('[data-especie=amanita_ponderosa] .mot').textContent();
+  const deliciosus = await p.locator('[data-especie=lactarius_deliciosus] .mot').textContent();
   comprobar(/^Fuera de temporada \(sale en mar, abr, may\), pero llovió fuerte/.test(fuera)
-    && /^Fuera de temporada \(sale en feb, mar, abr\)\.$/.test(await p.locator('[data-especie=amanita_ponderosa] .mot').textContent())
-    && /esperar\. Ventana desde ~\d\d\/\d\d hasta ~\d\d\/\d\d\./.test(await p.locator('[data-especie=lactarius_deliciosus] .mot').textContent()),
-    `temporada en la Zona: «${fuera}»`);
+    && /^Fuera de temporada \(sale en feb, mar, abr\)/.test(ponderosa)
+    && /esperar\. Ventana desde ~\d\d\/\d\d hasta ~\d\d\/\d\d\./.test(deliciosus),
+    `temporada en la Zona: «${fuera}» · «${ponderosa}» · «${deliciosus}»`);
   const desborde = await p.$$eval('#lista-semaforo .semaforo-fila', (bs) => bs.filter((b) => b.scrollWidth > b.clientWidth + 1).map((b) => b.dataset.especie));
   comprobar(!desborde.length, `filas del semáforo sin desbordar en horizontal${desborde.length ? ': ' + desborde.join(', ') : ''}`);
   await p.locator('#lista-semaforo [data-especie=terfezia_arenaria]').scrollIntoViewIfNeeded();

@@ -232,6 +232,11 @@ details > summary { cursor: pointer; }
 .selector-especie:active { transform: scale(0.98); }
 .miniatura-especie { width: 48px; height: 48px; border-radius: 16px; overflow: hidden; flex: none; background: var(--lavado); display: grid; place-items: center; color: var(--tinta-2); }
 .miniatura-especie img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Miniatura redonda junto al nombre de una seta (fotoMini en selector-especie.ts). Va dentro del texto del nombre. */
+.foto-mini { display: inline-block; width: 26px; height: 26px; border-radius: 50%; object-fit: cover; flex: none;
+  vertical-align: -7px; margin-right: 7px; background: var(--lavado); box-shadow: 0 0 0 1px oklch(20% 0.02 160 / 0.18); }
+.exportar-lista .foto-mini { width: 22px; height: 22px; vertical-align: -6px; margin-right: 4px; }
+.tt-elegir .foto-mini { width: 22px; height: 22px; vertical-align: -6px; margin-right: 5px; }
 .se-texto { display: grid; min-width: 0; flex: 1; }
 .se-texto b { font-size: 18px; line-height: 1.2; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .se-texto i { font-size: 14px; color: var(--tinta-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -1053,3 +1058,8 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .exportar-acciones .btn { min-height: var(--toque); text-decoration: none; display: inline-flex; align-items: center; }
 .exportar-lista { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
 .exportar-lista a { overflow-wrap: anywhere; }
+.tz-texto b .foto-mini { margin-right: 0; }
+/* Nombre con miniatura: la foto a la izquierda y el nombre (aunque ocupe dos líneas) a su lado, sin quedarse sola arriba. */
+.semaforo-fila .esp:has(> .foto-mini), .sitio .meta:has(> .foto-mini) { display: flex; align-items: center; gap: 7px; }
+.semaforo-fila .esp > .foto-mini, .sitio .meta > .foto-mini { margin-right: 0; }
+/* En columnas estrechas (Calendario, Temporada) va en línea con el texto: si no cabe, el nombre pasa debajo sin partirse. */

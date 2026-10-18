@@ -41,6 +41,21 @@ export function datosEspecie(e: Especie): { comun: string; cientifico: string; m
     miniatura: miniaturaEspecie(e.id, indiceGuia()) };
 }
 
+/**
+ * Miniatura redonda pequeña de una seta del mapa para poner junto a su nombre (Zona, Calendario, Temporada, Exportar,
+ * Mis sitios…): la misma miniatura de la guía que usa el selector (precacheada: funciona sin conexión), con carga
+ * diferida y el nombre como texto alternativo. Sin foto en la guía (o si falla al cargar), nada: no se pone otra.
+ */
+export function fotoMini(idMapa: string, nombre: string): HTMLImageElement | null {
+  const url = miniaturaEspecie(idMapa, indiceGuia());
+  if (!url) return null;
+  const img = document.createElement('img');
+  img.className = 'foto-mini'; img.alt = nombre; img.loading = 'lazy'; img.decoding = 'async'; img.width = 128; img.height = 128;
+  img.onerror = () => img.remove();
+  img.src = url;
+  return img;
+}
+
 function miniatura(caja: HTMLElement, url: string | null) {
   caja.replaceChildren();
   const icono = () => {

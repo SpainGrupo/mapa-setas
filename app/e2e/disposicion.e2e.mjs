@@ -194,6 +194,17 @@ try {
           return { cabBajo, cabAlto, titulo, primero, ultimo: u.getBoundingClientRect().bottom, ultimoTxt: (u.textContent || u.tagName).trim().slice(0, 50), barra };
         }, id);
         if (CAPTURAS) await p.screenshot({ path: join(CAPTURAS, `${id}-${ancho}-${tema}.png`) });
+        if (id === 'p-zona' || id === 'p-hoy') {
+          // Miniaturas de la seta junto a cada nombre (fotos de la guía): con alt, de la guía y cargadas.
+          const fm = await p.evaluate((id) => [...document.querySelectorAll(`#${id} img.foto-mini`)].map((i) => ({ alt: i.alt,
+            src: i.getAttribute('src'), lista: i.closest('#lista-semaforo, #calendario, .temporada-tabla')?.id || i.closest('table')?.className })), id);
+          await p.evaluate((id) => document.querySelectorAll(`#${id} img.foto-mini`).forEach((i) => { i.loading = 'eager'; }), id);
+          await p.waitForFunction((id) => [...document.querySelectorAll(`#${id} img.foto-mini`)].every((i) => i.complete), id, { timeout: 15000 });
+          const rotas = await p.evaluate((id) => [...document.querySelectorAll(`#${id} img.foto-mini`)].filter((i) => !i.naturalWidth).length, id);
+          const zonas = [...new Set(fm.map((f) => f.lista))].join(', ');
+          comprobar(fm.length > 0 && fm.every((f) => f.alt.trim() && /^guia\/miniaturas\/[a-z_]+\.jpg\?v=/.test(f.src)) && rotas === 0,
+            `${etq} · ${id}: ${fm.length} miniaturas de la guía junto a los nombres (${zonas}), con alt y cargadas`);
+        }
         if (id === 'p-hoy') {
           // Los enlaces «saltar a» llevan la sección justo bajo la cabecera, no debajo de ella.
           const saltos = await p.locator('#p-hoy .saltos a').count();

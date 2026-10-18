@@ -22,7 +22,7 @@ import { AVISO_CITAS, COLOR_ORIGEN, NOMBRE_ORIGEN, ORIGENES_CITA } from './citas
 import { bloqueCuando } from './ventana-ui';
 import type { SitiosJson } from './ranking';
 import { datosAcceso } from './acceso-datos';
-import { iniciarSelectorEspecie, ordenSelector, pintarSelectorEspecie } from './selector-especie';
+import { fotoMini, iniciarSelectorEspecie, ordenSelector, pintarSelectorEspecie } from './selector-especie';
 import { Gps } from './gps';
 import { borrarMapas, descargarMapas, estadoDescarga, moverEnOpfs } from './opfs';
 import { borrarSitio, guardarSitio, guardarVarios, leerSitio, listarSitios } from './sitios';
@@ -924,6 +924,7 @@ async function pintarLista(l?: Sitio[]) {
     const est = document.createElement('div'); est.className = 'est'; est.textContent = '★'.repeat(s.estrellas) + '☆'.repeat(3 - s.estrellas);
     const meta = document.createElement('div'); meta.className = 'meta';
     meta.textContent = `${nombres[s.especie] ?? 'Sin especie'} · ${new Date(s.fecha).toLocaleDateString('es-ES')}`;
+    const fmS = s.especie ? fotoMini(s.especie, nombres[s.especie] ?? s.especie) : null; if (fmS) meta.prepend(fmS);
     li.append(est);
     if (s.foto) { const img = document.createElement('img'); const u = URL.createObjectURL(s.foto); urlsLista.push(u); img.src = u; img.alt = ''; li.append(img); }
     li.append(meta);
@@ -1099,7 +1100,8 @@ function pintarTarjeta() {
   if ($('#tarjeta-zona').hidden || !puntoSel) return;
   const r = estadoEn(puntoSel, especieSel());
   const punto = document.createElement('span'); punto.className = 'punto-estado'; punto.dataset.estado = r?.estado ?? 'gris'; punto.setAttribute('aria-hidden', 'true');
-  $('#tz-estado').replaceChildren(punto, r ? `${nombres[especieSel()]}: ${NOMBRE_ESTADO[r.estado]}` : `${nombres[especieSel()]}: sin datos del tiempo`);
+  const fmTz = fotoMini(especieSel(), nombres[especieSel()] ?? especieSel());
+  $('#tz-estado').replaceChildren(punto, ...(fmTz ? [fmTz] : []), r ? `${nombres[especieSel()]}: ${NOMBRE_ESTADO[r.estado]}` : `${nombres[especieSel()]}: sin datos del tiempo`);
   $('#tz-motivo').textContent = r ? r.motivo : 'Conéctate y pulsa «Actualizar tiempo» en Zona.';
 }
 $('#tz-cerrar').addEventListener('click', () => ($('#tarjeta-zona').hidden = true));
@@ -1156,6 +1158,7 @@ function pintarZona() {
     b.dataset.estado = r?.estado ?? 'gris';
     const ic = document.createElement('span'); ic.className = 'ic punto-estado'; ic.dataset.estado = r?.estado ?? 'gris'; ic.setAttribute('aria-hidden', 'true');
     const esp = document.createElement('span'); esp.className = 'esp'; esp.textContent = e.nombre;
+    const fmZ = fotoMini(e.id, e.nombre); if (fmZ) esp.prepend(fmZ);
     const est = document.createElement('span'); est.className = 'est'; est.textContent = r ? NOMBRE_ESTADO[r.estado] : 'Sin datos del tiempo';
     const mot = document.createElement('span'); mot.className = 'mot'; mot.textContent = r?.motivo ?? '';
     b.append(ic, esp, est, mot);

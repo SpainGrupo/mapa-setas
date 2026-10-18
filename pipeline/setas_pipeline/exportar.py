@@ -11,6 +11,7 @@
     uv run python -m setas_pipeline.exportar citas      [--region …]          # citas.pmtiles (citas y sitios conocidos)
     uv run python -m setas_pipeline.exportar lugares    [--region …]          # pueblo más cercano en meteo_puntos.json
     uv run python -m setas_pipeline.exportar ccaa       [--region …]          # ccaa.pmtiles (si la región declara capas.ccaa)
+    uv run python -m setas_pipeline.exportar micro      [--region …]          # Modo campo: micro.bin/json (valores por celda)
     uv run python -m setas_pipeline.exportar manifest   [--region …]
     uv run python -m setas_pipeline.exportar todo       [--region …]
     uv run python -m setas_pipeline.exportar respaldo   [--region …]          # Fase 7: OsmAnd/Locus (out/respaldo/)
@@ -42,6 +43,7 @@ RADIO_BOSQUE = 6000         # m: un punto meteo se conserva si hay bosque hosped
 IDON_BOSQUE = 30            # idoneidad mínima (cualquier especie) para contar como bosque hospedador
 MIN_OBS_FIABILIDAD = 10    # observaciones GBIF mínimas para juzgar una especie (= calibracion.MIN_OBS)
 ACCESO_ARCHIVOS = ("acceso.json", "acceso.bin.gz", "aparcamientos.json")   # acceso.bin sin comprimir no se publica
+MICRO_ARCHIVOS = ("micro.json", "micro.bin")   # Modo campo (micro.py): teselas gzip, se leen sin descomprimir el total
 PROTOMAPS_BUILDS = "https://build-metadata.protomaps.dev/builds.json"
 PROTOMAPS_URL = "https://build.protomaps.com/{key}"
 
@@ -616,7 +618,7 @@ def exportar_base(region: Region, out: Path | None = None, maxzoom: int = ZOOM_B
 
 def escribir_manifest(region: Region, out: Path | None = None) -> dict:
     out = out or region.app
-    extra = ["meteo_puntos.json", *ACCESO_ARCHIVOS, "sitios.json"]
+    extra = ["meteo_puntos.json", *ACCESO_ARCHIVOS, "sitios.json", *MICRO_ARCHIVOS]
     rutas = sorted(out.glob("*.pmtiles")) + [out / n for n in extra if (out / n).exists()]
     archivos = [{"nombre": p.name, "bytes": p.stat().st_size} for p in rutas]
     bbox, _ = _bbox_zona(region, 0)
@@ -644,6 +646,9 @@ def escribir_manifest(region: Region, out: Path | None = None) -> dict:
         "acceso": ({"cabecera": "acceso.json", "datos": "acceso.bin.gz", "aparcamientos": "aparcamientos.json"}
                    if all((out / n).exists() for n in ACCESO_ARCHIVOS) else None),
         "rutas": "rutas.pmtiles" if (out / "rutas.pmtiles").exists() else None,
+        # Modo campo (2026-10-18): idoneidad y factores por celda en teselas (micro.py).
+        "micro": ({"cabecera": "micro.json", "datos": "micro.bin"}
+                  if all((out / n).exists() for n in MICRO_ARCHIVOS) else None),
         # Modelo v2: capa legal (Zonas de Reserva de los PORN, Reservas Naturales, Parque Nacional).
         "restricciones": ({"capa": "restricciones.pmtiles", "tipos": region.legal["tipos_restriccion"],
                            "aviso": region.legal["aviso"]}
@@ -730,7 +735,7 @@ def modelo_disponible(out: Path, compartido: Path | None = None) -> dict | None:
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("pasos", nargs="+", choices=["capas", "restricciones", "ccaa", "titularidad", "citas", "lugares", "base",
-                                                 "meteo", "acceso", "altitud", "rutas", "sitios", "manifest",
+                                                 "meteo", "acceso", "altitud", "rutas", "sitios", "micro", "manifest",
                                                  "respaldo", "regiones", "todo"])
     ap.add_argument("--maxzoom", type=int, default=None,
                     help="zoom máximo del mapa base (por defecto zona.base_maxzoom de la región, o 15)")
@@ -775,6 +780,9 @@ def main(argv=None):
     if pasos & {"sitios", "todo"}:
         from .sitios import calcular as calcular_sitios
         print("sitios…", flush=True); calcular_sitios(region)
+    if pasos & {"micro", "todo"}:
+        from .micro import exportar_micro
+        print("micro…", flush=True); exportar_micro(region, malla)
     if pasos & {"rutas", "todo"}:
         from .rutas import construir
         print("rutas…", flush=True); construir(region)

@@ -31,6 +31,9 @@ export const ponerBloqueTiempo = (f: (idFicha: string) => HTMLElement | null) =>
 let bloqueTop: ((idFicha: string) => Promise<HTMLElement | null>) | null = null;
 /** Top de sitios de la especie (hoy-ui.bloqueTopGuia, lo conecta main.ts). */
 export const ponerBloqueTop = (f: (idFicha: string) => Promise<HTMLElement | null>) => { bloqueTop = f; };
+let bloqueBuscar: ((idFicha: string) => Promise<HTMLElement | null>) | null = null;
+/** «Cómo buscar <seta>» (campo-ui.bloqueComoBuscar, lo conecta main.ts). */
+export const ponerBloqueBuscar = (f: (idFicha: string) => Promise<HTMLElement | null>) => { bloqueBuscar = f; };
 
 async function json<T>(ruta: string): Promise<T | null> {
   try {
@@ -257,6 +260,11 @@ function pintarFicha(id: string) {
     const hueco = el('div', 'ficha-top-hueco');
     cuerpo.append(hueco);
     bloqueTop(f.id).then((b) => { if (b && hueco.isConnected && v.dataset.id === f.id) hueco.replaceWith(b); else hueco.remove(); }).catch(() => hueco.remove());
+  }
+  if (!peligroAbierto && bloqueBuscar) {
+    const hueco = el('div', 'ficha-buscar-hueco');
+    cuerpo.append(hueco);
+    bloqueBuscar(f.id).then((b) => { if (b && hueco.isConnected && v.dataset.id === f.id) hueco.replaceWith(b); else hueco.remove(); }).catch(() => hueco.remove());
   }
   // Con mortales sin descartar se quita el aviso del grupo, pero no el de que la propia especie es tóxica (colmenilla).
   const nota = COMESTIBLES.has(f.grupo) ? (peligroAbierto ? notaBajoPeligro(f.toxicidad_nota) : f.toxicidad_nota) : '';

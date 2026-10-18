@@ -34,6 +34,8 @@ export interface Manifest {
   meteo?: { puntos: string; zonas: string } | null;
   /** Acceso a pie desde el coche (pipeline acceso.py): cabecera JSON, binario (.bin o .bin.gz) y aparcamientos. */
   acceso?: { cabecera: string; datos: string; aparcamientos: string } | null;
+  /** Modo campo (pipeline micro.py): idoneidad y factores por celda de 100 m en teselas gzip. */
+  micro?: { cabecera: string; datos: string } | null;
   /** Rutas y senderos (GR/PR/SL), PMTiles con la capa 'rutas'. */
   rutas?: string | null;
   /** Recintos donde recoger exige autorización (capa 'restricciones': tipo, nombre, zona, texto), textos por tipo y aviso legal. */

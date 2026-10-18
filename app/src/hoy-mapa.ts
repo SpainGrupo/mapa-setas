@@ -18,6 +18,8 @@ export interface ContextoHoyMapa {
   abrirEnlace: (url: string) => void;
   irAlSitio: (lat: number, lon: number, titulo: string) => void;
   rutaAPie: (lat: number, lon: number) => void;
+  /** Guardar el sitio en Mis sitios. */
+  guardar?: (lat: number, lon: number, titulo: string) => void;
 }
 
 type SitioMapa = ReturnType<typeof topActualMapa>['sitios'][number];
@@ -64,6 +66,7 @@ function tarjeta() {
   bs.append(boton('Google Maps', () => ctx.abrirEnlace(urlSitioGoogle(s)), 'btn btn-primario hm-google'),
     boton('Navegar aquí', () => ctx.irAlSitio(s.lat, s.lon, titulo), 'btn hm-navegar'),
     boton('Ruta a pie', () => ctx.rutaAPie(s.lat, s.lon), 'btn hm-ruta'));
+  if (ctx.guardar) bs.append(boton('Guardar', () => ctx.guardar!(s.lat, s.lon, titulo), 'btn hm-guardar'));
   t.append(bs);
 }
 

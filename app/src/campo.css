@@ -108,3 +108,26 @@ body[data-grabando] .mapa-cab { top: calc(var(--sup) + 140px); }
 .estrellas-nota span { display: grid; place-items: center; min-width: 56px; min-height: var(--toque); padding: 0 10px; border-radius: 12px; border: 2px solid var(--regla); color: var(--oxido); font-size: 18px; cursor: pointer; }
 .estrellas-nota input:checked + span { border-color: var(--tinta); background: var(--lavado); }
 .estrellas-nota input:focus-visible + span { outline: 3px solid var(--ruta); }
+
+/* ---------------------------------------------------------------- «Modo campo» (campo-ui.ts) */
+.dlg-campo[open] > .cp-mapa { min-height: 300px; }
+.cp-especie { display: grid; gap: 4px; }
+.cp-especie select { min-height: var(--toque); font: inherit; border-radius: 12px; padding: 0 10px; border: 1px solid var(--regla); background: var(--papel); color: var(--tinta); }
+.cp-estado { margin: 0; font-weight: 700; font-size: 15px; }
+.cp-estado[data-zona=fuera] { color: var(--tinta-2); }
+.cp-tarjeta { display: grid; gap: 8px; padding: 12px; border-radius: 18px; background: var(--papel); border: 1px solid oklch(62% 0.017 158 / 0.4); }
+.cp-tarjeta[hidden] { display: none; }
+.cp-tarjeta p { margin: 0; }
+.cp-tit { font-weight: 800; font-size: 17px; }
+.cp-razon { font-size: 15px; color: var(--tinta-2); }
+.cp-lista { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.cp-fila { min-height: 40px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--regla); background: var(--papel); color: var(--tinta); font: inherit; font-size: 14px; }
+.cp-fila[aria-current=true] { background: var(--bosque); color: oklch(100% 0 0); border-color: var(--bosque); }
+.cp-buscar { padding: 10px 12px; border-radius: 18px; background: var(--papel); border: 1px solid oklch(62% 0.017 158 / 0.4); }
+.cp-buscar summary { font-weight: 800; min-height: 32px; cursor: pointer; }
+.cp-buscar dl, .cp-dl { margin: 8px 0 0; display: grid; gap: 2px; }
+.cp-buscar dt, .cp-dl dt { font-weight: 700; margin-top: 8px; }
+.cp-buscar dd, .cp-dl dd { margin: 0; }
+.cp-fuente { display: block; color: var(--tinta-2); font-size: 12px; }
+.cp-pendiente { color: var(--tinta-2); font-style: italic; }
+.cp-mapa .ir-mapa-cab { right: auto; }

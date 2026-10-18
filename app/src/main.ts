@@ -33,20 +33,22 @@ import { claveMeteo, edadHoras, fechaMadrid, obtener, renombrarCache, CADUCIDAD_
 import { bandaAltitud, ddmm, humedadAcumulada, semaforo, sumarDias, textoBanda, type ResultadoSemaforo } from './semaforo';
 import { expresionColores, haceTexto, NOMBRE_ESTADO, puntoMasCercano } from './zona';
 import { pintarGrafico, type VentanaGrafico } from './grafico';
-import { abrirFicha, cargarGuia, fichasGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, mostrarGuia, pintarCreditos, ponerBloqueTiempo, ponerBloqueTop, type EstadoFotos } from './guia-ui';
-import { binomio, especieMapaDeFicha, fichaDeEspecieMapa } from './guia';
+import { abrirFicha, cargarGuia, fichaGuia, fichasGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, indiceGuia, mostrarGuia, pintarCreditos, ponerBloqueBuscar, ponerBloqueTiempo, ponerBloqueTop, type EstadoFotos } from './guia-ui';
+import { binomio, especieMapaDeFicha, fichaDeEspecieMapa, miniaturaEspecie } from './guia';
 import { iniciarReconocer, mostrarReconocer, pintarAjustesModelo } from './reconocer-ui';
 import { elegirCcaaGemini } from './gemini';
 import { Hoja } from './hoja';
 import { guardarNav, leerNav, type EstadoNav } from './estado-nav';
 import { celdaDe } from './acceso';
-import { abrirIr, estadoIr, iniciarIr } from './ir-sitio';
+import { abrirIr, estadoIr, iniciarIr, volverAlMapaIr } from './ir-sitio';
+import { abrirCampo, bloqueComoBuscar, campoAbierto, estadoCampo, iniciarCampo, limpiarCampo } from './campo-ui';
 import { estadoGrabacion, iniciarGrabar, pintarRutas } from './grabar-ui';
 import { elegirEnMapaTop, iniciarHoyMapa } from './hoy-mapa';
 import { abrirEnlaceDeUrl, iniciarEnlace, puntosEnlace } from './enlace-ui';
 import { puntosDeKml } from './enlaces';
 import type { SenderoApp } from './ir-sitio';
 import { mapaListo } from './minimapa';
+import { ultimaPosicion } from './posicion-viva';
 
 // Service worker en modo «prompt» (vite.config.ts): una versión nueva queda en espera y se ofrece con un aviso; la página
 // solo se recarga si el usuario pulsa «Nueva versión: actualizar». Antes (autoUpdate + skipWaiting) iOS recargaba la app
@@ -315,6 +317,8 @@ async function iniciarMapa() {
   if (pos && navGuardada?.region === regionActiva()) mapa.jumpTo({ center: [pos.lon, pos.lat], zoom: pos.zoom, bearing: pos.bearing ?? 0, pitch: pos.pitch ?? 0 });
   mapa.on('moveend', guardarEstadoNavPronto);
   gps = new Gps(mapa, (m) => avisar(m));
+  gps.alLeer(pintarBotonCampo);
+  pintarBotonCampo(ultimaPosicion());
   if (import.meta.env.DEV || E2E) (window as any).__setas = { mapa, origenes: M.origenes,
     region: () => ({ activa: regionActiva(), regiones: regiones.map((r) => r.id) }), meteo: () => ({ datos: meteo, origen: meteoOrigen, punto: puntoSel }),
     acceso: () => ultimoAcceso, trazaAcceso: () => trazaAcceso, hoy: hoyZona, tops: resumenHoy, selector: ordenSelector, puntoRef: refPunto,
@@ -324,7 +328,7 @@ async function iniciarMapa() {
     olvidarGps: () => { if (gps) gps.ultima = null; }, vista: vistaMapa,
     lugarHoy: (id: string) => lugarRef(id),
     sitioEditando: () => editando && { ...editando, foto: undefined }, accesoSitio: () => accesoSitio,
-    ir: estadoIr, grabacion: estadoGrabacion, elegirEnMapaTop, altitudEn, abrirIr, miniMapa: mapaListo, puntosEnlace, abrirEnlaceDeUrl,
+    ir: estadoIr, campo: estadoCampo, abrirCampo, grabacion: estadoGrabacion, elegirEnMapaTop, altitudEn, abrirIr, miniMapa: mapaListo, puntosEnlace, abrirEnlaceDeUrl,
     resumenSemaforo: () => Object.fromEntries((manifest?.especies ?? []).map((e) => {
       const n: Record<string, number> = { verde: 0, amarillo: 0, rojo: 0, gris: 0 };
       for (const p of puntosMeteo) n[estadoEn(p, e.id)?.estado ?? 'gris']++;
@@ -1135,6 +1139,7 @@ function pintarTarjeta() {
 $('#tz-cerrar').addEventListener('click', () => ($('#tarjeta-zona').hidden = true));
 $('#tz-ver').addEventListener('click', () => irA('p-zona'));
 $('#tz-navegar').addEventListener('click', () => { if (ultimoToque) abrirIr({ lat: ultimoToque.lat, lon: ultimoToque.lon, titulo: 'Punto del mapa' }); });
+$('#tz-guardar').addEventListener('click', () => { if (ultimoToque) abrirSitio(null, ultimoToque); });
 $('#zona-ir-mapa').addEventListener('click', () => irA('p-mapa'));
 $('#zona-volver').addEventListener('click', () => irA('p-hoy'));
 
@@ -1436,18 +1441,38 @@ async function senderoA(lat: number, lon: number): Promise<SenderoApp | null> {
   const extra = ultA ? Math.hypot((fin[0] - ultA[0]) * 111320 * Math.cos((lat * Math.PI) / 180), (fin[1] - ultA[1]) * 111320) : 0;
   return { linea, dist: [...per.dist, ultimo + extra], alt: [...per.alt, alts[alts.length - 1] ?? NaN], via: c.acceso.via };
 }
-iniciarIr({ manifest: () => manifest, altitudEn, sendero: senderoA, abrirEnlace });
+/** Guarda un punto en Mis sitios (1 estrella) sin duplicar el mismo punto con la misma nota. */
+async function guardarPunto(p: { lat: number; lon: number; nota: string; especie?: string }): Promise<'guardado' | 'ya'> {
+  const ya = (await listarSitios()).some((x) => Math.abs(x.lat - p.lat) < 5e-5 && Math.abs(x.lon - p.lon) < 5e-5 && x.nota === p.nota);
+  if (ya) return 'ya';
+  await guardarSitio({ id: nuevoId(), lat: p.lat, lon: p.lon, estrellas: 1, nota: p.nota, especie: p.especie ?? '', fecha: new Date().toISOString() });
+  await refrescarSitios();
+  return 'guardado';
+}
+/** Botón «Campo» del mapa: solo con datos de microzonas y tu posición dentro de la región. */
+function pintarBotonCampo(p: { lat: number; lon: number } | null) {
+  const b = manifest?.bbox;
+  const dentro = !!(p && b && manifest?.micro && p.lon >= b[0] && p.lon <= b[2] && p.lat >= b[1] && p.lat <= b[3]);
+  $('#btn-campo').hidden = !dentro;
+}
+$('#btn-campo').addEventListener('click', () => abrirCampo());
+iniciarIr({ manifest: () => manifest, altitudEn, sendero: senderoA, abrirEnlace, avisar,
+  abrirCampo: () => { if (manifest?.micro) abrirCampo(); else avisar('Esta región no tiene datos de microzonas: actualiza los mapas.'); },
+  guardar: (d) => guardarPunto({ lat: d.lat, lon: d.lon, nota: [d.titulo, d.subtitulo].filter(Boolean).join(' — ') }) });
+iniciarCampo({
+  manifest: () => manifest, especie: especieSel, nombre: (id) => nombres[id] ?? id, avisar,
+  miniatura: (id) => miniaturaEspecie(id, indiceGuia()),
+  ficha: (id) => { const f = fichaGuia(fichaDeEspecieMapa(id)); return f ? { habitat: f.habitat, temporada: f.temporada } : null; },
+  navegar: (p) => { ($('#dlg-campo') as HTMLDialogElement).close(); abrirIr({ lat: p.lat, lon: p.lon, titulo: p.titulo, subtitulo: p.nota }); },
+  guardar: (p) => guardarPunto({ lat: p.lat, lon: p.lon, nota: p.nota, especie: p.especie }),
+  alCerrar: () => volverAlMapaIr(),
+});
+document.getElementById('dlg-ir')?.addEventListener('close', () => { if (!campoAbierto()) limpiarCampo(); });
+ponerBloqueBuscar((idFicha) => bloqueComoBuscar(especieMapaDeFicha(idFicha, (manifest?.especies ?? []).map((e) => e.id))));
 iniciarEnlace({
   mapa: () => mapa, bbox: () => manifest?.bbox ?? null, nombreRegion: () => manifest?.region?.nombre ?? 'esta región', irA,
   navegar: (p) => abrirIr({ lat: p.lat, lon: p.lon, titulo: p.nombre || 'Punto recibido', subtitulo: p.nota || undefined }),
-  guardar: async (p) => {
-    const nota = [p.nombre, p.nota].filter(Boolean).join(' — ');
-    const ya = (await listarSitios()).some((x) => Math.abs(x.lat - p.lat) < 5e-5 && Math.abs(x.lon - p.lon) < 5e-5 && x.nota === nota);
-    if (ya) return 'ya';
-    await guardarSitio({ id: nuevoId(), lat: p.lat, lon: p.lon, estrellas: 1, nota, especie: '', fecha: new Date().toISOString() });
-    await refrescarSitios();
-    return 'guardado';
-  },
+  guardar: (p) => guardarPunto({ lat: p.lat, lon: p.lon, nota: [p.nombre, p.nota].filter(Boolean).join(' — ') }),
 });
 iniciarGrabar({ avisar, mapa: () => mapa, irA });
 
@@ -1484,7 +1509,8 @@ iniciarHoy({
   },
   soloPublicos,
 });
-iniciarHoyMapa({ manifest: () => manifest, abrirEnlace, irAlSitio, rutaAPie: (lat, lon) => abrirRuta(lat, lon) });
+iniciarHoyMapa({ manifest: () => manifest, abrirEnlace, irAlSitio, rutaAPie: (lat, lon) => abrirRuta(lat, lon),
+  guardar: (lat, lon, titulo) => { guardarPunto({ lat, lon, nota: titulo }).then((r) => avisar(r === 'ya' ? 'Ya estaba en Mis sitios' : 'Guardado en Mis sitios')); } });
 $<HTMLInputElement>('#hoy-solo-publicos').checked = soloPublicos();
 $<HTMLInputElement>('#hoy-solo-publicos').addEventListener('change', (ev) => {
   ponerSoloPublicos((ev.target as HTMLInputElement).checked);

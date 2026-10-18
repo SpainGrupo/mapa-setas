@@ -12,6 +12,7 @@
     "aviso": "node scripts/aviso-ventanas.mts",
     "e2e": "node e2e/offline.e2e.mjs && node e2e/regiones.e2e.mjs && node e2e/citas-hoy.e2e.mjs",
     "e2e:citas": "node e2e/citas-hoy.e2e.mjs",
+    "e2e:gemini-real": "node e2e/gemini-real.red.mjs",
     "e2e:marbella": "node e2e/offline.e2e.mjs",
     "e2e:regiones": "node e2e/regiones.e2e.mjs",
     "cobertura": "vitest run --coverage --coverage.include=src/seguridad.ts --coverage.include=src/reconocer-nucleo.ts --coverage.thresholds.100"

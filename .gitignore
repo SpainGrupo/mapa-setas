@@ -14,3 +14,4 @@ modelo/.tmp/
 app/coverage/
 app/public/ort
 .claude/
+app/e2e/capturas-red/

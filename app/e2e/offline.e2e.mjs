@@ -7,7 +7,8 @@
 // A. phalloides → su ficha dice MORTAL; sin conexión y tras recargar, la guía y sus fotos siguen cargando.
 // Fase 5: descarga aparte del reconocedor (OPFS) → sin conexión, foto CC de A. caesarea → top-5 offline → A. phalloides
 // y A. verna «no descartadas» hasta la pregunta del huevo; interior blanco → alerta roja; «Guardar sitio» rellena especie,
-// foto y GPS; foto de A. phalloides. Fase 6: con conexión, Worker de Gemini simulado (403/413/429/503 y respuesta buena).
+// foto y GPS; foto de A. phalloides. Fase 6: con conexión, Gemini primero (Worker simulado: 403 → respaldo local con el
+// motivo, 413/429/503 y respuesta buena) y un boleto: dobles relevantes, mortales aparte y descarte por poros.
 // La app solo expone window.__setas con ?e2e=1 (y solo entonces acepta la URL del Worker desde localStorage).
 // Requiere `npm run build` y el servidor: php -S 127.0.0.1:8765 -t dist servidor.php
 import { createRequire } from 'node:module';
@@ -1293,42 +1294,57 @@ try {
   await p.locator('#creditos-fotos').scrollIntoViewIfNeeded();
   await captura('guia-creditos.png');
 
-  // Fase 6: segunda opinión con el Worker simulado (la URL de pruebas solo se acepta con ?e2e=1).
+  // Fase 6 (rediseño 2026-10-18): con conexión responde Gemini PRIMERO (Worker simulado; la URL de pruebas solo se
+  // acepta con ?e2e=1); si falla, el reconocedor local responde y se ve el motivo real; si responden los dos, el local
+  // es el contraste. Después, los dobles relevantes (no las amanitas para un boleto) y las mortales aparte.
   await p.evaluate((u) => localStorage.setItem('setas:e2e-worker-url', u), URL_WORKER);
   await ctx.setOffline(false);
   await p.reload();
   await mapaListo();
   await p.getByRole('button', { name: /Ajustes/ }).click();
-  comprobar(/Configurada/.test(await p.locator('#estado-gemini').textContent()), 'Ajustes: segunda opinión configurada');
+  comprobar(/Configurada/.test(await p.locator('#estado-gemini').textContent()), 'Ajustes: Gemini configurado');
   const peticiones = [];
   const errorWorker = (status, codigo) => ({ status, contentType: 'application/json', body: JSON.stringify({ error: { codigo, mensaje: 'x' } }) });
+  const okOronja = { status: 200, contentType: 'application/json', body: JSON.stringify({
+    candidatos: [{ nombre_cientifico: 'Amanita caesarea', nombre_comun: 'oronja', confianza: 'media',
+      rasgos_observados: ['sombrero naranja', 'excelente comestible'], rasgos_que_faltan_ver: ['base del pie con la volva'] }],
+    peligrosas_posibles: [{ nombre_cientifico: 'Amanita phalloides', motivo: 'el huevo cerrado es igual por fuera' },
+      { nombre_cientifico: 'Amanita virosa', motivo: 'amanita blanca mortal' }],
+    fotos_recomendadas: ['corte vertical del huevo'], aviso: 'Se puede comer' }) };
+  const okBoleto = { status: 200, contentType: 'application/json', body: JSON.stringify({
+    candidatos: [{ nombre_cientifico: 'Suillellus luridus', nombre_comun: 'boleto cetrino', confianza: 'media',
+      rasgos_observados: ['poros rojo anaranjado', 'pie con retículo rojizo', 'azulea al roce'], rasgos_que_faltan_ver: ['línea de Bataille en el corte'] }],
+    peligrosas_posibles: [{ nombre_cientifico: 'Rubroboletus satanas', motivo: 'poros rojos y azuleo; sombrero blanquecino y pie globoso' },
+      { nombre_cientifico: 'Rubroboletus legaliae', motivo: 'sombrero pálido que se mancha de rosa' }],
+    fotos_recomendadas: ['corte longitudinal completo'], aviso: '' }) };
   const respuestas = [errorWorker(403, 'origen_no_permitido'), errorWorker(413, 'carga_demasiado_grande'),
-    errorWorker(429, 'limite_diario_superado'), errorWorker(503, 'gemini_saturado'),
-    { status: 200, contentType: 'application/json', body: JSON.stringify({
-      candidatos: [{ nombre_cientifico: 'Amanita caesarea', nombre_comun: 'oronja', confianza: 'media',
-        rasgos_observados: ['sombrero naranja', 'excelente comestible'], rasgos_que_faltan_ver: ['base del pie con la volva'] }],
-      peligrosas_posibles: [{ nombre_cientifico: 'Amanita phalloides', motivo: 'el huevo cerrado es igual por fuera' },
-        { nombre_cientifico: 'Amanita virosa', motivo: 'amanita blanca mortal' }],
-      fotos_recomendadas: ['corte vertical del huevo'], aviso: 'Se puede comer' }) }];
+    errorWorker(429, 'limite_diario_superado'), errorWorker(503, 'gemini_saturado'), okOronja];
+  let fija = null;
   await ctx.route(URL_WORKER, async (r) => {
     const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type', 'access-control-allow-methods': 'POST, OPTIONS' };
     if (r.request().method() === 'OPTIONS') return r.fulfill({ status: 204, headers: cors });
     peticiones.push(JSON.parse(r.request().postData()));
-    const resp = respuestas[Math.min(peticiones.length - 1, respuestas.length - 1)];
+    const resp = fija ?? respuestas[Math.min(peticiones.length - 1, respuestas.length - 1)];
     await r.fulfill({ ...resp, headers: cors });
   });
   await p.getByRole('button', { name: /Reconocer/ }).click();
+  comprobar(/Con conexión responde Gemini/.test(await p.locator('#rec-estado').textContent()), 'Reconocer con conexión: «Con conexión responde Gemini»');
+  if (await p.locator('.miniatura .btn-x').count()) await p.locator('.miniatura .btn-x').first().click();
   await analizar('amanita_caesarea_1.jpg');
+  const motor1 = await p.evaluate(() => ({ motor: document.body.dataset.motor, t: document.querySelector('#rec-motor').innerText }));
+  comprobar(peticiones.length === 1 && motor1.motor === 'local' && /Gemini no ha respondido: .*no está autorizada/.test(motor1.t),
+    `Gemini primero; con 403 responde el reconocedor sin conexión y se ve el motivo: «${motor1.t.replace(/\s+/g, ' ')}»`);
+  comprobar(JSON.stringify(peticiones[0].respuestas_guiadas) === '{}' && peticiones[0].candidatos_offline.length === 0,
+    'la primera consulta a Gemini va sola (sin respuestas ni candidatos del local)');
   await responder('interior_huevo', 'naranja_amarillo');
   const btnG = p.locator('#rec-gemini');
-  await btnG.waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});   // pintarGemini corre tras pintar el resultado
-  comprobar(await btnG.isVisible() && await btnG.isEnabled(), 'con conexión y Worker configurado: botón «Segunda opinión (Gemini)» activo');
+  comprobar(await btnG.isVisible() && await btnG.isEnabled() && /Consultar a Gemini/.test(await btnG.textContent()), 'botón «Consultar a Gemini» activo');
   await ctx.setOffline(true);
   await p.waitForFunction(() => document.querySelector('#rec-gemini').disabled);
   comprobar(/Sin conexión/.test(await p.locator('#rec-gemini-nota').textContent()), 'sin conexión el botón de Gemini se desactiva');
   await ctx.setOffline(false);
   await p.waitForFunction(() => !document.querySelector('#rec-gemini').disabled);
-  for (const [estado, re] of [[403, /no está autorizada/], [413, /pesan demasiado/], [429, /límite diario/], [503, /saturado/]]) {
+  for (const [estado, re] of [[413, /pesan demasiado/], [429, /límite diario/], [503, /saturado/]]) {
     await p.evaluate(() => { delete document.body.dataset.gemini; });
     await btnG.click();
     await p.waitForSelector('body[data-gemini=error]', { state: 'attached', timeout: 30000 });
@@ -1338,22 +1354,63 @@ try {
   }
   await p.evaluate(() => { delete document.body.dataset.gemini; });
   await btnG.click();
-  await p.waitForSelector('body[data-gemini=ok]', { state: 'attached', timeout: 30000 });
+  await p.waitForSelector('body[data-gemini=ok][data-motor=gemini]', { state: 'attached', timeout: 30000 });
   const pet = peticiones.at(-1);
   const bytesFoto = Math.floor(pet.fotos[0].length * 3 / 4);
-  comprobar(pet.fotos.length === 1 && pet.fotos[0].startsWith('/9j/') && bytesFoto <= 1.5 * 1024 * 1024
+  const lado = await p.evaluate(async (b64) => { const bmp = await createImageBitmap(await (await fetch(`data:image/jpeg;base64,${b64}`)).blob()); return Math.max(bmp.width, bmp.height); }, pet.fotos[0]);
+  comprobar(pet.fotos.length === 1 && pet.fotos[0].startsWith('/9j/') && bytesFoto <= 1.5 * 1024 * 1024 && lado <= 1024
     && pet.respuestas_guiadas.interior_huevo === 'Naranja y amarillo' && pet.respuestas_guiadas.volva_saco === null
+    && Object.keys(pet.respuestas_guiadas).length <= 20
     && /^\d{4}-\d{2}-\d{2}$/.test(pet.contexto.fecha) && pet.contexto.lat === 36.589 && pet.contexto.lon === -5.244
     && pet.candidatos_offline.length === 5 && pet.candidatos_offline[0].id === 'amanita_caesarea'
     && pet.candidatos_offline.every((c) => c.score >= 0 && c.score <= 1),
-    `petición al Worker: 1 foto JPEG de ${(bytesFoto / 1024).toFixed(0)} KB, respuestas, fecha y GPS, 5 candidatos offline`);
+    `«Preguntar otra vez»: 1 foto JPEG de ${(bytesFoto / 1024).toFixed(0)} KB y ${lado} px, respuestas, fecha y GPS, 5 candidatos locales`);
   const ndG = await noDescartadas();
   comprobar(ndG.includes('amanita_phalloides') && ndG.includes('Amanita virosa'),
     `unión con Gemini: phalloides vuelve a la lista roja y se añade A. virosa (${ndG.join(', ')})`);
-  comprobar(await p.locator('#rec-gemini-resultado').isVisible() && !PROHIBIDO.test(await textoRec()),
-    'respuesta de Gemini con la misma presentación y sin «comestible» ni «se puede comer»');
-  await p.locator('#rec-gemini-resultado').scrollIntoViewIfNeeded();
+  const vistaG = await p.evaluate(() => ({ motor: document.querySelector('#rec-motor').innerText,
+    cand: [...document.querySelectorAll('.rec-cand')].map((l) => `${l.dataset.motor}:${l.dataset.nombre}`),
+    contraste: document.querySelector('#rec-contraste').innerText, discrepa: document.querySelector('#rec-contraste').dataset.discrepa ?? '' }));
+  comprobar(/Responde Gemini/.test(vistaG.motor) && vistaG.cand[0] === 'gemini:Amanita caesarea' && /coincide en el género/.test(vistaG.contraste) && !vistaG.discrepa
+    && !PROHIBIDO.test(await textoRec()),
+    `responde Gemini (candidatos ${vistaG.cand.join(', ')}), el local coincide en el género y nada dice «comestible»`);
+  await p.locator('#rec-motor').scrollIntoViewIfNeeded();
   await captura('reconocer-gemini.png');
+
+  // Gemini primero al pulsar «Reconocer» y un boleto de poros rojos: los dobles son boletos, no amanitas.
+  fija = okBoleto;
+  const nPet = peticiones.length;
+  await p.locator('.miniatura .btn-x').first().click();
+  await p.evaluate(() => { delete document.body.dataset.reconocer; });
+  await p.locator('#rec-galeria').setInputFiles(join(FOTOS_GUIA, 'boletus_edulis_1.jpg'));
+  await p.locator('#rec-analizar').click();
+  await p.waitForSelector('body[data-reconocer=resultado][data-motor=gemini]', { state: 'attached', timeout: 60000 });
+  await p.waitForFunction(() => !/aún está comparando/.test(document.querySelector('#rec-contraste').innerText), null, { timeout: 180000 });
+  const bol = await p.evaluate(() => ({
+    rel: [...document.querySelectorAll('#rec-peligrosas .peligrosa')].map((l) => l.dataset.id),
+    distingue: [...document.querySelectorAll('#rec-peligrosas .peligrosa')].map((l) => l.querySelector('.distingue')?.dataset.fuente ?? ''),
+    otras: [...document.querySelectorAll('#rec-otras-mortales li')].map((l) => l.dataset.id),
+    otrasVisible: !document.querySelector('#rec-otras-mortales').hidden,
+    preguntas: [...document.querySelectorAll('#rec-preguntas fieldset')].map((f) => f.dataset.pregunta),
+    pares: [...document.querySelectorAll('#rec-pares .par-tab')].map((b) => b.dataset.id),
+    discrepa: document.querySelector('#rec-contraste').dataset.discrepa ?? '', contraste: document.querySelector('#rec-contraste').innerText,
+    rasgos: document.querySelector('.rec-cand .rasgos.vistos')?.innerText ?? '' }));
+  comprobar(peticiones.length === nPet + 1 && bol.rel.includes('rubroboletus_satanas') && bol.rel.includes('Rubroboletus legaliae')
+    && !bol.rel.some((id) => id.startsWith('amanita_')) && bol.distingue.every(Boolean) && /retículo/.test(bol.rasgos),
+    `boleto: dobles relevantes ${bol.rel.join(', ')}, cada uno con el rasgo que lo separa; rasgos vistos por Gemini`);
+  comprobar(bol.otrasVisible && bol.otras.includes('amanita_phalloides') && bol.preguntas[0] === 'bajo_sombrero' && !bol.preguntas.includes('interior_huevo')
+    && !bol.pares.some((id) => /amanita|lepiota|gyromitra|clitocybe|equestre/.test(id)),
+    `mortales de otros grupos aparte, en rojo (${bol.otras.length}); la primera pregunta es «debajo del sombrero»; sin pares con amanitas`);
+  comprobar(bol.discrepa === 'si' || /coincide/.test(bol.contraste), `contraste del local: «${bol.contraste.replace(/\s+/g, ' ').slice(0, 160)}»`);
+  await p.locator('#rec-resultado').scrollIntoViewIfNeeded();
+  await captura('reconocer-gemini-boleto.png');
+  await responder('bajo_sombrero', 'poros');
+  comprobar(await p.locator('#rec-otras-mortales').isVisible(), '«poros» sola no descarta las mortales');
+  await responder('color_poros', 'rojo_naranja');
+  await p.waitForFunction(() => document.querySelector('#rec-otras-mortales').hidden);
+  const desc = await p.$$eval('#rec-descartadas li', (ls) => ls.map((l) => l.dataset.id));
+  comprobar(desc.includes('amanita_phalloides') && (await noDescartadas()).includes('rubroboletus_satanas'),
+    'poros rojos: las mortales de láminas pasan a «descartadas»; R. satanas sigue sin descartar');
   await p.locator('#rec-peligrosas').scrollIntoViewIfNeeded();
   await captura('reconocer-gemini-peligrosas.png');
   console.log('INFORME', JSON.stringify(informe));

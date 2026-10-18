@@ -206,11 +206,11 @@ describe('rebozuelos', () => {
   it('Omphalotus no descartado hasta pliegues + no en matas', () => {
     const nd = (r: Respuestas) => { const e = evaluar(c, fichas, r); mortalesPresentes(e); return sinMortales(noDescartadas(e)); };
     expect(nd({})).toEqual(['omphalotus_olearius']);
-    expect(nd({ himenio_cantarelo: 'pliegues' })).toEqual(['omphalotus_olearius']);
-    expect(nd({ himenio_cantarelo: 'pliegues', en_matas_madera: 'no' })).toEqual([]);
+    expect(nd({ bajo_sombrero: 'pliegues' })).toEqual(['omphalotus_olearius']);
+    expect(nd({ bajo_sombrero: 'pliegues', en_matas_madera: 'no' })).toEqual([]);
   });
   it('láminas + en matas → alerta de tóxica', () => {
-    const e = evaluar(c, fichas, { himenio_cantarelo: 'laminas', en_matas_madera: 'si' });
+    const e = evaluar(c, fichas, { bajo_sombrero: 'laminas', en_matas_madera: 'si' });
     expect(e.alertas).toEqual([expect.objectContaining({ nivel: 'toxica', especies: ['omphalotus_olearius'] })]);
   });
 });
@@ -483,5 +483,54 @@ describe('hallazgo de revisión: las mortales salen aunque ningún candidato act
     const mortales = fichas.filter((f) => f.grupo === 'mortal').map((f) => f.id);
     expect(noDescartadas(e)).toEqual(expect.arrayContaining(mortales));
     expect(e.preguntas.map((p) => p.id)).toEqual(expect.arrayContaining(['interior_huevo', 'sombrero_mayor_10cm']));
+    expect(e.peligrosas.every((p) => p.relevante)).toBe(true);
+  });
+});
+
+describe('dobles relevantes frente a mortales que salen siempre (rediseño 2026-10-18)', () => {
+  const boleto = [{ nombre: 'Suillellus luridus' }];   // fuera de la guía: activa el grupo de los boletos
+  it('un boleto de poros rojos: dobles relevantes = boletos tóxicos; las mortales siguen, aparte', () => {
+    const e = evaluar(boleto, fichas, {});
+    const rel = e.peligrosas.filter((p) => p.relevante).map((p) => p.id).sort();
+    expect(rel).toEqual([...PELIGROSAS_GRUPO.boletoide].sort());
+    const otras = e.peligrosas.filter((p) => !p.relevante).map((p) => p.id).sort();
+    expect(otras).toEqual(MORTALES);
+    mortalesPresentes(e);
+    // Preguntas: la de debajo del sombrero primero y las de los boletos; las de amanitas, aparte.
+    expect(e.preguntas[0].id).toBe('bajo_sombrero');
+    expect(e.preguntas.map((p) => p.id)).toEqual(expect.arrayContaining(['color_poros', 'azulea_al_corte', 'color_reticulo']));
+    expect(e.preguntas.map((p) => p.id)).not.toContain('interior_huevo');
+    expect(e.preguntasOtras.map((p) => p.id)).toEqual(expect.arrayContaining(['interior_huevo', 'volva_saco']));
+  });
+  it('«poros» solo no descarta ninguna mortal; «poros» y su color, sí (dos respuestas)', () => {
+    expect(descartadas(evaluar(boleto, fichas, { bajo_sombrero: 'poros' }))).toEqual([]);
+    const e = evaluar(boleto, fichas, { bajo_sombrero: 'poros', color_poros: 'rojo_naranja' });
+    for (const m of MORTALES) expect(descartadas(e), m).toContain(m);
+    expect(noDescartadas(e)).toEqual(expect.arrayContaining(['rubroboletus_satanas', 'caloboletus_calopus']));
+    const conNoSe = evaluar(boleto, fichas, { bajo_sombrero: 'poros', color_poros: NO_SE });
+    expect(descartadas(conNoSe).filter((id) => MORTALES.includes(id))).toEqual([]);
+  });
+  it('sin un candidato boleto, al responder «poros» aparece la pregunta del color de los poros', () => {
+    const e = evaluar(cand('amanita_caesarea'), fichas, { bajo_sombrero: 'poros' });
+    expect(e.preguntas.map((p) => p.id)).toContain('color_poros');
+  });
+  it('«no tiene sombrero» no descarta nada; láminas descartan los boletos tóxicos', () => {
+    expect(descartadas(evaluar(boleto, fichas, { bajo_sombrero: 'sin_sombrero' }))).toEqual([]);
+    expect(descartadas(evaluar(boleto, fichas, { bajo_sombrero: 'laminas' })).sort()).toEqual([...PELIGROSAS_GRUPO.boletoide].sort());
+  });
+  it('una alerta sigue mandando: huevo blanco con poros no descarta phalloides y la hace relevante', () => {
+    const e = evaluar(boleto, fichas, { bajo_sombrero: 'poros', color_poros: 'rojo_naranja', interior_huevo: 'blanco' });
+    expect(e.peligrosas.find((p) => p.id === 'amanita_phalloides')).toMatchObject({ descartada: false, alerta: true, relevante: true });
+  });
+  it('una amanita: phalloides y verna son dobles relevantes; Gyromitra no', () => {
+    const e = evaluar(cand('amanita_caesarea'), fichas, {});
+    for (const id of ['amanita_phalloides', 'amanita_verna']) expect(e.peligrosas.find((p) => p.id === id)!.relevante, id).toBe(true);
+    expect(e.peligrosas.find((p) => p.id === 'gyromitra_esculenta')!.relevante).toBe(false);
+  });
+  it('respuestasParaWorker no pasa de 20 claves y pone delante las respondidas', () => {
+    const out = respuestasParaWorker([...PREGUNTAS, ...PREGUNTAS], { anillo_pie: 'si' });
+    expect(Object.keys(out).length).toBeLessThanOrEqual(20);
+    expect(Object.keys(out)[0]).toBe('anillo_pie');
+    expect(out.anillo_pie).toBe('Sí');
   });
 });

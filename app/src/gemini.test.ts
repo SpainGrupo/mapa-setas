@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import datos from '../../guia/especies.json';
-import { elegirCcaaGemini, fechaHoy, fusionarPeligrosas, limpiarRespuesta, mensajeError, pedirSegundaOpinion, urlWorker, type PeticionGemini } from './gemini';
+import {
+  candidatosDeGemini, discrepancia, elegirCcaaGemini, ErrorGemini, fechaHoy, fusionarPeligrosas, limpiarRespuesta, MAX_LADO, mensajeError,
+  pedirSegundaOpinion, urlWorker, type PeticionGemini,
+} from './gemini';
 import { evaluar, type FichaMin } from './seguridad';
 
 const fichas: (FichaMin & { grupo: string })[] = datos as never;
@@ -52,8 +55,8 @@ describe('fusionarPeligrosas (unión)', () => {
       { nombre_cientifico: 'Amanita virosa', motivo: 'blanca' },
     ], fichas);
     const ph = f.find((p) => p.id === 'amanita_phalloides')!;
-    expect(ph).toMatchObject({ nivel: 'mortal', motivos: expect.arrayContaining(['segunda opinión: huevo blanco']) });
-    expect(ph.motivos.at(-1)).toBe('segunda opinión: huevo blanco');
+    expect(ph).toMatchObject({ nivel: 'mortal', motivos: expect.arrayContaining(['según Gemini: huevo blanco']) });
+    expect(ph.motivos.at(-1)).toBe('según Gemini: huevo blanco');
     expect(f.map((p) => p.id ?? p.nombre)).toEqual(expect.arrayContaining(['amanita_phalloides', 'lepiota_brunneoincarnata', 'Amanita virosa']));
     expect(f.map((p) => p.id)).not.toContain('amanita_verna');   // descartada en local y Gemini no la propone
     expect(f.find((p) => p.nombre === 'Amanita virosa')!.nivel).toBe('desconocido');
@@ -71,7 +74,7 @@ describe('fusionarPeligrosas (unión)', () => {
     const loc = evaluar(c, fichas, {}).peligrosas;
     const f = fusionarPeligrosas(loc, [{ nombre_cientifico: 'Amanita verna', motivo: '' }], fichas);
     const verna = f.find((p) => p.id === 'amanita_verna')!;
-    expect(verna.motivos.at(-1)).toBe('segunda opinión: posible confusión');
+    expect(verna.motivos.at(-1)).toBe('según Gemini: posible confusión');
     expect(f.length).toBe(loc.length);   // verna ya estaba: no se duplica
     const mortales = fichas.filter((x) => x.grupo === 'mortal').map((x) => x.id).sort();
     expect(f.slice(0, mortales.length).every((p) => p.nivel === 'mortal')).toBe(true);
@@ -110,6 +113,44 @@ describe('pedirSegundaOpinion', () => {
     let n = 0;
     await expect(pedirSegundaOpinion('u', pet, (async () => { n++; return new Response('', { status: 400 }); }) as unknown as typeof fetch)).rejects.toThrow();
     expect(n).toBe(1);
+  });
+});
+
+describe('consulta a Gemini: tiempo, motivo real y candidatos (2026-10-18)', () => {
+  const pet: PeticionGemini = { fotos: ['/9j/AA=='], respuestas_guiadas: {}, contexto: {}, candidatos_offline: [] };
+  it('corta a los N ms con un mensaje de tiempo agotado y envía la señal de aborto', async () => {
+    let senal: AbortSignal | undefined;
+    const lento = ((_u: string, i: RequestInit) => new Promise<Response>((_ok, mal) => {
+      senal = i.signal ?? undefined;
+      i.signal?.addEventListener('abort', () => mal(new DOMException('abortado', 'AbortError')));
+    })) as typeof fetch;
+    const e = await pedirSegundaOpinion('u', pet, lento, 20).catch((x) => x);
+    expect(e).toBeInstanceOf(ErrorGemini);
+    expect(e.estado).toBe(-1);
+    expect(e.message).toMatch(/no ha respondido/);
+    expect(senal?.aborted).toBe(true);
+  });
+  it('un 400 enseña el motivo que da el Worker y un error raro, su código', async () => {
+    const r400 = (async () => new Response('{"error":{"codigo":"solicitud_invalida","mensaje":"fotos[0] no es un JPEG."}}', { status: 400 })) as unknown as typeof fetch;
+    await expect(pedirSegundaOpinion('u', pet, r400)).rejects.toThrow(/no es un JPEG/);
+    expect(mensajeError(500, 'gemini_error')).toMatch(/error 500, gemini_error/);
+  });
+  it('una respuesta 200 que no es JSON da un error claro', async () => {
+    const malo = (async () => new Response('<html>')) as unknown as typeof fetch;
+    await expect(pedirSegundaOpinion('u', pet, malo)).rejects.toBeInstanceOf(ErrorGemini);
+  });
+  it('fotos de 1024 px como máximo', () => expect(MAX_LADO).toBe(1024));
+  it('candidatosDeGemini enlaza con la ficha por binomio; sin ficha, solo el nombre', () => {
+    const r = limpiarRespuesta({ candidatos: [
+      { nombre_cientifico: 'Rubroboletus satanas', confianza: 'media' }, { nombre_cientifico: 'Suillellus luridus', confianza: 'baja' }] });
+    const c = candidatosDeGemini(r, fichas);
+    expect(c[0]).toMatchObject({ nombre: 'Rubroboletus satanas', idGuia: 'rubroboletus_satanas', confianza: 'media' });
+    expect(c[1].idGuia).toBeUndefined();
+  });
+  it('discrepancia: género distinto en el modelo local → sus nombres; mismo género o sin datos → null', () => {
+    expect(discrepancia([{ nombre: 'Suillellus luridus' }], [{ nombre: 'Amanita muscaria' }, { nombre: 'Russula aurea' }])).toEqual(['Amanita muscaria', 'Russula aurea']);
+    expect(discrepancia([{ nombre: 'Suillellus luridus' }], [{ nombre: 'Boletus edulis' }, { nombre: 'Suillellus queletii' }])).toBeNull();
+    expect(discrepancia([], [{ nombre: 'Amanita muscaria' }])).toBeNull();
   });
 });
 

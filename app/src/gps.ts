@@ -78,6 +78,12 @@ export class Gps {
   }
 
   /** Llama a `f` con cada lectura nueva (arranca el GPS); devuelve la función para dejar de escuchar. */
+  /** Escucha las lecturas sin arrancar el GPS (solo si otra parte de la app ya lo tiene en marcha). */
+  alLeer(f: (p: Posicion) => void): () => void {
+    this.escuchas.add(f);
+    return () => { this.escuchas.delete(f); };
+  }
+
   escuchar(f: (p: Posicion) => void): () => void {
     this.escuchas.add(f);
     this.iniciar();

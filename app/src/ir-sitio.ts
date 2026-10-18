@@ -33,6 +33,11 @@ export interface ContextoIr {
   /** Sendero a pie aparcamiento → punto (acceso.bin); null si la app no lo tiene para ese punto. */
   sendero: (lat: number, lon: number) => Promise<SenderoApp | null>;
   abrirEnlace: (url: string) => void;
+  /** Modo campo (campo-ui.ts) encima de esta vista; sin él, no hay botón. */
+  abrirCampo?: () => void;
+  /** Guardar el destino en Mis sitios. */
+  guardar?: (d: DestinoIr) => Promise<'guardado' | 'ya'>;
+  avisar?: (t: string) => void;
 }
 
 type Fuente = 'brujula' | 'marcha' | 'norte';
@@ -100,6 +105,8 @@ function html() {
     <div class="ir-acciones">
       <button id="ir-google" class="btn" type="button"><svg class="ico" aria-hidden="true"><use href="#i-coche"/></svg>Google Maps</button>
       <button id="ir-google-pie" class="btn" type="button"><svg class="ico" aria-hidden="true"><use href="#i-caminar"/></svg>Google a pie</button>
+      <button id="ir-guardar" class="btn" type="button" hidden>Guardar</button>
+      <button id="ir-campo" class="btn" type="button" hidden>Modo campo</button>
     </div>
     <p class="nota ir-aviso">Orientativo: la línea recta no sigue caminos y el sendero es aproximado (rejilla de 100 m); puede cruzar fincas, vallas o barrancos. La altitud del GPS puede fallar ±10–30 m.</p>`;
   document.body.append(d);
@@ -336,6 +343,14 @@ export function iniciarIr(c: ContextoIr) {
   $('#ir-google').addEventListener('click', () => destino && ctx.abrirEnlace(urlNavegarGoogle(destino, 'driving')));
   $('#ir-google-pie').addEventListener('click', () => destino && ctx.abrirEnlace(urlNavegarGoogle(destino, 'walking')));
   $('#ir-nota').addEventListener('click', () => abrirNota());
+  $('#ir-campo').hidden = !c.abrirCampo;
+  $('#ir-campo').addEventListener('click', () => c.abrirCampo?.());
+  $('#ir-guardar').hidden = !c.guardar;
+  $('#ir-guardar').addEventListener('click', async () => {
+    if (!destino || !c.guardar) return;
+    const r = await c.guardar(destino);
+    c.avisar?.(r === 'ya' ? 'Ya estaba en Mis sitios' : 'Guardado en Mis sitios');
+  });
   $('#ir-grabar').addEventListener('click', async () => {
     if (estadoGrabacion()) { await terminar(); grabacionPropia = false; } else grabacionPropia = await empezarGrabacion(true);
     pintarGrab();
@@ -343,6 +358,14 @@ export function iniciarIr(c: ContextoIr) {
   // Arrastrar el mapa deja de seguirte (como en Wikiloc); «Seguirme» lo vuelve a activar.
   Mini.alCrear((m) => m.on('dragstart', () => { if (dlg.open) $<HTMLInputElement>('#ir-seguir').checked = false; }));
   document.addEventListener('visibilitychange', () => { if (dlg.open && document.visibilityState === 'visible') pedirBloqueo(); });
+}
+
+/** Devuelve el mini-mapa a esta vista (al cerrar el modo campo abierto encima). */
+export function volverAlMapaIr() {
+  if (!dlg?.open || !destino) return;
+  Mini.ponerEn($('#ir-hueco'));
+  ultimoGiroMapa = 0;
+  pintar();
 }
 
 /** Estado para el e2e (window.__setas.ir()). */

@@ -20,6 +20,7 @@ const VACIO: FeatureCollection = { type: 'FeatureCollection', features: [] };
 function capas(m: MapaML) {
   m.addSource('top-hoy', { type: 'geojson', data: pendientes.get('top-hoy') ?? VACIO });
   m.addSource('ir', { type: 'geojson', data: pendientes.get('ir') ?? VACIO });
+  m.addSource('campo', { type: 'geojson', data: pendientes.get('campo') ?? VACIO });
   m.addLayer({ id: 'ir-sendero-fondo', type: 'line', source: 'ir', filter: ['==', ['get', 'tipo'], 'sendero'],
     layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 8 } });
   m.addLayer({ id: 'ir-sendero', type: 'line', source: 'ir', filter: ['==', ['get', 'tipo'], 'sendero'],
@@ -33,6 +34,17 @@ function capas(m: MapaML) {
   m.addLayer({ id: 'top-hoy-num', type: 'symbol', source: 'top-hoy', layout: { 'text-field': ['to-string', ['get', 'pos']],
     'text-font': ['Noto Sans Medium'], 'text-size': 13, 'text-allow-overlap': true, 'text-ignore-placement': true },
     paint: { 'text-color': '#0d1a13' } });
+  // Modo campo (campo-ui.ts): círculo de búsqueda, iconos de la seta en las microzonas y número de cada una.
+  m.addLayer({ id: 'campo-radio', type: 'line', source: 'campo', filter: ['==', ['get', 'tipo'], 'radio'],
+    paint: { 'line-color': '#1565c0', 'line-width': 2, 'line-dasharray': [2, 2], 'line-opacity': 0.7 } });
+  m.addLayer({ id: 'campo-yo', type: 'circle', source: 'campo', filter: ['==', ['get', 'tipo'], 'yo'], paint: {
+    'circle-radius': 9, 'circle-color': '#1565c0', 'circle-stroke-color': '#fff', 'circle-stroke-width': 3 } });
+  m.addLayer({ id: 'campo-iconos', type: 'symbol', source: 'campo', filter: ['==', ['get', 'tipo'], 'micro'], layout: {
+    'icon-image': ['get', 'icono'], 'icon-size': ['case', ['boolean', ['get', 'sel'], false], 0.62, 0.5],
+    'icon-allow-overlap': true, 'icon-ignore-placement': true,
+    'text-field': ['to-string', ['get', 'n']], 'text-font': ['Noto Sans Medium'], 'text-size': 12, 'text-offset': [1.1, -1.1],
+    'text-allow-overlap': true, 'text-ignore-placement': true },
+  paint: { 'text-color': '#0d1a13', 'text-halo-color': '#ffffff', 'text-halo-width': 2 } });
   m.addLayer({ id: 'ir-destino', type: 'circle', source: 'ir', filter: ['==', ['get', 'tipo'], 'destino'], paint: {
     'circle-radius': 11, 'circle-color': '#b23a0b', 'circle-stroke-color': '#fff', 'circle-stroke-width': 3 } });
   m.addLayer({ id: 'ir-yo', type: 'circle', source: 'ir', filter: ['==', ['get', 'tipo'], 'yo'], paint: {
@@ -62,7 +74,7 @@ export function ponerEn(hueco: HTMLElement) {
 }
 
 /** Datos de una de sus fuentes (se guardan hasta que el estilo cargue). */
-export function datos(fuente: 'top-hoy' | 'ir', fc: FeatureCollection) {
+export function datos(fuente: 'top-hoy' | 'ir' | 'campo', fc: FeatureCollection) {
   pendientes.set(fuente, fc);
   (mapa?.getSource(fuente) as GeoJSONSource | undefined)?.setData(fc);
 }

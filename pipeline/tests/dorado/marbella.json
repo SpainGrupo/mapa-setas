@@ -3,6 +3,7 @@
   "app/acceso.json": "1ccd742e3d610a5999713c14194a5dc45e6011a63ed7818f1af625e5c6bd5a15",
   "app/aparcamientos.json": "347c72e9830fe5b77b1e07d3b9cf7026b1ff9dc8b1d8040dab2cbb43241e5f63",
   "app/meteo_puntos.json": "02a57bce9266deebe0c87bd754c7a3fad212347070c9d8749643bd0f5bf60824",
+  "app/micro.json": "ef7cc30afb54c837e0c67a0d683490f14f31a18f2a1f1d4e5874251980027327",
   "app/sitios.json": "5e0a70770d6073398619aa7c05ebf7ac8ed10a9cd98a7b6f77d5691ae6c20f5f",
   "calibracion.json": "d6f9894fe03328a72f2e274cc77cdd130ee7ebb2cb98284f96c091b5a34846ee",
   "citas.geojson": "28e8f6b0fc0f245556e5b98d235f187fedcccc56db347e7ce3c26e92dad0a8d5",
@@ -627,6 +628,14 @@
    {
     "bytes": 1105918,
     "nombre": "sitios.json"
+   },
+   {
+    "bytes": 38835,
+    "nombre": "micro.json"
+   },
+   {
+    "bytes": 9460651,
+    "nombre": "micro.bin"
    }
   ],
   "base": "20261018.pmtiles maxzoom=15",
@@ -1315,6 +1324,10 @@
    "puntos": "meteo_puntos.json",
    "zonas": "meteo_zonas.pmtiles"
   },
+  "micro": {
+   "cabecera": "micro.json",
+   "datos": "micro.bin"
+  },
   "restricciones": {
    "aviso": "Málaga (Res. 23-09-2026, BOJA 196, vigente hasta 31-05-2027): autoconsumo ≤3 kg por persona y día sin autorización en montes públicos, salvo Zonas de Reserva; de día, sin rastrillos ni remover el mantillo. Fincas privadas: permiso del propietario. Cádiz: la última resolución encontrada es de 2019, sin confirmar su vigencia.",
    "capa": "restricciones.pmtiles",
@@ -1403,7 +1416,7 @@
    ]
   }
  },
- "manifest_total_bytes": 203635545,
+ "manifest_total_bytes": 213135031,
  "pmtiles": {
   "app/citas.pmtiles": {
    "atribucion": "GBIF.org · iNaturalist · Observation.org · foros y literatura (cada cita con su licencia)",
@@ -3649,6 +3662,7 @@
  "sha": {
   "app/acceso.bin": "dab6710b5e10a6c3d235ced7bea6ba83e4a47b70c91269a26474f3fcbe5e759e",
   "app/acceso.bin.gz": "cf1d093732e0ae318260cef813178e65909bb297591cd2f81fe53e1572b26c21",
+  "app/micro.bin": "1fd050fdf73cdec6ac44c48a301a7391dccbda29219e28879b5db0d676939293",
   "calibracion.md": "f7bc7fd7276a95533d07eeafaadb7e5df627f4dc2a707dd5cb1091b4451bc354",
   "respaldo/README_respaldo.md": "6256d5961bc93152f71641d6338295f33d963d24cab323543dd0023ee6765ba9",
   "respaldo/setas_agaricus_campestris_zonas_buenas.kml": "6fce7f967c58f666bb33d72a1de773a2b58096b813a45ea0d4815286bcc4df2c",

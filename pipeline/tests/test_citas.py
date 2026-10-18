@@ -98,3 +98,29 @@ def test_leer_sitios_no_publica_la_frase_de_la_fuente(tmp_path):
     regs, _ = leer_sitios(f, (36.6, -5.2), 50)
     assert regs and all(r["atribucion"] == "surinenglish.com" for r in regs)
     assert not any("porcini" in str(v) for r in regs for v in r.values())
+
+
+def test_get_reintenta_cortes_de_conexion(monkeypatch):
+    """Un corte de conexión pasajero (RemoteDisconnected de GBIF, 2026-10-18) se reintenta; si persiste, falla."""
+    import requests
+
+    class R:
+        status_code = 200
+        def raise_for_status(self): pass
+        def json(self): return {"ok": True}
+    llamadas = []
+
+    def get(url, params=None, timeout=None):
+        llamadas.append(1)
+        if len(llamadas) < 3:
+            raise requests.ConnectionError("Remote end closed connection without response")
+        return R()
+    monkeypatch.setattr(citas._sesion, "get", get)
+    monkeypatch.setattr(citas.time, "sleep", lambda s: None)
+    assert citas._get("https://x", {}) == {"ok": True} and len(llamadas) == 3
+
+    def siempre(url, params=None, timeout=None):
+        raise requests.ConnectionError("caído")
+    monkeypatch.setattr(citas._sesion, "get", siempre)
+    with pytest.raises(requests.ConnectionError):
+        citas._get("https://x", {}, intentos=2)

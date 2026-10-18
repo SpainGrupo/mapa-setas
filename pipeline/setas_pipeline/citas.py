@@ -8,7 +8,9 @@ Uso personal y no comercial: no se excluye ninguna licencia (CC BY-NC incluida);
 licencia y su atribución. Las respuestas crudas se cachean en data/<region>/raw/citas/ (--refrescar las vuelve a
 pedir).
 Observation.org: su API v1 exige OAuth (cuenta) y su web está tras anti-bot; solo entra lo que llega vía GBIF
-(datasetKey 8a863029-…), etiquetado origen=observation. IMBA: sin servicio de puntos (ver redacta-imba.md).
+(datasetKey 8a863029-…), etiquetado origen=observation. Mushroom Observer: solo vía GBIF (dataset d714382d-…); su
+API no está pensada para extracción de datos y en las dos regiones no tiene citas de estas especies (2026-10-18).
+IMBA: sin servicio de puntos (ver redacta-imba.md).
 Propiedades: especie, fecha, lat, lon, precision_m, fuente, origen, licencia, url, confianza (+ atribucion,
 tambien_en). La especie es el id de guia/especies.json. Dedupe: misma especie, < 100 m y misma fecha (día).
 """
@@ -96,7 +98,12 @@ def fecha_dia(f) -> str | None:
 
 def _get(url, params, intentos=4):
     for i in range(intentos):
-        r = _sesion.get(url, params=params, timeout=90)
+        try:
+            r = _sesion.get(url, params=params, timeout=90)
+        except (requests.ConnectionError, requests.Timeout):
+            if i == intentos - 1:
+                raise
+            time.sleep(5 * (i + 1)); continue          # corte de conexión pasajero (visto con GBIF, 2026-10-18)
         if r.status_code in (429, 500, 502, 503):
             time.sleep(5 * (i + 1)); continue
         r.raise_for_status()

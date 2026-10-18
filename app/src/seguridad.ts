@@ -74,6 +74,9 @@ export const PELIGROSAS_GRUPO: Record<GrupoMorfo, string[]> = {
   clitociboide: ['clitocybe_dealbata'],
   otros: [],
 };
+/** Peligrosas de la guía que no son boletos (no tienen poros): todas las de los grupos salvo boletoide. */
+export const PELIGROSAS_NO_BOLETO: string[] = [...new Set(Object.entries(PELIGROSAS_GRUPO)
+  .filter(([g]) => g !== 'boletoide').flatMap(([, ids]) => ids))].filter((id) => !PELIGROSAS_GRUPO.boletoide.includes(id));
 
 // ---------------------------------------------------------------- preguntas guiadas
 
@@ -106,9 +109,13 @@ export const PREGUNTAS: Pregunta[] = [
     opciones: [op('claro', 'Blanca o clara, del color del pie'), op('rojo', 'Roja'), op('pardo_oscuro', 'Parda oscura, más que el fondo'),
       op('sin_reticulo', 'No tiene red'), op(NO_SE, 'No sé')] },
 
-  { id: 'himenio_cantarelo', grupo: 'cantareloide', texto: 'Debajo del sombrero, ¿qué hay?',
-    opciones: [op('pliegues', 'Pliegues gruesos y bifurcados que bajan por el pie'), op('laminas', 'Láminas finas y apretadas'),
-      op('pinchos', 'Pinchos'), op(NO_SE, 'No sé')] },
+  // La pregunta más básica: separa boletos (poros) de las setas de láminas. Con «poros» se descartan las peligrosas de
+  // la guía que no son boletos (todas las mortales); con láminas, pliegues o pinchos, los boletos tóxicos.
+  { id: 'bajo_sombrero', grupo: 'otros', texto: 'Debajo del sombrero, ¿qué hay?',
+    ayuda: 'Dale la vuelta a la seta y mira de cerca, con luz de día.',
+    opciones: [op('poros', 'Poros: una esponja de tubitos, sin láminas'), op('laminas', 'Láminas finas y apretadas'),
+      op('pliegues', 'Pliegues gruesos y bifurcados que bajan por el pie'), op('pinchos', 'Pinchos'),
+      op('sin_sombrero', 'No tiene sombrero: es una bola, un huevo cerrado o una colmenilla'), op(NO_SE, 'No sé')] },
   { id: 'en_matas_madera', grupo: 'cantareloide', texto: '¿Crece en matas, con los pies unidos, sobre madera, raíces o tocones (p. ej. al pie de un olivo)?', opciones: SI_NO },
 
   { id: 'sombrero_mayor_10cm', grupo: 'lepiotoide', texto: '¿El sombrero mide más de 10 cm?', opciones: SI_NO },
@@ -175,7 +182,7 @@ export const DESCARTES: Regla[] = [
   { especie: 'tylopilus_felleus', si: { color_poros: ['rojo_naranja'] }, motivo: 'poros rojos (T. felleus nunca los tiene)' },
 
   // Omphalotus: láminas verdaderas y en matas sobre madera.
-  { especie: 'omphalotus_olearius', si: { himenio_cantarelo: ['pliegues', 'pinchos'], en_matas_madera: ['no'] },
+  { especie: 'omphalotus_olearius', si: { bajo_sombrero: ['pliegues', 'pinchos'], en_matas_madera: ['no'] },
     motivo: 'pliegues o pinchos (no láminas) y no crece en matas sobre madera' },
 
   // Lepiotoides: L. brunneoincarnata es pequeña con anillo fugaz; C. rhacodes tiene pie liso y carne que enrojece.
@@ -206,6 +213,15 @@ export const DESCARTES: Regla[] = [
   // marrón oscuro (las de C. dealbata son blancas y, ya viejas, rosado grisáceas) y anillo en el pie (no tiene).
   // Láminas blancas sin anillo disparan su alerta.
   { especie: 'clitocybe_dealbata', si: { laminas_pie_color: ['rosas_marrones'], anillo_pie: ['si'] }, motivo: 'láminas rosa vivo o marrón oscuro y anillo en el pie' },
+
+  // Poros frente a láminas (rasgo de himenio de cada ficha): un boleto no tiene láminas y ninguna peligrosa de la guía que
+  // no sea boleto tiene poros. Dos respuestas, como en el resto de mortales: «poros» y el color de esos poros (quien lo
+  // contesta los ha mirado). «No tiene sombrero» no descarta nada (un huevo cerrado puede ser una amanita).
+  ...PELIGROSAS_NO_BOLETO.map((especie): Regla => (
+    { especie, si: { bajo_sombrero: ['poros'], color_poros: ['blanco_amarillo_verdoso', 'rojo_naranja', 'rosado'] },
+      motivo: 'tiene poros bajo el sombrero, como un boleto, y has visto su color' })),
+  ...PELIGROSAS_GRUPO.boletoide.map((especie): Regla => (
+    { especie, si: { bajo_sombrero: ['laminas', 'pliegues', 'pinchos'] }, motivo: 'tiene láminas, pliegues o pinchos, no poros' })),
 ];
 
 export const ALERTAS: ReglaAlerta[] = [
@@ -215,7 +231,7 @@ export const ALERTAS: ReglaAlerta[] = [
     texto: 'Láminas blancas y volva en saco: rasgos de Amanita phalloides o Amanita verna, MORTALES.' },
   { nivel: 'mortal', especies: ['lepiota_brunneoincarnata'], si: { sombrero_mayor_10cm: ['no'] },
     texto: 'Parasol pequeño (menos de 10 cm): hay lepiotas pequeñas MORTALES, como Lepiota brunneoincarnata.' },
-  { nivel: 'toxica', especies: ['omphalotus_olearius'], si: { himenio_cantarelo: ['laminas'], en_matas_madera: ['si'] },
+  { nivel: 'toxica', especies: ['omphalotus_olearius'], si: { bajo_sombrero: ['laminas'], en_matas_madera: ['si'] },
     texto: 'Láminas finas y en matas sobre madera: rasgos de Omphalotus olearius, TÓXICA.' },
   { nivel: 'mortal', especies: ['amanita_phalloides', 'amanita_verna'], si: { interior_gleba: ['silueta_seta'] },
     texto: 'Dentro se ve el dibujo de una seta: es un huevo de amanita, y puede ser Amanita phalloides o Amanita verna, MORTALES.' },
@@ -252,11 +268,15 @@ export interface Peligrosa {
   motivo?: string;          // por qué se descarta (si descartada)
   alerta: boolean;          // una respuesta la hace probable
   origen: string[];         // por qué está en la lista: grupo o «se confunde con X»
+  /** Doble relevante para estos candidatos (mismo grupo, «no confundir con», alerta). false: solo está porque las
+   * mortales salen siempre (el reconocedor puede fallar); la UI la agrupa aparte, en rojo, sin mezclarla con los dobles. */
+  relevante: boolean;
 }
 export interface Alerta { nivel: Nivel; texto: string; especies: string[] }
 export interface Evaluacion {
   grupos: GrupoMorfo[];
-  preguntas: Pregunta[];
+  preguntas: Pregunta[];        // las que deciden sobre los dobles relevantes (y «¿qué hay debajo del sombrero?»)
+  preguntasOtras: Pregunta[];   // las que solo hacen falta para las mortales no relevantes
   peligrosas: Peligrosa[];      // no descartadas primero (mortales antes que tóxicas), después las descartadas
   alertas: Alerta[];
   aviso: string;
@@ -290,6 +310,8 @@ export function evaluar(candidatos: CandidatoMin[], fichas: FichaMin[], respuest
   // géneros «otros». Solo las respuestas guiadas las descartan.
   const porque = noReconocido || !candidatos.length ? 'no se ha reconocido la seta' : 'mortal: el reconocedor puede fallar';
   for (const f of fichas) if (f.grupo === 'mortal') anadir(f.id, porque);
+  // Sin ningún grupo conocido (no reconocida, o solo géneros «otros») no hay base para separar: todas son relevantes.
+  const sinGrupo = ![...grupos].some((g) => g !== 'otros');
   // Una respuesta que apunta a una peligrosa la trae aunque ningún candidato active su grupo (p. ej. escamas oscuras
   // de T. pardinum con un top-5 sin Tricholoma): la pregunta sale por otra especie y la respuesta no se pierde.
   for (const a of ALERTAS) if (cumple(a.si, respuestas)) for (const e of a.especies) anadir(e, 'tus respuestas apuntan a ella');
@@ -301,30 +323,47 @@ export function evaluar(candidatos: CandidatoMin[], fichas: FichaMin[], respuest
   const peligrosas: Peligrosa[] = [...origen].map(([id, por]) => {
     const alerta = enAlerta.has(id);
     const regla = alerta ? undefined : DESCARTES.find((r) => r.especie === id && cumple(r.si, respuestas));
-    return { id, nivel: nivelDe(porId.get(id))!, descartada: !!regla, motivo: regla?.motivo, alerta, origen: [...por] };
+    const relevante = sinGrupo || alerta || [...por].some((o) => o !== porque);
+    return { id, nivel: nivelDe(porId.get(id))!, descartada: !!regla, motivo: regla?.motivo, alerta, origen: [...por], relevante };
   });
   const rango = (p: Peligrosa) => (p.descartada ? 2 : 0) + (p.nivel === 'mortal' ? 0 : 1);
   peligrosas.sort((a, b) => rango(a) - rango(b) || Number(b.alerta) - Number(a.alerta) || a.id.localeCompare(b.id));
 
   // Preguntas: las que pueden descartar alguna peligrosa de la lista y las que disparan alertas de sus especies.
-  const ids = new Set<string>();
-  for (const r of DESCARTES) if (origen.has(r.especie)) Object.keys(r.si).forEach((q) => ids.add(q));
-  for (const a of ALERTAS) if (a.especies.some((e) => origen.has(e))) Object.keys(a.si).forEach((q) => ids.add(q));
-  const preguntas = PREGUNTAS.filter((p) => ids.has(p.id));
+  // Primero las de los dobles relevantes; las que solo sirven para las mortales no relevantes van aparte. La de debajo
+  // del sombrero va siempre con las primeras si hay mortales no relevantes: una sola respuesta («poros») las descarta.
+  const relevantes = new Set(peligrosas.filter((p) => p.relevante).map((p) => p.id));
+  const idsDe = (especies: Set<string>) => {
+    const ids = new Set<string>();
+    for (const r of DESCARTES) if (especies.has(r.especie)) Object.keys(r.si).forEach((q) => ids.add(q));
+    for (const a of ALERTAS) if (a.especies.some((e) => especies.has(e))) Object.keys(a.si).forEach((q) => ids.add(q));
+    return ids;
+  };
+  const ids = idsDe(relevantes);
+  if (peligrosas.some((p) => !p.relevante)) {
+    ids.add('bajo_sombrero');
+    if (respuestas.bajo_sombrero === 'poros') ids.add('color_poros');   // la segunda respuesta de ese descarte
+  }
+  const otras = idsDe(new Set(origen.keys()));
+  const primero = (p: Pregunta) => (p.id === 'bajo_sombrero' ? 0 : 1);
+  const preguntas = PREGUNTAS.filter((p) => ids.has(p.id)).sort((a, b) => primero(a) - primero(b));
+  const preguntasOtras = PREGUNTAS.filter((p) => otras.has(p.id) && !ids.has(p.id));
 
-  return { grupos: [...grupos].sort(), preguntas, peligrosas, alertas, aviso: AVISO_EXPERTO };
+  return { grupos: [...grupos].sort(), preguntas, preguntasOtras, peligrosas, alertas, aviso: AVISO_EXPERTO };
 }
 
 function binomioCorto(n: string) { return n.split(/\s+/).slice(0, 2).join(' '); }
 
 /** Respuestas para el Worker (claves snake_case, valores en texto legible; «no sé» → null). */
+export const MAX_CLAVES_WORKER = 20;
+/** Respuestas para el Worker: primero las respondidas y luego las «no sé», sin pasar de las 20 claves que admite. */
 export function respuestasParaWorker(preguntas: Pregunta[], r: Respuestas): Record<string, string | null> {
-  const out: Record<string, string | null> = {};
-  for (const p of preguntas) {
+  const pares = preguntas.filter((p, i, a) => a.findIndex((x) => x.id === p.id) === i).map((p): [string, string | null] => {
     const v = r[p.id];
-    out[p.id] = !v || v === NO_SE ? null : (p.opciones.find((o) => o.v === v)?.t ?? null);
-  }
-  return out;
+    return [p.id, !v || v === NO_SE ? null : (p.opciones.find((o) => o.v === v)?.t ?? null)];
+  });
+  pares.sort((a, b) => Number(a[1] === null) - Number(b[1] === null));
+  return Object.fromEntries(pares.slice(0, MAX_CLAVES_WORKER));
 }
 
 const PROHIBIDO = /\b(comestib\w*|comible\w*|se pueden? (comer|consumir)\w*|pueden? comerse|se (comen?|consumen?)|apt[oa]s? para (el )?(consumo|comer|consumir)|(es|son) (\w+ )?segur[ao]s?)\b|(?<!\bno (es |son )?)\binofensiv\w*/gi;

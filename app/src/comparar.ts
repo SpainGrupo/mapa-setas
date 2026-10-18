@@ -12,7 +12,7 @@ interface DefRasgo { clave: CampoFicha; titulo: string; preguntas: string[] }
 /** Orden de lectura cuando dos filas pesan lo mismo; las que deciden pasan siempre delante. */
 export const RASGOS: DefRasgo[] = [
   { clave: 'fase_huevo', titulo: 'Huevo cortado', preguntas: ['interior_huevo'] },
-  { clave: 'himenio', titulo: 'Láminas o poros', preguntas: ['laminas_pie_color', 'color_poros', 'himenio_cantarelo'] },
+  { clave: 'himenio', titulo: 'Láminas o poros', preguntas: ['laminas_pie_color', 'color_poros', 'bajo_sombrero'] },
   { clave: 'pie', titulo: 'Pie', preguntas: ['laminas_pie_color', 'color_reticulo', 'pie_serpiente'] },
   { clave: 'volva', titulo: 'Volva (base)', preguntas: ['volva_saco'] },
   { clave: 'anillo', titulo: 'Anillo', preguntas: ['anillo_doble_movil', 'anillo_pie'] },
@@ -33,7 +33,7 @@ export const FOTO_PREGUNTA: Record<string, string> = {
   color_poros: 'los poros, desde abajo',
   azulea_al_corte: 'la carne cortada, un minuto después',
   color_reticulo: 'el pie de cerca, con su red',
-  himenio_cantarelo: 'debajo del sombrero, de cerca',
+  bajo_sombrero: 'debajo del sombrero, de cerca',
   en_matas_madera: 'dónde crece, con la base y lo que hay debajo',
   sombrero_mayor_10cm: 'el sombrero junto a algo que dé la escala',
   anillo_doble_movil: 'el anillo, de cerca',
@@ -140,9 +140,10 @@ function textoOrigen(o: string): string {
 }
 
 /**
- * Pares de comparación de la candidata frente a cada peligrosa con ficha (menos ella misma). Orden: primero las no
- * descartadas (mortales antes que tóxicas, las que la guía cita como confusión antes que las del grupo), después las
- * descartadas, que siguen accesibles.
+ * Pares de comparación de la candidata frente a cada doble peligroso RELEVANTE con ficha (menos ella misma): las
+ * mortales que solo salen «por si el reconocedor falla» no se comparan aquí (la UI las agrupa aparte, en rojo).
+ * Orden: primero las no descartadas (las que la guía cita como confusión antes que las del grupo; a igualdad,
+ * mortales antes que tóxicas), después las descartadas, que siguen accesibles.
  */
 export function construirPares(candidata: Ficha, ev: Evaluacion, fichas: Ficha[], r: Respuestas): Par[] {
   const porId = new Map(fichas.map((f) => [f.id, f]));
@@ -151,7 +152,7 @@ export function construirPares(candidata: Ficha, ev: Evaluacion, fichas: Ficha[]
   const pares: Par[] = [];
   for (const p of ev.peligrosas) {
     const f = porId.get(p.id);
-    if (!f || f.id === candidata.id) continue;
+    if (!f || f.id === candidata.id || p.relevante === false) continue;
     const deciden = new Set([...preguntasQueDeciden(f.id)].filter((q) => enEv.has(q)));
     const filas: FilaRasgo[] = [];
     for (const d of RASGOS) {
@@ -182,8 +183,30 @@ export function construirPares(candidata: Ficha, ev: Evaluacion, fichas: Ficha[]
     pares.push({ peligrosa: p, ficha: f, estado, citada: citadas.has(f.id) || f.no_confundir_con.some((c) => c.id === candidata.id), filas,
       falsoPositivo: { parecido: p.origen.map(textoOrigen).filter((t, i, a) => a.indexOf(t) === i), separa: dif, fiarte, fotos } });
   }
-  const rango = (x: Par) => (x.estado === 'descartada' ? 4 : 0) + (x.peligrosa.nivel === 'mortal' ? 0 : 2) + (x.citada ? 0 : 1);
+  const rango = (x: Par) => (x.estado === 'descartada' ? 4 : 0) + (x.estado === 'alerta' ? -8 : 0) + (x.citada ? 0 : 2) + (x.peligrosa.nivel === 'mortal' ? 0 : 1);
   return pares.map((x, i) => [x, i] as const).sort((a, b) => rango(a[0]) - rango(b[0]) || a[1] - b[1]).map(([x]) => x);
+}
+
+export interface Distincion { rasgos: string[]; fuente: 'guia_par' | 'guia_ficha' | 'gemini' | 'ninguna' }
+/**
+ * El rasgo concreto que separa un doble peligroso de los candidatos: las «diferencias» de «No confundir con…» de la
+ * guía entre un candidato y el doble (en cualquier sentido); si la guía no tiene ese par, los rasgos clave de la ficha
+ * del doble; si el doble no está en la guía, el motivo que da Gemini. Nada inventado.
+ */
+export function rasgoQueDistingue(idDoble: string | undefined, idsCandidatos: string[], fichas: Ficha[], motivoGemini?: string): Distincion {
+  const porId = new Map(fichas.map((f) => [f.id, f]));
+  const doble = idDoble ? porId.get(idDoble) : undefined;
+  if (doble) {
+    for (const id of idsCandidatos) {
+      const c = porId.get(id);
+      if (!c || c.id === doble.id) continue;
+      const dif = c.no_confundir_con.find((x) => x.id === doble.id)?.diferencias ?? doble.no_confundir_con.find((x) => x.id === c.id)?.diferencias;
+      if (dif?.length) return { rasgos: dif, fuente: 'guia_par' };
+    }
+    if (doble.rasgos_clave.length) return { rasgos: doble.rasgos_clave.slice(0, 3), fuente: 'guia_ficha' };
+  }
+  if (motivoGemini) return { rasgos: [motivoGemini], fuente: 'gemini' };
+  return { rasgos: [], fuente: 'ninguna' };
 }
 
 /** «Amanita phalloides (oronja verde)». */

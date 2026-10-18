@@ -8,7 +8,7 @@ The control point for this stage. Define exactly what it reads, does, and writes
 - Layer 3 (reference): ../../_config/conventions.md
 
 ## Process
-Worker de Cloudflare como proxy a Gemini; la clave la crea Alexander y va como secreto del Worker. TODO: modelo Gemini por decidir.
+Worker de Cloudflare como proxy a Gemini; la clave la crea Alexander y va como secreto del Worker. Modelo: GEMINI_MODEL en worker/wrangler.toml. Desde 2026-10-18 Gemini es la primera opinión con conexión (ver ../../knowledge/reference/reconocedor.md).
 
 ## Outputs
 - worker/ desplegado

@@ -318,7 +318,7 @@
     <section id="p-reconocer" class="pantalla" aria-label="Reconocer">
       <header class="cab"><h1>Reconocer una seta</h1></header>
       <div class="cuerpo">
-        <p class="nota">El reconocedor busca setas parecidas a tus fotos. No confirma nada y nunca dice si una seta se come.</p>
+        <p class="nota">Con conexión responde Gemini; sin conexión, el reconocedor descargado. Ninguno confirma nada y nunca dice si una seta se come.</p>
         <p id="rec-estado" class="estado">Comprobando…</p>
         <button id="rec-ir-ajustes" class="btn" type="button" hidden>Ir a la descarga</button>
         <div class="captura">
@@ -327,33 +327,37 @@
         </div>
         <p id="rec-num-fotos" class="nota"></p>
         <div id="rec-miniaturas" class="miniaturas"></div>
-        <button id="rec-analizar" class="btn btn-primario btn-ancho" type="button" disabled>Comparar con la guía</button>
-        <p id="rec-progreso" class="nota" hidden>Comparando… La primera vez tarda unos segundos en cargar el reconocedor.</p>
+        <button id="rec-analizar" class="btn btn-primario btn-ancho" type="button" disabled>Reconocer</button>
+        <p id="rec-progreso" class="nota" role="status" hidden>Comparando…</p>
         <div id="rec-resultado" class="rec-resultado" hidden>
           <div id="rec-alertas"></div>
-          <h2 class="titulo-peligro">Peligrosas sin descartar</h2>
-          <p class="nota">Siguen aquí hasta que tus respuestas las descarten con rasgos claros. «No sé» nunca descarta.</p>
-          <ul id="rec-peligrosas" class="rec-peligrosas"></ul>
-          <p id="rec-sin-peligrosas" class="nota" hidden>Ninguna de la guía en estos grupos. Eso no significa que la seta sea segura.</p>
-          <details id="rec-descartadas" class="creditos" hidden><summary>Descartadas por tus respuestas</summary><ul class="lista-descartadas"></ul></details>
-          <h2>Se parecen a tu foto</h2>
+          <div id="rec-motor" class="rec-motor" role="status"></div>
+          <h2>Candidatos probables</h2>
           <p id="rec-no-reconocido" class="caja-nota" hidden>No se reconoce la seta en las fotos. Prueba con otras fotos más cercanas y nítidas.</p>
           <ol id="rec-candidatos" class="rec-candidatos"></ol>
-          <section id="rec-comparar" class="rec-comparar" aria-labelledby="tit-comparar" hidden>
-            <h2 id="tit-comparar">Compáralas tú</h2>
-            <p class="nota">Cada número señala el mismo rasgo en la tabla, en el dibujo y en lo que debes buscar en tus fotos. Un recuadro de trazos es un rasgo que aún no has comprobado.</p>
-            <div id="rec-pares" class="rec-pares" role="tablist" aria-label="Peligrosa con la que comparar"></div>
-            <div id="rec-par" class="rec-par" role="tabpanel"></div>
-          </section>
+          <div id="rec-fotos-rec" class="caja-nota rec-fotos-rec" hidden></div>
+          <div id="rec-contraste" class="rec-contraste" hidden></div>
+          <h2 class="titulo-peligro">Dobles peligrosos a descartar</h2>
+          <p class="nota">Tóxicas o mortales que se parecen a estos candidatos, con el rasgo que las separa. Siguen aquí hasta que tus respuestas las descarten. «No sé» nunca descarta.</p>
+          <ul id="rec-peligrosas" class="rec-peligrosas"></ul>
+          <p id="rec-sin-peligrosas" class="nota" hidden>Ninguna de la guía se parece a estos candidatos. Eso no significa que la seta sea segura.</p>
+          <div id="rec-otras-mortales" class="caja-peligro rec-otras-mortales" role="alert" hidden></div>
           <h2 id="tit-preguntas">Comprueba tú</h2>
           <p id="rec-sin-preguntas" class="nota" hidden>No hay preguntas para estos candidatos.</p>
           <div id="rec-preguntas" class="rec-preguntas"></div>
+          <details id="rec-preguntas-otras" class="creditos" hidden><summary>Más preguntas para descartar las otras mortales</summary><div class="rec-preguntas"></div></details>
+          <section id="rec-comparar" class="rec-comparar" aria-labelledby="tit-comparar" hidden>
+            <h2 id="tit-comparar">Compáralas tú</h2>
+            <p class="nota">Cada número señala el mismo rasgo en la tabla, en el dibujo y en lo que debes buscar en tus fotos. Un recuadro de trazos es un rasgo que aún no has comprobado.</p>
+            <div id="rec-pares" class="rec-pares" role="tablist" aria-label="Doble peligroso con el que comparar"></div>
+            <div id="rec-par" class="rec-par" role="tabpanel"></div>
+          </section>
+          <details id="rec-descartadas" class="creditos" hidden><summary>Descartadas por tus respuestas</summary><ul class="lista-descartadas"></ul></details>
           <div class="fila-botones">
-            <button id="rec-gemini" class="btn" type="button" hidden>Segunda opinión (Gemini)</button>
+            <button id="rec-gemini" class="btn" type="button" hidden>Consultar a Gemini</button>
             <button id="rec-guardar" class="btn" type="button"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>Guardar sitio</button>
           </div>
           <p id="rec-gemini-nota" class="nota"></p>
-          <div id="rec-gemini-resultado" class="rec-gemini" hidden></div>
           <div id="rec-aviso-final" class="aviso-fijo" role="note">No consumas ninguna seta sin la confirmación de un experto.</div>
         </div>
       </div>

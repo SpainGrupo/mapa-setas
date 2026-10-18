@@ -727,10 +727,22 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .opcion { display: flex; align-items: center; gap: 12px; min-height: var(--toque); padding: 6px 12px; border-radius: 12px; border: 2px solid var(--lavado); cursor: pointer; }
 .opcion:has(input:checked) { border-color: var(--tinta); background: var(--lavado); }
 .opcion input { width: 22px; height: 22px; margin: 0; accent-color: var(--tinta); flex: none; }
-.rec-gemini { display: grid; gap: 10px; padding: 14px; border-radius: 18px; background: var(--hoja); border: 1px solid oklch(62% 0.017 158 / 0.4); }
-.rec-gemini h3 { margin: 0; }
-.rec-gemini-cand { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
-.rec-gemini-cand li { display: grid; gap: 4px; }
+/* Reconocer: qué motor responde, rasgos de cada candidato, contraste y mortales aparte */
+.rec-motor { display: grid; gap: 2px; padding: 12px 14px; border-radius: 16px; background: var(--hoja); border: 2px solid var(--tinta); }
+.rec-motor b { font-size: 17px; font-weight: 800; }
+.rec-motor p { margin: 0; font-size: 15px; color: var(--tinta-2); }
+.rec-motor[data-motor=local] { border-color: var(--regla); }
+.rec-cand .rasgos b, .peligrosa .distingue b, .rec-fotos-rec b { font-size: 14px; font-weight: 800; letter-spacing: 0.02em; }
+.rec-cand .rasgos ul, .peligrosa .distingue ul, .rec-fotos-rec ul { margin: 2px 0 0; padding-left: 20px; display: grid; gap: 2px; font-size: 15px; }
+.rec-cand .rasgos.faltan b { color: var(--ambar-tx); }
+.peligrosa .distingue { padding: 8px 10px; border-radius: 12px; background: var(--hoja); border: 1px solid var(--regla); }
+.rec-contraste { padding: 10px 14px; border-radius: 16px; border: 1px dashed var(--regla); display: grid; gap: 2px; }
+.rec-contraste p { margin: 0; }
+.rec-contraste[data-discrepa=si] { border: 2px solid var(--ambar); background: var(--hoja); }
+.rec-contraste[data-discrepa=si] b { color: var(--ambar-tx); }
+.rec-otras-mortales ul { margin: 4px 0; padding-left: 20px; display: grid; gap: 2px; font-weight: 700; }
+.rec-otras-mortales .btn-chico { justify-self: start; }
+#rec-progreso[data-error=si] { color: var(--peligro-tx); font-weight: 700; }
 .aviso-fijo {
   position: sticky; bottom: calc(var(--pie) + 8px); z-index: 4; margin-top: 4px;
   padding: 12px 14px 12px 46px; border-radius: 16px; background: var(--aviso-fondo); color: oklch(100% 0 0); border: 1px solid oklch(100% 0 0 / 0.18); font-weight: 800; font-size: 16px; line-height: 1.3;

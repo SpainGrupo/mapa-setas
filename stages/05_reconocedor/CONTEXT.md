@@ -8,7 +8,7 @@ The control point for this stage. Define exactly what it reads, does, and writes
 - Layer 3 (reference): ../../_config/conventions.md
 
 ## Process
-Spike de viabilidad del modelo offline (licencia, tamaño, precisión) y luego integración con comprobación guiada. TODO: plan detallado pendiente.
+Spike de viabilidad del modelo offline (licencia, tamaño, precisión) y luego integración con comprobación guiada. Desde 2026-10-18 el modelo local es el respaldo sin conexión y el contraste de Gemini; flujo, dobles relevantes y límites en ../../knowledge/reference/reconocedor.md.
 
 ## Outputs
 - modelo ONNX y comprobación guiada

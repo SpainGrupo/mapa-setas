@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import datos from '../../guia/especies.json';
-import { construirPares, dibujoDe, FOTO_PREGUNTA, nombreConComun, preguntasQueDeciden, RASGOS } from './comparar';
+import { construirPares, dibujoDe, FOTO_PREGUNTA, nombreConComun, preguntasQueDeciden, RASGOS, rasgoQueDistingue } from './comparar';
 import { CLAVES_ANATOMIA } from './anatomia';
 import { AVISO_BUSCADA, bannerFicha, type Ficha } from './guia';
 import { AVISO_EXPERTO, evaluar, NO_SE, PREGUNTAS, type Respuestas } from './seguridad';
@@ -81,7 +81,7 @@ describe('comparación por pares', () => {
       const k = dibujoDe(d.clave, String(f[d.clave] ?? ''));
       if (k) expect(CLAVES_ANATOMIA, `${f.id}.${d.clave}`).toContain(k);
     }
-    expect(preguntasQueDeciden('amanita_phalloides')).toEqual(new Set(['interior_huevo', 'laminas_pie_color', 'color_sombrero', 'volva_saco', 'interior_gleba']));
+    expect(preguntasQueDeciden('amanita_phalloides')).toEqual(new Set(['interior_huevo', 'laminas_pie_color', 'color_sombrero', 'volva_saco', 'bajo_sombrero', 'color_poros', 'interior_gleba']));
   });
 
   it('heurística de dibujos: negaciones y verrugas', () => {
@@ -122,5 +122,23 @@ describe('aviso de la ficha (spec §2)', () => {
   });
   it('ficha de una peligrosa: siempre el aviso del experto', () => {
     expect(bannerFicha(porId.get('amanita_phalloides')!, ['x'], AVISO_EXPERTO).clase).toBe('banner-experto');
+  });
+});
+
+describe('dobles relevantes y rasgo que los distingue (2026-10-18)', () => {
+  it('un boleto no se compara con amanitas ni otras mortales de otros grupos', () => {
+    const edulis = porId.get('boletus_edulis')!;
+    const ids = paresDe(edulis).map((p) => p.ficha.id);
+    expect(ids).toEqual(expect.arrayContaining(['rubroboletus_satanas', 'tylopilus_felleus']));
+    expect(ids.some((id) => porId.get(id)!.grupo === 'mortal')).toBe(false);
+  });
+  it('el rasgo sale del par de la guía; si no hay par, de la ficha del doble; si no hay ficha, de Gemini', () => {
+    const par = rasgoQueDistingue('rubroboletus_satanas', ['boletus_edulis'], fichas);
+    expect(par.fuente).toBe('guia_par');
+    expect(par.rasgos.join(' ')).toMatch(/poros rojos/);
+    const ficha = rasgoQueDistingue('rubroboletus_satanas', [], fichas);
+    expect(ficha).toEqual({ rasgos: porId.get('rubroboletus_satanas')!.rasgos_clave.slice(0, 3), fuente: 'guia_ficha' });
+    expect(rasgoQueDistingue(undefined, [], fichas, 'sombrero pálido que se mancha de rosa')).toEqual({ rasgos: ['sombrero pálido que se mancha de rosa'], fuente: 'gemini' });
+    expect(rasgoQueDistingue(undefined, [], fichas).fuente).toBe('ninguna');
   });
 });

@@ -41,7 +41,7 @@ try {
   comprobar(await p.evaluate(() => window.__setas.tops().factorCitas) === sitios.factor_citas,
     `la pestaña Hoy lee factor_citas (${sitios.factor_citas})`);
   // Una seta cuyo top 10 tenga algún sitio con citas.
-  const ids = await p.$$eval('#hoy-especie option', (os) => os.map((o) => o.value));
+  const ids = await p.$$eval('#hoy-especie option', (os) => os.map((o) => o.value).filter((v) => !v.startsWith('grupo:')));
   let especie = null;
   for (const id of ids) {
     await p.locator('#hoy-especie').selectOption(id);
@@ -74,6 +74,44 @@ try {
   comprobar(!PROHIBIDO.test(nuevos), 'nada de lo nuevo dice «comestible»');
   await fila.locator('.tf-citado').first().click();
   comprobar(await lista.isHidden(), 'volver a pulsar pliega la lista');
+  // Orden compartido de los tops y razón de cada sitio (2026-10-18).
+  const nControles = await p.$$eval('#p-hoy ol.tops', (ols) => ols.filter((o) => o.previousElementSibling?.classList.contains('orden-top')).length);
+  const nListas = await p.$$eval('#p-hoy ol.tops', (ols) => ols.length);
+  comprobar(nControles === nListas && nListas >= 2, `control «Ordenar por» delante de los ${nListas} listados de Hoy`);
+  const razones = await p.$$eval('#p-hoy .top-fila .tf-razon', (rs) => rs.map((r) => r.textContent));
+  comprobar(razones.length > 0 && razones.every((r) => /^Puntuación \d+\/100 por /.test(r)) && !razones.some((r) => PROHIBIDO.test(r)),
+    `cada sitio lleva su razón (${razones.length}), sin «comestible»`);
+  await p.locator('#top-especie').locator('xpath=preceding-sibling::div[1]').getByRole('button', { name: 'Dificultad a pie' }).click();
+  const ORD = ['facil', 'moderada', 'dificil', 'muy_dificil'];
+  const difs = await p.$$eval('#top-especie .top-fila', (ls) => ls.map((l) => l.dataset.dificultad));
+  const ordenes = await p.$$eval('#p-hoy ol.tops', (ols) => ols.map((o) => o.dataset.orden));
+  comprobar(difs.every((d, i) => !i || ORD.indexOf(difs[i - 1]) <= ORD.indexOf(d)) && ordenes.every((o) => o === 'dificultad'),
+    `ordenar por dificultad reordena todos los listados (${difs.join(',')})`);
+  await p.locator('#top-especie').locator('xpath=preceding-sibling::div[1]').getByRole('button', { name: 'Probabilidad' }).click();
+  const pts = await p.$$eval('#top-especie .top-fila', (ls) => ls.map((l) => Number(l.dataset.puntuacion)));
+  comprobar(pts.every((x, i) => !i || pts[i - 1] >= x), 'volver a probabilidad: puntuación de mayor a menor');
+  // Filtro por grupo (grupos.ts, 2026-10-18): «Boletus: todo el grupo» combina las cuatro y desduplica a 300 m.
+  const og = await p.$$eval('#hoy-especie optgroup', (gs) => gs.map((g) => g.label));
+  comprobar(og.length >= 5 && og[0] === 'Boletus', `selector Seta con ${og.length} grupos (${og.join(', ')})`);
+  await p.locator('#hoy-especie').selectOption('grupo:boletus');
+  await p.waitForFunction(() => window.__setas.tops().especie === 'grupo:boletus');
+  const espFilas = await p.$$eval('#top-especie .top-fila', (ls) => ls.map((l) => l.dataset.especies.split(' ')));
+  comprobar(espFilas.length > 0 && espFilas.flat().every((e) => e.startsWith('boletus_')) && new Set(espFilas.flat()).size >= 2
+    && await p.locator('#hoy-ver-ficha').isHidden(),
+    `top del grupo Boletus: ${espFilas.length} filas con ${[...new Set(espFilas.flat())].join(', ')}, sin «Ver ficha»`);
+  await p.locator('#tit-top-especie').scrollIntoViewIfNeeded();
+  await p.screenshot({ path: join(CAPTURAS, 'hoy-grupo-boletus.png'), fullPage: false });
+  await p.locator('#hoy-especie').selectOption(especie);
+  await p.waitForFunction((e) => window.__setas.tops().especie === e, especie);
+  // Top de la ficha de la guía.
+  const espTop = await p.$eval('#hoy-especie', (s) => s.value);
+  await p.evaluate(() => document.querySelector('#top-especie .tf-especie')?.click());
+  await p.waitForSelector('#top-guia .top-fila', { timeout: 10000 });
+  const nGuia = await p.$$eval('#top-guia .top-fila', (ls) => ls.length);
+  const nCand = (sitios.especies[espTop] ?? []).length;
+  comprobar(nGuia <= 7 && (nGuia >= Math.min(5, nCand) || nCand < 5) && await p.locator('#top-guia').locator('xpath=preceding-sibling::div[1]').getAttribute('class') === 'orden-top',
+    `ficha de ${espTop}: Top de ${nGuia} sitios con control de orden`);
+  await p.screenshot({ path: join(CAPTURAS, 'guia-top-sitios.png'), fullPage: false });
   comprobar(!errores.length, `sin errores de página${errores.length ? `: ${errores.join(' | ')}` : ''}`);
   console.log('e2e de citas en Hoy: OK');
 } finally {

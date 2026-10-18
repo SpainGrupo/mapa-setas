@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.1" creator="Mapa de setas" xmlns="http://www.topografix.com/GPX/1/1" xmlns:setas="https://setas.local/gpx/1">
   <wpt lat="36.589" lon="-5.244">
-    <time>2026-10-16T08:27:09.373Z</time>
+    <time>2026-10-18T09:18:43.586Z</time>
     <name>★★★ Amanita caesarea</name>
     <desc>Ñandú &amp; &lt;castaños&gt; &quot;junto&quot; al &apos;arroyo&apos; ✓</desc>
-    <extensions><setas:sitio id="c33ab967-b0dd-44f4-ba3c-7475352d111a" estrellas="3" especie="amanita_caesarea"/></extensions>
+    <extensions><setas:sitio id="274bf9ec-641c-4a69-9ebb-89671f19bb28" estrellas="3" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="36.589" lon="-5.244">
-    <time>2026-10-16T08:26:48.513Z</time>
+    <time>2026-10-18T09:18:14.572Z</time>
     <name>★☆☆ Amanita caesarea</name>
     <desc>Desde Reconocer</desc>
-    <extensions><setas:sitio id="43218610-7d64-4787-9253-1b99789618bc" estrellas="1" especie="amanita_caesarea"/></extensions>
+    <extensions><setas:sitio id="2150a4d5-4534-4c45-861f-63e12b657b7b" estrellas="1" especie="amanita_caesarea"/></extensions>
   </wpt>
 </gpx>

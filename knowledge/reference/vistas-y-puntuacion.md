@@ -15,7 +15,14 @@ timestamp: 2026-10-17T20:00:00Z
 - Desde el Top se abre la ficha de la especie.
 - Las fichas buscadas llevan aviso neutro, sin la palabra «comestible».
 
+## Cubierta de copas por sitio (sitios.json v3, 2026-10-18)
+- Cada sitio trae `arbol` (moda del MFE en la mancha), `fcc_mfe` (FCC media del MFE), `cubierta_sat` (% de píxeles árbol de ESA WorldCover 2021, 10 m, CC BY 4.0; `arbol_sat.tif`, paso `satelite`) y `cubierta_sat_punto` (300 m alrededor del punto, informativo).
+- `factor_cubierta` = 0,3 + 0,7·smoothstep(c / m), c = satélite si hay, si no MFE; m = min(dosel.opt[0], 40). Sin `dosel` o m = 0 → 1. Multiplica la calidad en pipeline (sitios.py) y app (ranking.ts).
+- La razón dice «Alcornocal claro, 25 % de copas» (< 10 muy abierto, < 40 claro, < 70 densidad media, resto denso) y avisa si el satélite ve ≥ 15 puntos menos que el MFE o que la mancha alrededor del punto.
+- Se eligió WorldCover y no Copernicus HRL TCD 2018 porque esta exige cuenta para descargar. WorldCover es binaria por píxel (no densidad), así que tiende a dar más cubierta que la FCC del MFE en olivares y matorral alto.
+
 # Citations
 
 - commits 56b61c3, 5ba88dd, 42a885c
 - app/src/ranking.ts, app/src/hoy-ui.ts, app/src/citas.ts, pipeline/setas_pipeline/citas_sitios.py
+- pipeline/setas_pipeline/sitios.py, pipeline/setas_pipeline/cubierta_satelite.py, app/src/razones.ts

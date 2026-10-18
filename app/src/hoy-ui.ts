@@ -15,6 +15,9 @@ import { ordenarTemporada, textoFinVentana, type DiaVentana, type Ventana } from
 import type { Estado } from './semaforo';
 import { detallesTitularidad, esPublico, normaTitularidad, textoTitularidad } from './titularidad';
 import { AVISO_CITAS, filaRefCita, textoCitado, type CitasSitio } from './citas';
+import { clavesEntrada, esOrdenTop, NOMBRE_ORDEN, ORDENES_TOP, ordenarTops, PENDIENTE, type OrdenTop } from './orden-tops';
+import { razonSitio } from './razones';
+import { especiesDeValor, esValorGrupo, gruposDe, topGrupo, valorGrupo } from './grupos';
 
 /** Explicación de la cifra del Top (2026-10-15: antes «Calidad del monte», que no decía que entra el tiempo). */
 export const EXPLICACION_PUNTUACION = 'Hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa (× citas cercanas, si la región lo aplica).';
@@ -46,6 +49,7 @@ export interface ContextoHoy {
 
 const CLAVE_DIF = 'setas:dificultad-max';
 const CLAVE_N = 'setas:top-n';
+const CLAVE_ORDEN = 'setas:orden-top';
 const leer = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
 const escribir = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* solo esta sesión */ } };
 
@@ -136,6 +140,50 @@ function bloqueCitas(c: CitasSitio, prefijo: string): HTMLElement {
   return caja;
 }
 
+/** Origen de las distancias: tu GPS o, sin él, el origen de la región (null = PENDIENTE). */
+const origenDistancias = (): { lat: number; lon: number } | null => ctx.posicion() ?? ctx.manifest()?.region?.origen ?? null;
+
+export const ordenTop = (): OrdenTop => { const v = leer(CLAVE_ORDEN); return esOrdenTop(v) ? v : 'probabilidad'; };
+
+/** Motivo real del semáforo de la última consulta (para la razón de cada sitio). */
+let motivoEn: (especie: string, meteoId: number) => string | null = () => null;
+
+interface ItemTop { principal: Entrada; entradas: Entrada[] }
+/** Listados de top pintados (cada <ol> con sus filas sin ordenar), para repintarlos todos al cambiar el orden. */
+const listas = new Map<HTMLElement, ItemTop[]>();
+
+/** Control compartido «Ordenar por» (uno delante de cada listado; todos usan la misma preferencia). */
+function controlOrden(ul: HTMLElement) {
+  let c = ul.previousElementSibling as HTMLElement | null;
+  if (!c?.classList.contains('orden-top')) {
+    c = document.createElement('div'); c.className = 'orden-top'; c.setAttribute('role', 'group'); c.setAttribute('aria-label', 'Ordenar sitios por');
+    const etq = document.createElement('span'); etq.className = 'etq'; etq.textContent = 'Ordenar por';
+    c.append(etq, ...ORDENES_TOP.map((o) => {
+      const b = boton(NOMBRE_ORDEN[o], () => { escribir(CLAVE_ORDEN, o); repintarListas(); }, 'chip');
+      b.dataset.orden = o;
+      return b;
+    }));
+    ul.before(c);
+  }
+  const o = ordenTop();
+  c.querySelectorAll<HTMLButtonElement>('button').forEach((b) => { const on = b.dataset.orden === o; b.setAttribute('aria-pressed', String(on)); b.classList.toggle('activa', on); });
+}
+
+/** Pinta un listado de sitios top con el orden elegido (helper único para todos los listados). */
+export function pintarListaTop(ul: HTMLElement, items: ItemTop[]) {
+  listas.set(ul, items);
+  controlOrden(ul);
+  ul.querySelectorAll(':scope > li.top-fila').forEach((li) => li.remove());
+  const origen = origenDistancias();
+  ordenarTops(items, ordenTop(), (x) => clavesEntrada(x.principal, origen))
+    .forEach((x, i) => ul.append(fila(x.principal, x.entradas, i + 1)));
+  ul.dataset.orden = ordenTop();
+}
+
+function repintarListas() {
+  for (const [ul, items] of listas) { if (ul.isConnected) pintarListaTop(ul, items); else listas.delete(ul); }
+}
+
 /** Una fila de top (como un panel de salidas): una o varias setas en el mismo sitio. Una sola acción principal
  * («Ruta a pie»); el resto, en el menú «Más». */
 function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIElement {
@@ -183,8 +231,13 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIEleme
   const dif = document.createElement('span'); dif.className = `insignia-dif dif-${principal.dificultad}`; dif.textContent = NOMBRE_DIFICULTAD[principal.dificultad];
   const pts = document.createElement('span'); pts.className = 'tf-puntos'; pts.textContent = `Puntuación del día: ${principal.puntuacion} de 100`;
   pts.title = EXPLICACION_PUNTUACION;
-  meta.append(dif, pts, textoLejania(s));
+  const lej = textoLejania(s);
+  meta.append(dif, pts, lej || `Distancia: ${PENDIENTE}`);
   li.append(cab, meta);
+  // Por qué este sitio: factores reales del ranking (razones.ts).
+  const rz = document.createElement('p'); rz.className = 'tf-razon';
+  rz.textContent = razonSitio(principal, { fiabilidad: fiab(principal.especie), motivo: motivoEn(principal.especie, s.meteo_id) });
+  li.append(rz);
   // Titularidad: monte público o «probablemente privado» (sin dato del pipeline cuenta como privado).
   const tl = s.titularidad ?? { clase: 'privado' as const };
   const ti = document.createElement('p'); ti.className = 'chip-titularidad tf-titularidad'; ti.dataset.clase = tl.clase;
@@ -250,29 +303,65 @@ export function elegirDia(f: string) {
 
 function opciones(fecha: string): Opciones {
   const cache = new Map<string, ResultadoSemaforo | null>();
+  const res = (e: string, id: number) => {
+    const k = `${e}:${id}`;
+    if (!cache.has(k)) cache.set(k, ctx.estadoPunto(id, e, fecha));
+    return cache.get(k) ?? null;
+  };
+  motivoEn = (e, id) => res(e, id)?.motivo ?? null;
   return {
-    estadoEn: (e, id) => {
-      const k = `${e}:${id}`;
-      if (!cache.has(k)) cache.set(k, ctx.estadoPunto(id, e, fecha));
-      return cache.get(k)?.estado ?? null;
-    },
+    estadoEn: (e, id) => res(e, id)?.estado ?? null,
     fiabilidad: fiab,
     maxDificultad: maxDificultad(),
     soloPublicos: ctx.soloPublicos(),
   };
 }
 
+/**
+ * Rellena el selector «Seta» de Hoy con la taxonomía de grupos.ts: un <optgroup> por grupo; si el grupo tiene varias
+ * especies, primero «<grupo>: todo el grupo» (valor «grupo:x», top combinado) y debajo cada especie con sangría.
+ */
+export function rellenarSelectHoy(sel: HTMLSelectElement, especies: { id: string; nombre: string }[]) {
+  const nombreDe = new Map(especies.map((e) => [e.id, e]));
+  sel.replaceChildren(...gruposDe(especies.map((e) => e.id)).map(({ grupo, especies: ids }) => {
+    const og = document.createElement('optgroup'); og.label = grupo.nombre; og.dataset.grupo = grupo.id;
+    if (ids.length > 1) {
+      const t = new Option(`${grupo.nombre}: todo el grupo (${ids.length})`, valorGrupo(grupo.id));
+      t.dataset.grupo = grupo.id; og.append(t);
+    }
+    for (const id of ids) {
+      const e = nombreDe.get(id)!;
+      const op = new Option(`${ids.length > 1 ? '\u2003' : ''}${comunSeguro(e)}`, id); op.dataset.grupo = grupo.id; og.append(op);
+    }
+    return og;
+  }));
+  sel.dataset.especies = especies.map((e) => e.id).join(',');
+}
+// Nombre común si el contexto ya está iniciado (tests sin ctx: el del manifest).
+const comunSeguro = (e: { id: string; nombre: string }) => { try { return ctx ? nombreComunId(e.id) : e.nombre; } catch { return e.nombre; } };
+
 async function pintarTopEspecie(datos: SitiosJson | null, o: Opciones) {
   const sel = $<HTMLSelectElement>('#hoy-especie');
   const ul = $('#top-especie');
   ul.replaceChildren();
   const id = sel.value;
+  if (esValorGrupo(id)) {
+    const ids = especiesDeValor(id, ctx.manifest()?.especies.map((e) => e.id) ?? []);
+    const filas = datos ? topGrupo(datos, ids, o, 10) : [];
+    if (!datos) vacio(ul, 'Esta versión de los mapas no trae sitios candidatos.');
+    else if (!filas.length) vacio(ul, !ids.some((x) => datos.especies[x]?.length) ? 'Sin sitios candidatos para este grupo en esta región.'
+      : 'Ningún sitio de este grupo cumple los filtros. Prueba a subir la dificultad máxima.');
+    pintarListaTop(ul, filas);
+    if (ultimo) { ultimo.especie = id; ultimo.top = filas.map((f) => f.principal); }
+    $('#hoy-ver-ficha').hidden = true;
+    return;
+  }
   const top = datos ? topEspecie(datos, id, o, 10) : [];
   if (!datos) vacio(ul, 'Esta versión de los mapas no trae sitios candidatos.');
   else if (!top.length) vacio(ul, !(datos.especies[id]?.length ?? 0) ? 'Sin sitios candidatos para esta seta.'
     : o.soloPublicos && !datos.especies[id].some((s) => esPublico(s.titularidad)) ? 'Ningún sitio de esta seta cae en monte público.'
       : 'Ningún sitio con esa dificultad. Prueba a subir el máximo.');
-  top.forEach((e, i) => ul.append(fila(e, [e], i + 1)));
+  pintarListaTop(ul, top.map((e) => ({ principal: e, entradas: [e] })));
   if (ultimo) { ultimo.especie = id; ultimo.top = top; }
   $('#hoy-ver-ficha').hidden = !(await ctx.hayFicha(id));
 }
@@ -434,10 +523,12 @@ export async function pintarHoy() {
   $('#hoy-meteo').textContent = ctx.textoMeteo();
   $<HTMLSelectElement>('#hoy-dificultad').value = maxDificultad() ?? '';
   const sel = $<HTMLSelectElement>('#hoy-especie');
-  if (m && sel.options.length !== m.especies.length) {
+  if (m && sel.dataset.especies !== m.especies.map((e) => e.id).join(',')) {
     const previo = sel.value;
-    sel.replaceChildren(...m.especies.map((e) => new Option(e.nombre, e.id)));
-    sel.value = previo && m.especies.some((e) => e.id === previo) ? previo : (m.especies.find((e) => e.id.startsWith('boletus_'))?.id ?? m.especies[0]?.id ?? '');
+    rellenarSelectHoy(sel, m.especies);
+    const valores = [...sel.options].map((o) => o.value);
+    sel.value = previo && valores.includes(previo) ? previo
+      : (m.especies.find((e) => e.id.startsWith('boletus_'))?.id ?? m.especies[0]?.id ?? '');
   }
   const datos = await cargarSitios();
   if (fecha !== fechaSel) return;   // otro día elegido mientras cargaba
@@ -451,13 +542,39 @@ export async function pintarHoy() {
   if (!datos) vacio(ul, 'Esta versión de los mapas no trae sitios candidatos.');
   else if (!general.length) vacio(ul, o.soloPublicos ? 'Ese día ningún sitio en monte público cumple los filtros.'
     : 'Ese día todas las setas están en rojo o ningún sitio cumple la dificultad elegida.');
-  general.forEach((f, i) => ul.append(fila(f.principal, f.entradas, i + 1)));
+  pintarListaTop(ul, general);
   ultimo = { fecha, confianza: confianza(hoy, fecha), general, especie: sel.value, top: [], calendario: [], sinSitios: !datos, temporada: [],
     factorCitas: datos?.factor_citas === true };
   ultimo.temporada = pintarTemporada();
   await pintarTopEspecie(datos, o);
   ultimo.calendario = pintarCalendario(datos, fecha);
   document.body.dataset.hoy = fecha;
+}
+
+/** Mínimo y máximo de sitios del Top de la ficha de la guía. */
+export const TOP_GUIA_MIN = 5, TOP_GUIA_MAX = 7;
+
+/**
+ * Bloque «Top sitios más probables» de la ficha de una seta (guía): hasta 7 sitios de hoy con el ranking de Hoy
+ * (mismos filtros de dificultad y montes públicos). Sin sitios candidatos para la especie, null.
+ */
+export async function bloqueTopGuia(especie: string): Promise<HTMLElement | null> {
+  if (!ctx) return null;
+  const datos = await cargarSitios();
+  if (!datos?.especies[especie]?.length) return null;
+  const top = topEspecie(datos, especie, opciones(ctx.hoy()), TOP_GUIA_MAX);
+  const sec = document.createElement('section'); sec.className = 'ficha-top-sitios'; sec.dataset.especie = especie;
+  const h = document.createElement('h2'); h.textContent = 'Top sitios más probables hoy';
+  const nota = document.createElement('p'); nota.className = 'nota';
+  nota.textContent = `${EXPLICACION_PUNTUACION} Distancias en línea recta. Que salga aquí no dice nada de si se puede recoger o consumir.`;
+  const ul = document.createElement('ol'); ul.className = 'tops'; ul.id = 'top-guia';
+  sec.append(h, nota, ul);
+  if (!top.length) vacio(ul, 'Ningún sitio cumple ahora los filtros de Hoy (dificultad o montes públicos).');
+  else if (top.length < TOP_GUIA_MIN) {
+    const p = document.createElement('p'); p.className = 'nota'; p.textContent = `Solo hay ${top.length} sitios con esos filtros.`; sec.append(p);
+  }
+  pintarListaTop(ul, top.map((e) => ({ principal: e, entradas: [e] })));
+  return sec;
 }
 
 /** Resumen para el e2e (window.__setas.tops()). */

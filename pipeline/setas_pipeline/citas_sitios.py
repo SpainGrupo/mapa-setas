@@ -135,8 +135,9 @@ def factor(c: dict | None) -> float:
 
 
 def calidad(s: dict) -> float:
-    """La misma calidad que sitios.calidad y ranking.ts (punt_media × ln(1 + area_ha) × bonus_pisado)."""
-    return float(s["punt_media"]) * math.log1p(float(s["area_ha"])) * float(s.get("bonus_pisado") or 1.0)
+    """La misma calidad que sitios.calidad y ranking.ts (punt_media × ln(1 + area_ha) × bonus_pisado × factor_cubierta)."""
+    return (float(s["punt_media"]) * math.log1p(float(s["area_ha"])) * float(s.get("bonus_pisado") or 1.0)
+            * float(s.get("factor_cubierta") or 1.0))
 
 
 def evaluable(c: dict) -> bool:

@@ -9,6 +9,10 @@ import { EXPLICACION_FIABILIDAD, insigniaFiabilidad, nivelFiabilidad, sinCalibra
 import type { ResultadoSemaforo } from './semaforo';
 import { ordenarSelector, textoFinVentana, TEXTO_INACTIVA, type EtiquetaInactiva, type Ventana } from './ventana-especie';
 import { NOMBRE_ESTADO } from './zona';
+import { grupoDe, gruposDe } from './grupos';
+
+/** Filtro por grupo de la hoja (grupos.ts); '' = todas. Solo filtra la lista: la capa sigue siendo de una especie. */
+let grupoFiltro = '';
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 let especies: () => Especie[] = () => [];
@@ -79,10 +83,26 @@ export function pintarSelectorEspecie() {
   caja.replaceChildren();
   // Arriba «Activas ahora» (verde/amarillo en su punto de referencia); debajo, tras «Ver más», las demás en gris
   // con su motivo, elegibles igual, y las que no tienen hábitat en la región (no elegibles).
-  const orden = ordenarSelector(lista.map((e) => ({ id: e.id, especie: e, fiabilidad: nivelFiabilidad(e.fiabilidad),
+  // Chips de grupo (taxonomía de grupos.ts, solo los grupos con especies en esta región).
+  const grupos = gruposDe(lista.map((e) => e.id));
+  if (grupoFiltro && !grupos.some((g) => g.grupo.id === grupoFiltro)) grupoFiltro = '';
+  if (grupos.length > 1) {
+    const chips = document.createElement('div'); chips.className = 'chips se-grupos'; chips.id = 'se-grupos';
+    chips.setAttribute('role', 'group'); chips.setAttribute('aria-label', 'Filtrar por grupo');
+    for (const [id, texto] of [['', 'Todas'], ...grupos.map((g) => [g.grupo.id, `${g.grupo.nombre}${g.especies.length > 1 ? ` · ${g.especies.length}` : ''}`])]) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'chip' + (id === grupoFiltro ? ' activa' : '');
+      b.dataset.grupo = id; b.setAttribute('aria-pressed', String(id === grupoFiltro)); b.textContent = texto;
+      b.onclick = () => { grupoFiltro = id; pintarSelectorEspecie(); $<HTMLElement>(`#se-grupos [data-grupo="${id}"]`)?.focus(); };
+      chips.append(b);
+    }
+    caja.append(chips);
+  }
+  const enFiltro = (id: string) => !grupoFiltro || grupoDe(id).id === grupoFiltro;
+  const orden0 = ordenarSelector(lista.map((e) => ({ id: e.id, especie: e, fiabilidad: nivelFiabilidad(e.fiabilidad),
     resultado: estadoHoy(e.id), meses: e.tiempo?.meses ?? [] })), hoy());
+  const orden = { ...orden0, activas: orden0.activas.filter((x) => enFiltro(x.id)), inactivas: orden0.inactivas.filter((x) => enFiltro(x.item.id)) };
   const lugares: Record<string, string | null> = Object.fromEntries(lista.map((e) => [e.id, lugar(e.id)]));
-  const sh = sinHabitat();
+  const sh = sinHabitat().filter((e) => enFiltro(e.id));
   ultimoOrden = { activas: orden.activas.map((x) => x.id), inactivas: orden.inactivas.map((x) => ({ id: x.item.id, etiqueta: x.etiqueta })), lugares,
     sinHabitat: sh.map((e) => e.id) };
 
@@ -92,6 +112,7 @@ export function pintarSelectorEspecie() {
     li.setAttribute('role', 'option');
     li.id = `opc-especie-${e.id}`;
     li.dataset.especie = e.id;
+    li.dataset.grupo = grupoDe(e.id).id;
     const elegida = e.id === actual?.id;
     li.setAttribute('aria-selected', String(elegida));
     li.tabIndex = elegida ? 0 : -1;
@@ -149,7 +170,7 @@ export function pintarSelectorEspecie() {
   if (orden.activas.length) caja.append(ulAct);
   else {
     const n = document.createElement('p'); n.className = 'se-ninguna'; n.id = 'se-ninguna';
-    n.textContent = 'Ahora ninguna está activa en la zona que miras. Las tienes todas abajo, en gris: se pueden elegir igual.';
+    n.textContent = (grupoFiltro ? 'Ahora ninguna de este grupo está activa' : 'Ahora ninguna está activa') + ' en la zona que miras. Las tienes todas abajo, en gris: se pueden elegir igual.';
     caja.append(n);
   }
 

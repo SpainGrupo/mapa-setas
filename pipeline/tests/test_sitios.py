@@ -126,3 +126,37 @@ def test_diversidad_salta_los_cercanos():
     d = np.full(idon.shape, 500.0)
     assert [r["punt_media"] for r in S.candidatos(idon, u, u, o, d)] == [90.0, 70.0]
     assert [r["punt_media"] for r in S.candidatos(idon, u, u, o, d, separacion_m=0)] == [90.0, 80.0, 70.0]
+
+
+# ---- v3: cubierta arbórea por sitio (2026-10-18)
+def test_factor_cubierta_curva():
+    from setas_pipeline.sitios import factor_cubierta, minimo_cubierta
+    assert factor_cubierta(0, 30) == pytest.approx(0.3)
+    assert factor_cubierta(30, 30) == pytest.approx(1.0)
+    assert factor_cubierta(60, 30) == pytest.approx(1.0)
+    assert factor_cubierta(15, 30) == pytest.approx(0.65)          # smoothstep(0,5) = 0,5
+    assert factor_cubierta(5, 0) == 1.0 and factor_cubierta(None, 30) == 1.0
+    assert minimo_cubierta({"arboles": {"pino": 1}, "dosel": {"opt": [50, 85]}}) == 40
+    assert minimo_cubierta({"arboles": {"pino": 1}, "dosel": {"opt": [0, 30]}}) == 0
+    assert minimo_cubierta({"arboles": {}}) == 0
+
+
+def test_candidatos_cubierta():
+    from setas_pipeline.sitios import candidatos
+    idon = np.full((5, 5), 80, "uint8")
+    t = np.full((5, 5), 10, "uint16"); sub = np.zeros((5, 5), "uint16")
+    o = np.zeros((5, 5), "uint32"); d = np.full((5, 5), 500.0)
+    arbol = np.full((5, 5), 1, "uint8"); arbol[0, :] = 5
+    fcc = np.full((5, 5), 30, "uint8"); sat = np.full((5, 5), 6, "uint8"); sat[0, 0] = 255
+    r = candidatos(idon, t, sub, o, d, arbol=arbol, fcc=fcc, sat=sat, min_cubierta=30)[0]
+    assert r["arbol"] == "alcornoque" and r["fcc_mfe"] == 30 and r["cubierta_sat"] == 6
+    assert r["factor_cubierta"] < 0.4
+    sin = candidatos(idon, t, sub, o, d)[0]
+    assert "arbol" not in sin and "factor_cubierta" not in sin
+    assert r["_calidad"] == pytest.approx(sin["_calidad"] * r["factor_cubierta"], rel=1e-2)
+
+
+def test_teselas_worldcover():
+    from setas_pipeline.cubierta_satelite import teselas_bbox
+    assert teselas_bbox(-5.9, 36.1, -4.0, 37.0) == ["N36W006"]
+    assert set(teselas_bbox(-0.5, 38.0, 0.5, 39.5)) == {"N36W003", "N36E000", "N39W003", "N39E000"}

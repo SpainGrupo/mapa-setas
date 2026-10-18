@@ -106,6 +106,10 @@ def pasos_de(region: Region) -> dict:
         malla = _malla()
         construir_accesos(malla, OUT, FUENTES, pbf_region(region, malla))
 
+    def _satelite():
+        from .cubierta_satelite import calcular as calcular_satelite
+        calcular_satelite(region)
+
     def _edificado():
         from .edificado import construir_edificado
         from .adaptadores.osm import pbf_region
@@ -148,6 +152,7 @@ def pasos_de(region: Region) -> dict:
                     lambda: [*_geo(), OUT / "altitud.tif"]),
         "protegidos": (_protegidos, lambda: [OUT / "protegido.tif"], _geo),
         "accesos": (_accesos, lambda: [OUT / "distancia_acceso.tif"], _geo),
+        "satelite": (_satelite, lambda: [OUT / "arbol_sat.tif"], lambda: [OUT / "malla.json"]),
         "edificado": (_edificado, lambda: [OUT / "edificado.tif"], _entradas_mfe),
         "idoneidad": (_idoneidad, _por_especie("idoneidad_{}.tif"), _entradas_idoneidad),
         "calibracion": (_calibracion, lambda: [OUT / "calibracion.md"],
@@ -157,7 +162,7 @@ def pasos_de(region: Region) -> dict:
 
 
 NOMBRES = ("zona", "relieve", "vegetacion", "suelo", "estructura", "cubierta", "incendios", "humedad",
-           "protegidos", "accesos", "edificado", "idoneidad", "calibracion", "vista")
+           "protegidos", "accesos", "satelite", "edificado", "idoneidad", "calibracion", "vista")
 
 
 def _al_dia(salidas: list[Path], entradas: list[Path]) -> bool:

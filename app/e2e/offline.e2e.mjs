@@ -188,6 +188,14 @@ try {
   await captura('selector-lista.png');
   await p.locator('#lista-especies [data-especie=terfezia_arenaria]').scrollIntoViewIfNeeded();
   await captura('selector-lista-nuevas.png');
+  // Chips de grupo (grupos.ts): «Boletus» deja solo las cuatro Boletus; «Todas» las devuelve.
+  await p.locator('#se-grupos [data-grupo=boletus]').click();
+  const deGrupo = await p.$$eval('#lista-especies [role=option][data-especie]', (os) => os.map((o) => o.dataset.especie));
+  comprobar(deGrupo.length === 4 && deGrupo.every((e) => e.startsWith('boletus_'))
+    && await p.locator('#se-grupos [data-grupo=boletus]').getAttribute('aria-pressed') === 'true', `chip Boletus filtra la hoja (${deGrupo.join(', ')})`);
+  await captura('selector-grupo-boletus.png');
+  await p.locator('#se-grupos [data-grupo=""]').click();
+  comprobar(await p.locator('#lista-especies [role=option][data-especie]').count() === idsMapa.length, 'chip «Todas» devuelve todas las especies');
   await p.locator('#lista-especies [aria-selected=true]').focus();
   await p.keyboard.press('End');
   // El orden de la hoja depende del semáforo de hoy (activas primero): se lee del DOM.

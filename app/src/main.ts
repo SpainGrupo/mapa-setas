@@ -15,7 +15,7 @@ import { textoChip, type Restriccion } from './restricciones';
 import { altitudes, aparcamiento, centroCelda, consultar, nombreVia, simplificar, textoSubida, textoTiempo, trazar, urlGoogleCoche, type Celda } from './acceso';
 import { dificultad, NOMBRE_DIFICULTAD, perfil, seguir, textoDistancia, type Dificultad, type Perfil, type Seguimiento } from './ruta';
 import { pintarPerfil } from './perfil-grafico';
-import { iniciarHoy, pintarHoy, resumenHoy, sitiosCandidatos } from './hoy-ui';
+import { bloqueTopGuia, iniciarHoy, pintarHoy, resumenHoy, sitiosCandidatos } from './hoy-ui';
 import { diasEspecie, puntoReferencia, referenciaVista, ventanaEspecie, type DiaVentana, type PuntoRef, type Ventana, type Vista } from './ventana-especie';
 import { detallesTitularidad, esPublico, normaTitularidad, notaTitularidad, ponerTextosTitularidad, TEXTO_TITULARIDAD, textoTitularidad, type Titularidad } from './titularidad';
 import { AVISO_CITAS, COLOR_ORIGEN, NOMBRE_ORIGEN, ORIGENES_CITA } from './citas';
@@ -33,7 +33,7 @@ import { claveMeteo, edadHoras, fechaMadrid, obtener, renombrarCache, CADUCIDAD_
 import { bandaAltitud, ddmm, humedadAcumulada, semaforo, sumarDias, textoBanda, type ResultadoSemaforo } from './semaforo';
 import { expresionColores, haceTexto, NOMBRE_ESTADO, puntoMasCercano } from './zona';
 import { pintarGrafico } from './grafico';
-import { abrirFicha, cargarGuia, fichasGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, mostrarGuia, pintarCreditos, ponerBloqueTiempo, type EstadoFotos } from './guia-ui';
+import { abrirFicha, cargarGuia, fichasGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, mostrarGuia, pintarCreditos, ponerBloqueTiempo, ponerBloqueTop, type EstadoFotos } from './guia-ui';
 import { binomio, especieMapaDeFicha, fichaDeEspecieMapa } from './guia';
 import { iniciarReconocer, mostrarReconocer, pintarAjustesModelo } from './reconocer-ui';
 import { elegirCcaaGemini } from './gemini';
@@ -959,6 +959,7 @@ function cuandoRef(id: string): { dias: DiaVentana[]; ventana: Ventana; meses: n
   return { dias, ventana: ventanaEspecie(dias, meses, hoy), meses, origen: ref?.origen ?? null };
 }
 
+ponerBloqueTop((idFicha) => bloqueTopGuia(especieMapaDeFicha(idFicha, (manifest?.especies ?? []).map((e) => e.id))));
 ponerBloqueTiempo((idFicha) => {
   const ids = (manifest?.especies ?? []).map((e) => e.id);
   const id = especieMapaDeFicha(idFicha, ids);

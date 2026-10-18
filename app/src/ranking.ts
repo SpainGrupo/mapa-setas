@@ -1,7 +1,8 @@
 // Tops por día (fase 9): orden de los sitios candidatos de sitios.json para una fecha. Puro, sin DOM (ranking.test.ts).
 //
 // puntuación(sitio, D) = calidad × factor del semáforo × factor de fiabilidad × factor de citas
-//   calidad      = punt_media × ln(1 + area_ha) × bonus_pisado   (la misma con la que el pipeline los ordena)
+//   calidad      = punt_media × ln(1 + area_ha) × bonus_pisado × factor_cubierta   (la misma con la que el pipeline
+//                  los ordena; factor_cubierta = penalización suave por pocas copas, sitios.py v3; sin campo = 1)
 //   semáforo     = estado de la especie en el punto meteo del sitio el día D: verde 1, amarillo 0,5, gris 0,3, rojo 0,1
 //   fiabilidad   = la del mapa de la especie: buena 1, media 0,85, sin validar 0,75, baja 0,6
 //   citas        = citas reales de la especie cerca del sitio (pipeline citas_sitios.py, campo `citas` de sitios.json):
@@ -37,6 +38,16 @@ export interface SitioCandidato {
   titularidad?: Titularidad;
   /** Citas reales de la especie cerca del sitio (pipeline citas_sitios.py); sin citas, sin campo. */
   citas?: CitasSitio;
+  /** Árbol dominante del Mapa Forestal en la mancha (nombre de malla.ARBOL: alcornoque, pino…). Sitios v3. */
+  arbol?: string;
+  /** Fracción de cabida cubierta media del Mapa Forestal en la mancha (%). Sitios v3. */
+  fcc_mfe?: number;
+  /** % de árbol visto por ESA WorldCover 2021 en la mancha (null sin dato). Sitios v3. */
+  cubierta_sat?: number | null;
+  /** Lo mismo en los 300 m alrededor del punto marcado (informativo). Sitios v3. */
+  cubierta_sat_punto?: number | null;
+  /** Penalización por cubierta de copas baja (0,3–1). Sin campo = 1. Sitios v3. */
+  factor_cubierta?: number;
 }
 export interface SitiosJson {
   version: number;
@@ -53,7 +64,8 @@ export const CALIDAD_MAX = 100 * Math.log(101);
 export const MAX_GENERAL = 20;
 export const RADIO_FUSION_M = 300;
 
-export const calidad = (s: SitioCandidato) => s.punt_media * Math.log(1 + s.area_ha) * (s.bonus_pisado ?? 1);
+export const calidad = (s: SitioCandidato) =>
+  s.punt_media * Math.log(1 + s.area_ha) * (s.bonus_pisado ?? 1) * (Number.isFinite(s.factor_cubierta) ? (s.factor_cubierta as number) : 1);
 /** Factor de citas de un sitio (1 si la región no lo aplica o el sitio no tiene citas). */
 export const factorCitas = (s: SitioCandidato, activo: boolean | undefined) => (activo && s.citas ? FACTOR_CITAS[s.citas.nivel] ?? 1 : 1);
 export const puntuacion100 = (score: number) => Math.max(0, Math.min(100, Math.round((100 * score) / CALIDAD_MAX)));

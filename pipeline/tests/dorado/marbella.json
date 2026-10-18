@@ -3,7 +3,7 @@
   "app/acceso.json": "1ccd742e3d610a5999713c14194a5dc45e6011a63ed7818f1af625e5c6bd5a15",
   "app/aparcamientos.json": "347c72e9830fe5b77b1e07d3b9cf7026b1ff9dc8b1d8040dab2cbb43241e5f63",
   "app/meteo_puntos.json": "119d73ffaa210670131d3134bf45072a1ad895a6e701902bd22847216bdcedb9",
-  "app/sitios.json": "62fb98da72b3c4bc54b8da9f87d8085d060864cb3014147b7ef061e1ccaf081d",
+  "app/sitios.json": "ddfda38b8f2f0bddf39faa488a8355aa9334723b7b11f1f09a95865d30bfa054",
   "calibracion.json": "f8d2971a6001cc10d16554a18ad637b1cbe37968ba4925b531537279750b20cc",
   "citas.geojson": "e4b825ca3822d039a0358726b70edfd99c24623168a0a51a232123ba0db9364f",
   "citas_capa.json": "8216768e4c17fc683ad353db51a568cb3b7765c4540b3afc0c4fac4eea769a11",
@@ -24,7 +24,7 @@
   "rutas.geojson": "109c10a0ba5b2058dd6477c2341d239ae6ca9150da4d60df1131c087d9a918c0",
   "titularidad.geojson": "0f1aa237e0b0ea6de6f8ec38b165293dd381b471745ab3001db10a6e86335af6",
   "titularidad_resumen.json": "22a63723c18c62bb6d91f071ad8cf6e298717582893cb4ad705d3d7c3e7ddd97",
-  "validacion_citas.json": "296304883a34fba48e65ee86d6adccc28daf27c0f482354ee4372cc2b1ef0baf",
+  "validacion_citas.json": "c72f79f2c9f0c616247a2e8f546a3eb3c7b99e580a7df61b183d6e2a9b2e70a2",
   "zona.geojson": "9c141af8a7617fc8e4524c710498c8266f659619e2b360e9fa62a083ef6d3966"
  },
  "manifest": {
@@ -375,7 +375,7 @@
     "nombre": "aparcamientos.json"
    },
    {
-    "bytes": 475997,
+    "bytes": 613827,
     "nombre": "sitios.json"
    }
   ],
@@ -789,7 +789,7 @@
     "pleurotus_eryngii": 150,
     "terfezia_arenaria": 150
    },
-   "version": 2
+   "version": 3
   },
   "titularidad": {
    "aviso": "No hay datos abiertos fiables de vallas ni de quién es dueño de cada finca. Fuera de los montes públicos marcados, asume que es privado y pide permiso. Ley 43/2003 de Montes, art. 36.1: el titular del monte es el propietario de sus frutos espontáneos. Resolución de 23-09-2026 (BOJA 196), punto 8: en terrenos particulares hace falta la autorización del propietario para recoger setas.",
@@ -841,7 +841,7 @@
    ]
   }
  },
- "manifest_total_bytes": 169547328,
+ "manifest_total_bytes": 169685158,
  "pmtiles": {
   "app/citas.pmtiles": {
    "atribucion": "GBIF.org · iNaturalist · Observation.org · foros y literatura (cada cita con su licencia)",
@@ -2141,7 +2141,7 @@
   "respaldo/setas_macrolepiota_procera_zonas_buenas.kml": "1bbda6fdfa242611cca59e8049397d4b83e08f92260cc121ef31d57801119eda",
   "respaldo/setas_pleurotus_eryngii_zonas_buenas.kml": "a52ad9094b679868ea9573b104676d06176ef342551446d7a7cc5dd9296a3d98",
   "respaldo/setas_terfezia_arenaria_zonas_buenas.kml": "ad522ef8451c18aef58dae93113f6eb2ae7644a11b761a7d909faae50218d45f",
-  "validacion_citas.md": "9522bb3f80cf64e508463016a1437690789a0705b825e4e8d120e16e3b64789a",
+  "validacion_citas.md": "a67e59de0c6bbee98abc43cc2517c3d3098f8f44e0624ecc83ddac9ae2bd12a3",
   "vista_amanita_caesarea.png": "7cf67b0dc9a840ecd0e7a8de581f752a17aa4c56154fdcf3f23b54d8931395bf",
   "vista_amanita_ponderosa.png": "77d1f2f1277da0465433259e0161b22de91c53dfee484642b235850dec9a05a3",
   "vista_boletus_aereus.png": "fa18e589b5c1bdd8cd10164e03f847b455f8e80dcab417ddf9d7160cc0cce22d",
@@ -2235,6 +2235,25 @@
    ],
    "nodata": 255.0,
    "sha256": "e640cc7cbf503f31ec179f954de151457f315383358440a426cc7ebb1c7f8f57",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "arbol_sat.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 255.0,
+   "sha256": "1599f25ac0e864aa612de4ea9f861359b7f9726f0d14b5e51d2f30989580b218",
    "transform": [
     100.0,
     0.0,

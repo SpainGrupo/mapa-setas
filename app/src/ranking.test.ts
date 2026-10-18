@@ -16,6 +16,8 @@ describe('puntuación', () => {
   it('calidad = punt_media × ln(1 + área) × bonus', () => {
     expect(calidad(sitio({ punt_media: 80, area_ha: 50, bonus_pisado: 0.5 }))).toBeCloseTo(80 * Math.log(51) * 0.5, 9);
     expect(calidad(sitio({ bonus_pisado: undefined }))).toBeCloseTo(80 * Math.log(51), 9);
+    expect(calidad(sitio({ factor_cubierta: 0.5 }))).toBeCloseTo(80 * Math.log(51) * 0.5, 9);
+    expect(calidad(sitio({ factor_cubierta: undefined }))).toBeCloseTo(80 * Math.log(51), 9);
   });
   it('factores de semáforo y fiabilidad', () => {
     const s = sitio();

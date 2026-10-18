@@ -24,15 +24,30 @@ mientras no cambie la malla, y sirve para consultar acceso.bin directamente.
 Coordenadas: centro de la celda representativa, WGS84, 5 decimales.
 Versión 2 (2026-10-17): campo opcional `citas` por sitio (citas reales cercanas de su especie) y `factor_citas`
 (¿aplica la app el factor «citado» en esta región?); ambos de citas_sitios.anotar (asignación y validación por bloques).
+Versión 3 (2026-10-18): cubierta arbórea por sitio y penalización por cubierta baja.
+  arbol         = árbol dominante del MFE en la submancha (moda de arbol.tif; nombre de malla.ARBOL).
+  fcc_mfe       = FCC arbolada media del MFE en la submancha (%, fcc.tif; celdas sin dato fuera).
+  cubierta_sat  = % medio de píxeles «árbol» de ESA WorldCover 2021 en la submancha (arbol_sat.tif,
+                  cubierta_satelite.py); null si falta la capa o < la mitad de las celdas tiene dato.
+  cubierta_sat_punto = lo mismo en el entorno 3×3 (300 m) del punto representativo (informativo: el punto
+                  puede caer en un claro de una mancha arbolada; no entra en la puntuación).
+  factor_cubierta = penalización suave por cubierta baja, solo para especies con `dosel` en el perfil:
+                  c = cubierta_sat si existe, si no fcc_mfe; m = min(dosel.opt[0], 40) (cubierta mínima útil);
+                  t = clip(c / m, 0, 1); factor = 0,3 + 0,7 · t²(3 − 2t)   (smoothstep: 0,3 en 0 %, 1 desde m).
+                  m = 0 (p. ej. Terfezia, óptimo 0–30 %) o sin dosel → factor 1. Entra en la calidad
+                  (punt_media × ln(1 + area_ha) × bonus_pisado × factor_cubierta) y la app lo aplica igual.
 """
 from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path
 import numpy as np
+from .malla import ARBOL
+from .cubierta_satelite import FUENTE as FUENTE_SAT
 
+_NOMBRE_ARBOL = {v: k for k, v in ARBOL.items()}
 
-VERSION = 2
+VERSION = 3
 UMBRAL = 60          # idoneidad mínima de una celda de mancha
 MIN_HA = 2.0         # área mínima de la mancha
 MAXIMO = 150         # sitios por especie
@@ -43,6 +58,9 @@ BONUS_MIN = 0.4      # bonus en un camino (o sin dato de distancia)
 SIN_U16 = 0xFFFF
 SIN_U32 = 0xFFFFFFFF
 NODATA_DIST = -9999.0
+SIN_U8 = 255
+FACTOR_COB_MIN = 0.3   # factor_cubierta con 0 % de copas
+COB_TOPE = 40.0        # la cubierta mínima útil (m) nunca pasa de este %
 
 
 # ---------------------------------------------------------------- lógica pura
@@ -70,16 +88,45 @@ def bonus_pisado(dist) -> np.ndarray:
     return np.where(ok, np.clip(np.where(ok, d, 0.0) / DIST_PISADO, BONUS_MIN, 1.0), BONUS_MIN)
 
 
-def calidad(punt_media: float, area_ha: float, bonus: float = 1.0) -> float:
-    return punt_media * float(np.log1p(area_ha)) * bonus
+def calidad(punt_media: float, area_ha: float, bonus: float = 1.0, factor_cob: float = 1.0) -> float:
+    return punt_media * float(np.log1p(area_ha)) * bonus * factor_cob
+
+
+def minimo_cubierta(perfil: dict | None) -> float:
+    """Cubierta mínima útil (%) de una especie: min(dosel.opt[0], 40); 0 = no se penaliza."""
+    if not perfil or "dosel" not in perfil or not perfil.get("arboles"):
+        return 0.0
+    return float(min(perfil["dosel"]["opt"][0], COB_TOPE))
+
+
+def factor_cubierta(c, minimo: float) -> float:
+    """0,3 + 0,7·smoothstep(c / minimo); 1 si minimo ≤ 0 o sin dato de cubierta."""
+    if minimo <= 0 or c is None or not np.isfinite(c):
+        return 1.0
+    t = min(max(float(c) / minimo, 0.0), 1.0)
+    return FACTOR_COB_MIN + (1 - FACTOR_COB_MIN) * t * t * (3 - 2 * t)
+
+
+def _media_sub(arr, celdas, sub, ns, min_frac: float = 0.0):
+    """Media por submancha de un raster uint8 (255 = sin dato); NaN si no llega a min_frac de celdas con dato."""
+    v = arr.ravel()[celdas]
+    ok = v != SIN_U8
+    n = np.bincount(sub, weights=ok.astype(float), minlength=ns)
+    s = np.bincount(sub, weights=np.where(ok, v, 0).astype(float), minlength=ns)
+    tot = np.bincount(sub, minlength=ns)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        m = s / n
+    return np.where((n > 0) & (n >= min_frac * tot), m, np.nan)
 
 
 def candidatos(idon, tiempo, subida, origen, dist, celda: float = 100.0, umbral: float = UMBRAL,
                min_ha: float = MIN_HA, maximo: int = MAXIMO, tesela_m: float = TESELA_M,
-               separacion_m: float = SEPARACION_M) -> list[dict]:
+               separacion_m: float = SEPARACION_M, arbol=None, fcc=None, sat=None,
+               min_cubierta: float = 0.0) -> list[dict]:
     """Submanchas ordenadas por calidad (hasta `maximo`, separadas ≥ `separacion_m`), con fila/col de su
     punto representativo y los datos de acceso en esa celda. `tiempo`/`subida` uint16 (0xFFFF sin dato),
-    `origen` uint32 (0xFFFFFFFF sin dato), `dist` float (< 0 o NODATA sin dato)."""
+    `origen` uint32 (0xFFFFFFFF sin dato), `dist` float (< 0 o NODATA sin dato). `arbol`/`fcc`/`sat` (uint8,
+    255 sin dato, opcionales) dan arbol, fcc_mfe, cubierta_sat y factor_cubierta (con `min_cubierta`)."""
     lab, n = manchas(idon, umbral, min_ha, celda)
     if n == 0:
         return []
@@ -101,6 +148,18 @@ def candidatos(idon, tiempo, subida, origen, dist, celda: float = 100.0, umbral:
     suma = np.bincount(sub, weights=v[celdas], minlength=ns)
     pmax = np.zeros(ns)
     np.maximum.at(pmax, sub, v[celdas])
+    fcc_m = _media_sub(fcc, celdas, sub, ns) if fcc is not None else np.full(ns, np.nan)
+    sat_m = _media_sub(sat, celdas, sub, ns, 0.5) if sat is not None else np.full(ns, np.nan)
+    moda = None
+    if arbol is not None:
+        a = arbol.ravel()[celdas].astype(np.int64)
+        a = np.where(a == SIN_U8, -1, a)
+        moda = np.full(ns, -1)
+        cuenta = np.zeros(ns)
+        for cod in np.unique(a[a >= 0]):
+            k_ = np.bincount(sub, weights=(a == cod).astype(float), minlength=ns)
+            mejor = k_ > cuenta
+            moda[mejor], cuenta[mejor] = cod, k_[mejor]
     # Representativo: máximo de idoneidad × bonus_pisado entre las celdas con acceso; empate → menor índice.
     bonus = bonus_pisado(dist).ravel()
     acc = tiempo.ravel()[celdas] != SIN_U16
@@ -120,13 +179,28 @@ def candidatos(idon, tiempo, subida, origen, dist, celda: float = 100.0, umbral:
         o = int(origen[f, c])
         s_ = int(subida[f, c])
         b = float(bonus[i])
+        fm, sm = fcc_m[k], sat_m[k]
+        cob = sm if np.isfinite(sm) else fm
+        fc = factor_cubierta(cob, min_cubierta)
+        extra = {}
+        if moda is not None and moda[k] >= 0:
+            extra["arbol"] = _NOMBRE_ARBOL.get(int(moda[k]), "otro")
+        if np.isfinite(fm):
+            extra["fcc_mfe"] = int(round(float(fm)))
+        if sat is not None:
+            extra["cubierta_sat"] = int(round(float(sm))) if np.isfinite(sm) else None
+            ven = sat[max(f - 1, 0):f + 2, max(c - 1, 0):c + 2]
+            ven = ven[ven != SIN_U8]
+            extra["cubierta_sat_punto"] = int(round(float(ven.mean()))) if ven.size else None
+        if min_cubierta > 0:
+            extra["factor_cubierta"] = round(fc, 2)
         res.append({"fila": f, "col": c, "id": i,
                     "area_ha": round(float(area), 1), "area_mancha_ha": round(float(area_mancha[l[i]]), 1),
                     "punt_media": round(float(media), 1), "punt_max": int(pmax[k]),
                     "t_pie_min": int(tiempo[f, c]), "subida_m": None if s_ == SIN_U16 else s_,
                     "dist_camino_m": None if (d < 0 or not np.isfinite(d)) else int(round(d)),
                     "aparcamiento_id": None if o == SIN_U32 else o, "bonus_pisado": round(b, 2),
-                    "_calidad": calidad(float(media), float(area), b)})
+                    **extra, "_calidad": calidad(float(media), float(area), b, fc)})
     res.sort(key=lambda r: (-r["_calidad"], r["id"]))
     # Diversidad: voraz, se salta lo que esté a < separacion_m de uno ya elegido.
     elegidos, sep2 = [], (separacion_m / celda) ** 2
@@ -164,6 +238,8 @@ def georreferenciar(lista: list[dict], malla, restricciones=None, meteo: list[di
                     "subida_m": r["subida_m"], "dist_camino_m": r["dist_camino_m"],
                     "aparcamiento_id": r["aparcamiento_id"], "bonus_pisado": r["bonus_pisado"],
                     "restringido": restr,
+                    **{k: r[k] for k in ("arbol", "fcc_mfe", "cubierta_sat", "cubierta_sat_punto",
+                                                     "factor_cubierta") if k in r},
                     "meteo_id": mas_cercano(lat, lon, meteo) if meteo else None})
     return res
 
@@ -185,9 +261,16 @@ def calcular(region, out: Path | None = None, verbose: bool = True) -> dict:
              "especies": {}}
     from .titularidad import cargar_poligonos, titularidad_puntos
     poligonos = cargar_poligonos(region)         # una vez para todas las especies
+    from .idoneidad import cargar_perfiles
+    from .exportar import ESPECIES
+    perfiles = region.perfiles(cargar_perfiles(ESPECIES))
+    capa = lambda n: leer_tif(region.out / n) if (region.out / n).exists() else None
+    arbol, fcc, sat = capa("arbol.tif"), capa("fcc.tif"), capa("arbol_sat.tif")
+    datos["cubierta_sat_fuente"] = FUENTE_SAT if sat is not None else None
     for e in especies_activas(region):
         idon = leer_tif(region.out / f"idoneidad_{e['id']}.tif")
-        lista = candidatos(idon, acc["tiempo_pie_min"], acc["subida_m"], acc["origen_id"], dist, malla.celda)
+        lista = candidatos(idon, acc["tiempo_pie_min"], acc["subida_m"], acc["origen_id"], dist, malla.celda,
+                           arbol=arbol, fcc=fcc, sat=sat, min_cubierta=minimo_cubierta(perfiles.get(e["id"])))
         geo = georreferenciar(lista, malla, restr, meteo)
         for s, tit in zip(geo, titularidad_puntos([(s["lon"], s["lat"]) for s in geo], region, poligonos=poligonos)):
             if tit:

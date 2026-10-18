@@ -1019,3 +1019,12 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .temporada-leyenda span i { display: inline-block; width: 18px; height: 10px; border-radius: 5px; }
 .temporada-leyenda .tl-hoy i { width: 2px; height: 14px; border-radius: 0; background: var(--oxido); }
 .temporada-nota { margin: 0; }
+
+/* Orden compartido de los listados de top y razón de cada sitio */
+.orden-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0 8px; }
+.orden-top .etq { font-size: 14px; color: var(--tinta-2); margin-right: 2px; }
+.tf-razon { margin: 4px 0 0; font-size: 14px; line-height: 1.4; color: var(--tinta-2); }
+.ficha-top-sitios { margin: 16px 0; }
+
+/* Chips de grupo en la hoja del selector de especie (grupos.ts) */
+#lista-especies .se-grupos { flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }

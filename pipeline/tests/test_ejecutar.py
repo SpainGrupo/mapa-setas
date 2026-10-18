@@ -28,7 +28,7 @@ def test_pasos_de_usan_las_rutas_de_la_region(tmp_path):
     r = dataclasses.replace(cargar_region("marbella"), datos=tmp_path)
     p = ejecutar.pasos_de(r)
     assert set(p) == {"zona", "relieve", "vegetacion", "suelo", "estructura", "cubierta", "incendios", "humedad",
-                      "protegidos", "accesos", "edificado", "idoneidad", "calibracion", "vista"}
+                      "protegidos", "accesos", "satelite", "edificado", "idoneidad", "calibracion", "vista"}
     assert set(p) == set(ejecutar.NOMBRES)
     assert all(s.parent == r.out for s in p["relieve"][1]())
     assert p["edificado"][1]() == [r.out / "edificado.tif"]

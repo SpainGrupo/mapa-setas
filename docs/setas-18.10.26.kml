@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+<name>setas 18.10.26</name>
+<description>Sitios en verde el 18/10/2026 según Mapa de setas. Orientativo. No consumas ninguna seta sin confirmación de un experto.</description>
+<Placemark><name>1 · Boletus aereus (81)</name><description>Seta: Boletus aereus (boletus negro, grupo Boletus).
+Por qué: mejor puntuación del día. Hábitat favorable según el modelo y ventana abierta por la lluvia de 27 mm del 04/10 (hace 14 días); cierra hacia el 24/10. En este mismo punto los rebozuelos (Cantharellus) entran en ventana el 21/10. Junto a una oronja (200 m) y un aestivalis.
+Acceso: 22 min a pie, 53 m de subida (fácil).
+Titularidad: PRIVADO, coto. Pide permiso antes de entrar.</description><Point><coordinates>-4.82185,36.60184,0</coordinates></Point></Placemark>
+<Placemark><name>1 · Amanita caesarea (70)</name><description>Seta: Amanita caesarea (oronja, grupo Amanitas).
+Por qué: hábitat favorable para la oronja y ventana abierta por la lluvia de 27 mm del 04/10. A 200 m del Boletus aereus, la misma zona sirve para las dos.
+Acceso: 19 min a pie, 42 m de subida (fácil).
+Titularidad: PRIVADO, coto (con paso). Pide permiso antes de entrar.</description><Point><coordinates>-4.82189,36.60365,0</coordinates></Point></Placemark>
+<Placemark><name>1 · Boletus aestivalis (12)</name><description>Seta: Boletus aestivalis (boletus de verano, grupo Boletus).
+Por qué: ventana abierta por la lluvia del 04/10. Puntuación baja, pero está en la misma zona que el aereus y la oronja.
+Acceso: 18 min a pie, 38 m de subida (fácil).
+Titularidad: PRIVADO, coto. Pide permiso antes de entrar.</description><Point><coordinates>-4.82404,36.60001,0</coordinates></Point></Placemark>
+<Placemark><name>2 · Amanita caesarea, Ojén (71)</name><description>Seta: Amanita caesarea (oronja, grupo Amanitas).
+Por qué: hábitat muy favorable según el modelo (79/100), mancha de 166 ha. Alcornocal de densidad media, con un 44 % de copas. Ventana abierta por la lluvia de 30 mm del 04/10. Ojo: justo en el punto marcado el satélite ve pocos árboles (22 %), así que busca la parte más arbolada de la mancha.
+Acceso: 13 min a pie, casi llano (fácil).
+Titularidad: PRIVADO, coto. Pide permiso antes de entrar.</description><Point><coordinates>-4.75852,36.52077,0</coordinates></Point></Placemark>
+<Placemark><name>3 · Boletus aestivalis (37)</name><description>Seta: Boletus aestivalis (boletus de verano, grupo Boletus).
+Por qué: el mejor aestivalis en verde hoy. Ventana abierta por la lluvia de 27 mm del 04/10, que cierra hacia el 25/10.
+Acceso: 13 min a pie, 16 m de subida (fácil).
+Titularidad: PRIVADO, coto. Pide permiso antes de entrar.</description><Point><coordinates>-4.8109,36.61192,0</coordinates></Point></Placemark>
+<Placemark><name>4 · Boletus aestivalis (8)</name><description>Seta: Boletus aestivalis (boletus de verano, grupo Boletus).
+Por qué: ventana abierta por la lluvia del 04/10, pero la puntuación del hábitat es baja. Solo vale la pena si te pilla de paso.
+Acceso: 9 min a pie, 13 m de subida (fácil).
+Titularidad: PRIVADO, coto. Pide permiso antes de entrar.</description><Point><coordinates>-4.83437,36.61157,0</coordinates></Point></Placemark>
+</Document>
+</kml>

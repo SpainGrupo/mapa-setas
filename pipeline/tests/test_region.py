@@ -37,12 +37,15 @@ def test_rutas_por_region():
         Path("/x/data/_comun"), Path("/x/data/marbella/out/respaldo"))
 
 
-def test_marbella_activa_las_12_especies_en_el_orden_del_catalogo():
+def test_marbella_activa_sus_22_especies_en_el_orden_del_catalogo():
     from setas_pipeline.idoneidad import cargar_perfiles
     cat = cargar_perfiles(R.ESPECIES)
     r = R.cargar_region("marbella")
-    # las 12 primeras del catálogo (las de Alicante van detrás y Marbella no las activa)
-    assert list(r.perfiles(cat)) == list(cat)[:12] and r.especies_sin_habitat == ()
+    # las 12 primeras del catálogo y, desde 2026-10-18, 10 más con citas GBIF en la zona (sin la llenega ni las turmas)
+    nuevas = ["suillus_collinitus", "lepista_nuda", "agaricus_campestris", "hydnum_repandum", "morchella_spp",
+              "suillus_bellinii", "suillus_luteus", "suillus_granulatus", "russula_cyanoxantha", "tricholoma_portentosum"]
+    esperado = [k for k in cat if k in list(cat)[:12] or k in nuevas]
+    assert list(r.perfiles(cat)) == esperado and len(esperado) == 22 and r.especies_sin_habitat == ()
 
 
 def test_alicante_carga_y_cumple_lo_decidido():

@@ -48,6 +48,9 @@ DAVOLI = {"titulo": "Davoli et al. (2016), Comment on «Chemical and toxicologic
 IECT_LD = {"titulo": "MITECO, Inventario Español de los Conocimientos Tradicionales relativos a la Biodiversidad: Lactarius deliciosus (incl. L. sanguifluus)", "url": "https://www.miteco.gob.es/content/dam/miteco/es/biodiversidad/temas/inventarios-nacionales/iect_lactarius_deliciosus_tcm30-164130.pdf"}
 RIOJA_H = {"titulo": "Gobierno de La Rioja (A. Caballero, Grupo Cultural Micológico Verpa), Llenega gris, Hygrophorus latitabundus", "url": "https://www.larioja.org/medio-ambiente/es/reserva-biosfera/valores/naturaleza/valores-naturales/45_setaslocalizacion.ficheros/633897-451899_HydrophorusLimacinus.pdf"}
 ALIC = " Con registros en GBIF en la zona de Alicante."
+# 2026-10-18: especies nuevas de Marbella
+def GBM(key, nombre):
+    return {"titulo": f"GBIF, {nombre}: registros en la zona de Marbella (consulta 18-10-2026)", "url": f"https://www.gbif.org/species/{key}"}
 
 E = []
 def sp(**k):
@@ -219,18 +222,18 @@ sp(id="macrolepiota_procera", nombre_cientifico="Macrolepiota procera (Scop.) Si
 # ================= COMESTIBLES MENORES =================
 sp(id="suillus_bellinii", nombre_cientifico="Suillus bellinii (Inzenga) Kuntze", nombres_comunes=[],
    grupo="comestible_menor", toxicidad_nota=AV + " Se aconseja retirar la cutícula viscosa. " + SIN_CONF,
-   sombrero="Hasta 15 cm. Pardo, con zonas blanquecinas hacia el borde, muy viscoso. S. collinitus, frecuente en los pinares de Alicante, tiene el sombrero pardo amarillento, de 4 a 12 cm, también viscoso.",
-   himenio="Tubos cortos; poros pequeños, blanquecinos a beige y luego amarillentos.",
+   sombrero="Hasta 15 cm. Pardo, con zonas blanquecinas hacia el borde, muy viscoso. S. collinitus, frecuente en los pinares de Alicante, tiene el sombrero pardo amarillento, de 4 a 12 cm, también viscoso. S. luteus lo tiene pardo castaño oscuro, de 5 a 10 cm, y S. granulatus, canela a pardo anaranjado, de 4 a 10 cm; los dos viscosos.",
+   himenio="Tubos cortos; poros pequeños, blanquecinos a beige y luego amarillentos. En S. luteus y S. granulatus, amarillo limón; S. granulatus suelta gotitas lechosas en los poros que oscurecen al secarse.",
    pie="Corto y robusto, blanquecino, con granulaciones rojizas. En S. collinitus el pie es amarillo, con granulaciones pardo rojizas y la base rosada por su micelio rosa.",
-   volva="No tiene.", anillo="No tiene.",
+   volva="No tiene.", anillo="S. bellinii, S. collinitus y S. granulatus no tienen. S. luteus tiene un anillo grande y colgante, blanco y luego violáceo por debajo.",
    carne_y_corte="Blanquecina y firme, amarillenta en la base. No se describe cambio de color al corte.",
    olor_sabor="Sin dato en las fuentes consultadas.",
    esporada="Parda.",
-   habitat="Pinares mediterráneos litorales y de interior, con Pinus halepensis, P. pinaster y P. pinea. Frecuente en Andalucía. S. collinitus y S. bellinii tienen registros en GBIF en la zona de Alicante.",
-   temporada="Las fuentes andaluzas citan las especies próximas en otoños y primaveras lluviosas; sin dato específico para S. bellinii. S. collinitus sale de octubre a febrero en el sur de Europa.",
-   rasgos_clave=["Sombrero muy viscoso, pardo con borde claro", "Pie corto y robusto con granulaciones rojizas", "Siempre bajo pinos", "Sin anillo", "S. collinitus: base del pie rosada"],
+   habitat="Pinares mediterráneos litorales y de interior, con Pinus halepensis, P. pinaster y P. pinea. Frecuente en Andalucía. S. collinitus y S. bellinii tienen registros en GBIF en la zona de Alicante y en la de Marbella. S. luteus (sitios húmedos y sombríos de pinar) y S. granulatus (bajo pinos de dos acículas) también tienen registros en GBIF en la zona de Marbella.",
+   temporada="Las fuentes andaluzas citan las especies próximas en otoños y primaveras lluviosas; sin dato específico para S. bellinii. S. collinitus sale de octubre a febrero en el sur de Europa. First Nature da S. luteus de agosto a noviembre y S. granulatus de julio a noviembre en Gran Bretaña, más tarde en el sur de Europa.",
+   rasgos_clave=["Sombrero muy viscoso, pardo con borde claro", "Siempre bajo pinos", "Sin anillo, salvo S. luteus", "S. collinitus: base del pie rosada", "S. granulatus: gotitas lechosas en los poros"],
    no_confundir_con=[],
-   fuentes=[GUIA, LEI, wp("en", "Suillus_bellinii", "Suillus bellinii"), sf(324328, "Suillus bellinii"), fn("suillus-collinitus", "Suillus collinitus"), sf(306571, "Suillus collinitus"), gbif(9104622, "Suillus collinitus"), gbif(7552504, "Suillus bellinii")])
+   fuentes=[GUIA, LEI, wp("en", "Suillus_bellinii", "Suillus bellinii"), sf(324328, "Suillus bellinii"), fn("suillus-collinitus", "Suillus collinitus"), sf(306571, "Suillus collinitus"), gbif(9104622, "Suillus collinitus"), gbif(7552504, "Suillus bellinii"), fn("suillus-luteus", "Suillus luteus"), fn("suillus-granulatus", "Suillus granulatus"), GBM(7777157, "Suillus luteus"), GBM(8146046, "Suillus granulatus")])
 
 sp(id="hydnum_repandum", nombre_cientifico="Hydnum repandum L.", nombres_comunes=["lengua de gato", "lengua de oveja", "lengua de vaca"],
    grupo="comestible_menor", toxicidad_nota=AV + " Sabor algo amargo, más en ejemplares viejos. " + SIN_CONF,
@@ -241,7 +244,7 @@ sp(id="hydnum_repandum", nombre_cientifico="Hydnum repandum L.", nombres_comunes
    carne_y_corte="Blanca, luego crema amarillenta; dura pero frágil. Sin cambio de color descrito.",
    olor_sabor="Olor muy suave; sabor algo amargo.",
    esporada="Crema blanquecina.",
-   habitat="Sobre todo encinares, más raramente pinares. En Andalucía no es muy frecuente; la guía la cita en las sierras de Jaén y Córdoba en otoños lluviosos." + ALIC,
+   habitat="Sobre todo encinares, más raramente pinares. En Andalucía no es muy frecuente; la guía la cita en las sierras de Jaén y Córdoba en otoños lluviosos." + ALIC + " También en la zona de Marbella (GBIF, consulta 18-10-2026).",
    temporada="Otoño avanzado; aguanta el frío y es de las últimas en desaparecer.",
    rasgos_clave=["Aguijones bajo el sombrero en vez de láminas", "Sombrero crema e irregular", "Pie corto y macizo", "Carne blanca, dura pero frágil"],
    no_confundir_con=[
@@ -257,7 +260,7 @@ sp(id="lepista_nuda", nombre_cientifico="Lepista nuda (Bull.) Cooke (Index Fungo
    carne_y_corte="Blanca con reflejos violetas; tierna. Sin cambio de color descrito.",
    olor_sabor="Olor afrutado característico; sabor suave y dulce.",
    esporada="Rosa suave.",
-   habitat="Prados y bosques de pinos y encinas, a menudo en corros de brujas. Muy frecuente en toda Andalucía." + ALIC,
+   habitat="Prados y bosques de pinos y encinas, a menudo en corros de brujas. Muy frecuente en toda Andalucía." + ALIC + " También en la zona de Marbella (GBIF, consulta 18-10-2026).",
    temporada="Otoño, principios de invierno y primaveras lluviosas.",
    rasgos_clave=["Toda la seta violeta, también láminas y pie", "Esporada rosa, no marrón", "Sin cortina ni anillo", "Olor afrutado"],
    no_confundir_con=[],
@@ -272,7 +275,7 @@ sp(id="russula_cyanoxantha", nombre_cientifico="Russula cyanoxantha (Schaeff.) F
    carne_y_corte="Blanca y quebradiza; grisácea suave al corte, algo violácea bajo la cutícula.",
    olor_sabor="Sabor suave y dulce; olor casi inapreciable, a avellana.",
    esporada="Blanca.",
-   habitat="Alcornocales, encinares y castañares. Muy abundante en Andalucía occidental y más escasa en la oriental.",
+   habitat="Alcornocales, encinares y castañares. Muy abundante en Andalucía occidental y más escasa en la oriental. Con registros en GBIF en la zona de Marbella (consulta 18-10-2026).",
    temporada="Desde verano hasta octubre o primeros de noviembre; es sensible al frío.",
    rasgos_clave=["Láminas blancas flexibles, que no se rompen al rozarlas", "Sombrero violeta o verdoso, nunca rojo", "Pie blanco sin anillo ni volva", "Sabor suave"],
    no_confundir_con=[
@@ -289,7 +292,7 @@ sp(id="agaricus_campestris", nombre_cientifico="Agaricus campestris L.", nombres
    carne_y_corte="Blanca, que al corte toma un tono rosado suave, sobre todo entre pie y sombrero. No amarillea.",
    olor_sabor="AmanitaCesarea.com los describe como agradables; la guía andaluza, como desagradables.",
    esporada="Marrón oscuro, pardo púrpura.",
-   habitat="Prados y pastizales, sobre todo los abonados por ganado. Muy frecuente en toda Andalucía." + ALIC,
+   habitat="Prados y pastizales, sobre todo los abonados por ganado. Muy frecuente en toda Andalucía." + ALIC + " También en la zona de Marbella (GBIF, consulta 18-10-2026).",
    temporada="Primavera y otoño.",
    rasgos_clave=["Láminas rosas que pasan a marrón y negro", "Sin volva en la base", "Carne que rosea, no amarillea", "En prados, no dentro del bosque"],
    no_confundir_con=[
@@ -319,7 +322,8 @@ sp(id="amanita_phalloides", nombre_cientifico="Amanita phalloides (Vaill. ex Fr.
      {"id": "russula_cyanoxantha", "diferencias": ["Las rúsulas no tienen anillo ni volva", "Sus láminas son blanco cremosas y la carne, quebradiza"]},
      {"id": "agaricus_campestris", "diferencias": ["El champiñón tiene láminas rosas a marrones, nunca blanco puro", "No tiene volva"]},
      {"id": "amanita_verna", "diferencias": ["A. verna es igual de mortal; es toda blanca y sale en primavera"]},
-     {"id": "amanita_ponderosa", "diferencias": ["La guía andaluza cita la confusión del gurumelo con la forma blanca de A. phalloides", "La oronja verde sale en otoño; el gurumelo, a finales de invierno y en primavera", "A. phalloides tiene la carne blanca que no cambia y un anillo blanco colgante y persistente; el gurumelo tiene un anillo frágil que se pierde pronto y su carne toma tonos rosados al corte", "El gurumelo sale medio enterrado, con la volva gruesa y manchada de tierra, y huele a tierra mojada"]}],
+     {"id": "amanita_ponderosa", "diferencias": ["La guía andaluza cita la confusión del gurumelo con la forma blanca de A. phalloides", "La oronja verde sale en otoño; el gurumelo, a finales de invierno y en primavera", "A. phalloides tiene la carne blanca que no cambia y un anillo blanco colgante y persistente; el gurumelo tiene un anillo frágil que se pierde pronto y su carne toma tonos rosados al corte", "El gurumelo sale medio enterrado, con la volva gruesa y manchada de tierra, y huele a tierra mojada"]},
+     {"id": "tricholoma_portentosum", "diferencias": ["La capuchina no tiene anillo ni volva: eso descarta la confusión (AmanitaCesarea.com)", "A. phalloides tiene láminas blancas, anillo blanco colgante y volva blanca en saco: saca la seta entera"]}],
    fuentes=[ac("amanita-phalloides", "Amanita phalloides"), ALV, DON, TOX, EFI, BEATY, FUNG, fn("amanita-phalloides", "Amanita phalloides"), sf(178962, "Amanita phalloides"), gbif(5240325, "Amanita phalloides")])
 
 sp(id="amanita_verna", nombre_cientifico="Amanita verna Bull. ex Lam.", nombres_comunes=["amanita de primavera", "cicuta blanca"],
@@ -633,7 +637,7 @@ sp(id="morchella_spp", nombre_cientifico="Morchella esculenta (L.) Pers. y espec
    carne_y_corte="Cerosa y frágil. Cortada de arriba abajo, el sombrero y el pie forman una sola cavidad hueca.",
    olor_sabor="Olor poco característico según First Nature; agradable según AmanitaCesarea.com.",
    esporada="Blanco crema a ocre pálido.",
-   habitat="Sitios húmedos: riberas de ríos y arroyos, bajo álamos y chopos. También suelos calizos y removidos. Con registros en GBIF de M. esculenta y M. elata en la zona de Alicante.",
+   habitat="Sitios húmedos: riberas de ríos y arroyos, bajo álamos y chopos. También suelos calizos y removidos. Con registros en GBIF de M. esculenta y M. elata en la zona de Alicante y en la de Marbella.",
    temporada="Primavera, desde finales de marzo.",
    rasgos_clave=["Sombrero con celdas hundidas, como un panal", "Hueca de arriba abajo, en una sola cavidad", "Borde del sombrero unido al pie", "Sale en primavera"],
    no_confundir_con=[
@@ -658,6 +662,23 @@ sp(id="tricholoma_terreum", nombre_cientifico="Tricholoma terreum (Schaeff.) P. 
      {"id": "tricholoma_equestre", "diferencias": ["T. equestre tiene las láminas y el pie amarillos", "Su sombrero es amarillento, con fibras pardas u oliva en el centro"]}],
    fuentes=[ac("tricholoma-terreum", "Tricholoma terreum"), fn("tricholoma-terreum", "Tricholoma terreum"), YIN, DAVOLI, sf(216171, "Tricholoma terreum"), gbif(5241808, "Tricholoma terreum")])
 
+sp(id="tricholoma_portentosum", nombre_cientifico="Tricholoma portentosum (Fr.) Quél.", nombres_comunes=["capuchina", "ratón"],
+   grupo="apreciada", toxicidad_nota=AV + " Varios Tricholoma tóxicos se le parecen (T. pardinum, T. virgatum, T. sejunctum): no recojas tricolomas grises sin un experto.",
+   sombrero="De 5 a 15 cm; cónico campanulado, luego plano con un mamelón suave. Gris verdoso oscuro con reflejos amarillentos y fibrillas radiales gris violáceas oscuras; algo viscoso con humedad.",
+   himenio="Láminas escotadas, ventrudas, frágiles y algo separadas; blanco grisáceas muy claras, con reflejos amarillos en los adultos cerca del pie.",
+   pie="De 5 a 15 cm por 0,8 a 2 cm; blanco grisáceo con un reflejo amarillo característico, algo fibroso, a menudo muy enterrado.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanca, algo grisácea en los adultos, frágil.",
+   olor_sabor="Olor harinoso suave y sabor dulce.",
+   esporada="Blanquecina.",
+   habitat="Bosques de coníferas, menos en hayedos; en grupos o matas. GBIF tiene pocos registros en la zona de Marbella (Serranía de Ronda y Grazalema).",
+   temporada="Otoño y principio del invierno; aguanta bien las heladas y es de las más tardías.",
+   rasgos_clave=["Sombrero gris con fibrillas negras radiales", "Reflejo amarillo en el pie y en las láminas", "Sin anillo ni volva", "Olor harinoso suave", "Bajo pinos, al final del otoño"],
+   no_confundir_con=[
+     {"id": "tricholoma_pardinum", "diferencias": ["T. pardinum, tóxico, es más robusto, con el borde enrollado y grandes escamas negruzcas redondeadas sobre fondo pardo claro", "No tiene el reflejo amarillo del pie de la capuchina"]},
+     {"id": "amanita_phalloides", "diferencias": ["A. phalloides, mortal, puede tener un sombrero parecido", "Tiene anillo y volva blanca en saco; la capuchina no tiene ninguno de los dos: saca la seta entera"]}],
+   fuentes=[ac("tricholoma-portentosum", "Tricholoma portentosum"), GBM(5241860, "Tricholoma portentosum")])
+
 sp(id="tricholoma_pardinum", nombre_cientifico="Tricholoma pardinum (Pers.) Quél.", nombres_comunes=[],
    grupo="toxica",
    toxicidad_nota="TÓXICA. Intoxicación digestiva (náuseas, vómitos, dolor de vientre y diarrea) que empieza entre media hora y 4 horas después de comerla. La tabla de toxicidad cita casos graves, con lesiones en el hígado, shock y hemorragias digestivas.",
@@ -672,7 +693,8 @@ sp(id="tricholoma_pardinum", nombre_cientifico="Tricholoma pardinum (Pers.) Qué
    temporada="Final del verano y otoño.",
    rasgos_clave=["Escamas oscuras y gruesas en círculos sobre fondo claro", "Sombrero grande, de hasta 15 cm", "Base del pie engrosada", "Láminas blancas que amarillean"],
    no_confundir_con=[
-     {"id": "tricholoma_terreum", "diferencias": ["La negrilla es más pequeña (2 a 7 cm) y muy frágil", "Su sombrero es como de fieltro, sin escamas gruesas"]}],
+     {"id": "tricholoma_terreum", "diferencias": ["La negrilla es más pequeña (2 a 7 cm) y muy frágil", "Su sombrero es como de fieltro, sin escamas gruesas"]},
+     {"id": "tricholoma_portentosum", "diferencias": ["La capuchina tiene el sombrero gris con fibrillas negras radiales, sin escamas oscuras en círculos", "Su pie tiene un reflejo amarillo que falta en T. pardinum (AmanitaCesarea.com)", "T. pardinum es más robusto, con borde enrollado y grandes escamas negruzcas sobre fondo pardo claro"]}],
    fuentes=[fn("tricholoma-pardinum", "Tricholoma pardinum"), ac("tricholoma-terreum", "Tricholoma terreum (cita T. pardinum)"), TOX, sf(356853, "Tricholoma pardinum"), gbif(7242174, "Tricholoma pardinum")])
 
 sp(id="tricholoma_equestre", nombre_cientifico="Tricholoma equestre (L.) P. Kumm. (incluye T. auratum y T. flavovirens)", nombres_comunes=["seta de los caballeros", "verderón", "limonera"],

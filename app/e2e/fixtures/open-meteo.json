@@ -1,34 +1,44 @@
 {
- "_nota": "Fixture del e2e: días relativos a «hoy», fijado a 2026-10-14 con ?hoy= (solo en modo e2e) para que la temporada de cada especie no dependa del mes en que se ejecute. 30 mm hace 17 días (el episodio) más lluvias sueltas que suman 4 días de lluvia en 30; tmin 13 y tmax 23 en todos los días; ET0 2 mm/día (balance 30 d = 46 − 60 = −14 mm); HR mínima 55 %; humedad del suelo 0,2 m³/m³ en todas las horas. La elevación del modelo se iguala a alt_media de cada punto (sin corrección por altitud). Con el manifest v2 (12 especies): L. deliciosus/sanguifluus esperan (ventana 20–40 días); A. ponderosa y T. arenaria quedan en amarillo «fuera de temporada, pero llovió fuerte» (30 mm ≥ 1,5 × episodio y suelo húmedo).",
- "lluvia": {
-  "-22": 8,
-  "-20": 6,
-  "-17": 30,
-  "-5": 2,
-  "1": 1
- },
- "tmin": 13,
- "tmax": 23,
- "esperado": {
-  "boletus_aereus": "verde",
-  "boletus_aestivalis": "verde",
-  "boletus_edulis": "verde",
-  "boletus_pinophilus": "amarillo",
-  "amanita_caesarea": "rojo",
-  "lactarius_deliciosus": "amarillo",
-  "lactarius_sanguifluus": "amarillo",
-  "cantharellus_cibarius": "verde",
-  "amanita_ponderosa": "amarillo",
-  "macrolepiota_procera": "verde",
-  "pleurotus_eryngii": "verde",
-  "terfezia_arenaria": "amarillo"
- },
- "et0": 2,
- "hr_min": 55,
- "suelo": 0.2,
- "indicadores": {
-  "balance": "−14 mm",
-  "dias": "4 de 30",
-  "suelo": "0,20 m³/m³"
- }
+  "_nota": "Fixture del e2e: días relativos a «hoy», fijado a 2026-10-14 con ?hoy= (solo en modo e2e) para que la temporada de cada especie no dependa del mes en que se ejecute. 30 mm hace 17 días (el episodio) más lluvias sueltas que suman 4 días de lluvia en 30; tmin 13 y tmax 23 en todos los días; ET0 2 mm/día (balance 30 d = 46 − 60 = −14 mm); HR mínima 55 %; humedad del suelo 0,2 m³/m³ en todas las horas. La elevación del modelo se iguala a alt_media de cada punto (sin corrección por altitud). Con el manifest v2 (12 especies): L. deliciosus/sanguifluus esperan (ventana 20–40 días); A. ponderosa y T. arenaria quedan en amarillo «fuera de temporada, pero llovió fuerte» (30 mm ≥ 1,5 × episodio y suelo húmedo). Con 22 especies (2026-10-18): Agaricus en rojo (ventana 5–15 días ya cerrada); L. nuda y H. repandum en amarillo (tmin o tmax fuera de rango); T. portentosum espera (ventana 20–40); Morchella amarilla fuera de temporada por la lluvia fuerte.",
+  "lluvia": {
+    "-22": 8,
+    "-20": 6,
+    "-17": 30,
+    "-5": 2,
+    "1": 1
+  },
+  "tmin": 13,
+  "tmax": 23,
+  "esperado": {
+    "boletus_aereus": "verde",
+    "boletus_aestivalis": "verde",
+    "boletus_edulis": "verde",
+    "boletus_pinophilus": "amarillo",
+    "amanita_caesarea": "rojo",
+    "lactarius_deliciosus": "amarillo",
+    "lactarius_sanguifluus": "amarillo",
+    "cantharellus_cibarius": "verde",
+    "amanita_ponderosa": "amarillo",
+    "macrolepiota_procera": "verde",
+    "pleurotus_eryngii": "verde",
+    "terfezia_arenaria": "amarillo",
+    "suillus_collinitus": "verde",
+    "lepista_nuda": "amarillo",
+    "agaricus_campestris": "rojo",
+    "hydnum_repandum": "amarillo",
+    "morchella_spp": "amarillo",
+    "suillus_bellinii": "verde",
+    "suillus_luteus": "verde",
+    "suillus_granulatus": "verde",
+    "russula_cyanoxantha": "verde",
+    "tricholoma_portentosum": "amarillo"
+  },
+  "et0": 2,
+  "hr_min": 55,
+  "suelo": 0.2,
+  "indicadores": {
+    "balance": "−14 mm",
+    "dias": "4 de 30",
+    "suelo": "0,20 m³/m³"
+  }
 }

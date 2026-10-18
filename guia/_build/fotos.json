@@ -732,5 +732,25 @@
    "licencia": "CC BY-SA 3.0",
    "url_fuente": "https://commons.wikimedia.org/wiki/File:2007-08-29_Clitocybe_rivulosa.jpg"
   }
+ ],
+ "tricholoma_portentosum": [
+  {
+   "archivo": "fotos/tricholoma_portentosum_1.jpg",
+   "autor": "Adrien BENOIT à la GUILLAUME",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Tricholoma_portentosum_(Haute-Loire,_France).jpg"
+  },
+  {
+   "archivo": "fotos/tricholoma_portentosum_2.jpg",
+   "autor": "Adrien BENOIT à la GUILLAUME",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Tricholoma_portentosum_-_coupe_longitudinale_(Haute-Loire,_France).jpg"
+  },
+  {
+   "archivo": "fotos/tricholoma_portentosum_3.jpg",
+   "autor": "Jacques LECLERCQ",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:R%C3%A9colte_de_Tricholoma_portentosum_(Haute-Loire,_France).jpg"
+  }
  ]
 }

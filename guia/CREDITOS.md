@@ -105,6 +105,9 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | fotos/tricholoma_terreum_1.jpg | Tricholoma terreum | Holger Krisp | CC BY 3.0 | https://commons.wikimedia.org/wiki/File:Erd-Ritterling_Tricholoma_terreum.jpg |
 | fotos/tricholoma_terreum_2.jpg | Tricholoma terreum | Adrien BENOIT à la GUILLAUME | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Tricholoma_terreum_(Haute-Loire,_France).jpg |
 | fotos/tricholoma_terreum_3.jpg | Tricholoma terreum | Adrien BENOIT à la GUILLAUME | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Tricholoma_terreum_-_lamelles_et_pied_(Haute-Loire,_France).jpg |
+| fotos/tricholoma_portentosum_1.jpg | Tricholoma portentosum | Adrien BENOIT à la GUILLAUME | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Tricholoma_portentosum_(Haute-Loire,_France).jpg |
+| fotos/tricholoma_portentosum_2.jpg | Tricholoma portentosum | Adrien BENOIT à la GUILLAUME | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Tricholoma_portentosum_-_coupe_longitudinale_(Haute-Loire,_France).jpg |
+| fotos/tricholoma_portentosum_3.jpg | Tricholoma portentosum | Jacques LECLERCQ | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:R%C3%A9colte_de_Tricholoma_portentosum_(Haute-Loire,_France).jpg |
 | fotos/tricholoma_pardinum_1.jpg | Tricholoma pardinum | Sava Krstic (sava) | CC BY-SA 3.0 | https://commons.wikimedia.org/wiki/File:Tricholoma_pardinum_112561_cropped.jpg |
 | fotos/tricholoma_pardinum_2.jpg | Tricholoma pardinum | Jerzy Opioła | CC BY-SA 3.0 | https://commons.wikimedia.org/wiki/File:Tricholoma_pardinum_(1).JPG |
 | fotos/tricholoma_pardinum_3.jpg | Tricholoma pardinum | Jerzy Opioła | CC BY-SA 3.0 | https://commons.wikimedia.org/wiki/File:Tricholoma_pardinum_a1.JPG |
@@ -154,6 +157,7 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Russula cyanoxantha | https://www.amanitacesarea.com/russula-cyanoxantha.html | russula_cyanoxantha |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Scleroderma verrucosum | https://www.amanitacesarea.com/scleroderma-verrucosum.html | scleroderma_citrinum |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Tricholoma equestre | https://www.amanitacesarea.com/tricholoma-equestre.html | tricholoma_equestre |
+| AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Tricholoma portentosum | https://www.amanitacesarea.com/tricholoma-portentosum.html | tricholoma_portentosum |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Tricholoma terreum | https://www.amanitacesarea.com/tricholoma-terreum.html | tricholoma_terreum |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Tricholoma terreum (cita T. pardinum) | https://www.amanitacesarea.com/tricholoma-terreum.html | tricholoma_pardinum |
 | Andrino et al. (2019), The crop of desert truffle depends on agroclimatic parameters during two key annual periods (Agron. Sustain. Dev.) | https://hal.science/hal-02995102/document | terfezia_arenaria |
@@ -189,6 +193,8 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | First Nature (P. O'Reilly), ficha de Scleroderma citrinum | https://www.first-nature.com/fungi/scleroderma-citrinum.php | scleroderma_citrinum |
 | First Nature (P. O'Reilly), ficha de Scleroderma verrucosum | https://www.first-nature.com/fungi/scleroderma-verrucosum.php | scleroderma_citrinum |
 | First Nature (P. O'Reilly), ficha de Suillus collinitus | https://www.first-nature.com/fungi/suillus-collinitus.php | suillus_bellinii |
+| First Nature (P. O'Reilly), ficha de Suillus granulatus | https://www.first-nature.com/fungi/suillus-granulatus.php | suillus_bellinii |
+| First Nature (P. O'Reilly), ficha de Suillus luteus | https://www.first-nature.com/fungi/suillus-luteus.php | suillus_bellinii |
 | First Nature (P. O'Reilly), ficha de Tricholoma equestre | https://www.first-nature.com/fungi/tricholoma-equestre.php | tricholoma_equestre |
 | First Nature (P. O'Reilly), ficha de Tricholoma pardinum | https://www.first-nature.com/fungi/tricholoma-pardinum.php | tricholoma_pardinum |
 | First Nature (P. O'Reilly), ficha de Tricholoma terreum | https://www.first-nature.com/fungi/tricholoma-terreum.php | tricholoma_terreum |
@@ -216,8 +222,11 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | GBIF, Rubroboletus satanas: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/7722553 | rubroboletus_satanas |
 | GBIF, Suillus bellinii: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/7552504 | suillus_bellinii |
 | GBIF, Suillus collinitus: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/9104622 | suillus_bellinii |
+| GBIF, Suillus granulatus: registros en la zona de Marbella (consulta 18-10-2026) | https://www.gbif.org/species/8146046 | suillus_bellinii |
+| GBIF, Suillus luteus: registros en la zona de Marbella (consulta 18-10-2026) | https://www.gbif.org/species/7777157 | suillus_bellinii |
 | GBIF, Tricholoma equestre: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/3324883 | tricholoma_equestre |
 | GBIF, Tricholoma pardinum: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/7242174 | tricholoma_pardinum |
+| GBIF, Tricholoma portentosum: registros en la zona de Marbella (consulta 18-10-2026) | https://www.gbif.org/species/5241860 | tricholoma_portentosum |
 | GBIF, Tricholoma terreum: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/5241808 | tricholoma_terreum |
 | Global Fungal Red List Initiative, Terfezia claveryi | https://redlist.info/iucn/species_view/144803 | terfezia_arenaria |
 | Gobierno de La Rioja (A. Caballero, Grupo Cultural Micológico Verpa), Llenega gris, Hygrophorus latitabundus | https://www.larioja.org/medio-ambiente/es/reserva-biosfera/valores/naturaleza/valores-naturales/45_setaslocalizacion.ficheros/633897-451899_HydrophorusLimacinus.pdf | hygrophorus_latitabundus |

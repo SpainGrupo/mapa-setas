@@ -101,19 +101,21 @@ export function urlFoto(archivo: string, indice: IndiceGuia | null): string {
 /**
  * Especies del mapa (manifest) cuya ficha tiene otro id. GBIF trata Boletus aestivalis como sinónimo de
  * B. reticulatus, y la guía la describe como «Boletus reticulatus (= B. aestivalis)». Las de Alicante
- * (S. collinitus, T. claveryi) van en la ficha de su especie próxima.
+ * (S. collinitus, T. claveryi) y las de Marbella S. luteus y S. granulatus van en la ficha de su especie próxima.
  */
 export const FICHA_DE_ESPECIE_MAPA: Record<string, string> = {
   boletus_aestivalis: 'boletus_reticulatus',
   lactarius_sanguifluus: 'lactarius_deliciosus',
   suillus_collinitus: 'suillus_bellinii',
+  suillus_luteus: 'suillus_bellinii',
+  suillus_granulatus: 'suillus_bellinii',
   terfezia_claveryi: 'terfezia_arenaria',
 };
 /**
  * Especies del mapa sin ficha propia que la guía describe dentro de la ficha de otra especie (no son sinónimos):
  * el selector las muestra con su nombre científico y la foto de esa ficha. L. sanguifluus va en la del níscalo.
  */
-export const DESCRITA_EN_OTRA_FICHA: ReadonlySet<string> = new Set(['lactarius_sanguifluus', 'suillus_collinitus', 'terfezia_claveryi']);
+export const DESCRITA_EN_OTRA_FICHA: ReadonlySet<string> = new Set(['lactarius_sanguifluus', 'suillus_collinitus', 'suillus_luteus', 'suillus_granulatus', 'terfezia_claveryi']);
 export const fichaDeEspecieMapa = (id: string) => FICHA_DE_ESPECIE_MAPA[id] ?? id;
 const CON_ARTICULO: Record<string, string> = { el: 'del', la: 'de la', los: 'de los', las: 'de las' };
 /**

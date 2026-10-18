@@ -29,6 +29,9 @@ export const GRUPOS: readonly Grupo[] = [
   { id: 'pie_azul', nombre: 'Pie azul', especies: ['lepista_nuda'] },
   { id: 'champinones', nombre: 'Champiñones', especies: ['agaricus_campestris'] },
   { id: 'colmenillas', nombre: 'Colmenillas', especies: ['morchella_spp'], prefijos: ['morchella_'] },
+  { id: 'rusulas', nombre: 'Rúsulas (carbonera)', especies: ['russula_cyanoxantha'] },
+  // Sin prefijo tricholoma_: T. terreum, T. pardinum y T. equestre son fichas tóxicas, nunca capa.
+  { id: 'tricholoma', nombre: 'Capuchinas (Tricholoma)', especies: ['tricholoma_portentosum'] },
 ];
 
 export const OTRAS: Grupo = { id: 'otras', nombre: 'Otras', especies: [] };

@@ -36,7 +36,8 @@ const CITA = { lat: 36.601283, lon: -5.117867, especie: 'amanita_caesarea' };
 const MARBELLA = { lat: 36.5101, lon: -4.8825 };
 const ESPECIES_NUEVAS = ['lactarius_deliciosus', 'lactarius_sanguifluus', 'cantharellus_cibarius', 'amanita_ponderosa',
   'macrolepiota_procera', 'pleurotus_eryngii', 'terfezia_arenaria'];
-const FICHA_DE = { boletus_aestivalis: 'boletus_reticulatus', lactarius_sanguifluus: 'lactarius_deliciosus' };
+const FICHA_DE = { boletus_aestivalis: 'boletus_reticulatus', lactarius_sanguifluus: 'lactarius_deliciosus',
+  suillus_collinitus: 'suillus_bellinii', suillus_luteus: 'suillus_bellinii', suillus_granulatus: 'suillus_bellinii' };
 const ACCESO = { lat: 36.61083, lon: -5.24579, tiempo: '36 min', subida: '+138 m', via: 'camino de servicio sin nombre', aparc: [36.60908, -5.25496] };
 const FIXTURE = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'fixtures/open-meteo.json'), 'utf8'));
 const NOTA = 'Ñandú & <castaños> "junto" al \'arroyo\' ✓';
@@ -242,7 +243,7 @@ try {
   await p.locator('#btn-capas').click();
   await elegirEspecie('boletus_edulis');
 
-  // Idoneidad: los 12 × 6 PMTiles responden a Range con la cabecera PMTiles v3, y cada especie se pinta en el mapa.
+  // Idoneidad: los 22 × 6 PMTiles responden a Range con la cabecera PMTiles v3, y cada especie se pinta en el mapa.
   const man = await p.evaluate(async () => (await fetch('data/marbella/manifest.json')).json());
   const malos = [];
   for (const e of man.especies) for (const u of man.umbrales) {
@@ -250,7 +251,7 @@ try {
     const b = Buffer.from(await r.arrayBuffer());
     if (r.status !== 206 || b.toString('latin1', 0, 7) !== 'PMTiles') malos.push(`${e.id}_${u}:${r.status}`);
   }
-  comprobar(man.especies.length === 12 && !malos.length, `idoneidad: ${man.especies.length} especies × ${man.umbrales.length} umbrales servidos como PMTiles${malos.length ? ' — fallan ' + malos.join(', ') : ''}`);
+  comprobar(man.especies.length === 22 && !malos.length, `idoneidad: ${man.especies.length} especies × ${man.umbrales.length} umbrales servidos como PMTiles${malos.length ? ' — fallan ' + malos.join(', ') : ''}`);
   await p.evaluate(({ latitude, longitude }) => window.__setas.mapa.jumpTo({ center: [longitude, latitude], zoom: 10 }), PUNTO);
   for (const e of man.especies) {
     await elegirEspecie(e.id);
@@ -556,7 +557,7 @@ try {
   await p.locator('#tz-ver').click();
   await p.locator('#lista-semaforo .semaforo-fila').first().waitFor();
   const est1 = await estadosZona();
-  comprobar(Object.keys(est1).length === 12 && igual(est1, FIXTURE.esperado), `Zona con el fixture (hoy ${HOY_E2E}), 12 especies: ${JSON.stringify(est1)}`);
+  comprobar(Object.keys(est1).length === 22 && igual(est1, FIXTURE.esperado), `Zona con el fixture (hoy ${HOY_E2E}), 22 especies: ${JSON.stringify(est1)}`);
   const fuera = await p.locator('[data-especie=terfezia_arenaria] .mot').textContent();
   comprobar(/^fuera de temporada \(sale en mar, abr, may\), pero llovió fuerte/.test(fuera)
     && /fuera de temporada \(sale en feb, mar, abr\)/.test(await p.locator('[data-especie=amanita_ponderosa] .mot').textContent())
@@ -608,13 +609,16 @@ try {
     && selHoy.act.join(',') === selHoy.orden.activas.join(',') && selHoy.chips.every((c) => /^(Buen momento|Esperar)$/.test(c))
     && selHoy.hasta.length > 0 && selHoy.hasta.every((t) => /^(hasta|empieza) ~\d{1,2} [a-z]{3}$/.test(t)),
     `selector: «Activas ahora» con ${selHoy.act.length} setas (verde → amarillo), estado y «${selHoy.hasta[0]}»`);
-  comprobar(selHoy.btn === 'Ver más · 1 no activa ahora' && selHoy.exp === 'false' && !selHoy.masVisible && selHoy.orden.inactivas.length === 1,
+  comprobar(selHoy.btn === 'Ver más · 2 no activas ahora' && selHoy.exp === 'false' && !selHoy.masVisible && selHoy.orden.inactivas.length === 2,
     `«${selHoy.btn}» plegado`);
   await captura('selector-activas.png');
   await p.locator('#btn-ver-mas').click();
   const selMas = await leerSel();
+  // Con 22 especies (2026-10-18) hay dos inactivas: A. caesarea y A. campestris; se mira la oronja.
+  const iCae = selMas.inact.findIndex((x) => x.id === 'amanita_caesarea');
+  if (iCae > 0) selMas.inact.unshift(...selMas.inact.splice(iCae, 1));
   comprobar(selMas.exp === 'true' && selMas.masVisible && selMas.guardado === '1'
-    && selMas.inact.length === 1 && selMas.inact[0].id === 'amanita_caesarea' && selMas.inact[0].alto >= 48
+    && selMas.inact.length === 2 && selMas.inact[0].id === 'amanita_caesarea' && selMas.inact.some((x) => x.id === 'agaricus_campestris') && selMas.inact[0].alto >= 48
     && /^(seco|ya pasó su lluvia|fuera de temporada)( \(mirado cerca de \S.*\))?$/.test(selMas.inact[0].et)
     && selMas.inact[0].op < 1 && /grayscale/.test(selMas.inact[0].gris) && !PROHIBIDO.test(selMas.inact[0].et),
     `«Ver más» se abre (y se recuerda): A. caesarea en gris con su motivo «${selMas.inact[0].et}»`);
@@ -706,10 +710,10 @@ try {
   await p.waitForFunction(() => window.__setas.tops().especie === 'boletus_aereus');
   await p.locator('#tit-top-especie').scrollIntoViewIfNeeded();
   await captura('hoy-especie.png');
-  // Calendario: 12 especies × 12 meses, marca en octubre y estado de cada una; tocar una → su top 10.
+  // Calendario: 22 especies × 12 meses, marca en octubre y estado de cada una; tocar una → su top 10.
   const cal = await p.evaluate(() => ({ filas: [...document.querySelectorAll('#calendario .cal-fila')].map((b) => ({ id: b.dataset.especie, clase: b.dataset.clase,
     t: b.querySelector('.cal-estado').textContent, meses: b.querySelectorAll('.cal-meses i').length, oct: b.querySelectorAll('.cal-meses i')[9].classList.contains('actual') })) }));
-  comprobar(cal.filas.length === 12 && cal.filas.every((f) => f.meses === 12 && f.oct)
+  comprobar(cal.filas.length === 22 && cal.filas.every((f) => f.meses === 12 && f.oct)
     && cal.filas[0].clase === 'sale' && cal.filas[0].id.startsWith('boletus_')
     && /^Ya sale · aguanta hasta ~\d\d\/\d\d$/.test(cal.filas[0].t)
     && cal.filas.find((f) => f.id === 'lactarius_deliciosus').t.startsWith('Empieza en ~')
@@ -1059,7 +1063,7 @@ try {
   await p.waitForSelector('#top-general .top-fila');
   const tOff = await p.evaluate(() => window.__setas.tops());
   comprobar(!tOff.sinSitios && tOff.general.length > 5 && tOff.top.length === 10 && tOff.fecha === HOY_E2E
-    && await p.locator('#calendario .cal-fila').count() === 12 && /guardado/.test(await p.locator('#hoy-meteo').textContent()),
+    && await p.locator('#calendario .cal-fila').count() === 22 && /guardado/.test(await p.locator('#hoy-meteo').textContent()),
     `sin conexión, Hoy sale de OPFS (sitios.json) y la caché del tiempo: ${tOff.general.length} filas, top 10 y calendario`);
   await captura('hoy-offline.png');
   await p.locator('#hoy-zona').click();

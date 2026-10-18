@@ -39,6 +39,10 @@ NUEVAS = {
                          "File:Suillus collinitus pink mycelium.jpg"],
     "lactarius_deliciosus": ["File:Lactarius deliciosus cut.jpg", "File:Echte Reizker Lactarius deliciosus.JPG",
                              "File:Lactarius sanguifluus 186490.jpg"],
+    # 2026-10-18 (Marbella): capuchina
+    "tricholoma_portentosum": ["File:Tricholoma portentosum (Haute-Loire, France).jpg",
+                               "File:Tricholoma portentosum - coupe longitudinale (Haute-Loire, France).jpg",
+                               "File:Récolte de Tricholoma portentosum (Haute-Loire, France).jpg"],
 }
 
 

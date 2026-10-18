@@ -55,7 +55,9 @@ def test_taxa_extra_por_region_sin_tocar_las_demas():
     from setas_pipeline import citas as C
     from setas_pipeline.region import cargar_region
     m = cargar_region("marbella")
-    assert C.taxa_region(m) == C.TAXA
+    # Marbella (2026-10-18) declara los taxones de sus especies nuevas; el resto es TAXA tal cual
+    t0 = C.taxa_region(m)
+    assert {k: v for k, v in t0.items() if k in C.TAXA} == C.TAXA and t0["suillus_luteus"] == ["Suillus luteus"]
     a = dataclasses.replace(m, citas={**m.citas, "taxa": {"morchella_spp": ["Morchella esculenta"]}})
     t = C.taxa_region(a)
     assert t["morchella_spp"] == ["Morchella esculenta"] and "morchella_spp" not in C.TAXA

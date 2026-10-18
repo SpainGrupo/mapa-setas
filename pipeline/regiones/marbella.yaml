@@ -108,7 +108,10 @@ capas:
 especies:                                       # orden = el de especies.yaml (el manifest sigue el catálogo)
   activas: [boletus_aereus, boletus_aestivalis, boletus_edulis, boletus_pinophilus, amanita_caesarea,
             lactarius_deliciosus, lactarius_sanguifluus, cantharellus_cibarius, amanita_ponderosa,
-            macrolepiota_procera, pleurotus_eryngii, terfezia_arenaria]
+            macrolepiota_procera, pleurotus_eryngii, terfezia_arenaria,
+            # 2026-10-18: con citas GBIF a ≤200 km (ver especies.yaml y knowledge/reference/especies-y-grupos.md)
+            suillus_collinitus, lepista_nuda, agaricus_campestris, hydnum_repandum, morchella_spp,
+            suillus_bellinii, suillus_luteus, suillus_granulatus, russula_cyanoxantha, tricholoma_portentosum]
   sin_habitat: []
 overrides_especies: {}
 
@@ -121,6 +124,12 @@ citas:                                          # citas.py (2026-10-15)
   # CSV de sitios de foros/literatura (lugar, lat, lon, precision, especies, fecha, fuente_url, confianza, cita).
   # Relativo a pipeline/regiones/ (versionado).
   sitios_csv: "marbella-sitios-conocidos.csv"
+  taxa:                                         # taxones de las especies nuevas (citas.py TAXA tiene el resto)
+    suillus_collinitus: ["Suillus collinitus"]
+    suillus_luteus: ["Suillus luteus"]
+    suillus_granulatus: ["Suillus granulatus"]
+    morchella_spp: ["Morchella esculenta", "Morchella elata", "Morchella conica"]
+    tricholoma_portentosum: ["Tricholoma portentosum"]
 
 legal:
   aviso: &aviso "Málaga (Res. 23-09-2026, BOJA 196, vigente hasta 31-05-2027): autoconsumo ≤3 kg por persona y día sin autorización en montes públicos, salvo Zonas de Reserva; de día, sin rastrillos ni remover el mantillo. Fincas privadas: permiso del propietario. Cádiz: la última resolución encontrada es de 2019, sin confirmar su vigencia."

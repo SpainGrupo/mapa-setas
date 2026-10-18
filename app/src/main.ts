@@ -15,7 +15,7 @@ import { textoChip, type Restriccion } from './restricciones';
 import { altitudes, aparcamiento, centroCelda, consultar, nombreVia, simplificar, textoSubida, textoTiempo, trazar, urlGoogleCoche, type Celda } from './acceso';
 import { dificultad, NOMBRE_DIFICULTAD, perfil, seguir, textoDistancia, type Dificultad, type Perfil, type Seguimiento } from './ruta';
 import { pintarPerfil } from './perfil-grafico';
-import { bloqueTopGuia, iniciarHoy, pintarHoy, resumenHoy, sitiosCandidatos } from './hoy-ui';
+import { bloqueTopGuia, estadoHoy, iniciarHoy, pintarHoy, restaurarHoy, resumenHoy, sitiosCandidatos } from './hoy-ui';
 import { diasEspecie, puntoReferencia, referenciaVista, ventanaEspecie, type DiaVentana, type PuntoRef, type Ventana, type Vista } from './ventana-especie';
 import { detallesTitularidad, esPublico, normaTitularidad, notaTitularidad, ponerTextosTitularidad, TEXTO_TITULARIDAD, textoTitularidad, type Titularidad } from './titularidad';
 import { AVISO_CITAS, COLOR_ORIGEN, NOMBRE_ORIGEN, ORIGENES_CITA } from './citas';
@@ -38,8 +38,27 @@ import { binomio, especieMapaDeFicha, fichaDeEspecieMapa } from './guia';
 import { iniciarReconocer, mostrarReconocer, pintarAjustesModelo } from './reconocer-ui';
 import { elegirCcaaGemini } from './gemini';
 import { Hoja } from './hoja';
+import { guardarNav, leerNav, type EstadoNav } from './estado-nav';
 
-registerSW({ immediate: true });
+// Service worker en modo «prompt» (vite.config.ts): una versión nueva queda en espera y se ofrece con un aviso; la página
+// solo se recarga si el usuario pulsa «Nueva versión: actualizar». Antes (autoUpdate + skipWaiting) iOS recargaba la app
+// al volver a ella y se perdía lo que se estaba viendo.
+const actualizarSW = registerSW({
+  immediate: true,
+  onNeedRefresh() { document.getElementById('aviso-version')!.hidden = false; },
+});
+document.getElementById('btn-actualizar')!.addEventListener('click', () => {
+  guardarEstadoNav();
+  document.getElementById('aviso-version')!.hidden = true;
+  // Solo aquí, porque lo ha pedido el usuario: en cuanto la versión nueva toma el control se recarga (y, si el
+  // navegador no avisa del cambio, a los 4 s de todas formas).
+  let recargada = false;
+  const recargar = () => { if (!recargada) { recargada = true; location.reload(); } };
+  navigator.serviceWorker?.addEventListener('controllerchange', recargar, { once: true });
+  window.setTimeout(recargar, 4000);
+  void actualizarSW(true);
+});
+document.getElementById('btn-actualizar-luego')!.addEventListener('click', () => { document.getElementById('aviso-version')!.hidden = true; });
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 /** Texto de una cifra grande: los números en <b> (más grandes), las unidades normales. textContent no cambia. */
@@ -93,6 +112,7 @@ function irA(id: string) {
   if (id === 'p-hoy') pintarHoy();
   if (id === 'p-guia') mostrarGuia();
   if (id === 'p-reconocer') mostrarReconocer();
+  guardarEstadoNavPronto();
 }
 
 // Alto real de la cabecera fija de cada pantalla (incluye el notch): la usa el CSS para que lo que se trae a la vista
@@ -107,6 +127,62 @@ new MutationObserver(vigilarCabeceras).observe($('#p-guia'), { childList: true, 
 
 document.querySelectorAll<HTMLButtonElement>('.pestanas button').forEach((b) =>
   b.addEventListener('click', () => (b.dataset.p ? irA(b.dataset.p) : avisar(`${b.dataset.prox}: próximamente`))));
+
+// ---------------------------------------------------------------- estado de navegación (sobrevive a recargas)
+// iOS descarta la página en segundo plano y al volver la carga de nuevo: se guarda dónde estaba (estado-nav.ts) al
+// cambiar de pestaña, al hacer scroll, al mover el mapa y al salir de la app, y se restaura al arrancar.
+const sesionNav = () => sessionStorage, localNav = () => localStorage;
+const navGuardada: EstadoNav | null = leerNav(sesionNav, localNav);
+const scrolls: Record<string, number> = { ...(navGuardada?.scroll ?? {}) };
+let navRestaurada = false;   // hasta restaurar, no se pisa lo guardado con el estado inicial
+function guardarEstadoNav() {
+  if (!navRestaurada) return;
+  const c = mapa?.getCenter();
+  const est: EstadoNav = { v: 1, t: Date.now(), region: hayRegionActiva() ? regionActiva() : undefined,
+    pantalla: document.querySelector('.pantalla.activa')?.id,
+    scroll: Object.fromEntries(Object.entries(scrolls).filter(([, v]) => v > 0)),
+    mapa: mapa && c ? { lon: c.lng, lat: c.lat, zoom: mapa.getZoom(), bearing: mapa.getBearing(), pitch: mapa.getPitch() } : navGuardada?.mapa,
+    capas: !$('#capas').hidden || undefined, hoy: estadoHoy() };
+  guardarNav(est, sesionNav, localNav);
+}
+let tNav = 0;
+function guardarEstadoNavPronto() { clearTimeout(tNav); tNav = window.setTimeout(guardarEstadoNav, 400); }
+document.querySelectorAll<HTMLElement>('.pantalla').forEach((p) => p.addEventListener('scroll', () => {
+  if (!p.classList.contains('activa')) return;
+  scrolls[p.id] = Math.round(p.scrollTop);
+  guardarEstadoNavPronto();
+}, { passive: true }));
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') guardarEstadoNav(); });
+window.addEventListener('pagehide', guardarEstadoNav);
+document.addEventListener('click', guardarEstadoNavPronto, { passive: true });
+document.addEventListener('change', guardarEstadoNavPronto, { passive: true });
+
+/** Lleva el scroll de la pantalla a `y` cuando el contenido ya llega (se pinta en diferido): reintenta unos segundos,
+ * salvo que el usuario haya hecho scroll entretanto. */
+function restaurarScroll(id: string, y: number) {
+  const p = document.getElementById(id);
+  if (!p || !(y > 0)) return;
+  let intentos = 0;
+  const paso = () => {
+    if (!p.classList.contains('activa')) return;
+    p.scrollTop = y;
+    scrolls[id] = Math.round(p.scrollTop);
+    if (Math.abs(p.scrollTop - y) > 2 && ++intentos < 12) window.setTimeout(paso, 250);
+  };
+  requestAnimationFrame(paso);
+}
+/** Al arrancar (con la región y el mapa listos): pestaña, día y seta de Hoy, hoja de capas y scroll. El mapa se
+ * recoloca antes, al crearse (iniciarMapa). */
+function restaurarNav() {
+  const n = navGuardada;
+  if (!manifest) { navRestaurada = true; return; }
+  if (n?.hoy) restaurarHoy(n.hoy);
+  if (n?.pantalla && document.getElementById(n.pantalla) && n.pantalla !== 'p-mapa') irA(n.pantalla);
+  else if (n?.capas && n.region === regionActiva()) abrirCapas(true);
+  navRestaurada = true;
+  if (n?.pantalla && n.scroll?.[n.pantalla]) restaurarScroll(n.pantalla, n.scroll[n.pantalla]);
+  guardarEstadoNav();
+}
 
 // ---------------------------------------------------------------- primer arranque
 
@@ -221,6 +297,9 @@ async function iniciarMapa() {
   pintarSelectorEspecie();
 
   mapa = M.crearMapa($('#mapa'), manifest);
+  const pos = navGuardada?.mapa;
+  if (pos && navGuardada?.region === regionActiva()) mapa.jumpTo({ center: [pos.lon, pos.lat], zoom: pos.zoom, bearing: pos.bearing ?? 0, pitch: pos.pitch ?? 0 });
+  mapa.on('moveend', guardarEstadoNavPronto);
   gps = new Gps(mapa, (m) => avisar(m));
   if (import.meta.env.DEV || E2E) (window as any).__setas = { mapa, origenes: M.origenes,
     region: () => ({ activa: regionActiva(), regiones: regiones.map((r) => r.id) }), meteo: () => ({ datos: meteo, origen: meteoOrigen, punto: puntoSel }),
@@ -1387,5 +1466,6 @@ async function arrancar() {
   establecerActiva(id);
   iniciarSelectorRegion(opcionesRegion);
   await iniciarMapa();
+  restaurarNav();
 }
 arrancar().then(pintarAjustes).finally(() => guardarFotosSinConexion(pintarEstadoGuia));

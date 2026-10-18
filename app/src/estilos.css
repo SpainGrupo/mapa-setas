@@ -817,6 +817,15 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
   box-shadow: 0 8px 24px oklch(15% 0.02 160 / 0.3); animation: materializar 200ms var(--entrada) both;
 }
 
+/* Versión nueva del service worker en espera: solo recarga si el usuario pulsa (nunca sola al volver a la app). */
+.aviso-version {
+  position: fixed; z-index: 45; left: 12px; right: 12px; top: calc(var(--sup) + 8px); margin: 0 auto; max-width: 520px;
+  display: flex; align-items: center; gap: 10px; padding: 8px 6px 8px 16px; border-radius: 22px; color: var(--tinta);
+  animation: materializar 200ms var(--entrada) both;
+}
+.aviso-version > span { flex: 1; min-width: 0; font-weight: 700; font-size: 15px; }
+.aviso-version .btn { min-height: var(--toque); padding: 8px 14px; font-size: 15px; }
+
 /* ---------------------------------------------------------------- tema oscuro (anochecer)
    Sigue al sistema; en Ajustes se puede fijar «Claro (sol)» u «Oscuro». Mismos objetivos de contraste (≥ 7:1 el texto
    principal). El mapa no cambia: las capas son datos. Los gráficos SVG (perfil, lluvia) y los dibujos van sobre papel claro. */

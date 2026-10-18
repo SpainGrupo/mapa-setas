@@ -215,6 +215,50 @@ try {
       await ctx.close();
     }
   }
+  // Estado de navegación: al recargar (como cuando iOS descarta la página en segundo plano) vuelve donde estaba.
+  {
+    const ctx = await nav.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, locale: 'es-ES', timezoneId: 'Europe/Madrid',
+      geolocation: { latitude: PUNTO.lat, longitude: PUNTO.lon }, permissions: ['geolocation'] });
+    await ctx.route('**/api.open-meteo.com/**', (r) => r.fulfill({ status: 503, body: '' }));
+    await ctx.route('https://www.ign.es/**', (r) => r.fulfill({ status: 404, body: '' }));
+    const p = await ctx.newPage();
+    p.on('pageerror', (e) => errores.push(String(e)));
+    const listo = async () => {
+      const b = p.getByRole('button', { name: 'Entendido' });
+      if (await b.isVisible({ timeout: 4000 }).catch(() => false)) await b.click();
+      await p.waitForFunction(() => document.body.dataset.mapa === 'listo', null, { timeout: 60000 });
+    };
+    await p.goto(URL_APP); await listo();
+    await p.locator('.pestanas [data-p=p-hoy]').click();
+    await p.waitForSelector('#hoy-dias .chip');
+    const dia = await p.locator('#hoy-dias .chip').nth(2).getAttribute('data-fecha');
+    await p.locator('#hoy-dias .chip').nth(2).click();
+    const especies = await p.$$eval('#hoy-especie option', (os) => os.map((o) => o.value).filter((v) => !v.startsWith('grupo:')));
+    const especie = especies[Math.min(3, especies.length - 1)];
+    await p.locator('#hoy-especie').selectOption(especie);
+    await p.waitForTimeout(500);
+    await p.evaluate(() => { const e = document.getElementById('p-hoy'); e.scrollTop = 700; e.dispatchEvent(new Event('scroll')); });
+    const y = await p.evaluate(() => document.getElementById('p-hoy').scrollTop);
+    await p.waitForTimeout(700);
+    await p.reload(); await listo();
+    await p.waitForTimeout(1500);
+    const tras = await p.evaluate(() => ({ activa: document.querySelector('.pantalla.activa')?.id,
+      dia: document.querySelector('#hoy-dias .chip.activa')?.dataset.fecha, especie: document.querySelector('#hoy-especie').value,
+      y: document.getElementById('p-hoy').scrollTop }));
+    comprobar(tras.activa === 'p-hoy' && tras.dia === dia && tras.especie === especie && Math.abs(tras.y - y) <= 2,
+      `tras recargar vuelve a Hoy con el día ${dia}, la seta ${especie} y el scroll (${tras.y} ≈ ${y})`);
+    await p.locator('.pestanas [data-p=p-mapa]').click();
+    await p.evaluate(() => window.__setas.mapa.jumpTo({ center: [-5.1234, 36.6543], zoom: 13.4 }));
+    await p.locator('#btn-capas').click();
+    await p.waitForTimeout(700);
+    await p.reload(); await listo();
+    await p.waitForTimeout(800);
+    const m = await p.evaluate(() => { const c = window.__setas.mapa.getCenter(); return { lon: c.lng, lat: c.lat, z: window.__setas.mapa.getZoom(),
+      activa: document.querySelector('.pantalla.activa')?.id, capas: !document.getElementById('capas').hidden }; });
+    comprobar(m.activa === 'p-mapa' && Math.abs(m.lon + 5.1234) < 1e-3 && Math.abs(m.lat - 36.6543) < 1e-3 && Math.abs(m.z - 13.4) < 0.01 && m.capas,
+      `tras recargar, el mapa sigue en el mismo sitio (${m.lat.toFixed(4)}, ${m.lon.toFixed(4)}, z ${m.z.toFixed(2)}) con «Capas» abierta`);
+    await ctx.close();
+  }
   comprobar(!errores.length, `sin errores de página${errores.length ? `: ${errores.join(' | ')}` : ''}`);
   if (fallos.length) throw new Error(`Falla (${fallos.length}):\n- ${fallos.join('\n- ')}`);
   console.log('e2e disposición OK');

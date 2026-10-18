@@ -299,6 +299,18 @@ function pintarDias(hoy: string, fecha: string) {
   el.append(b, TEXTO_CONFIANZA[c]);
 }
 
+/** Día y seta elegidos en «Hoy» (para guardar el estado de navegación). */
+export function estadoHoy(): { especie?: string; dia?: string } {
+  const especie = document.querySelector<HTMLSelectElement>('#hoy-especie')?.value || undefined;
+  return { ...(especie ? { especie } : {}), ...(fechaSel ? { dia: fechaSel } : {}) };
+}
+let especiePendiente: string | null = null;
+/** Restaura día y seta de «Hoy» tras una recarga (el día se acota a los que hay; la seta, si existe en la región). */
+export function restaurarHoy(e: { especie?: string; dia?: string }) {
+  if (e.dia) fechaSel = e.dia;
+  if (e.especie) especiePendiente = e.especie;
+}
+
 export function elegirDia(f: string) {
   fechaSel = acotarDia(ctx.hoy(), f);
   pintarHoy();
@@ -532,6 +544,10 @@ export async function pintarHoy() {
     const valores = [...sel.options].map((o) => o.value);
     sel.value = previo && valores.includes(previo) ? previo
       : (m.especies.find((e) => e.id.startsWith('boletus_'))?.id ?? m.especies[0]?.id ?? '');
+  }
+  if (especiePendiente) {
+    if ([...sel.options].some((o) => o.value === especiePendiente)) sel.value = especiePendiente;
+    especiePendiente = null;
   }
   const datos = await cargarSitios();
   if (fecha !== fechaSel) return;   // otro día elegido mientras cargaba

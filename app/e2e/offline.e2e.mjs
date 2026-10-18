@@ -677,7 +677,7 @@ try {
     && /hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa/.test(await p.locator('#hoy-explicacion-puntos').textContent())
     && /(Monte público|Probablemente privado)/.test(f0.t), '«Puntuación del día» (antes «Calidad del monte») con su explicación y la titularidad en la fila');
   comprobar(/de 100/.test(f0.t) && /a pie/.test(f0.t) && /km de (Marbella|ti)/.test(f0.t) && /(Fácil|Moderada|Difícil|Muy difícil)/.test(f0.t) && /Buen momento|Esperar|Sin datos/.test(f0.t)
-    && f0.botones.join('|') === 'Ruta a pie|Más acciones|Ver en mapa|Cómo llegar en coche|Guardar' && f0.menuOculto && f0.img.includes('miniaturas/'),
+    && f0.botones.join('|') === 'Ruta a pie|Más acciones|Ver en mapa|Cómo llegar en coche|Guardar|Navegar aquí' && f0.menuOculto && f0.img.includes('miniaturas/'),
     'cada fila: miniatura, puntuación, estado, tiempo a pie, subida, dificultad, distancia, «Ruta a pie» y el resto en «Más acciones»');
   // Tocar el nombre de la seta en una fila del Top abre su ficha (la misma que el calendario).
   const espFila = await fila0.locator('.tf-especie').first().getAttribute('data-especie');

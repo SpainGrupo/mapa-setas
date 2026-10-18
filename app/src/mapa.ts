@@ -416,3 +416,32 @@ export function ponerBase(mapa: MapaML, base: Base, sombreado: boolean) {
   mapa.setLayoutProperty('pnoa', 'visibility', sat ? 'visible' : 'none');
   verCapa(mapa, ['sombreado'], !sat && sombreado);
 }
+
+// ---------------------------------------------------------------- mini-mapa (Hoy e «Ir al sitio»)
+
+/**
+ * Mapa pequeño con el mismo estilo y las mismas fuentes PMTiles (OPFS o HTTP) que el principal, sin sus popups ni las
+ * capas del semáforo, de titularidad ni de citas. Lo usan el mapa del Top de Hoy y la vista «Ir al sitio», que
+ * comparten una sola instancia (minimapa.ts).
+ */
+export function crearMiniMapa(contenedor: HTMLElement, m: ManifestApp): MapaML {
+  const [o, s, e, n] = m.bbox;
+  const mx = (e - o) * 0.25, my = (n - s) * 0.25;
+  const mapa = new maplibregl.Map({
+    container: contenedor,
+    style: estilo(false, m.rutas ?? null, m.restricciones?.capa ?? null, null, null),
+    bounds: [[o, s], [e, n]],
+    maxBounds: [[o - mx, s - my], [e + mx, n + my]],
+    minZoom: 7,
+    maxZoom: 17,
+    attributionControl: { compact: true, customAttribution: m.atribuciones.mapa || undefined },
+    dragRotate: false,
+    pitchWithRotate: false,
+  });
+  mapa.touchZoomRotate.disableRotation();
+  mapa.on('styleimagemissing', (ev: { id: string }) => {
+    if (ev.id === RAYADO && !mapa.hasImage(RAYADO)) mapa.addImage(RAYADO, imagenRayado(), { pixelRatio: 2 });
+  });
+  mapa.once('load', () => contenedor.querySelector('.maplibregl-compact-show')?.classList.remove('maplibregl-compact-show'));
+  return mapa;
+}

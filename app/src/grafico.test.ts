@@ -23,6 +23,18 @@ describe('gráfico', () => {
     expect(dato).toBe(textoDia(serie[30], HOY));
     expect(dato).toMatch(/^mar 13\/10 \(hoy\) · lluvia 12 mm · máx 22 °C · mín 10 °C$/);
   });
+  it('ventana actual y próxima: dos franjas separadas con su etiqueta; la próxima, con barra a trazos', () => {
+    const div = document.createElement('div');
+    pintarGrafico(div, serie, HOY, [{ desde: sumarDias(HOY, -2), hasta: sumarDias(HOY, 1), etiqueta: 'ventana actual' },
+      { desde: sumarDias(HOY, 3), hasta: sumarDias(HOY, 5), etiqueta: 'próxima', proxima: true }], () => {});
+    const actual = [...div.querySelectorAll('.banda-ventana')], prox = [...div.querySelectorAll('.banda-proxima')];
+    expect(actual.length).toBe(2);          // temperatura y lluvia
+    expect(prox.length).toBe(2);
+    const fin = Number(actual[0].getAttribute('x')) + Number(actual[0].getAttribute('width'));
+    expect(Number(prox[0].getAttribute('x'))).toBeGreaterThan(fin);   // hay hueco: no parecen una sola ventana
+    expect([...div.querySelectorAll('text')].map((t) => t.textContent)).toEqual(expect.arrayContaining(['ventana actual', 'próxima']));
+    expect(div.querySelector('line[stroke-dasharray]')).not.toBeNull();
+  });
   it('sin humedad del suelo no hay tercer panel; con ella, línea propia y su dato al tocar', () => {
     const div = document.createElement('div');
     pintarGrafico(div, serie, HOY, null, () => {});

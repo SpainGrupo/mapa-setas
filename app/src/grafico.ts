@@ -34,12 +34,14 @@ export function textoDia(d: Dia, hoy: string): string {
   return `${sem} ${ddmm(d.fecha)}${cuando} · lluvia ${num1(d.lluvia)} mm · máx ${num1(d.tmax)} °C · mín ${num1(d.tmin)} °C${suelo}`;
 }
 
+export interface VentanaGrafico { desde: string; hasta: string; etiqueta: string; proxima?: boolean }
 /**
  * Dibuja el gráfico en `contenedor` (sustituye lo que hubiera). `ventana` = fechas de la ventana de la especie
- * (si hay episodio). `alDato` recibe el texto del día señalado al tocar/pasar el dedo.
+ * (si hay episodio); puede ser una lista: la actual y la próxima (esta, más clara y con la barra a trazos), cada una con
+ * su etiqueta, para que dos ventanas seguidas se vean como dos. `alDato` recibe el texto del día al tocar/pasar el dedo.
  */
 export function pintarGrafico(contenedor: HTMLElement, serie: Dia[], hoy: string,
-  ventana: { desde: string; hasta: string; etiqueta: string } | null, alDato: (t: string) => void) {
+  ventana: VentanaGrafico | VentanaGrafico[] | null, alDato: (t: string) => void) {
   contenedor.replaceChildren();
   if (!serie.length) return;
   const n = serie.length;
@@ -73,18 +75,24 @@ export function pintarGrafico(contenedor: HTMLElement, serie: Dia[], hoy: string
     el('rect', { x: x0, y: T0 - 14, width: W - DER - x0, height: FONDO - T0 + 14, fill: '#000', 'fill-opacity': 0.06 }, svg);
     el('text', { x: W - DER - 2, y: T0 - 4, 'text-anchor': 'end', 'font-size': 12, fill: TINTA_2 }, svg, 'previsión');
   }
-  if (ventana) {
-    const a = Math.max(0, iDe(ventana.desde)), b = Math.min(n - 1, iDe(ventana.hasta));
-    if (b >= a) {
-      const x0 = IZQ + a * slot, x1 = IZQ + (b + 1) * slot;
-      for (const [y0, y1] of [[T0, T1], [L0, L1], ...(conSuelo ? [[S0, S1]] : [])]) {
-        el('rect', { x: x0, y: y0, width: x1 - x0, height: y1 - y0, fill: COLORES_GRAFICO.ventana, 'fill-opacity': 0.14 }, svg);
-      }
-      el('rect', { x: x0, y: FONDO + 2, width: x1 - x0, height: 4, rx: 2, fill: COLORES_GRAFICO.ventana }, svg);
-      // Etiqueta dentro de la banda, bajo el título (la de «previsión» va encima): halo blanco para leerse sobre las líneas.
-      el('text', { x: Math.min(x0 + 3, W - DER - 70), y: T0 + 13, 'font-size': 12, fill: TINTA, 'font-weight': 700,
-        stroke: '#fff', 'stroke-width': 3, 'paint-order': 'stroke' }, svg, ventana.etiqueta);
+  let finEtiqueta = -Infinity;
+  for (const v of ventana ? (Array.isArray(ventana) ? ventana : [ventana]) : []) {
+    const a = Math.max(0, iDe(v.desde)), b = Math.min(n - 1, iDe(v.hasta));
+    if (b < a) continue;
+    const x0 = IZQ + a * slot, x1 = IZQ + (b + 1) * slot;
+    for (const [y0, y1] of [[T0, T1], [L0, L1], ...(conSuelo ? [[S0, S1]] : [])]) {
+      el('rect', { x: x0, y: y0, width: x1 - x0, height: y1 - y0, fill: COLORES_GRAFICO.ventana, 'fill-opacity': v.proxima ? 0.08 : 0.14,
+        class: v.proxima ? 'banda-proxima' : 'banda-ventana' }, svg);
     }
+    if (v.proxima) el('line', { x1: x0, x2: x1, y1: FONDO + 4, y2: FONDO + 4, stroke: COLORES_GRAFICO.ventana, 'stroke-width': 4, 'stroke-dasharray': '6 4' }, svg);
+    else el('rect', { x: x0, y: FONDO + 2, width: x1 - x0, height: 4, rx: 2, fill: COLORES_GRAFICO.ventana }, svg);
+    // Etiqueta dentro de la banda, bajo el título (la de «previsión» va encima): halo blanco para leerse sobre las líneas.
+    // Si choca con la anterior, baja una línea.
+    const xt = Math.min(x0 + 3, W - DER - 70);
+    const yt = xt < finEtiqueta + 6 ? T0 + 28 : T0 + 13;
+    el('text', { x: xt, y: yt, 'font-size': 12, fill: TINTA, 'font-weight': 700,
+      stroke: '#fff', 'stroke-width': 3, 'paint-order': 'stroke' }, svg, v.etiqueta);
+    finEtiqueta = xt + v.etiqueta.length * 7;
   }
 
   // Rejilla y ejes (recesivos)

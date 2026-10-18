@@ -15,14 +15,14 @@ import { textoChip, type Restriccion } from './restricciones';
 import { altitudes, aparcamiento, centroCelda, consultar, nombreVia, simplificar, textoSubida, textoTiempo, trazar, urlGoogleCoche, type Celda } from './acceso';
 import { dificultad, NOMBRE_DIFICULTAD, perfil, seguir, textoDistancia, type Dificultad, type Perfil, type Seguimiento } from './ruta';
 import { pintarPerfil } from './perfil-grafico';
-import { bloqueTopGuia, iniciarHoy, pintarHoy, resumenHoy, sitiosCandidatos } from './hoy-ui';
+import { bloqueTopGuia, estadoHoy, iniciarHoy, pintarHoy, restaurarHoy, resumenHoy, sitiosCandidatos } from './hoy-ui';
 import { diasEspecie, puntoReferencia, referenciaVista, ventanaEspecie, type DiaVentana, type PuntoRef, type Ventana, type Vista } from './ventana-especie';
 import { detallesTitularidad, esPublico, normaTitularidad, notaTitularidad, ponerTextosTitularidad, TEXTO_TITULARIDAD, textoTitularidad, type Titularidad } from './titularidad';
 import { AVISO_CITAS, COLOR_ORIGEN, NOMBRE_ORIGEN, ORIGENES_CITA } from './citas';
 import { bloqueCuando } from './ventana-ui';
 import type { SitiosJson } from './ranking';
 import { datosAcceso } from './acceso-datos';
-import { iniciarSelectorEspecie, ordenSelector, pintarSelectorEspecie } from './selector-especie';
+import { fotoMini, iniciarSelectorEspecie, ordenSelector, pintarSelectorEspecie } from './selector-especie';
 import { Gps } from './gps';
 import { borrarMapas, descargarMapas, estadoDescarga, moverEnOpfs } from './opfs';
 import { borrarSitio, guardarSitio, guardarVarios, leerSitio, listarSitios } from './sitios';
@@ -32,14 +32,33 @@ import type { Feature } from 'geojson';
 import { claveMeteo, edadHoras, fechaMadrid, obtener, renombrarCache, CADUCIDAD_H, type DatosMeteo, type PuntoMeteo } from './meteo';
 import { bandaAltitud, ddmm, humedadAcumulada, semaforo, sumarDias, textoBanda, type ResultadoSemaforo } from './semaforo';
 import { expresionColores, haceTexto, NOMBRE_ESTADO, puntoMasCercano } from './zona';
-import { pintarGrafico } from './grafico';
+import { pintarGrafico, type VentanaGrafico } from './grafico';
 import { abrirFicha, cargarGuia, fichasGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, mostrarGuia, pintarCreditos, ponerBloqueTiempo, ponerBloqueTop, type EstadoFotos } from './guia-ui';
 import { binomio, especieMapaDeFicha, fichaDeEspecieMapa } from './guia';
 import { iniciarReconocer, mostrarReconocer, pintarAjustesModelo } from './reconocer-ui';
 import { elegirCcaaGemini } from './gemini';
 import { Hoja } from './hoja';
+import { guardarNav, leerNav, type EstadoNav } from './estado-nav';
 
-registerSW({ immediate: true });
+// Service worker en modo «prompt» (vite.config.ts): una versión nueva queda en espera y se ofrece con un aviso; la página
+// solo se recarga si el usuario pulsa «Nueva versión: actualizar». Antes (autoUpdate + skipWaiting) iOS recargaba la app
+// al volver a ella y se perdía lo que se estaba viendo.
+const actualizarSW = registerSW({
+  immediate: true,
+  onNeedRefresh() { document.getElementById('aviso-version')!.hidden = false; },
+});
+document.getElementById('btn-actualizar')!.addEventListener('click', () => {
+  guardarEstadoNav();
+  document.getElementById('aviso-version')!.hidden = true;
+  // Solo aquí, porque lo ha pedido el usuario: en cuanto la versión nueva toma el control se recarga (y, si el
+  // navegador no avisa del cambio, a los 4 s de todas formas).
+  let recargada = false;
+  const recargar = () => { if (!recargada) { recargada = true; location.reload(); } };
+  navigator.serviceWorker?.addEventListener('controllerchange', recargar, { once: true });
+  window.setTimeout(recargar, 4000);
+  void actualizarSW(true);
+});
+document.getElementById('btn-actualizar-luego')!.addEventListener('click', () => { document.getElementById('aviso-version')!.hidden = true; });
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 /** Texto de una cifra grande: los números en <b> (más grandes), las unidades normales. textContent no cambia. */
@@ -93,10 +112,77 @@ function irA(id: string) {
   if (id === 'p-hoy') pintarHoy();
   if (id === 'p-guia') mostrarGuia();
   if (id === 'p-reconocer') mostrarReconocer();
+  guardarEstadoNavPronto();
 }
+
+// Alto real de la cabecera fija de cada pantalla (incluye el notch): la usa el CSS para que lo que se trae a la vista
+// con scroll no quede debajo (scroll-padding-top en .pantalla).
+const altoCabeceras = new ResizeObserver(() => document.querySelectorAll<HTMLElement>('.pantalla').forEach((p) => {
+  const alto = Math.max(0, ...[...p.querySelectorAll<HTMLElement>('.cab, .ficha-fija')].map((c) => c.offsetHeight));
+  if (alto) p.style.setProperty('--cab-alto', `${alto}px`);
+}));
+const vigilarCabeceras = () => document.querySelectorAll<HTMLElement>('.pantalla .cab, .pantalla .ficha-fija').forEach((c) => altoCabeceras.observe(c));
+vigilarCabeceras();
+new MutationObserver(vigilarCabeceras).observe($('#p-guia'), { childList: true, subtree: true });
 
 document.querySelectorAll<HTMLButtonElement>('.pestanas button').forEach((b) =>
   b.addEventListener('click', () => (b.dataset.p ? irA(b.dataset.p) : avisar(`${b.dataset.prox}: próximamente`))));
+
+// ---------------------------------------------------------------- estado de navegación (sobrevive a recargas)
+// iOS descarta la página en segundo plano y al volver la carga de nuevo: se guarda dónde estaba (estado-nav.ts) al
+// cambiar de pestaña, al hacer scroll, al mover el mapa y al salir de la app, y se restaura al arrancar.
+const sesionNav = () => sessionStorage, localNav = () => localStorage;
+const navGuardada: EstadoNav | null = leerNav(sesionNav, localNav);
+const scrolls: Record<string, number> = { ...(navGuardada?.scroll ?? {}) };
+let navRestaurada = false;   // hasta restaurar, no se pisa lo guardado con el estado inicial
+function guardarEstadoNav() {
+  if (!navRestaurada) return;
+  const c = mapa?.getCenter();
+  const est: EstadoNav = { v: 1, t: Date.now(), region: hayRegionActiva() ? regionActiva() : undefined,
+    pantalla: document.querySelector('.pantalla.activa')?.id,
+    scroll: Object.fromEntries(Object.entries(scrolls).filter(([, v]) => v > 0)),
+    mapa: mapa && c ? { lon: c.lng, lat: c.lat, zoom: mapa.getZoom(), bearing: mapa.getBearing(), pitch: mapa.getPitch() } : navGuardada?.mapa,
+    capas: !$('#capas').hidden || undefined, hoy: estadoHoy() };
+  guardarNav(est, sesionNav, localNav);
+}
+let tNav = 0;
+function guardarEstadoNavPronto() { clearTimeout(tNav); tNav = window.setTimeout(guardarEstadoNav, 400); }
+document.querySelectorAll<HTMLElement>('.pantalla').forEach((p) => p.addEventListener('scroll', () => {
+  if (!p.classList.contains('activa')) return;
+  scrolls[p.id] = Math.round(p.scrollTop);
+  guardarEstadoNavPronto();
+}, { passive: true }));
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') guardarEstadoNav(); });
+window.addEventListener('pagehide', guardarEstadoNav);
+document.addEventListener('click', guardarEstadoNavPronto, { passive: true });
+document.addEventListener('change', guardarEstadoNavPronto, { passive: true });
+
+/** Lleva el scroll de la pantalla a `y` cuando el contenido ya llega (se pinta en diferido): reintenta unos segundos,
+ * salvo que el usuario haya hecho scroll entretanto. */
+function restaurarScroll(id: string, y: number) {
+  const p = document.getElementById(id);
+  if (!p || !(y > 0)) return;
+  let intentos = 0;
+  const paso = () => {
+    if (!p.classList.contains('activa')) return;
+    p.scrollTop = y;
+    scrolls[id] = Math.round(p.scrollTop);
+    if (Math.abs(p.scrollTop - y) > 2 && ++intentos < 12) window.setTimeout(paso, 250);
+  };
+  requestAnimationFrame(paso);
+}
+/** Al arrancar (con la región y el mapa listos): pestaña, día y seta de Hoy, hoja de capas y scroll. El mapa se
+ * recoloca antes, al crearse (iniciarMapa). */
+function restaurarNav() {
+  const n = navGuardada;
+  if (!manifest) { navRestaurada = true; return; }
+  if (n?.hoy) restaurarHoy(n.hoy);
+  if (n?.pantalla && document.getElementById(n.pantalla) && n.pantalla !== 'p-mapa') irA(n.pantalla);
+  else if (n?.capas && n.region === regionActiva()) abrirCapas(true);
+  navRestaurada = true;
+  if (n?.pantalla && n.scroll?.[n.pantalla]) restaurarScroll(n.pantalla, n.scroll[n.pantalla]);
+  guardarEstadoNav();
+}
 
 // ---------------------------------------------------------------- primer arranque
 
@@ -211,6 +297,9 @@ async function iniciarMapa() {
   pintarSelectorEspecie();
 
   mapa = M.crearMapa($('#mapa'), manifest);
+  const pos = navGuardada?.mapa;
+  if (pos && navGuardada?.region === regionActiva()) mapa.jumpTo({ center: [pos.lon, pos.lat], zoom: pos.zoom, bearing: pos.bearing ?? 0, pitch: pos.pitch ?? 0 });
+  mapa.on('moveend', guardarEstadoNavPronto);
   gps = new Gps(mapa, (m) => avisar(m));
   if (import.meta.env.DEV || E2E) (window as any).__setas = { mapa, origenes: M.origenes,
     region: () => ({ activa: regionActiva(), regiones: regiones.map((r) => r.id) }), meteo: () => ({ datos: meteo, origen: meteoOrigen, punto: puntoSel }),
@@ -835,6 +924,7 @@ async function pintarLista(l?: Sitio[]) {
     const est = document.createElement('div'); est.className = 'est'; est.textContent = '★'.repeat(s.estrellas) + '☆'.repeat(3 - s.estrellas);
     const meta = document.createElement('div'); meta.className = 'meta';
     meta.textContent = `${nombres[s.especie] ?? 'Sin especie'} · ${new Date(s.fecha).toLocaleDateString('es-ES')}`;
+    const fmS = s.especie ? fotoMini(s.especie, nombres[s.especie] ?? s.especie) : null; if (fmS) meta.prepend(fmS);
     li.append(est);
     if (s.foto) { const img = document.createElement('img'); const u = URL.createObjectURL(s.foto); urlsLista.push(u); img.src = u; img.alt = ''; li.append(img); }
     li.append(meta);
@@ -976,12 +1066,6 @@ function textoMeteoCorto(): string {
   return `Tiempo ${navigator.onLine ? '' : 'guardado, '}actualizado ${haceTexto(h)}${h > CADUCIDAD_H ? ' · datos antiguos: semáforo en gris' : ''}.`;
 }
 
-function fechasTexto(r: ResultadoSemaforo): string {
-  if (r.estado === 'verde' && r.hasta) return `Hasta el ${ddmm(r.hasta)} aprox.`;
-  if (r.estado === 'amarillo' && r.desde) return `Desde el ${ddmm(r.desde)} aprox.`;
-  if (r.estado === 'amarillo' && r.hasta) return `Ventana hasta el ${ddmm(r.hasta)} aprox.`;
-  return '';
-}
 
 function pintarSemaforoMapa() {
   if (!mapa?.getLayer('semaforo')) return;
@@ -1016,8 +1100,9 @@ function pintarTarjeta() {
   if ($('#tarjeta-zona').hidden || !puntoSel) return;
   const r = estadoEn(puntoSel, especieSel());
   const punto = document.createElement('span'); punto.className = 'punto-estado'; punto.dataset.estado = r?.estado ?? 'gris'; punto.setAttribute('aria-hidden', 'true');
-  $('#tz-estado').replaceChildren(punto, r ? `${nombres[especieSel()]}: ${NOMBRE_ESTADO[r.estado]}` : `${nombres[especieSel()]}: sin datos del tiempo`);
-  $('#tz-motivo').textContent = r ? [r.motivo, fechasTexto(r)].filter(Boolean).join(' · ') : 'Conéctate y pulsa «Actualizar tiempo» en Zona.';
+  const fmTz = fotoMini(especieSel(), nombres[especieSel()] ?? especieSel());
+  $('#tz-estado').replaceChildren(punto, ...(fmTz ? [fmTz] : []), r ? `${nombres[especieSel()]}: ${NOMBRE_ESTADO[r.estado]}` : `${nombres[especieSel()]}: sin datos del tiempo`);
+  $('#tz-motivo').textContent = r ? r.motivo : 'Conéctate y pulsa «Actualizar tiempo» en Zona.';
 }
 $('#tz-cerrar').addEventListener('click', () => ($('#tarjeta-zona').hidden = true));
 $('#tz-ver').addEventListener('click', () => irA('p-zona'));
@@ -1073,11 +1158,10 @@ function pintarZona() {
     b.dataset.estado = r?.estado ?? 'gris';
     const ic = document.createElement('span'); ic.className = 'ic punto-estado'; ic.dataset.estado = r?.estado ?? 'gris'; ic.setAttribute('aria-hidden', 'true');
     const esp = document.createElement('span'); esp.className = 'esp'; esp.textContent = e.nombre;
+    const fmZ = fotoMini(e.id, e.nombre); if (fmZ) esp.prepend(fmZ);
     const est = document.createElement('span'); est.className = 'est'; est.textContent = r ? NOMBRE_ESTADO[r.estado] : 'Sin datos del tiempo';
     const mot = document.createElement('span'); mot.className = 'mot'; mot.textContent = r?.motivo ?? '';
     b.append(ic, esp, est, mot);
-    const f = r ? fechasTexto(r) : '';
-    if (f) { const fe = document.createElement('span'); fe.className = 'fechas'; fe.textContent = f; b.append(fe); }
     b.addEventListener('click', () => {
       const sel = $<HTMLSelectElement>('#sel-especie');
       if (sel.value === e.id) return;
@@ -1094,8 +1178,11 @@ function pintarZona() {
   const hoyF = hoyZona();
   const r = estadoEn(puntoSel, elegida);
   const reg = reglasDe(elegida);
-  const ventana = r?.episodio && reg ? { desde: sumarDias(r.episodio, reg.ventana_dias[0]), hasta: sumarDias(r.episodio, reg.ventana_dias[1]),
-    etiqueta: `ventana ${nombres[elegida]?.split(' ')[1] ?? ''}`.trim() } : null;
+  // Franja verde de la ventana que manda hoy y, si cae en la previsión, la de la próxima (la misma que nombra el motivo).
+  const ventana: VentanaGrafico[] = [];
+  if (r?.episodio && reg) ventana.push({ desde: sumarDias(r.episodio, reg.ventana_dias[0]), hasta: sumarDias(r.episodio, reg.ventana_dias[1]),
+    etiqueta: r.proxima ? 'ventana actual' : `ventana ${nombres[elegida]?.split(' ')[1] ?? ''}`.trim() });
+  if (r?.proxima) ventana.push({ desde: r.proxima.desde, hasta: r.proxima.hasta, etiqueta: 'próxima', proxima: true });
   pintarGrafico($('#grafico'), serie, hoyF, ventana, (t) => ($('#grafico-dato').textContent = t));
   const tabla = $<HTMLTableElement>('#tabla-dias');
   tabla.replaceChildren();
@@ -1382,5 +1469,6 @@ async function arrancar() {
   establecerActiva(id);
   iniciarSelectorRegion(opcionesRegion);
   await iniciarMapa();
+  restaurarNav();
 }
 arrancar().then(pintarAjustes).finally(() => guardarFotosSinConexion(pintarEstadoGuia));

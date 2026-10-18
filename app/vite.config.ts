@@ -8,7 +8,9 @@ export default defineConfig({
   worker: { format: 'es' },
   plugins: [
     VitePWA({
-      registerType: 'autoUpdate',
+      // «prompt»: una versión nueva espera y la app enseña «Nueva versión: actualizar»; solo recarga si el usuario pulsa.
+      // Con «autoUpdate» + skipWaiting, iOS recargaba la página al volver a la app (y se perdía lo que se estaba viendo).
+      registerType: 'prompt',
       injectRegister: false,
       includeAssets: ['iconos/*.png', 'fonts/**/*.pbf', 'sprites/*'],
       manifest: {
@@ -52,7 +54,7 @@ export default defineConfig({
         navigateFallbackDenylist: [/\/data\//, /\/guia\/fotos\//],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
-        skipWaiting: true,
+        skipWaiting: false,
       },
     }),
   ],

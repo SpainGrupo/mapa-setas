@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Mapa de setas" xmlns="http://www.topografix.com/GPX/1/1" xmlns:setas="https://setas.local/gpx/1">
+  <wpt lat="36.60184" lon="-4.82185">
+    <time>2026-10-18T12:00:00Z</time>
+    <name>★★★ boletus_aereus</name>
+    <desc>18/10: verde, puntuación 81 (la mejor del día). Ventana por la lluvia del 04/10, cierra ~24/10. Rebozuelos desde el 21/10. Rúsula carbonera también en verde. 22 min a pie, 53 m. PRIVADO, coto.</desc>
+    <extensions><setas:sitio id="0dcd6818-60f2-403c-8c30-3da4a2fb78bf" estrellas="3" especie="boletus_aereus"/></extensions>
+  </wpt>
+  <wpt lat="36.60365" lon="-4.82189">
+    <time>2026-10-18T12:00:00Z</time>
+    <name>★★★ amanita_caesarea</name>
+    <desc>18/10: verde, puntuación 70, a 200 m del aereus. 19 min, 42 m. PRIVADO, coto (con paso).</desc>
+    <extensions><setas:sitio id="1fe4f649-33e5-49cf-b7f8-18df23c21c06" estrellas="3" especie="amanita_caesarea"/></extensions>
+  </wpt>
+  <wpt lat="36.60001" lon="-4.82404">
+    <time>2026-10-18T12:00:00Z</time>
+    <name>★☆☆ boletus_aestivalis</name>
+    <desc>18/10: verde, puntuación 12, misma zona que el aereus. 18 min, 38 m. PRIVADO, coto.</desc>
+    <extensions><setas:sitio id="6b9e5591-d390-4fbc-8590-a6ac2c26b596" estrellas="1" especie="boletus_aestivalis"/></extensions>
+  </wpt>
+  <wpt lat="36.52077" lon="-4.75852">
+    <time>2026-10-18T12:00:00Z</time>
+    <name>★★★ amanita_caesarea</name>
+    <desc>18/10: verde, puntuación 71. Ojén: alcornocal con un 44 % de copas; busca la parte más arbolada (en el punto el satélite ve el 22 %). 13 min, casi llano. PRIVADO, coto.</desc>
+    <extensions><setas:sitio id="e17e7172-9407-4f84-bd81-57161edd98d9" estrellas="3" especie="amanita_caesarea"/></extensions>
+  </wpt>
+  <wpt lat="36.61192" lon="-4.8109">
+    <time>2026-10-18T12:00:00Z</time>
+    <name>★★☆ boletus_aestivalis</name>
+    <desc>18/10: verde, puntuación 37. 13 min, 16 m. PRIVADO, coto.</desc>
+    <extensions><setas:sitio id="22b1f92f-ce30-455a-abf5-84e4cc31ed05" estrellas="2" especie="boletus_aestivalis"/></extensions>
+  </wpt>
+  <wpt lat="36.61157" lon="-4.83437">
+    <time>2026-10-18T12:00:00Z</time>
+    <name>★☆☆ boletus_aestivalis</name>
+    <desc>18/10: verde, puntuación 8, solo si pasas cerca. 9 min. PRIVADO, coto.</desc>
+    <extensions><setas:sitio id="8c6729e7-2e2a-4672-9633-18f51e7784d0" estrellas="1" especie="boletus_aestivalis"/></extensions>
+  </wpt>
+  <wpt lat="36.64175" lon="-4.54986">
+    <time>2026-10-18T12:00:00Z</time>
+    <name>★★★ suillus_collinitus</name>
+    <desc>18/10: verde, puntuación 88. También S. bellinii en verde. PÚBLICO: monte de la Junta La Mezquita y Puerto Blanquillo.</desc>
+    <extensions><setas:sitio id="dedfc26c-93e6-4901-b9f2-c8d1cbb83511" estrellas="3" especie="suillus_collinitus"/></extensions>
+  </wpt>
+  <wpt lat="36.62624" lon="-4.56409">
+    <time>2026-10-18T12:00:00Z</time>
+    <name>★★★ suillus_collinitus</name>
+    <desc>18/10: verde, puntuación 83. PÚBLICO: monte de la Junta La Mezquita y Puerto Blanquillo.</desc>
+    <extensions><setas:sitio id="7c18b870-31ea-4ecb-b67a-145c890fced1" estrellas="3" especie="suillus_collinitus"/></extensions>
+  </wpt>
+  <wpt lat="36.63868" lon="-4.57777">
+    <time>2026-10-18T12:00:00Z</time>
+    <name>★★☆ suillus_collinitus</name>
+    <desc>18/10: verde, puntuación 77. PRIVADO.</desc>
+    <extensions><setas:sitio id="f8db08ac-d855-432c-aad3-ec5694df08e7" estrellas="2" especie="suillus_collinitus"/></extensions>
+  </wpt>
+  <wpt lat="36.64477" lon="-4.52532">
+    <time>2026-10-18T12:00:00Z</time>
+    <name>★☆☆ suillus_granulatus</name>
+    <desc>18/10: verde, especie aún sin validar con citas. PÚBLICO: monte municipal Sierra de Churriana.</desc>
+    <extensions><setas:sitio id="c0748da8-f878-4d1f-b189-68d879f37d86" estrellas="1" especie="suillus_granulatus"/></extensions>
+  </wpt>
+</gpx>

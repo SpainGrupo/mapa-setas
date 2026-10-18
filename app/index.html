@@ -133,6 +133,7 @@
       <div id="tarjeta-zona" class="tarjeta-zona vidrio" role="region" aria-label="Cómo va la zona tocada" hidden>
         <div class="tz-texto"><b id="tz-estado"></b><span id="tz-motivo"></span><p id="tz-titularidad" class="chip-titularidad tz-titularidad" role="note" hidden></p></div>
         <button id="tz-ver" class="btn btn-primario" type="button">Ver zona</button>
+        <button id="tz-navegar" class="btn" type="button">Navegar aquí</button>
         <button id="tz-cerrar" class="btn-x" type="button"><svg class="ico" aria-hidden="true"><use href="#i-cerrar"/></svg><span class="sr">Cerrar</span></button>
       </div>
 
@@ -155,6 +156,7 @@
           <div class="ta-botones">
             <button id="ta-coche" class="btn" type="button"><svg class="ico" aria-hidden="true"><use href="#i-coche"/></svg>En coche</button>
             <button id="ta-ruta" class="btn btn-primario" type="button"><svg class="ico" aria-hidden="true"><use href="#i-caminar"/></svg>Ruta a pie</button>
+            <button id="ta-navegar" class="btn" type="button"><svg class="ico" aria-hidden="true"><use href="#i-centrar"/></svg>Navegar aquí</button>
           </div>
         </div>
       </div>
@@ -194,11 +196,15 @@
       <div class="cuerpo">
         <label class="campo"><span class="etq">Ver solo</span><select id="filtro-especie"></select></label>
         <ul id="lista-sitios" class="lista"></ul>
+        <h2 id="tit-rutas">Mis rutas</h2>
+        <p class="nota">Graba por dónde vas, con notas en el camino («aquí boletus», «suelo seco»). Se guarda en este teléfono y se exporta a GPX.</p>
+        <button id="btn-grabar-ruta" class="btn btn-primario btn-ancho" type="button"><svg class="ico" aria-hidden="true"><use href="#i-caminar"/></svg>Grabar ruta</button>
+        <ul id="lista-rutas" class="lista"></ul>
         <h2>Exportar e importar</h2>
         <div class="fila-botones">
           <button id="btn-gpx" class="btn" type="button">Exportar GPX</button>
           <button id="btn-json" class="btn" type="button">Exportar JSON</button>
-          <label class="btn">Importar<input id="inp-importar" type="file" accept=".gpx,.json,application/gpx+xml,application/json" hidden /></label>
+          <label class="btn">Importar<input id="inp-importar" type="file" accept=".gpx,.json,.kml,application/gpx+xml,application/json,application/vnd.google-earth.kml+xml" hidden /></label>
         </div>
       </div>
     </section>
@@ -239,6 +245,8 @@
         <ol id="top-especie" class="tops"></ol>
         <button id="hoy-exportar" class="btn btn-ancho" type="button" aria-expanded="false" aria-controls="exportar-dia"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>Exportar día</button>
         <section id="exportar-dia" class="exportar-dia" hidden aria-label="Exportar los sitios del día"></section>
+        <button id="hoy-ver-mapa" class="btn btn-ancho" type="button" aria-expanded="false" aria-controls="hoy-mapa"><svg class="ico" aria-hidden="true"><use href="#i-mapa"/></svg>Ver en el mapa</button>
+        <section id="hoy-mapa" class="hoy-mapa" hidden aria-label="Mapa de los sitios del listado"></section>
         <h2 id="tit-calendario">Calendario</h2>
         <p class="nota">Meses de temporada de cada seta y cómo va el día elegido. Toca una seta para ver su ficha y cuándo sale; «Sitios» te lleva a sus mejores sitios.</p>
         <div id="calendario" class="calendario"></div>

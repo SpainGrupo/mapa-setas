@@ -47,6 +47,8 @@ export interface ContextoHoy {
   elegirEnMapa: (especie: string) => void;
   /** Interruptor «solo montes públicos» (compartido con el mapa). */
   soloPublicos: () => boolean;
+  /** Vista «Ir al sitio» (brújula y GPS), si está disponible. */
+  irAlSitio?: (lat: number, lon: number, titulo: string) => void;
 }
 
 const CLAVE_DIF = 'setas:dificultad-max';
@@ -98,7 +100,7 @@ function boton(texto: string, f: () => void, clase = 'btn') {
   return b;
 }
 
-function miniatura(id: string): HTMLElement {
+export function miniatura(id: string): HTMLElement {
   const caja = document.createElement('span'); caja.className = 'miniatura-especie'; caja.setAttribute('aria-hidden', 'true');
   const e = ctx.manifest()?.especies.find((x) => x.id === id);
   const url = e ? datosEspecie(e).miniatura : null;
@@ -180,8 +182,12 @@ export function pintarListaTop(ul: HTMLElement, items: ItemTop[]) {
   ordenarTops(items, ordenTop(), (x) => clavesEntrada(x.principal, origen))
     .forEach((x, i) => ul.append(fila(x.principal, x.entradas, i + 1)));
   ul.dataset.orden = ordenTop();
-  if (ul.id === 'top-especie') cerrarExportar();
+  if (ul.id === 'top-especie') { cerrarExportar(); alRepintarTop?.(); }
 }
+
+/** Aviso al mapa del Top (hoy-mapa.ts) cada vez que se repinta «Los 10 mejores por seta». */
+let alRepintarTop: (() => void) | null = null;
+export const avisarRepintadoTop = (f: () => void) => { alRepintarTop = f; };
 
 function repintarListas() {
   for (const [ul, items] of listas) { if (ul.isConnected) pintarListaTop(ul, items); else listas.delete(ul); }
@@ -267,6 +273,7 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIEleme
   const menu = document.createElement('div'); menu.className = 'tf-menu'; menu.hidden = true;
   menu.append(boton('Ver en mapa', () => ctx.verEnMapa(esp, s.lat, s.lon), ''), boton('Cómo llegar en coche', () => ctx.coche(s.lat, s.lon), ''),
     boton('Guardar', () => ctx.guardar(esp, s.lat, s.lon), ''));
+  if (ctx.irAlSitio) menu.append(boton('Navegar aquí', () => ctx.irAlSitio!(s.lat, s.lon, entradas.map((e) => nombre(e.especie)).join(' · ')), 'tf-navegar'));
   mas.onclick = () => { menu.hidden = !menu.hidden; mas.setAttribute('aria-expanded', String(!menu.hidden)); };
   acc.append(ruta, mas, menu);
   li.append(acc);
@@ -672,6 +679,17 @@ function abrirExportar() {
   sitiosX.forEach((x, i) => { const li = document.createElement('li'); li.append(enlace(nombrePlacemark(x, i + 1), urlSitioGoogle(x))); ol.append(li); });
   const ayuda = document.createElement('p'); ayuda.className = 'nota exportar-ayuda'; ayuda.textContent = AYUDA_MY_MAPS;
   panel.append(nota, acc, estado, ol, ayuda);
+}
+
+/** Sitios de «Los 10 mejores por seta» en el orden de la pantalla (día, filtro seta/grupo y orden actuales), con lo
+ * que enseña la tarjeta del mapa del Top (hoy-mapa.ts). */
+export function topActualMapa() {
+  const ul = document.querySelector<HTMLElement>('#top-especie');
+  const origen = origenDistancias();
+  const items = ul ? ordenarTops(listas.get(ul) ?? [], ordenTop(), (x) => clavesEntrada(x.principal, origen)) : [];
+  return { fecha: ultimo?.fecha ?? acotarDia(ctx.hoy(), fechaSel), filtro: textoFiltro(),
+    sitios: items.map((it, i) => ({ ...sitioExport(it), pos: i + 1, id: it.principal.sitio.id, especies: it.entradas.map((e) => e.especie),
+      nombres: it.entradas.map((e) => nombre(e.especie)), lejania: textoLejania(it.principal.sitio) })) };
 }
 
 /** Resumen para el e2e (window.__setas.tops()). */

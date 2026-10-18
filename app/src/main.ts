@@ -38,6 +38,14 @@ import { binomio, especieMapaDeFicha, fichaDeEspecieMapa } from './guia';
 import { iniciarReconocer, mostrarReconocer, pintarAjustesModelo } from './reconocer-ui';
 import { elegirCcaaGemini } from './gemini';
 import { Hoja } from './hoja';
+import { celdaDe } from './acceso';
+import { abrirIr, estadoIr, iniciarIr } from './ir-sitio';
+import { estadoGrabacion, iniciarGrabar, pintarRutas } from './grabar-ui';
+import { elegirEnMapaTop, iniciarHoyMapa } from './hoy-mapa';
+import { abrirEnlaceDeUrl, iniciarEnlace, puntosEnlace } from './enlace-ui';
+import { puntosDeKml } from './enlaces';
+import type { SenderoApp } from './ir-sitio';
+import { mapaListo } from './minimapa';
 
 registerSW({ immediate: true });
 
@@ -87,7 +95,7 @@ function irA(id: string) {
     if (b.dataset.p === id) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
   });
   if (id === 'p-mapa') mapa?.resize();
-  if (id === 'p-sitios') pintarLista();
+  if (id === 'p-sitios') { pintarLista(); pintarRutas(); }
   if (id === 'p-ajustes') pintarAjustes();
   if (id === 'p-zona') pintarZona();
   if (id === 'p-hoy') pintarHoy();
@@ -221,6 +229,7 @@ async function iniciarMapa() {
     olvidarGps: () => { if (gps) gps.ultima = null; }, vista: vistaMapa,
     lugarHoy: (id: string) => lugarRef(id),
     sitioEditando: () => editando && { ...editando, foto: undefined }, accesoSitio: () => accesoSitio,
+    ir: estadoIr, grabacion: estadoGrabacion, elegirEnMapaTop, altitudEn, abrirIr, miniMapa: mapaListo, puntosEnlace, abrirEnlaceDeUrl,
     resumenSemaforo: () => Object.fromEntries((manifest?.especies ?? []).map((e) => {
       const n: Record<string, number> = { verde: 0, amarillo: 0, rojo: 0, gris: 0 };
       for (const p of puntosMeteo) n[estadoEn(p, e.id)?.estado ?? 'gris']++;
@@ -251,6 +260,7 @@ async function iniciarMapa() {
     ponerSoloPublicos(soloPublicos());
     aplicarFiltroCitas();
     document.body.dataset.mapa = 'listo';
+    abrirEnlaceDeUrl();
   });
   $('#sel-especie').addEventListener('change', aplicarIdoneidad);
   $('#rng-umbral').addEventListener('input', aplicarIdoneidad);
@@ -570,6 +580,10 @@ $('#ta-coche').addEventListener('click', () => {
   const a = ultimoAcceso?.acceso;
   if (a) abrirEnlace(urlGoogleCoche(a.lat, a.lon));
 });
+$('#ta-navegar').addEventListener('click', () => {
+  const p = ultimoAcceso?.punto;
+  if (p) abrirIr({ lat: p.lat, lon: p.lon, titulo: 'Punto del mapa' });
+});
 $('#ta-ruta').addEventListener('click', () => {
   const p = ultimoAcceso?.punto;
   if (p && ultimoAcceso?.estado === 'ok') abrirRuta(p.lat, p.lon);
@@ -848,7 +862,9 @@ async function pintarLista(l?: Sitio[]) {
     const ir = document.createElement('button'); ir.className = 'btn btn-primario'; ir.textContent = 'Cómo llegar';
     ir.title = s.acceso ? 'En coche hasta el aparcamiento guardado (Google Maps)' : 'En coche hasta el sitio (Google Maps)';
     ir.onclick = () => abrirEnlace(urlGoogleCoche(s.acceso?.lat ?? s.lat, s.acceso?.lon ?? s.lon));
-    acc.append(ver, ir, ed); li.append(acc);
+    const nav = document.createElement('button'); nav.className = 'btn sitio-navegar'; nav.textContent = 'Navegar aquí';
+    nav.onclick = () => abrirIr({ lat: s.lat, lon: s.lon, titulo: s.nota.split('\n')[0].slice(0, 60) || (nombres[s.especie] ?? 'Mi sitio') });
+    acc.append(ver, ir, ed, nav); li.append(acc);
     ul.append(li);
   }
 }
@@ -873,7 +889,10 @@ $<HTMLInputElement>('#inp-importar').addEventListener('change', async (e) => {
   try {
     const txt = await f.text();
     const { sitios: l, descartados } = /\.json$/i.test(f.name) || txt.trimStart().startsWith('{')
-      ? deJSON(txt) : { sitios: deGPX(txt), descartados: 0 };
+      ? deJSON(txt) : /\.kml$/i.test(f.name) || /<kml[\s>]/.test(txt.slice(0, 2000))
+        ? { sitios: puntosDeKml(txt).map((p) => ({ id: nuevoId(), lat: p.lat, lon: p.lon, estrellas: 1 as const,
+          nota: [p.nombre, p.nota].filter(Boolean).join(' — '), especie: '', fecha: new Date().toISOString() })), descartados: 0 }
+        : { sitios: deGPX(txt), descartados: 0 };
     await guardarVarios(l);
     await refrescarSitios();
     avisar(descartados ? `Importados ${l.length}, descartados ${descartados}` : `Importados ${l.length} sitios`, descartados ? 5000 : 3500);
@@ -998,7 +1017,10 @@ function pintarPuntoMapa() {
 }
 
 let consultaZona = 0;
+/** Último punto tocado en el mapa (para «Navegar aquí» de la tarjeta de zona). */
+let ultimoToque: { lat: number; lon: number } | null = null;
 function elegirPunto(lat: number, lon: number, conTarjeta: boolean) {
+  if (conTarjeta) ultimoToque = { lat, lon };
   const p = puntoMasCercano(puntosMeteo, lat, lon);
   if (!p) return;
   const km = Math.hypot(p.lat - lat, (p.lon - lon) * Math.cos((lat * Math.PI) / 180)) * 111.2;
@@ -1021,6 +1043,7 @@ function pintarTarjeta() {
 }
 $('#tz-cerrar').addEventListener('click', () => ($('#tarjeta-zona').hidden = true));
 $('#tz-ver').addEventListener('click', () => irA('p-zona'));
+$('#tz-navegar').addEventListener('click', () => { if (ultimoToque) abrirIr({ lat: ultimoToque.lat, lon: ultimoToque.lon, titulo: 'Punto del mapa' }); });
 $('#zona-ir-mapa').addEventListener('click', () => irA('p-mapa'));
 $('#zona-volver').addEventListener('click', () => irA('p-hoy'));
 
@@ -1297,7 +1320,46 @@ window.addEventListener('offline', () => pintarAjustes());
   });
 }
 
+/** Altitud del terreno en un punto (capa de altitud de acceso.bin, celdas de 100 m); null sin dato. */
+async function altitudEn(lat: number, lon: number): Promise<number | null> {
+  const d = manifest ? await datosAcceso(manifest).catch(() => null) : null;
+  const c = d && celdaDe(d.cab, lat, lon);
+  if (!d || !c) return null;
+  const [a] = await altitudes(d.cab, d.lector, [c]).catch(() => [NaN]);
+  return Number.isFinite(a) ? a : null;
+}
+const irAlSitio = (lat: number, lon: number, titulo: string) => abrirIr({ lat, lon, titulo });
+/** Sendero a pie aparcamiento → punto con su perfil (acceso.bin, como «Ruta a pie»); null sin datos de acceso. */
+async function senderoA(lat: number, lon: number): Promise<SenderoApp | null> {
+  const c = await calcularAcceso(lat, lon);
+  const d = manifest ? await datosAcceso(manifest).catch(() => null) : null;
+  if (c.estado !== 'ok' || !c.acceso || !c.celdas || !d) return null;
+  const celdas = [...c.celdas].reverse();
+  const alts = await altitudes(d.cab, d.lector, celdas).catch(() => celdas.map(() => NaN));
+  const per = perfil(celdas, alts, d.cab.res);
+  const linea: [number, number][] = [...celdas.map((x) => centroCelda(d.cab, x)), [lon, lat]];
+  const ultimo = per.dist[per.dist.length - 1] ?? 0;
+  const ultA = linea[linea.length - 2], fin = linea[linea.length - 1];
+  const extra = ultA ? Math.hypot((fin[0] - ultA[0]) * 111320 * Math.cos((lat * Math.PI) / 180), (fin[1] - ultA[1]) * 111320) : 0;
+  return { linea, dist: [...per.dist, ultimo + extra], alt: [...per.alt, alts[alts.length - 1] ?? NaN], via: c.acceso.via };
+}
+iniciarIr({ manifest: () => manifest, altitudEn, sendero: senderoA, abrirEnlace });
+iniciarEnlace({
+  mapa: () => mapa, bbox: () => manifest?.bbox ?? null, nombreRegion: () => manifest?.region?.nombre ?? 'esta región', irA,
+  navegar: (p) => abrirIr({ lat: p.lat, lon: p.lon, titulo: p.nombre || 'Punto recibido', subtitulo: p.nota || undefined }),
+  guardar: async (p) => {
+    const nota = [p.nombre, p.nota].filter(Boolean).join(' — ');
+    const ya = (await listarSitios()).some((x) => Math.abs(x.lat - p.lat) < 5e-5 && Math.abs(x.lon - p.lon) < 5e-5 && x.nota === nota);
+    if (ya) return 'ya';
+    await guardarSitio({ id: nuevoId(), lat: p.lat, lon: p.lon, estrellas: 1, nota, especie: '', fecha: new Date().toISOString() });
+    await refrescarSitios();
+    return 'guardado';
+  },
+});
+iniciarGrabar({ avisar, mapa: () => mapa, irA });
+
 iniciarHoy({
+  irAlSitio,
   manifest: () => manifest,
   hoy: hoyZona,
   hayMeteo: () => !!meteo,
@@ -1329,6 +1391,7 @@ iniciarHoy({
   },
   soloPublicos,
 });
+iniciarHoyMapa({ manifest: () => manifest, abrirEnlace, irAlSitio, rutaAPie: (lat, lon) => abrirRuta(lat, lon) });
 $<HTMLInputElement>('#hoy-solo-publicos').checked = soloPublicos();
 $<HTMLInputElement>('#hoy-solo-publicos').addEventListener('change', (ev) => {
   ponerSoloPublicos((ev.target as HTMLInputElement).checked);

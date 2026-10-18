@@ -559,17 +559,17 @@ try {
   const est1 = await estadosZona();
   comprobar(Object.keys(est1).length === 22 && igual(est1, FIXTURE.esperado), `Zona con el fixture (hoy ${HOY_E2E}), 22 especies: ${JSON.stringify(est1)}`);
   const fuera = await p.locator('[data-especie=terfezia_arenaria] .mot').textContent();
-  comprobar(/^fuera de temporada \(sale en mar, abr, may\), pero llovió fuerte/.test(fuera)
-    && /fuera de temporada \(sale en feb, mar, abr\)/.test(await p.locator('[data-especie=amanita_ponderosa] .mot').textContent())
-    && /esperar, la ventana suele abrir/.test(await p.locator('[data-especie=lactarius_deliciosus] .mot').textContent()),
+  comprobar(/^Fuera de temporada \(sale en mar, abr, may\), pero llovió fuerte/.test(fuera)
+    && /^Fuera de temporada \(sale en feb, mar, abr\)\.$/.test(await p.locator('[data-especie=amanita_ponderosa] .mot').textContent())
+    && /esperar\. Ventana desde ~\d\d\/\d\d hasta ~\d\d\/\d\d\./.test(await p.locator('[data-especie=lactarius_deliciosus] .mot').textContent()),
     `temporada en la Zona: «${fuera}»`);
   const desborde = await p.$$eval('#lista-semaforo .semaforo-fila', (bs) => bs.filter((b) => b.scrollWidth > b.clientWidth + 1).map((b) => b.dataset.especie));
   comprobar(!desborde.length, `filas del semáforo sin desbordar en horizontal${desborde.length ? ': ' + desborde.join(', ') : ''}`);
   await p.locator('#lista-semaforo [data-especie=terfezia_arenaria]').scrollIntoViewIfNeeded();
   await captura('zona-temporada.png');
   await p.locator('#lista-semaforo').evaluate((e) => e.closest('.pantalla, .cuerpo')?.scrollTo?.(0, 0));
-  comprobar(/temperatura justa: máximas altas/.test(await p.locator('[data-especie=boletus_pinophilus] .mot').textContent())
-    && /ventana pasada/.test(await p.locator('[data-especie=amanita_caesarea] .mot').textContent()), 'los motivos explican el amarillo y el rojo');
+  comprobar(/^Lluvia suficiente \(\d+ mm el \d\d\/\d\d\) pero máximas altas .*Si refresca, ventana hasta ~\d\d\/\d\d/.test(await p.locator('[data-especie=boletus_pinophilus] .mot').textContent())
+    && /^Ventana pasada/.test(await p.locator('[data-especie=amanita_caesarea] .mot').textContent()), 'los motivos explican el amarillo y el rojo');
   comprobar(await p.locator('#grafico svg path[fill="#2a78d6"]').count() === Object.keys(FIXTURE.lluvia).length
     && /hoy/.test(await p.locator('#grafico-dato').textContent()), 'gráfico con la lluvia del fixture y el dato de hoy');
   comprobar(/Orientativo: reglas de aficionado, no ciencia exacta\./.test(await p.locator('#p-zona').textContent()), 'texto fijo «Orientativo…»');

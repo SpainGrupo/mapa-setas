@@ -17,7 +17,8 @@ describe('semaforo', () => {
   it('30 mm hace 12 días con temperatura templada → verde, hasta el fin de la ventana', () => {
     const r = semaforo(serie({ [-12]: 30 }), AEREUS, HOY);
     expect(r.estado).toBe('verde');
-    expect(r.motivo).toMatch(/ventana abierta/);
+    expect(r.motivo).toBe('Ventana actual (lluvia del 01/10, 30 mm, hace 12 días): hasta ~21/10.');
+    expect(r.proxima).toBeUndefined();
     expect(r.hasta).toBe(sumarDias(HOY, -12 + 20));
     expect(r.episodio).toBe(sumarDias(HOY, -12));
   });
@@ -32,19 +33,19 @@ describe('semaforo', () => {
   it('seco 30 días → rojo «seco»', () => {
     const r = semaforo(serie({ [-20]: 5, [-10]: 8 }), AEREUS, HOY);
     expect(r).toMatchObject({ estado: 'rojo' });
-    expect(r.motivo).toMatch(/seco/);
+    expect(r.motivo).toBe('Seco: sin lluvia de 25 mm o más en 30 días.');
   });
 
   it('30 mm hace 25 días → rojo «ventana pasada»', () => {
     const r = semaforo(serie({ [-25]: 30 }), AEREUS, HOY);
     expect(r.estado).toBe('rojo');
-    expect(r.motivo).toMatch(/ventana pasada/);
+    expect(r.motivo).toMatch(/^Ventana pasada: la última lluvia buena fue el 18\/09, hace 25 días\.$/);
   });
 
   it('30 mm hace 12 días con frío (tmin 3) → amarillo por temperatura, indicando cuál falla', () => {
     const r = semaforo(serie({ [-12]: 30 }, 3, 22), AEREUS, HOY);
     expect(r.estado).toBe('amarillo');
-    expect(r.motivo).toMatch(/lluvia buena, temperatura justa/);
+    expect(r.motivo).toBe('Lluvia suficiente (30 mm el 01/10) pero mínimas frías (3,0 °C; favorable 8–18). Si templa, ventana hasta ~21/10.');
     expect(r.motivo).toMatch(/mínimas/);
     expect(r.motivo).not.toMatch(/máximas/);
   });
@@ -67,14 +68,15 @@ describe('semaforo', () => {
   it('episodio solo en la previsión → amarillo «lluvia prevista el DD/MM»', () => {
     const r = semaforo(serie({ [2]: 30 }), AEREUS, HOY);
     expect(r.estado).toBe('amarillo');
-    expect(r.motivo).toMatch(/lluvia prevista el 15\/10/);
+    expect(r.motivo).toBe('Lluvia prevista el 15/10 (30 mm): esperar. Ventana desde ~23/10 hasta ~04/11.');
     expect(r.desde).toBe(sumarDias(HOY, 2 + 8));
   });
 
   it('ventana abierta y además lluvia prevista: sigue verde y el motivo añade la lluvia prevista', () => {
     const r = semaforo(serie({ [-12]: 30, [3]: 40 }), AEREUS, HOY);
     expect(r.estado).toBe('verde');
-    expect(r.motivo).toMatch(/lluvia prevista el 16\/10/);
+    expect(r.motivo).toBe('Ventana actual (lluvia del 01/10, 30 mm, hace 12 días): hasta ~21/10. Próxima ventana (lluvia prevista el 16/10): desde ~24/10.');
+    expect(r.proxima).toEqual({ desde: '2026-10-24', hasta: '2026-11-05', episodio: '2026-10-16', lluvia_mm: 40, prevista: true });
   });
 
   it('caché de más de 72 h → gris «datos antiguos»', () => {
@@ -117,9 +119,10 @@ describe('semaforo', () => {
     const r = semaforo(serie({ [-14]: 30, 0: 36 }), AEREUS, HOY);
     expect(r.estado).toBe('verde');
     expect(r.episodio).toBe(sumarDias(HOY, -14));
-    expect(r.motivo).toMatch(/ventana abierta por 30 mm el 29\/09/);
-    expect(r.motivo).toMatch(/nueva lluvia el 13\/10 abrirá otra hacia el 21\/10/);
-    expect(r.motivo).toMatch(/barro/);
+    expect(r.motivo).toBe('Ventana actual (lluvia del 29/09, 30 mm, hace 14 días): hasta ~19/10. Próxima ventana (lluvia del 13/10): desde ~21/10.'
+      + ' Aguacero hoy (36 mm): barro y accesos difíciles.');
+    expect(r.hasta).toBe('2026-10-19');
+    expect(r.proxima).toMatchObject({ desde: '2026-10-21', episodio: '2026-10-13', prevista: false });
   });
 
   it('lluvia reciente sin ninguna ventana abierta (la anterior ya pasó) → amarillo «esperar»', () => {
@@ -187,7 +190,7 @@ describe('semaforo v2 — humedad acumulada', () => {
   it('una sola tormenta en otoño seco → amarillo «lluvia puntual, suelo aún seco»', () => {
     const r = semaforo(serie2({ [-12]: 30 }, { et0: 3, suelo: 0.1 }), V2, HOY);
     expect(r.estado).toBe('amarillo');
-    expect(r.motivo).toMatch(/lluvia puntual, suelo aún seco/);
+    expect(r.motivo).toMatch(/^Lluvia puntual, suelo aún seco/);
     expect(r.motivo).toMatch(/balance −60 mm en 30 días y 1 día de lluvia; llovieron 30 mm/);
   });
   it('lluvia repartida y balance suficiente → verde', () => {
@@ -217,7 +220,7 @@ describe('semaforo v2 — golpe de calor y aire seco', () => {
   it('un día tras el episodio con máx ≥ media de 10 días + 8 °C → amarillo «golpe de calor»', () => {
     const r = semaforo(serie2(lluviaRepartida, {}, { [-5]: { tmax: 30 } }), V2, HOY);   // media 22 → +8
     expect(r.estado).toBe('amarillo');
-    expect(r.motivo).toMatch(/golpe de calor el 08\/10/);
+    expect(r.motivo).toMatch(/^Golpe de calor el 08\/10/);
     expect(semaforo(serie2(lluviaRepartida, {}, { [-5]: { tmax: 29.9 } }), V2, HOY).estado).toBe('verde');
   });
   it('el calor antes del episodio no cuenta', () => {
@@ -226,7 +229,7 @@ describe('semaforo v2 — golpe de calor y aire seco', () => {
   it('HR mínima < 30 % dos días seguidos tras la lluvia → amarillo «aire muy seco»; un día suelto, no', () => {
     const r = semaforo(serie2(lluviaRepartida, {}, { [-6]: { hr_min: 25 }, [-5]: { hr_min: 22 } }), V2, HOY);
     expect(r.estado).toBe('amarillo');
-    expect(r.motivo).toMatch(/aire muy seco desde el 07\/10/);
+    expect(r.motivo).toMatch(/^Aire muy seco desde el 07\/10/);
     expect(semaforo(serie2(lluviaRepartida, {}, { [-6]: { hr_min: 25 }, [-4]: { hr_min: 22 } }), V2, HOY).estado).toBe('verde');
   });
   it('vale también sin umbrales de humedad (regla general)', () => {
@@ -243,12 +246,12 @@ describe('semaforo v2 — temporada', () => {
   it('fuera de temporada → rojo «fuera de temporada» con los meses', () => {
     const r = semaforo(serie2(lluviaRepartida), PRIMAVERA, HOY);
     expect(r.estado).toBe('rojo');
-    expect(r.motivo).toBe('fuera de temporada (sale en mar, abr, may)');
+    expect(r.motivo).toBe('Fuera de temporada (sale en mar, abr, may).');
   });
   it('fuera de temporada con episodio fuerte (≥1,5×) y suelo húmedo → amarillo con aviso', () => {
     const r = semaforo(serie2({ ...lluviaRepartida, [-12]: 40 }), PRIMAVERA, HOY);
     expect(r.estado).toBe('amarillo');
-    expect(r.motivo).toMatch(/^fuera de temporada \(sale en mar, abr, may\), pero llovió fuerte/);
+    expect(r.motivo).toMatch(/^Fuera de temporada \(sale en mar, abr, may\), pero llovió fuerte/);
   });
   it('episodio fuerte pero suelo seco → rojo', () => {
     expect(semaforo(serie2({ [-12]: 60 }, { et0: 4, suelo: 0.1 }), PRIMAVERA, HOY).estado).toBe('rojo');
@@ -296,5 +299,41 @@ describe('bandaAltitud', () => {
   it('hoy fuera de la serie → null', () => {
     expect(bandaAltitud(serie(), '2027-01-01', AEREUS, 500)).toBeNull();
     expect(textoBanda(null, 500)).toBe('');
+  });
+});
+
+describe('semaforo — ventana actual y próxima sin contradicción (caso del 18/10/26)', () => {
+  // Marbella, 18/10: 27 mm el 04/10 (ventana abierta hasta el 24/10) y lluvia nueva el 18/10 (ventana desde el 26/10).
+  const H = '2026-10-18';
+  const s18 = (tmin: number, tmax: number) => Array.from({ length: 37 }, (_, i) => {
+    const fecha = sumarDias(H, i - 30);
+    return { fecha, lluvia: fecha === '2026-10-04' ? 27 : fecha === '2026-10-18' ? 26 : 0, tmin, tmax };
+  });
+
+  it('verde: cada fecha dice de qué lluvia es; la próxima va en `proxima`', () => {
+    const r = semaforo(s18(12, 22), AEREUS, H);
+    expect(r.estado).toBe('verde');
+    expect(r.motivo).toBe('Ventana actual (lluvia del 04/10, 27 mm, hace 14 días): hasta ~24/10. Próxima ventana (lluvia del 18/10): desde ~26/10.');
+    expect(r.hasta).toBe('2026-10-24');
+    expect(r.proxima).toEqual({ desde: '2026-10-26', hasta: '2026-11-07', episodio: '2026-10-18', lluvia_mm: 26, prevista: false });
+    expect(r.motivo).not.toMatch(/abrirá otra hacia/);
+  });
+
+  it('ámbar por temperatura: «Lluvia suficiente pero mínimas altas … Si refresca, ventana hasta ~X; próxima desde ~Y»', () => {
+    const r = semaforo(s18(16.5, 24), { ...AEREUS, tmin_media: [5, 15] }, H);
+    expect(r.estado).toBe('amarillo');
+    expect(r.motivo).toBe('Lluvia suficiente (27 mm el 04/10) pero mínimas altas (16,5 °C; favorable 5–15). Si refresca, ventana hasta ~24/10; próxima desde ~26/10 (lluvia del 18/10).');
+    expect(r.proxima?.desde).toBe('2026-10-26');
+    expect(r.desde).toBeUndefined();   // no hay «desde» de la actual: no se confunde con «esperar»
+  });
+
+  it('esperar con otra lluvia prevista: la segunda ventana se nombra como «otra ventana»', () => {
+    const r = semaforo(serie({ [-5]: 40, [2]: 25 }), AEREUS, HOY);
+    expect(r.motivo).toBe('Lluvia de 40 mm el 08/10: esperar. Ventana desde ~16/10 hasta ~28/10. Después, lluvia prevista el 15/10: otra ventana desde ~23/10.');
+  });
+
+  it('rojo no lleva `proxima`', () => {
+    const r = semaforo(serie({ [-25]: 30 }), AEREUS, HOY);
+    expect(r.proxima).toBeUndefined();
   });
 });

@@ -15,6 +15,14 @@ export interface Reglas {
   meses?: number[];                    // meses de temporada (1–12); fuera de ellos, rojo salvo lluvia fuerte y suelo húmedo
 }
 export type Estado = 'verde' | 'amarillo' | 'rojo' | 'gris';
+/** Ventana siguiente a la que manda hoy: la abre una lluvia más reciente (o prevista) que la del episodio actual. */
+export interface ProximaVentana {
+  desde: string;                       // YYYY-MM-DD
+  hasta: string;
+  episodio: string;                    // último día de esa lluvia
+  lluvia_mm: number;
+  prevista: boolean;                   // la lluvia aún está en la previsión
+}
 export interface ResultadoSemaforo {
   estado: Estado;
   motivo: string;
@@ -22,6 +30,7 @@ export interface ResultadoSemaforo {
   hasta?: string;
   episodio?: string;                   // último día del episodio de lluvia que manda
   lluvia_mm?: number;
+  proxima?: ProximaVentana;
 }
 export interface Humedad {
   balance_mm: number;                  // Σ(lluvia − ET0) de los 30 días que acaban hoy; NaN si falta la ET0
@@ -155,6 +164,22 @@ export function textoBanda(b: { desde: number; hasta: number; encaja: boolean } 
   return `Esta altitud va bien, mejor ahora ${banda}.`;
 }
 
+const mayuscula = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+const aprox = (iso: string) => `~${ddmm(iso)}`;
+/** «lluvia del 18/10» o «lluvia prevista el 20/10». */
+const deLluvia = (v: { episodio: string; prevista: boolean }) => (v.prevista ? `lluvia prevista el ${ddmm(v.episodio)}` : `lluvia del ${ddmm(v.episodio)}`);
+/** Condición para que la ventana actual valga cuando falla la temperatura: «Si refresca» / «Si templa». */
+function siTemperatura(fallos: string[]): string {
+  if (fallos.every((f) => f.includes(' altas '))) return 'Si refresca';
+  if (fallos.every((f) => f.includes(' frías '))) return 'Si templa';
+  return 'Si la temperatura entra en rango';
+}
+
+/**
+ * Semáforo de hoy. Los motivos dicen siempre de qué lluvia es cada fecha, para que dos ventanas seguidas no se lean como
+ * una contradicción («hasta ~25/10» de la actual y «desde ~26/10» de la próxima): «Ventana actual (lluvia del 04/10…):
+ * hasta ~24/10. Próxima ventana (lluvia del 18/10): desde ~26/10.» La próxima ventana va también en `proxima`.
+ */
 export function semaforo(serie: Dia[], reglas: Reglas, hoy: string, opciones: { edadHoras?: number } = {}): ResultadoSemaforo {
   if ((opciones.edadHoras ?? 0) > CADUCIDAD_H) return { estado: 'gris', motivo: 'datos antiguos' };
   const hoyI = serie.length ? diasEntre(serie[0].fecha, hoy) : -1;
@@ -164,46 +189,54 @@ export function semaforo(serie: Dia[], reglas: Reglas, hoy: string, opciones: { 
   const eps = episodios(serie, reglas.episodio_mm);
   const pasado = eps.find((e) => e.i <= hoyI);
   const previsto = eps.filter((e) => e.i > hoyI).at(-1); // el más cercano de la previsión (eps va del más reciente al más antiguo)
-
-  const evaluar = (ep: Episodio | undefined): ResultadoSemaforo => {
-    if (!ep) return { estado: 'rojo', motivo: `seco: sin lluvia de ${reglas.episodio_mm} mm o más en 30 días` };
-    const fecha = serie[ep.i].fecha;
-    const d = hoyI - ep.i;
-    const base = { episodio: fecha, lluvia_mm: ep.mm };
-    if (d < vmin) {
-      const desde = sumarDias(fecha, vmin);
-      const intro = d < 0 ? `lluvia prevista el ${ddmm(fecha)} (${ep.mm} mm)` : `lluvia de ${ep.mm} mm el ${ddmm(fecha)}`;
-      return { estado: 'amarillo', ...base, desde, hasta: sumarDias(fecha, vmax),
-        motivo: `${intro}: esperar, la ventana suele abrir el ${ddmm(desde)}` + (temp.length ? `; temperatura fuera de rango: ${temp.join(', ')}` : '') };
-    }
-    if (d > vmax) return { estado: 'rojo', ...base, motivo: `ventana pasada: la última lluvia buena fue el ${ddmm(fecha)}, hace ${d} días` };
-    const hasta = sumarDias(fecha, vmax);
-    if (temp.length) return { estado: 'amarillo', ...base, hasta, motivo: `lluvia buena, temperatura justa: ${temp.join(', ')}` };
-    const pegas = [faltaHumedad(hum, reglas), estres(serie, ep.i, hoyI)].filter((m): m is string => !!m);
-    if (pegas.length) return { estado: 'amarillo', ...base, hasta, motivo: `${pegas.join('; ')}; llovieron ${ep.mm} mm el ${ddmm(fecha)}` };
-    return { estado: 'verde', ...base, hasta, motivo: `ventana abierta: ${ep.mm} mm el ${ddmm(fecha)}, hace ${d} días` };
+  const hum = humedadAcumulada(serie, hoy);
+  const ventanaDe = (ep: Episodio): ProximaVentana => {
+    const f = serie[ep.i].fecha;
+    return { desde: sumarDias(f, vmin), hasta: sumarDias(f, vmax), episodio: f, lluvia_mm: ep.mm, prevista: ep.i > hoyI };
   };
 
-  const hum = humedadAcumulada(serie, hoy);
+  /** Estado y motivo del episodio `ep`; `prox` = la ventana siguiente, que el motivo menciona. */
+  const evaluar = (ep: Episodio | undefined, prox?: ProximaVentana): ResultadoSemaforo => {
+    if (!ep) return { estado: 'rojo', motivo: `Seco: sin lluvia de ${reglas.episodio_mm} mm o más en 30 días.` };
+    const v = ventanaDe(ep);
+    const fecha = v.episodio;
+    const d = hoyI - ep.i;
+    const base = { episodio: fecha, lluvia_mm: ep.mm, ...(prox ? { proxima: prox } : {}) };
+    const yProxima = prox ? `; próxima desde ${aprox(prox.desde)} (${deLluvia(prox)})` : '';
+    if (d < vmin) {
+      const intro = d < 0 ? `Lluvia prevista el ${ddmm(fecha)} (${ep.mm} mm)` : `Lluvia de ${ep.mm} mm el ${ddmm(fecha)}`;
+      return { estado: 'amarillo', ...base, desde: v.desde, hasta: v.hasta,
+        motivo: `${intro}: esperar. Ventana desde ${aprox(v.desde)} hasta ${aprox(v.hasta)}.`
+          + (temp.length ? ` Temperatura fuera de rango: ${temp.join(', ')}.` : '')
+          + (prox ? ` Después, ${deLluvia(prox)}: otra ventana desde ${aprox(prox.desde)}.` : '') };
+    }
+    if (d > vmax) return { estado: 'rojo', ...base, motivo: `Ventana pasada: la última lluvia buena fue el ${ddmm(fecha)}, hace ${d} días.` };
+    const hasta = v.hasta;
+    if (temp.length) return { estado: 'amarillo', ...base, hasta,
+      motivo: `Lluvia suficiente (${ep.mm} mm el ${ddmm(fecha)}) pero ${temp.join(' y ')}. ${siTemperatura(temp)}, ventana hasta ${aprox(hasta)}${yProxima}.` };
+    const pegas = [faltaHumedad(hum, reglas), estres(serie, ep.i, hoyI)].filter((m): m is string => !!m);
+    if (pegas.length) return { estado: 'amarillo', ...base, hasta,
+      motivo: `${mayuscula(pegas.join('; '))}; llovieron ${ep.mm} mm el ${ddmm(fecha)}. Ventana hasta ${aprox(hasta)}${yProxima}.` };
+    return { estado: 'verde', ...base, hasta,
+      motivo: `Ventana actual (lluvia del ${ddmm(fecha)}, ${ep.mm} mm, hace ${d} días): hasta ${aprox(hasta)}.`
+        + (prox ? ` Próxima ventana (${deLluvia(prox)}): desde ${aprox(prox.desde)}.` : '') };
+  };
+
   // Una lluvia nueva abre otra ventana futura, no cierra la actual: si un episodio anterior tiene la ventana
-  // abierta hoy, se evalúa ese (con temperatura, humedad y estrés) y la lluvia nueva solo se anota.
+  // abierta hoy, se evalúa ese (con temperatura, humedad y estrés) y la lluvia nueva es la próxima ventana.
   const abierto = pasado && hoyI - pasado.i < vmin
     ? eps.find((e) => e.i < pasado.i && hoyI - e.i >= vmin && hoyI - e.i <= vmax) : undefined;
-  let actual = evaluar(abierto ?? pasado);
-  if (abierto && pasado) {
-    const f = serie[pasado.i].fecha;
-    const nueva = `nueva lluvia el ${ddmm(f)} abrirá otra hacia el ${ddmm(sumarDias(f, vmin))}`;
-    const motivo = actual.estado === 'verde'
-      ? `ventana abierta por ${abierto.mm} mm el ${ddmm(serie[abierto.i].fecha)}, hace ${hoyI - abierto.i} días; ${nueva}`
-      : `${actual.motivo}; ${nueva}`;
-    const barro = serie[hoyI].lluvia >= AGUACERO_MM ? `; aguacero hoy (${Math.round(serie[hoyI].lluvia)} mm): barro y accesos difíciles` : '';
-    actual = { ...actual, motivo: motivo + barro };
+  const actual = abierto ?? pasado;
+  // La próxima ventana: la de la lluvia nueva si hay una ventana abierta; si no, la de la lluvia prevista. Si lo pasado
+  // no sirve (rojo), manda el episodio previsto.
+  const prox = abierto && pasado ? ventanaDe(pasado) : previsto ? ventanaDe(previsto) : undefined;
+  let res = evaluar(actual, prox);
+  if (res.estado === 'rojo' && previsto && !(abierto && pasado)) res = evaluar(previsto);
+  else if (abierto && pasado && previsto) res = { ...res, motivo: `${res.motivo} Más lluvia prevista el ${ddmm(serie[previsto.i].fecha)}.` };
+  if (res.estado === 'rojo') { const { proxima: _p, ...sin } = res; res = sin; }
+  if (abierto && pasado && serie[hoyI].lluvia >= AGUACERO_MM) {
+    res = { ...res, motivo: `${res.motivo} Aguacero hoy (${Math.round(serie[hoyI].lluvia)} mm): barro y accesos difíciles.` };
   }
-  // Si la lluvia pasada aún cuenta (ventana abierta o por abrir), la prevista solo completa el motivo;
-  // solo cuando lo pasado no sirve (rojo) manda el episodio previsto.
-  const res = !previsto ? actual
-    : actual.estado !== 'rojo' ? { ...actual, motivo: `${actual.motivo}; lluvia prevista el ${ddmm(serie[previsto.i].fecha)}` }
-    : evaluar(previsto);
   return temporada(res, reglas, hoy, hum);
 }
 
@@ -219,6 +252,6 @@ function temporada(res: ResultadoSemaforo, r: Reglas, hoy: string, hum: Humedad)
   if (r.meses.includes(+ref.slice(5, 7))) return res;
   const cuando = `sale en ${[...r.meses].sort((a, b) => a - b).map((m) => MESES[m - 1]).join(', ')}`;
   const fuerte = res.estado !== 'rojo' && (res.lluvia_mm ?? 0) >= FACTOR_FUERA_TEMPORADA * r.episodio_mm && !faltaHumedad(hum, r);
-  if (fuerte) return { ...res, estado: 'amarillo', motivo: `fuera de temporada (${cuando}), pero llovió fuerte y el suelo está húmedo: puede salir algo; ${res.motivo}` };
-  return { estado: 'rojo', motivo: `fuera de temporada (${cuando})`, ...(res.episodio ? { episodio: res.episodio, lluvia_mm: res.lluvia_mm } : {}) };
+  if (fuerte) return { ...res, estado: 'amarillo', motivo: `Fuera de temporada (${cuando}), pero llovió fuerte y el suelo está húmedo: puede salir algo. ${res.motivo}` };
+  return { estado: 'rojo', motivo: `Fuera de temporada (${cuando}).`, ...(res.episodio ? { episodio: res.episodio, lluvia_mm: res.lluvia_mm } : {}) };
 }

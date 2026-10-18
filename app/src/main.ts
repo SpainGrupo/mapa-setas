@@ -32,7 +32,7 @@ import type { Feature } from 'geojson';
 import { claveMeteo, edadHoras, fechaMadrid, obtener, renombrarCache, CADUCIDAD_H, type DatosMeteo, type PuntoMeteo } from './meteo';
 import { bandaAltitud, ddmm, humedadAcumulada, semaforo, sumarDias, textoBanda, type ResultadoSemaforo } from './semaforo';
 import { expresionColores, haceTexto, NOMBRE_ESTADO, puntoMasCercano } from './zona';
-import { pintarGrafico } from './grafico';
+import { pintarGrafico, type VentanaGrafico } from './grafico';
 import { abrirFicha, cargarGuia, fichasGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, mostrarGuia, pintarCreditos, ponerBloqueTiempo, ponerBloqueTop, type EstadoFotos } from './guia-ui';
 import { binomio, especieMapaDeFicha, fichaDeEspecieMapa } from './guia';
 import { iniciarReconocer, mostrarReconocer, pintarAjustesModelo } from './reconocer-ui';
@@ -986,12 +986,6 @@ function textoMeteoCorto(): string {
   return `Tiempo ${navigator.onLine ? '' : 'guardado, '}actualizado ${haceTexto(h)}${h > CADUCIDAD_H ? ' · datos antiguos: semáforo en gris' : ''}.`;
 }
 
-function fechasTexto(r: ResultadoSemaforo): string {
-  if (r.estado === 'verde' && r.hasta) return `Hasta el ${ddmm(r.hasta)} aprox.`;
-  if (r.estado === 'amarillo' && r.desde) return `Desde el ${ddmm(r.desde)} aprox.`;
-  if (r.estado === 'amarillo' && r.hasta) return `Ventana hasta el ${ddmm(r.hasta)} aprox.`;
-  return '';
-}
 
 function pintarSemaforoMapa() {
   if (!mapa?.getLayer('semaforo')) return;
@@ -1027,7 +1021,7 @@ function pintarTarjeta() {
   const r = estadoEn(puntoSel, especieSel());
   const punto = document.createElement('span'); punto.className = 'punto-estado'; punto.dataset.estado = r?.estado ?? 'gris'; punto.setAttribute('aria-hidden', 'true');
   $('#tz-estado').replaceChildren(punto, r ? `${nombres[especieSel()]}: ${NOMBRE_ESTADO[r.estado]}` : `${nombres[especieSel()]}: sin datos del tiempo`);
-  $('#tz-motivo').textContent = r ? [r.motivo, fechasTexto(r)].filter(Boolean).join(' · ') : 'Conéctate y pulsa «Actualizar tiempo» en Zona.';
+  $('#tz-motivo').textContent = r ? r.motivo : 'Conéctate y pulsa «Actualizar tiempo» en Zona.';
 }
 $('#tz-cerrar').addEventListener('click', () => ($('#tarjeta-zona').hidden = true));
 $('#tz-ver').addEventListener('click', () => irA('p-zona'));
@@ -1086,8 +1080,6 @@ function pintarZona() {
     const est = document.createElement('span'); est.className = 'est'; est.textContent = r ? NOMBRE_ESTADO[r.estado] : 'Sin datos del tiempo';
     const mot = document.createElement('span'); mot.className = 'mot'; mot.textContent = r?.motivo ?? '';
     b.append(ic, esp, est, mot);
-    const f = r ? fechasTexto(r) : '';
-    if (f) { const fe = document.createElement('span'); fe.className = 'fechas'; fe.textContent = f; b.append(fe); }
     b.addEventListener('click', () => {
       const sel = $<HTMLSelectElement>('#sel-especie');
       if (sel.value === e.id) return;
@@ -1104,8 +1096,11 @@ function pintarZona() {
   const hoyF = hoyZona();
   const r = estadoEn(puntoSel, elegida);
   const reg = reglasDe(elegida);
-  const ventana = r?.episodio && reg ? { desde: sumarDias(r.episodio, reg.ventana_dias[0]), hasta: sumarDias(r.episodio, reg.ventana_dias[1]),
-    etiqueta: `ventana ${nombres[elegida]?.split(' ')[1] ?? ''}`.trim() } : null;
+  // Franja verde de la ventana que manda hoy y, si cae en la previsión, la de la próxima (la misma que nombra el motivo).
+  const ventana: VentanaGrafico[] = [];
+  if (r?.episodio && reg) ventana.push({ desde: sumarDias(r.episodio, reg.ventana_dias[0]), hasta: sumarDias(r.episodio, reg.ventana_dias[1]),
+    etiqueta: r.proxima ? 'ventana actual' : `ventana ${nombres[elegida]?.split(' ')[1] ?? ''}`.trim() });
+  if (r?.proxima) ventana.push({ desde: r.proxima.desde, hasta: r.proxima.hasta, etiqueta: 'próxima', proxima: true });
   pintarGrafico($('#grafico'), serie, hoyF, ventana, (t) => ($('#grafico-dato').textContent = t));
   const tabla = $<HTMLTableElement>('#tabla-dias');
   tabla.replaceChildren();

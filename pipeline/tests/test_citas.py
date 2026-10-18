@@ -85,3 +85,14 @@ def test_construir_sin_red_con_cache(tmp_path, monkeypatch):
     monkeypatch.setattr(citas, "_get", lambda *a, **k: pytest.fail("no debe pedir nada a la red"))
     regs, _ = citas.construir(r)
     assert [x["especie"] for x in regs] == ["boletus_edulis"]
+
+
+def test_leer_sitios_no_publica_la_frase_de_la_fuente(tmp_path):
+    from setas_pipeline.citas import leer_sitios
+    f = tmp_path / "s.csv"
+    f.write_text("lugar,lat,lon,precision,especies,fecha,fuente_url,cita,confianza\n"
+                 "Genal,36.6,-5.2,comarca (aprox.),b. aereus,2021,https://www.surinenglish.com/a.html,"
+                 "good crop of porcini,media\n", encoding="utf-8")
+    regs, _ = leer_sitios(f, (36.6, -5.2), 50)
+    assert regs and all(r["atribucion"] == "surinenglish.com" for r in regs)
+    assert not any("porcini" in str(v) for r in regs for v in r.values())

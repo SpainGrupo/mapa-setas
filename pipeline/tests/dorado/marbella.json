@@ -3,9 +3,9 @@
   "app/acceso.json": "1ccd742e3d610a5999713c14194a5dc45e6011a63ed7818f1af625e5c6bd5a15",
   "app/aparcamientos.json": "347c72e9830fe5b77b1e07d3b9cf7026b1ff9dc8b1d8040dab2cbb43241e5f63",
   "app/meteo_puntos.json": "119d73ffaa210670131d3134bf45072a1ad895a6e701902bd22847216bdcedb9",
-  "app/sitios.json": "d8c1dbaf63cc5b113693fa6ba142dace7abeba538d8fb910c9a304dc2dd00060",
+  "app/sitios.json": "62fb98da72b3c4bc54b8da9f87d8085d060864cb3014147b7ef061e1ccaf081d",
   "calibracion.json": "f8d2971a6001cc10d16554a18ad637b1cbe37968ba4925b531537279750b20cc",
-  "citas.geojson": "64e95fa16d5f3c965183fa40324c64cca683ddae83c01ac0802dde06a9160d26",
+  "citas.geojson": "e4b825ca3822d039a0358726b70edfd99c24623168a0a51a232123ba0db9364f",
   "citas_capa.json": "8216768e4c17fc683ad353db51a568cb3b7765c4540b3afc0c4fac4eea769a11",
   "fuego_resumen.json": "1c60c68a83bbd73e65444d31046b197a7b3723c6d40e73da6c86f6c64254359d",
   "malla.json": "17f755f4c0e3b62271eec9afd16b8c209db908a34292de11314b3cce0ec90089",
@@ -375,7 +375,7 @@
     "nombre": "aparcamientos.json"
    },
    {
-    "bytes": 478320,
+    "bytes": 475997,
     "nombre": "sitios.json"
    }
   ],
@@ -841,7 +841,7 @@
    ]
   }
  },
- "manifest_total_bytes": 169554682,
+ "manifest_total_bytes": 169547328,
  "pmtiles": {
   "app/citas.pmtiles": {
    "atribucion": "GBIF.org · iNaturalist · Observation.org · foros y literatura (cada cita con su licencia)",
@@ -851,7 +851,7 @@
     -34391000,
     375856370
    ],
-   "bytes": 638766,
+   "bytes": 633735,
    "nombre": "<out>/app/citas.pmtiles",
    "teselas": 1080,
    "zoom": [

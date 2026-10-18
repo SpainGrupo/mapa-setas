@@ -226,6 +226,13 @@ def origen_csv(url: str) -> str | None:
     return "foro"
 
 
+def editor_url(url: str) -> str:
+    """Atribución de una cita de foro o literatura: el medio o editor (dominio del enlace). La frase de la columna
+    `cita` del CSV es texto literal de terceros sin licencia: sirve para verificar a mano, no se publica."""
+    m = re.match(r"https?://(?:www\.)?([^/]+)", url or "")
+    return m.group(1) if m else "fuente sin identificar"
+
+
 def leer_sitios(ruta: Path | None, centro, radio_km) -> tuple[list[dict], dict]:
     regs, st = [], {"filas": 0, "omitidas_gbif": 0, "fuera_radio": 0, "especie_sin_id": 0}
     if ruta is not None and not Path(ruta).exists():
@@ -250,7 +257,7 @@ def leer_sitios(ruta: Path | None, centro, radio_km) -> tuple[list[dict], dict]:
             regs.append({"especie": ABREV[s], "fecha": fecha, "lat": lat, "lon": lon, "precision_m": prec,
                          "fuente": f"{f['lugar']} ({f['precision']})", "origen": origen,
                          "licencia": "sin licencia (cita de terceros; uso personal)", "url": f["fuente_url"],
-                         "confianza": f["confianza"], "atribucion": f["cita"]})
+                         "confianza": f["confianza"], "atribucion": editor_url(f["fuente_url"])})
     return regs, st
 
 

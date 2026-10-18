@@ -1028,3 +1028,12 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 
 /* Chips de grupo en la hoja del selector de especie (grupos.ts) */
 #lista-especies .se-grupos { flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+
+/* «Exportar día» (hoy-ui.ts / exportar-dia.ts) */
+#hoy-exportar { margin-top: 12px; }
+.exportar-dia { margin-top: 12px; padding: 16px; background: var(--hoja); border-radius: 22px; border: 1px solid oklch(62% 0.017 158 / 0.4); display: grid; gap: 10px; }
+.exportar-dia h3 { margin: 0; font-size: 1.05rem; }
+.exportar-acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+.exportar-acciones .btn { min-height: var(--toque); text-decoration: none; display: inline-flex; align-items: center; }
+.exportar-lista { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.exportar-lista a { overflow-wrap: anywhere; }

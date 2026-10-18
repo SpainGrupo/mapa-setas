@@ -17,7 +17,9 @@ import { detallesTitularidad, esPublico, normaTitularidad, textoTitularidad } fr
 import { AVISO_CITAS, filaRefCita, textoCitado, type CitasSitio } from './citas';
 import { clavesEntrada, esOrdenTop, NOMBRE_ORDEN, ORDENES_TOP, ordenarTops, PENDIENTE, type OrdenTop } from './orden-tops';
 import { razonSitio } from './razones';
-import { especiesDeValor, esValorGrupo, gruposDe, topGrupo, valorGrupo } from './grupos';
+import { especiesDeValor, esValorGrupo, grupoDe, gruposDe, topGrupo, valorGrupo } from './grupos';
+import { AYUDA_MY_MAPS, generarKml, nombreArchivoKml, nombrePlacemark, seleccionarSitios, textoCompartir, urlRutaGoogle,
+  urlSitioGoogle, type SitioExport } from './exportar-dia';
 
 /** Explicación de la cifra del Top (2026-10-15: antes «Calidad del monte», que no decía que entra el tiempo). */
 export const EXPLICACION_PUNTUACION = 'Hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa (× citas cercanas, si la región lo aplica).';
@@ -178,6 +180,7 @@ export function pintarListaTop(ul: HTMLElement, items: ItemTop[]) {
   ordenarTops(items, ordenTop(), (x) => clavesEntrada(x.principal, origen))
     .forEach((x, i) => ul.append(fila(x.principal, x.entradas, i + 1)));
   ul.dataset.orden = ordenTop();
+  if (ul.id === 'top-especie') cerrarExportar();
 }
 
 function repintarListas() {
@@ -577,6 +580,100 @@ export async function bloqueTopGuia(especie: string): Promise<HTMLElement | null
   return sec;
 }
 
+// ---------------------------------------------------------------- «Exportar día» (exportar-dia.ts)
+
+function cerrarExportar() {
+  const p = document.querySelector<HTMLElement>('#exportar-dia');
+  if (!p || p.hidden) return;
+  p.hidden = true; p.replaceChildren();
+  document.querySelector('#hoy-exportar')?.setAttribute('aria-expanded', 'false');
+}
+
+/** Texto del filtro actual del selector «Seta» (grupo o especie). */
+function textoFiltro(): string {
+  const sel = $<HTMLSelectElement>('#hoy-especie');
+  const v = sel.value;
+  if (esValorGrupo(v)) return sel.selectedOptions[0]?.closest('optgroup')?.label ?? v;
+  return nombreComunId(v);
+}
+
+function sitioExport(it: ItemTop): SitioExport {
+  const p = it.principal, s = p.sitio;
+  return {
+    lat: s.lat, lon: s.lon, puntuacion: p.puntuacion, estado: p.estado,
+    setas: it.entradas.map((e) => ({ cientifico: nombre(e.especie), comun: nombreComunId(e.especie), grupo: grupoDe(e.especie).id === 'otras' ? '' : grupoDe(e.especie).nombre })),
+    porque: razonSitio(p, { fiabilidad: fiab(p.especie), motivo: motivoEn(p.especie, s.meteo_id) }),
+    minutos: s.t_pie_min, subida_m: s.subida_m, dificultad: p.dificultad,
+    titularidad: s.titularidad ?? { clase: 'privado' },
+    restriccion: s.restringido ? ctx.manifest()?.chip_sitio_restringido ?? null : null,
+  };
+}
+
+function enlace(texto: string, href: string, clase = '') {
+  const a = document.createElement('a'); a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.textContent = texto;
+  if (clase) a.className = clase;
+  return a;
+}
+
+/** Abre (o cierra) el panel con la ruta, el KML y Compartir para el día, el filtro y el orden de «Los 10 mejores por seta». */
+function abrirExportar() {
+  const panel = $('#exportar-dia'), bt = $('#hoy-exportar');
+  if (!panel.hidden) { cerrarExportar(); return; }
+  const ul = $('#top-especie');
+  const origen = origenDistancias();
+  const items = seleccionarSitios(ordenarTops(listas.get(ul) ?? [], ordenTop(), (x) => clavesEntrada(x.principal, origen)));
+  const fecha = ultimo?.fecha ?? acotarDia(ctx.hoy(), fechaSel);
+  const filtro = textoFiltro();
+  panel.replaceChildren();
+  panel.hidden = false; bt.setAttribute('aria-expanded', 'true');
+  const h = document.createElement('h3'); h.textContent = `Exportar ${fecha.slice(8, 10)}/${fecha.slice(5, 7)} · ${filtro}`;
+  panel.append(h);
+  if (!items.length) {
+    const p = document.createElement('p'); p.className = 'nota'; p.textContent = 'No hay sitios que exportar con estos filtros.';
+    panel.append(p); return;
+  }
+  const sitiosX = items.map(sitioExport);
+  const gps = ctx.posicion();
+  const ruta = urlRutaGoogle(sitiosX, gps)!;
+  const kml = generarKml(fecha, sitiosX, filtro);
+  const archivo = nombreArchivoKml(fecha);
+  const verdes = sitiosX.filter((x) => x.estado === 'verde').length;
+  const nota = document.createElement('p'); nota.className = 'nota';
+  nota.textContent = `${sitiosX.length} ${sitiosX.length === 1 ? 'sitio' : 'sitios'} (${verdes} en verde), en el orden elegido con los verdes delante. `
+    + (gps ? 'La ruta sale de tu posición.' : 'Sin GPS: Google Maps saldrá de tu ubicación actual.')
+    + ' Google Maps admite hasta 9 paradas más el destino.';
+  const acc = document.createElement('div'); acc.className = 'exportar-acciones';
+  const aRuta = enlace('Abrir ruta en Google Maps', ruta, 'btn btn-primario'); aRuta.id = 'exportar-ruta';
+  const bKml = boton('Descargar KML', () => {
+    const url = URL.createObjectURL(new Blob([kml], { type: 'application/vnd.google-earth.kml+xml' }));
+    const a = document.createElement('a'); a.href = url; a.download = archivo; document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  });
+  bKml.id = 'exportar-kml';
+  const estado = document.createElement('p'); estado.className = 'nota exportar-estado'; estado.setAttribute('role', 'status');
+  const texto = textoCompartir(fecha, sitiosX, ruta, filtro);
+  const bComp = boton('Compartir', async () => {
+    const titulo = `Setas ${fecha.slice(8, 10)}/${fecha.slice(5, 7)}`;
+    try {
+      if (navigator.share) {
+        const f = typeof File === 'function' ? new File([kml], archivo, { type: 'application/vnd.google-earth.kml+xml' }) : null;
+        const conArchivo = f && navigator.canShare?.({ files: [f] });
+        await navigator.share(conArchivo ? { title: titulo, text: texto, files: [f!] } : { title: titulo, text: texto });
+        estado.textContent = conArchivo ? 'Compartido con el KML.' : 'Compartido (sin archivo: descarga el KML aparte).';
+        return;
+      }
+    } catch (e) { if ((e as Error)?.name === 'AbortError') return; }
+    try { await navigator.clipboard.writeText(texto); estado.textContent = 'Copiado al portapapeles: texto y enlace de la ruta.'; }
+    catch { estado.textContent = 'No se pudo compartir ni copiar en este navegador.'; }
+  });
+  bComp.id = 'exportar-compartir';
+  acc.append(aRuta, bKml, bComp);
+  const ol = document.createElement('ul'); ol.className = 'exportar-lista';
+  sitiosX.forEach((x, i) => { const li = document.createElement('li'); li.append(enlace(nombrePlacemark(x, i + 1), urlSitioGoogle(x))); ol.append(li); });
+  const ayuda = document.createElement('p'); ayuda.className = 'nota exportar-ayuda'; ayuda.textContent = AYUDA_MY_MAPS;
+  panel.append(nota, acc, estado, ol, ayuda);
+}
+
 /** Resumen para el e2e (window.__setas.tops()). */
 export function resumenHoy() {
   if (!ultimo) return null;
@@ -604,6 +701,7 @@ export function iniciarHoy(c: ContextoHoy) {
   });
   $('#hoy-ver-ficha').addEventListener('click', () => ctx.verFicha($<HTMLSelectElement>('#hoy-especie').value));
   $('#hoy-zona').addEventListener('click', () => ctx.irZona());
+  $('#hoy-exportar').addEventListener('click', abrirExportar);
   const n = $<HTMLSelectElement>('#ajuste-top-n');
   n.value = String(topN());
   n.addEventListener('change', () => escribir(CLAVE_N, n.value));

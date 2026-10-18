@@ -3,7 +3,7 @@
 // citas. También comprueba que Marbella trae factor_citas en sitios.json y que nada de lo nuevo dice «comestible».
 // Requiere `npm run build` y el servidor: php -S 127.0.0.1:8765 -t dist servidor.php
 import { createRequire } from 'node:module';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const { chromium, devices } = createRequire(import.meta.url)('playwright');
@@ -101,6 +101,27 @@ try {
     `top del grupo Boletus: ${espFilas.length} filas con ${[...new Set(espFilas.flat())].join(', ')}, sin «Ver ficha»`);
   await p.locator('#tit-top-especie').scrollIntoViewIfNeeded();
   await p.screenshot({ path: join(CAPTURAS, 'hoy-grupo-boletus.png'), fullPage: false });
+  // «Exportar día» (exportar-dia.ts): ruta de Google Maps, KML con los sitios del top y sin «comestible».
+  comprobar(await p.locator('#hoy-exportar').isVisible(), 'botón «Exportar día» en Hoy');
+  await p.locator('#hoy-exportar').click();
+  await p.waitForSelector('#exportar-dia:not([hidden]) #exportar-kml');
+  const nExp = Math.min(10, espFilas.length);
+  const ruta = new URL(await p.locator('#exportar-ruta').getAttribute('href'));
+  const nParadas = ruta.searchParams.get('waypoints')?.split('|').length ?? 0;
+  comprobar(ruta.href.startsWith('https://www.google.com/maps/dir/?api=1') && ruta.searchParams.get('travelmode') === 'driving'
+    && [null, '36.58900,-5.24400'].includes(ruta.searchParams.get('origin')) && nParadas === nExp - 1 && nParadas <= 9
+    && await p.locator('.exportar-lista a[href^="https://www.google.com/maps/search/?api=1&query="]').count() === nExp,
+    `ruta de Google Maps (origin ${ruta.searchParams.get('origin') ?? 'sin GPS en la app'}) con ${nParadas} paradas + destino y ${nExp} enlaces por sitio`);
+  const [descarga] = await Promise.all([p.waitForEvent('download'), p.locator('#exportar-kml').click()]);
+  const kml = readFileSync(await descarga.path(), 'utf8');
+  const idsTop = await p.evaluate(() => window.__setas.tops().top.map((x) => x.id));
+  const coords = (kml.match(/<coordinates>[^<]+<\/coordinates>/g) ?? []);
+  comprobar(/^setas \d\d\.\d\d\.\d\d\.kml$/.test(descarga.suggestedFilename()) && (kml.match(/<Placemark>/g) ?? []).length === nExp
+    && coords.length === nExp && idsTop.length >= nExp && kml.includes('<name>1 · Boletus') && kml.includes('Titularidad: P')
+    && kml.includes('No consumas ninguna seta sin confirmación de un experto.') && !PROHIBIDO.test(kml),
+    `KML «${descarga.suggestedFilename()}» con ${nExp} Placemarks y sin «comestible»`);
+  comprobar(!PROHIBIDO.test(await p.locator('#exportar-dia').innerText()) && await p.locator('#exportar-dia').getByText('Importar', { exact: false }).count() > 0,
+    'panel de exportar con ayuda de My Maps y sin «comestible»');
   await p.locator('#hoy-especie').selectOption(especie);
   await p.waitForFunction((e) => window.__setas.tops().especie === e, especie);
   // Top de la ficha de la guía.

@@ -673,7 +673,7 @@ try {
     && t0.general.every((f, i, a) => !i || a[i - 1].score >= f.score) && await p.locator('#top-general .top-fila').count() === t0.general.length,
     `top general: ${t0.general.length} filas ordenadas, sin especies en rojo (A. caesarea fuera); primera ${t0.general[0].especie} ${t0.general[0].puntuacion}/100`);
   const fila0 = p.locator('#top-general .top-fila').first();
-  const f0 = await fila0.evaluate((li) => ({ t: li.innerText, botones: [...li.querySelectorAll('button:not(.tf-especie):not(.tf-citado)')].map((b) => b.textContent || b.getAttribute('aria-label')),
+  const f0 = await fila0.evaluate((li) => ({ t: li.innerText, botones: [...li.querySelectorAll('button:not(.tf-especie):not(.tf-citado):not(.tf-ind-ayuda)')].map((b) => b.textContent || b.getAttribute('aria-label')),
     menuOculto: li.querySelector('.tf-menu').hidden, img: li.querySelector('.miniatura-especie img')?.getAttribute('src') ?? '' }));
   comprobar(/Puntuación del día: \d+ de 100/.test(f0.t) && !/Calidad del monte/.test(f0.t)
     && /hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa/.test(await p.locator('#hoy-explicacion-puntos').textContent())

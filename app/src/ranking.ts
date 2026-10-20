@@ -18,6 +18,7 @@ import type { Fiabilidad } from './fiabilidad';
 import { dentroDeDificultad, dificultad, type Dificultad } from './ruta';
 import { esPublico, type Titularidad } from './titularidad';
 import { parsearCitasSitio, type CitasSitio, type NivelCitas } from './citas';
+import { parsearValidacion, type Validacion } from './indicador';
 
 export interface SitioCandidato {
   id: number;                 // índice plano de la celda (fila·ancho + col) en acceso.bin
@@ -55,6 +56,8 @@ export interface SitiosJson {
   especies: Record<string, SitioCandidato[]>;
   /** ¿Aplica esta región el factor de citas al orden? (validación por bloques del pipeline; sin campo = no). */
   factor_citas?: boolean;
+  /** Lift por tramo de puntuación validado por bloques (pipeline exportar.validacion_sitios; indicador.ts). */
+  validacion?: Validacion;
 }
 
 export const FACTOR_SEMAFORO: Record<Estado, number> = { verde: 1, amarillo: 0.5, gris: 0.3, rojo: 0.1 };
@@ -101,7 +104,7 @@ export function puntuar(especie: string, s: SitioCandidato, o: Opciones): Entrad
   return { especie, sitio: s, estado, dificultad: dif, score, puntuacion: puntuacion100(score) };
 }
 
-const conFactor = (datos: SitiosJson, o: Opciones): Opciones => ({ ...o, factorCitas: o.factorCitas ?? datos.factor_citas === true });
+export const conFactor = (datos: SitiosJson, o: Opciones): Opciones => ({ ...o, factorCitas: o.factorCitas ?? datos.factor_citas === true });
 
 const porScore = (a: Entrada, b: Entrada) => b.score - a.score || a.sitio.id - b.sitio.id;
 
@@ -164,5 +167,6 @@ export function parsearSitios(j: unknown): SitiosJson | null {
         return c ? { ...resto, citas: c } : resto;
       });
   }
-  return { version: o.version, generado: o.generado, especies, factor_citas: o.factor_citas === true };
+  const validacion = parsearValidacion(o.validacion);
+  return { version: o.version, generado: o.generado, especies, factor_citas: o.factor_citas === true, ...(validacion ? { validacion } : {}) };
 }

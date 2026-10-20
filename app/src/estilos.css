@@ -467,6 +467,13 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .tf-cifra .tf-sube { font-family: var(--cifras); font-size: 15px; font-weight: 700; color: var(--tinta); }
 .tf-meta { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 15px; color: var(--tinta-2); }
 .tf-puntos { font-weight: 700; color: var(--tinta); }
+.tf-indicador { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; font-size: 14px; color: var(--tinta-2); min-width: 0; }
+.tf-ind { font-family: var(--cifras); font-size: 13px; font-weight: 700; letter-spacing: -0.01em; overflow-wrap: anywhere; min-width: 0; }
+.tf-indicador[data-validado=false] .tf-ind { font-weight: 400; }
+.tf-ind-ayuda { all: unset; box-sizing: border-box; cursor: pointer; flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--regla); background: var(--hoja); color: var(--tinta); font-size: 14px; font-weight: 800; line-height: 1; }
+.tf-ind-ayuda[aria-expanded=true] { background: var(--tinta); color: var(--hoja); border-color: var(--tinta); }
+.tf-ind-ayuda:focus-visible { outline: 3px solid var(--ruta); outline-offset: 2px; }
+.tf-ind-nota { flex-basis: 100%; margin: 4px 0 0; padding: 8px 10px; border-radius: 12px; border: 1.5px solid var(--regla); background: var(--hoja); font-size: 14px; line-height: 1.45; color: var(--tinta); animation: materializar 160ms var(--entrada) both; }
 .tf-acciones { display: grid; grid-template-columns: 1fr auto; gap: 8px; position: relative; }
 .tf-acciones .btn-primario { min-height: 52px; }
 .tf-mas { width: 52px; height: 52px; border-radius: 14px; border: 2px solid var(--regla); background: var(--hoja); display: grid; place-items: center; color: var(--tinta); }

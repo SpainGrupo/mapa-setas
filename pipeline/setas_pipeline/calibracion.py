@@ -28,6 +28,9 @@ MIN_OBS = 10                 # por debajo no se juzga la especie
 BLOQUE_VALIDACION_M = 10_000.0
 PLIEGUES = 5
 SEMILLA_PLIEGUES = 0
+# Lift por tramo de puntuación (indicador «≈N× la media» de la app): tramos [0,25) [25,50) [50,75) [75,100].
+TRAMOS = (0, 25, 50, 75, 101)
+MIN_OBS_TRAMO = 3            # por debajo la app dice «sin validar» para ese tramo (= indicador.ts MIN_OBS_TRAMO)
 log = logging.getLogger(__name__)
 _a_utm = Transformer.from_crs("EPSG:4326", CRS, always_xy=True)
 _a_wgs = Transformer.from_crs(CRS, "EPSG:4326", always_xy=True)
@@ -171,6 +174,29 @@ def validacion_bloques(malla: Malla, raster: np.ndarray, tierra: np.ndarray, xy_
             "lift_medio": round(float(np.mean(lifts)), 2) if lifts else None}
 
 
+def lift_tramos(malla: Malla, raster: np.ndarray, tierra: np.ndarray, xy_utm, pliegue: np.ndarray,
+                k: int = PLIEGUES) -> list[dict]:
+    """Lift por tramo de puntuación con la misma validación por bloques que validacion_bloques, agregado (no media
+    de pliegues): en cada pliegue con observaciones y celdas de tierra, obs += sus obs. con valor en el tramo y
+    esperados += sus obs. × fracción de sus celdas de tierra en el tramo. lift = obs / esperados (1 = como el azar;
+    None si esperados = 0)."""
+    obs = np.zeros(len(TRAMOS) - 1); esp = np.zeros(len(TRAMOS) - 1)
+    if len(xy_utm):
+        f, c = _indices(malla, xy_utm)
+        v, p_obs = raster[f, c], pliegue[f, c]
+        for i in range(k):
+            o = v[p_obs == i]
+            zona = raster[tierra & (pliegue == i)]
+            if not len(o) or not len(zona):
+                continue
+            for t, (a, b) in enumerate(zip(TRAMOS[:-1], TRAMOS[1:])):
+                obs[t] += int(np.sum((o >= a) & (o < b)))
+                esp[t] += len(o) * float(np.mean((zona >= a) & (zona < b)))
+    return [{"desde": a, "hasta": b, "obs": int(obs[t]), "esperados": round(float(esp[t]), 3),
+             "lift": round(float(obs[t] / esp[t]), 2) if esp[t] > 0 else None}
+            for t, (a, b) in enumerate(zip(TRAMOS[:-1], TRAMOS[1:]))]
+
+
 def filtrar_incertidumbre(pts):
     """→ (conservados, n_con_incertidumbre_ok, n_sin_incertidumbre)."""
     ok = [p for p in pts if p[2] is not None and p[2] <= INCERTIDUMBRE_MAX]
@@ -305,6 +331,7 @@ def calibrar(out_dir: Path, raw_dir: Path, perfiles: dict, recalcular: bool = Tr
             "ventana": resumen(valores_en_puntos(malla, rmax, xy_t), rmax[tierra]),
             "val_celda": validacion_bloques(malla, r, tierra, xy_t, pliegue),
             "val_ventana": validacion_bloques(malla, rmax, tierra, xy_t, pliegue),
+            "lift_tramos": lift_tramos(malla, r, tierra, xy_t, pliegue),
         }
     return res
 
@@ -384,6 +411,23 @@ def tabla_mascara(res: dict) -> list[str]:
     return L
 
 
+def tabla_tramos(res: dict) -> list[str]:
+    """Sección «Lift por tramo de puntuación» (validación por bloques agregada; lo usa la app: «≈N× la media»)."""
+    cab = [f"{a}–{min(b, 100)}" for a, b in zip(TRAMOS[:-1], TRAMOS[1:])]
+    L = ["## Lift por tramo de puntuación (validación por bloques)", "",
+         "Por tramo de idoneidad: citas observadas en el tramo / citas esperadas si estuvieran repartidas al azar por "
+         "las celdas de tierra, sumando los pliegues retenidos (no es media de pliegues). Entre paréntesis, citas "
+         f"observadas. Con menos de {MIN_OBS_TRAMO} citas en el tramo la app dice «sin validar».", "",
+         "| especie | n | " + " | ".join(cab) + " |", "|---|---|" + "---|" * len(cab)]
+    f = lambda x: "—" if x is None else x
+    for d in res.values():
+        t = d.get("lift_tramos") or []
+        if not t:
+            continue
+        L.append(f"| {d['nombre']} | {d['celda']['n']} | " + " | ".join(f"{f(x['lift'])} ({x['obs']})" for x in t) + " |")
+    return L + [""]
+
+
 def _ruta_legible(p: Path) -> str:
     """Ruta relativa a pipeline/ (data/<region>/out/…) si cuelga de ahí; si no, tal cual."""
     from .region import BASE
@@ -435,7 +479,7 @@ def informe(out_dir: Path, perfiles: dict, raw_dir: Path | None = None) -> Path:
                  f"{val(d['val_celda'])} | "
                  f"{f(v['mediana_obs'])} | {v['pct_obs_buenas']} | {v['pct_zona_buena']} | {f(v['lift'])} | "
                  f"{val(d['val_ventana'])} |")
-    L += [""] + tabla_mascara(res)
+    L += [""] + tabla_mascara(res) + tabla_tramos(res)
     L += ["Fuentes: GBIF.org, iNaturalist, Observation.org (vía GBIF), foros y literatura (citas.py; cada cita "
           "conserva su licencia y atribución). Perfiles: especies.yaml (heurístico v2)."]
     ruta = out_dir / "calibracion.md"
@@ -447,7 +491,8 @@ def informe(out_dir: Path, perfiles: dict, raw_dir: Path | None = None) -> Path:
                      "mascara": {k: {"n": x["celda"]["n"], "lift_ajuste": x["celda"]["lift"],
                                      "lift_validacion": x["val"]["lift_medio"],
                                      "celdas_buenas": x["celdas_buenas"]}
-                                 for k, x in d.get("variantes", {}).items()}}
+                                 for k, x in d.get("variantes", {}).items()},
+                     "lift_tramos": d.get("lift_tramos", [])}
              for clave, d in res.items()}
     datos["_mascara"] = {"mantener_borde_urbano": mantener, "bajan": bajan}
     (out_dir / "calibracion.json").write_text(json.dumps(datos, ensure_ascii=False, indent=1))

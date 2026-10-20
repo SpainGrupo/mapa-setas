@@ -6,7 +6,7 @@ Pregunta de Alexander: ¿hay más datos abiertos de dónde sale cada seta en Mar
 - Las fuentes abiertas ya están en el pipeline y al día. Desde la descarga del 15/10, GBIF tiene 0 registros nuevos de nuestras especies en los dos radios. iNaturalist (research y needs_id) suma 2 altas y 3 bajas, y ninguna llega a la calibración. Mushroom Observer no tiene ninguna cita de nuestras especies en las dos regiones. iNaturalist «casual» aporta 1 cita útil.
 - **No se integra nada nuevo**: la n no es relevante. La calibración y el dorado no cambian.
 - **El hueco de *Lactarius* en Pinar del Rey / San Roque es real y lo confirman los datos abiertos.** El pipeline ya tiene 6 citas de *L. deliciosus* y *L. sanguifluus* a menos de 4 km de Pinar del Rey (iNaturalist y Observation.org), y el modelo les da 0 a todas. **Causa: la altitud.** Los perfiles de *Lactarius* empiezan en 200 m y el pinar está entre 30 y 200 m. El mapa de árbol detecta bien el pino. El suelo resta, pero no es lo que bloquea.
-- Es una decisión de modelo, no una corrección de datos. Queda como **propuesta**: un override solo para Marbella, con números abajo. No se ha aplicado.
+- Es una decisión de modelo, no una corrección de datos. Era una **propuesta**: un override solo para Marbella, con números abajo. **Aplicado el 2026-10-20 con la aprobación de Alexander** (ver §4.1).
 
 ## 1. Fuentes revisadas (términos, robots y uso)
 
@@ -140,6 +140,7 @@ Calibración de las dos especies con `calibracion.calibrar` y el perfil cambiado
    - **Motivo:** el 37 % de las citas de *L. deliciosus* que calibran en la zona están por debajo de 200 m, y en los pinares costeros de pino piñonero y pinaster del Estrecho salen níscalos a nivel del mar (iNat, Observation y Wikiloc coinciden).
    - **Efecto:** la validación de *L. deliciosus* sube de 4,36 a 5,90, y las celdas ≥50 pasan de 9.911 a 15.937.
    - **Alicante no se toca.**
+   - **Aplicado el 2026-10-20** (`pipeline/regiones/marbella.yaml`, `overrides_especies`). Resultado real: validación de *L. deliciosus* 4,36 → 5,90 y de *L. sanguifluus* 10,03 → 9,32 (n = 10, mucho ruido); sitios de *L. deliciosus* 145 → 150. Alicante idéntico (`calibracion.json` idéntico tras recalcularlo).
    - Si se aplica: idoneidad → calibración → sitios → export, y actualizar el dorado de Marbella.
 2. **Suelo «Gravas, arenas y limos. Localmente margas…»** (~50.800 ha en Marbella y 7.600 ha en Alicante): valorar pasarlo a «otro» con una excepción en `fuentes.yaml → geologia.mapeo_suelo`, como ya se hizo con las «areniscas» genéricas. Afecta a todas las especies; habría que medir antes y después todas las especies de las dos regiones.
 3. **Refrescar las citas de Alicante** (`citas --refrescar`) en el próximo ciclo, para quitar las 3 observaciones borradas.

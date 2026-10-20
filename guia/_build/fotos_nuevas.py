@@ -43,6 +43,13 @@ NUEVAS = {
     "tricholoma_portentosum": ["File:Tricholoma portentosum (Haute-Loire, France).jpg",
                                "File:Tricholoma portentosum - coupe longitudinale (Haute-Loire, France).jpg",
                                "File:Récolte de Tricholoma portentosum (Haute-Loire, France).jpg"],
+    # 2026-10-20 (Marbella): trompeta de los muertos / angula de monte y seta de ostra
+    "craterellus_cornucopioides": ["File:Black trumpet Craterellus cornucopioides.jpg",
+                                   "File:Craterellus cornucopioides, Monte Rocca Romana.jpg",
+                                   "File:2007-11-10 Craterellus lutescens.jpg"],
+    "pleurotus_ostreatus": ["File:Austernpilz Pleurotus ostreatus.jpg",
+                            "File:Gewone oesterzwam (Pleurotus ostreatus). Paddenstoel op els 01.JPG",
+                            "File:Pleurotus ostreatus 4.jpg"],
 }
 
 

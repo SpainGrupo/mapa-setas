@@ -244,7 +244,7 @@ try {
   await p.locator('#btn-capas').click();
   await elegirEspecie('boletus_edulis');
 
-  // Idoneidad: los 22 × 6 PMTiles responden a Range con la cabecera PMTiles v3, y cada especie se pinta en el mapa.
+  // Idoneidad: los 24 × 6 PMTiles responden a Range con la cabecera PMTiles v3, y cada especie se pinta en el mapa.
   const man = await p.evaluate(async () => (await fetch('data/marbella/manifest.json')).json());
   const malos = [];
   for (const e of man.especies) for (const u of man.umbrales) {
@@ -252,7 +252,7 @@ try {
     const b = Buffer.from(await r.arrayBuffer());
     if (r.status !== 206 || b.toString('latin1', 0, 7) !== 'PMTiles') malos.push(`${e.id}_${u}:${r.status}`);
   }
-  comprobar(man.especies.length === 22 && !malos.length, `idoneidad: ${man.especies.length} especies × ${man.umbrales.length} umbrales servidos como PMTiles${malos.length ? ' — fallan ' + malos.join(', ') : ''}`);
+  comprobar(man.especies.length === 24 && !malos.length, `idoneidad: ${man.especies.length} especies × ${man.umbrales.length} umbrales servidos como PMTiles${malos.length ? ' — fallan ' + malos.join(', ') : ''}`);
   await p.evaluate(({ latitude, longitude }) => window.__setas.mapa.jumpTo({ center: [longitude, latitude], zoom: 10 }), PUNTO);
   for (const e of man.especies) {
     await elegirEspecie(e.id);
@@ -559,7 +559,7 @@ try {
   await p.locator('#tz-ver').click();
   await p.locator('#lista-semaforo .semaforo-fila').first().waitFor();
   const est1 = await estadosZona();
-  comprobar(Object.keys(est1).length === 22 && igual(est1, FIXTURE.esperado), `Zona con el fixture (hoy ${HOY_E2E}), 22 especies: ${JSON.stringify(est1)}`);
+  comprobar(Object.keys(est1).length === 24 && igual(est1, FIXTURE.esperado), `Zona con el fixture (hoy ${HOY_E2E}), 24 especies: ${JSON.stringify(est1)}`);
   const fuera = await p.locator('[data-especie=terfezia_arenaria] .mot').textContent();
   const ponderosa = await p.locator('[data-especie=amanita_ponderosa] .mot').textContent();
   const deliciosus = await p.locator('[data-especie=lactarius_deliciosus] .mot').textContent();
@@ -618,7 +618,7 @@ try {
   await captura('selector-activas.png');
   await p.locator('#btn-ver-mas').click();
   const selMas = await leerSel();
-  // Con 22 especies (2026-10-18) hay dos inactivas: A. caesarea y A. campestris; se mira la oronja.
+  // Con 22 especies (2026-10-18; en 2026-10-20, 24 con Craterellus y P. ostreatus activas) hay dos inactivas: A. caesarea y A. campestris; se mira la oronja.
   const iCae = selMas.inact.findIndex((x) => x.id === 'amanita_caesarea');
   if (iCae > 0) selMas.inact.unshift(...selMas.inact.splice(iCae, 1));
   comprobar(selMas.exp === 'true' && selMas.masVisible && selMas.guardado === '1'
@@ -714,10 +714,10 @@ try {
   await p.waitForFunction(() => window.__setas.tops().especie === 'boletus_aereus');
   await p.locator('#tit-top-especie').scrollIntoViewIfNeeded();
   await captura('hoy-especie.png');
-  // Calendario: 22 especies × 12 meses, marca en octubre y estado de cada una; tocar una → su top 10.
+  // Calendario: 24 especies × 12 meses, marca en octubre y estado de cada una; tocar una → su top 10.
   const cal = await p.evaluate(() => ({ filas: [...document.querySelectorAll('#calendario .cal-fila')].map((b) => ({ id: b.dataset.especie, clase: b.dataset.clase,
     t: b.querySelector('.cal-estado').textContent, meses: b.querySelectorAll('.cal-meses i').length, oct: b.querySelectorAll('.cal-meses i')[9].classList.contains('actual') })) }));
-  comprobar(cal.filas.length === 22 && cal.filas.every((f) => f.meses === 12 && f.oct)
+  comprobar(cal.filas.length === 24 && cal.filas.every((f) => f.meses === 12 && f.oct)
     && cal.filas[0].clase === 'sale' && cal.filas[0].id.startsWith('boletus_')
     && /^Ya sale · aguanta hasta ~\d\d\/\d\d$/.test(cal.filas[0].t)
     && cal.filas.find((f) => f.id === 'lactarius_deliciosus').t.startsWith('Empieza en ~')
@@ -1067,7 +1067,7 @@ try {
   await p.waitForSelector('#top-general .top-fila');
   const tOff = await p.evaluate(() => window.__setas.tops());
   comprobar(!tOff.sinSitios && tOff.general.length > 5 && tOff.top.length === 10 && tOff.fecha === HOY_E2E
-    && await p.locator('#calendario .cal-fila').count() === 22 && /guardado/.test(await p.locator('#hoy-meteo').textContent()),
+    && await p.locator('#calendario .cal-fila').count() === 24 && /guardado/.test(await p.locator('#hoy-meteo').textContent()),
     `sin conexión, Hoy sale de OPFS (sitios.json) y la caché del tiempo: ${tOff.general.length} filas, top 10 y calendario`);
   await captura('hoy-offline.png');
   await p.locator('#hoy-zona').click();

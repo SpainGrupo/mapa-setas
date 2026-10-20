@@ -2,12 +2,13 @@
  "json": {
   "app/acceso.json": "1ccd742e3d610a5999713c14194a5dc45e6011a63ed7818f1af625e5c6bd5a15",
   "app/aparcamientos.json": "347c72e9830fe5b77b1e07d3b9cf7026b1ff9dc8b1d8040dab2cbb43241e5f63",
-  "app/meteo_puntos.json": "02a57bce9266deebe0c87bd754c7a3fad212347070c9d8749643bd0f5bf60824",
-  "app/micro.json": "ef7cc30afb54c837e0c67a0d683490f14f31a18f2a1f1d4e5874251980027327",
-  "app/sitios.json": "5e0a70770d6073398619aa7c05ebf7ac8ed10a9cd98a7b6f77d5691ae6c20f5f",
-  "calibracion.json": "d6f9894fe03328a72f2e274cc77cdd130ee7ebb2cb98284f96c091b5a34846ee",
-  "citas.geojson": "28e8f6b0fc0f245556e5b98d235f187fedcccc56db347e7ce3c26e92dad0a8d5",
-  "citas_capa.json": "728b17371f12981375259ddb596ddd23bb2dd29ff398b4c385705c6d80dc6570",
+  "app/mdt_campo.json": "4d9278022823ff0d4f12e22831be4684c864aaea3f0a34b7aed5107a888d7437",
+  "app/meteo_puntos.json": "dbfff484667036dece7ad8b24516c2f36f436aabd7e193bc93d787fb6a76d48c",
+  "app/micro.json": "e0be5bcb2b6338b29f99479ee34f996f002a8b40bece638e96cbb5d1cba894fa",
+  "app/sitios.json": "c72e91b362350fabfa3136eeda47d14c7a2a65458cb45be1f7648bac6fe9e549",
+  "calibracion.json": "d2f052c99f66a08febb33df9e6f7467e19423981a52f01f97d26424ee2d5392c",
+  "citas.geojson": "e3a864c25de8949a95eadc994104df975b999c6751862a967c3f3292bde1d775",
+  "citas_capa.json": "dcff62464b3a0690ec2edc9141376637474cb0504748a77287a48d51d46d02fc",
   "fuego_resumen.json": "1c60c68a83bbd73e65444d31046b197a7b3723c6d40e73da6c86f6c64254359d",
   "malla.json": "17f755f4c0e3b62271eec9afd16b8c209db908a34292de11314b3cce0ec90089",
   "respaldo/setas_agaricus_campestris_zonas_buenas.geojson": "2730f825ab862eb484644ba4c6fb4b55d83c38eda363386978f793059df25fa6",
@@ -18,13 +19,15 @@
   "respaldo/setas_boletus_edulis_zonas_buenas.geojson": "0afa4538f97092019e3492646f42746e8e2278adae3cc647376a18ec3705149c",
   "respaldo/setas_boletus_pinophilus_zonas_buenas.geojson": "c2310431a9225e058eb658d5a3ef2aa8581aa8f7effd35a71e4534525a304fbd",
   "respaldo/setas_cantharellus_cibarius_zonas_buenas.geojson": "da741e33c766d5ac3d734ea045ff6e9de3ceae31f47bbc556f4f79005a6f88af",
+  "respaldo/setas_craterellus_cornucopioides_zonas_buenas.geojson": "87f499d5fe463aa1a2dcf768d13886246b0358d08134f06d406db4043655bf0c",
   "respaldo/setas_hydnum_repandum_zonas_buenas.geojson": "caf52f8088095940e168f33f205a16bc429efbc12c11f141a9ce3c2b84cdb70d",
-  "respaldo/setas_lactarius_deliciosus_zonas_buenas.geojson": "123e7a2d6ed6788b406e12b6a7b7c0aaaa292b9d106ce088213a9d7b06187189",
-  "respaldo/setas_lactarius_sanguifluus_zonas_buenas.geojson": "8d25898595ce0b143505e2097e1476bc175e7f0f97229be66ad2e12dfb4fda15",
+  "respaldo/setas_lactarius_deliciosus_zonas_buenas.geojson": "24ef1ca2764de84cb6fc10e7686a544ff479d7d5cdd16252aa99be0017e3f082",
+  "respaldo/setas_lactarius_sanguifluus_zonas_buenas.geojson": "9954c4b6118e2cb49437a4044687b41117d0d00a92f3d23417453806dbad4486",
   "respaldo/setas_lepista_nuda_zonas_buenas.geojson": "bb0ffe57babfa9f426931161d37573959c6c25e798f9275ed6ea88c84828454e",
   "respaldo/setas_macrolepiota_procera_zonas_buenas.geojson": "9bf261fab5a0f23438464114f71fcabfea571834ac2558e2a15b8c095e7f0c29",
   "respaldo/setas_morchella_spp_zonas_buenas.geojson": "e89af54a1cd2aaabcb0a773a07a0057e7f5a4729a744c3548d3e60090b096f4d",
   "respaldo/setas_pleurotus_eryngii_zonas_buenas.geojson": "680ccf3d8fb7e9c168d31a8b9df0b05ecb004a6856d686ab3ccbd764f90a5240",
+  "respaldo/setas_pleurotus_ostreatus_zonas_buenas.geojson": "4fcbff408fe204d431c74424cfc275b5bfffa935a66c59b780f854b259280047",
   "respaldo/setas_russula_cyanoxantha_zonas_buenas.geojson": "0f1ea73d7454a4c17792e2f4d6892db8ab5eb5232911fca49a12a4e21485c21d",
   "respaldo/setas_suillus_bellinii_zonas_buenas.geojson": "a8b60e2e4634d2a8457610969e1a4445284321763461890daedd359e0ab11a2d",
   "respaldo/setas_suillus_collinitus_zonas_buenas.geojson": "152c153fb54a576f48c6198035f00abb3e7ebef7e9de1d00b99e0b98c8a23f3e",
@@ -35,7 +38,7 @@
   "rutas.geojson": "109c10a0ba5b2058dd6477c2341d239ae6ca9150da4d60df1131c087d9a918c0",
   "titularidad.geojson": "0f1aa237e0b0ea6de6f8ec38b165293dd381b471745ab3001db10a6e86335af6",
   "titularidad_resumen.json": "22a63723c18c62bb6d91f071ad8cf6e298717582893cb4ad705d3d7c3e7ddd97",
-  "validacion_citas.json": "516df871da6d28cbbd43398b00b138e76ac352a5f3d5be5b34ed4a8a94572972",
+  "validacion_citas.json": "5aaec80f4b9bc9e937873543d75a083d974f03d66d7708e5a521cae8c53e3db4",
   "zona.geojson": "9c141af8a7617fc8e4524c710498c8266f659619e2b360e9fa62a083ef6d3966"
  },
  "manifest": {
@@ -251,6 +254,30 @@
    },
    {
     "bytes": null,
+    "nombre": "idoneidad_craterellus_cornucopioides_0.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_craterellus_cornucopioides_1000.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_craterellus_cornucopioides_200.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_craterellus_cornucopioides_400.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_craterellus_cornucopioides_600.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_craterellus_cornucopioides_800.pmtiles"
+   },
+   {
+    "bytes": null,
     "nombre": "idoneidad_hydnum_repandum_0.pmtiles"
    },
    {
@@ -416,6 +443,30 @@
    {
     "bytes": null,
     "nombre": "idoneidad_pleurotus_eryngii_800.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_pleurotus_ostreatus_0.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_pleurotus_ostreatus_1000.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_pleurotus_ostreatus_200.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_pleurotus_ostreatus_400.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_pleurotus_ostreatus_600.pmtiles"
+   },
+   {
+    "bytes": null,
+    "nombre": "idoneidad_pleurotus_ostreatus_800.pmtiles"
    },
    {
     "bytes": null,
@@ -610,7 +661,7 @@
     "nombre": "titularidad.pmtiles"
    },
    {
-    "bytes": 9572,
+    "bytes": 9571,
     "nombre": "meteo_puntos.json"
    },
    {
@@ -626,16 +677,24 @@
     "nombre": "aparcamientos.json"
    },
    {
-    "bytes": 1105918,
+    "bytes": 1229781,
     "nombre": "sitios.json"
    },
    {
-    "bytes": 38835,
+    "bytes": 40620,
     "nombre": "micro.json"
    },
    {
-    "bytes": 9460651,
+    "bytes": 10042270,
     "nombre": "micro.bin"
+   },
+   {
+    "bytes": 30979,
+    "nombre": "mdt_campo.json"
+   },
+   {
+    "bytes": 10864541,
+    "nombre": "mdt_campo.bin"
    }
   ],
   "base": "20261018.pmtiles maxzoom=15",
@@ -647,13 +706,13 @@
   ],
   "citas": {
    "capa": "citas.pmtiles",
-   "n": 853,
+   "n": 921,
    "por_origen": {
     "foro": 4,
-    "gbif": 141,
-    "inat": 389,
+    "gbif": 156,
+    "inat": 411,
     "literatura": 14,
-    "observation": 305
+    "observation": 336
    }
   },
   "especies": [
@@ -1318,8 +1377,73 @@
       40
      ]
     }
+   },
+   {
+    "fiabilidad": "buena",
+    "id": "craterellus_cornucopioides",
+    "n_citas": 13,
+    "nombre": "Craterellus cornucopioides / lutescens",
+    "tiempo": {
+     "balance_30d_min_mm": -20,
+     "dias_lluvia_30d_min": 4,
+     "episodio_mm": 20,
+     "humedad_suelo_min": 0.16,
+     "meses": [
+      10,
+      11,
+      12,
+      1
+     ],
+     "tmax_media": [
+      14,
+      25
+     ],
+     "tmin_media": [
+      7,
+      16
+     ],
+     "ventana_dias": [
+      10,
+      25
+     ]
+    }
+   },
+   {
+    "fiabilidad": "buena",
+    "id": "pleurotus_ostreatus",
+    "n_citas": 41,
+    "nombre": "Pleurotus ostreatus",
+    "tiempo": {
+     "balance_30d_min_mm": -30,
+     "dias_lluvia_30d_min": 3,
+     "episodio_mm": 20,
+     "humedad_suelo_min": 0.15,
+     "meses": [
+      10,
+      11,
+      12,
+      1,
+      2
+     ],
+     "tmax_media": [
+      12,
+      24
+     ],
+     "tmin_media": [
+      4,
+      16
+     ],
+     "ventana_dias": [
+      10,
+      20
+     ]
+    }
    }
   ],
+  "mdt_campo": {
+   "cabecera": "mdt_campo.json",
+   "datos": "mdt_campo.bin"
+  },
   "meteo": {
    "puntos": "meteo_puntos.json",
    "zonas": "meteo_zonas.pmtiles"
@@ -1349,13 +1473,15 @@
     "boletus_edulis": 20,
     "boletus_pinophilus": 13,
     "cantharellus_cibarius": 150,
+    "craterellus_cornucopioides": 150,
     "hydnum_repandum": 150,
-    "lactarius_deliciosus": 145,
+    "lactarius_deliciosus": 150,
     "lactarius_sanguifluus": 150,
     "lepista_nuda": 150,
     "macrolepiota_procera": 150,
     "morchella_spp": 4,
     "pleurotus_eryngii": 150,
+    "pleurotus_ostreatus": 150,
     "russula_cyanoxantha": 150,
     "suillus_bellinii": 150,
     "suillus_collinitus": 150,
@@ -1416,7 +1542,7 @@
    ]
   }
  },
- "manifest_total_bytes": 213135031,
+ "manifest_total_bytes": 236508352,
  "pmtiles": {
   "app/citas.pmtiles": {
    "atribucion": "GBIF.org · iNaturalist · Observation.org · foros y literatura (cada cita con su licencia)",
@@ -1426,9 +1552,9 @@
     -34391000,
     375856370
    ],
-   "bytes": 700998,
+   "bytes": 736277,
    "nombre": "<out>/app/citas.pmtiles",
-   "teselas": 1179,
+   "teselas": 1211,
    "zoom": [
     6,
     14
@@ -1442,7 +1568,7 @@
     -34595500,
     375761290
    ],
-   "bytes": 12420157,
+   "bytes": 12420211,
    "nombre": "<out>/app/curvas.pmtiles",
    "teselas": 5886,
    "zoom": [
@@ -2218,6 +2344,102 @@
     13
    ]
   },
+  "app/idoneidad_craterellus_cornucopioides_0.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1477490,
+   "nombre": "idoneidad_craterellus_cornucopioides_0",
+   "teselas": 874,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_craterellus_cornucopioides_1000.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 220938,
+   "nombre": "idoneidad_craterellus_cornucopioides_1000",
+   "teselas": 187,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_craterellus_cornucopioides_200.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 953535,
+   "nombre": "idoneidad_craterellus_cornucopioides_200",
+   "teselas": 717,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_craterellus_cornucopioides_400.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 593690,
+   "nombre": "idoneidad_craterellus_cornucopioides_400",
+   "teselas": 475,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_craterellus_cornucopioides_600.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 400243,
+   "nombre": "idoneidad_craterellus_cornucopioides_600",
+   "teselas": 320,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_craterellus_cornucopioides_800.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 300606,
+   "nombre": "idoneidad_craterellus_cornucopioides_800",
+   "teselas": 249,
+   "zoom": [
+    8,
+    13
+   ]
+  },
   "app/idoneidad_hydnum_repandum_0.pmtiles": {
    "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
    "bbox_e7": [
@@ -2322,9 +2544,9 @@
     -34370899,
     375942006
    ],
-   "bytes": 584629,
+   "bytes": 741201,
    "nombre": "idoneidad_lactarius_deliciosus_0",
-   "teselas": 544,
+   "teselas": 665,
    "zoom": [
     8,
     13
@@ -2338,9 +2560,9 @@
     -34370899,
     375942006
    ],
-   "bytes": 21440,
+   "bytes": 36173,
    "nombre": "idoneidad_lactarius_deliciosus_1000",
-   "teselas": 32,
+   "teselas": 54,
    "zoom": [
     8,
     13
@@ -2354,9 +2576,9 @@
     -34370899,
     375942006
    ],
-   "bytes": 307638,
+   "bytes": 393983,
    "nombre": "idoneidad_lactarius_deliciosus_200",
-   "teselas": 379,
+   "teselas": 480,
    "zoom": [
     8,
     13
@@ -2370,9 +2592,9 @@
     -34370899,
     375942006
    ],
-   "bytes": 153168,
+   "bytes": 191364,
    "nombre": "idoneidad_lactarius_deliciosus_400",
-   "teselas": 216,
+   "teselas": 263,
    "zoom": [
     8,
     13
@@ -2386,9 +2608,9 @@
     -34370899,
     375942006
    ],
-   "bytes": 66485,
+   "bytes": 93177,
    "nombre": "idoneidad_lactarius_deliciosus_600",
-   "teselas": 95,
+   "teselas": 132,
    "zoom": [
     8,
     13
@@ -2402,9 +2624,9 @@
     -34370899,
     375942006
    ],
-   "bytes": 36356,
+   "bytes": 55560,
    "nombre": "idoneidad_lactarius_deliciosus_800",
-   "teselas": 53,
+   "teselas": 81,
    "zoom": [
     8,
     13
@@ -2418,9 +2640,9 @@
     -34370899,
     375942006
    ],
-   "bytes": 790040,
+   "bytes": 925192,
    "nombre": "idoneidad_lactarius_sanguifluus_0",
-   "teselas": 609,
+   "teselas": 704,
    "zoom": [
     8,
     13
@@ -2434,9 +2656,9 @@
     -34370899,
     375942006
    ],
-   "bytes": 31662,
+   "bytes": 39499,
    "nombre": "idoneidad_lactarius_sanguifluus_1000",
-   "teselas": 48,
+   "teselas": 60,
    "zoom": [
     8,
     13
@@ -2450,9 +2672,9 @@
     -34370899,
     375942006
    ],
-   "bytes": 454066,
+   "bytes": 524080,
    "nombre": "idoneidad_lactarius_sanguifluus_200",
-   "teselas": 482,
+   "teselas": 556,
    "zoom": [
     8,
     13
@@ -2466,9 +2688,9 @@
     -34370899,
     375942006
    ],
-   "bytes": 237190,
+   "bytes": 271883,
    "nombre": "idoneidad_lactarius_sanguifluus_400",
-   "teselas": 306,
+   "teselas": 349,
    "zoom": [
     8,
     13
@@ -2482,9 +2704,9 @@
     -34370899,
     375942006
    ],
-   "bytes": 122381,
+   "bytes": 143466,
    "nombre": "idoneidad_lactarius_sanguifluus_600",
-   "teselas": 175,
+   "teselas": 205,
    "zoom": [
     8,
     13
@@ -2498,9 +2720,9 @@
     -34370899,
     375942006
    ],
-   "bytes": 60905,
+   "bytes": 76410,
    "nombre": "idoneidad_lactarius_sanguifluus_800",
-   "teselas": 90,
+   "teselas": 114,
    "zoom": [
     8,
     13
@@ -2885,6 +3107,102 @@
    "bytes": 291406,
    "nombre": "idoneidad_pleurotus_eryngii_800",
    "teselas": 369,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_pleurotus_ostreatus_0.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 2671583,
+   "nombre": "idoneidad_pleurotus_ostreatus_0",
+   "teselas": 1355,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_pleurotus_ostreatus_1000.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 360990,
+   "nombre": "idoneidad_pleurotus_ostreatus_1000",
+   "teselas": 338,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_pleurotus_ostreatus_200.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1752120,
+   "nombre": "idoneidad_pleurotus_ostreatus_200",
+   "teselas": 1226,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_pleurotus_ostreatus_400.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 1119026,
+   "nombre": "idoneidad_pleurotus_ostreatus_400",
+   "teselas": 936,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_pleurotus_ostreatus_600.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 740902,
+   "nombre": "idoneidad_pleurotus_ostreatus_600",
+   "teselas": 662,
+   "zoom": [
+    8,
+    13
+   ]
+  },
+  "app/idoneidad_pleurotus_ostreatus_800.pmtiles": {
+   "atribucion": "IGN CC BY 4.0 · © MITECO MFE · IGME · REDIAM CC BY 4.0 · Catastro INSPIRE (D. G. del Catastro) · © OpenStreetMap ODbL",
+   "bbox_e7": [
+    -62182644,
+    359587459,
+    -34370899,
+    375942006
+   ],
+   "bytes": 517779,
+   "nombre": "idoneidad_pleurotus_ostreatus_800",
+   "teselas": 477,
    "zoom": [
     8,
     13
@@ -3570,7 +3888,7 @@
     -34594610,
     375761790
    ],
-   "bytes": 79387,
+   "bytes": 79435,
    "nombre": "<out>/app/meteo_zonas.pmtiles",
    "teselas": 485,
    "zoom": [
@@ -3586,7 +3904,7 @@
     -35386960,
     375669960
    ],
-   "bytes": 422989,
+   "bytes": 423046,
    "nombre": "<out>/app/protegidos.pmtiles",
    "teselas": 859,
    "zoom": [
@@ -3602,7 +3920,7 @@
     -37637690,
     375439020
    ],
-   "bytes": 386468,
+   "bytes": 386522,
    "nombre": "<out>/app/restricciones.pmtiles",
    "teselas": 683,
    "zoom": [
@@ -3618,7 +3936,7 @@
     -34377090,
     375669820
    ],
-   "bytes": 1528320,
+   "bytes": 1528377,
    "nombre": "<out>/app/rutas.pmtiles",
    "teselas": 2468,
    "zoom": [
@@ -3650,7 +3968,7 @@
     -33307840,
     376690750
    ],
-   "bytes": 7970775,
+   "bytes": 7970831,
    "nombre": "<out>/app/titularidad.pmtiles",
    "teselas": 7653,
    "zoom": [
@@ -3662,9 +3980,10 @@
  "sha": {
   "app/acceso.bin": "dab6710b5e10a6c3d235ced7bea6ba83e4a47b70c91269a26474f3fcbe5e759e",
   "app/acceso.bin.gz": "cf1d093732e0ae318260cef813178e65909bb297591cd2f81fe53e1572b26c21",
-  "app/micro.bin": "1fd050fdf73cdec6ac44c48a301a7391dccbda29219e28879b5db0d676939293",
-  "calibracion.md": "f7bc7fd7276a95533d07eeafaadb7e5df627f4dc2a707dd5cb1091b4451bc354",
-  "respaldo/README_respaldo.md": "6256d5961bc93152f71641d6338295f33d963d24cab323543dd0023ee6765ba9",
+  "app/mdt_campo.bin": "2bd279fe0140bf2fa8df4ad69968bf886a1d527776f6feb3c99d18f0eaf90010",
+  "app/micro.bin": "7f4638a1a9a44cf9ef54efb69275b5a7ee29bf56a05ac2f098f2cdaf3f2f85a3",
+  "calibracion.md": "f8367ac9e0c007655aa086be6b23f24ae5f63beff5dd79c585bc5d15b3e4fed1",
+  "respaldo/README_respaldo.md": "91d25ebd175f7a6878e23c9e965f9b2ec13b485a6a461159d10f2162ffc4c0b1",
   "respaldo/setas_agaricus_campestris_zonas_buenas.kml": "6fce7f967c58f666bb33d72a1de773a2b58096b813a45ea0d4815286bcc4df2c",
   "respaldo/setas_amanita_caesarea_zonas_buenas.kml": "0fdba37f56669097316711e5af583e45349471b6b5fe62983765afc128c481c8",
   "respaldo/setas_amanita_ponderosa_zonas_buenas.kml": "d5cb35ee3c3c07f37bfc68071ddb8905a4ed2c4c07c332a7c679a7eb1b5be38f",
@@ -3673,13 +3992,15 @@
   "respaldo/setas_boletus_edulis_zonas_buenas.kml": "70dc350687adc6ff9a5fa28d20160de11dba75a357952f319ab8f62da77eab4f",
   "respaldo/setas_boletus_pinophilus_zonas_buenas.kml": "5d1a126bd885698008f0ff7068797ca9b1d0f567a317e9d9ad6176f144c0370b",
   "respaldo/setas_cantharellus_cibarius_zonas_buenas.kml": "0c07494a95f1a3fdd9ca09f00c822ac3c146cb817819655170744849cd685142",
+  "respaldo/setas_craterellus_cornucopioides_zonas_buenas.kml": "01f9eac09d023874b3426644a454dcb3c1bce6828d7357bc26b98f55851a8a32",
   "respaldo/setas_hydnum_repandum_zonas_buenas.kml": "3bb340afd456eedcb072bfbc868ced1179e54301b75ea713e1253e97180d7689",
-  "respaldo/setas_lactarius_deliciosus_zonas_buenas.kml": "4cb7b37c998e49ce7169355443d54d5b5d3a6bd980d0cd6b547d96c427feebb2",
-  "respaldo/setas_lactarius_sanguifluus_zonas_buenas.kml": "66593323c41978b030b96d839b26d46272944094f26b60bc5276e6233d17ed09",
+  "respaldo/setas_lactarius_deliciosus_zonas_buenas.kml": "f492b0361b4fa0bdf4b50d5889dd33b1d011624a240bd974def8ab2e9e16c929",
+  "respaldo/setas_lactarius_sanguifluus_zonas_buenas.kml": "c7a73f1fd97277a351f987d4125f5cf36f6806308842263317b663a68bb17be5",
   "respaldo/setas_lepista_nuda_zonas_buenas.kml": "371933bccd58774e995e984495387ca09190855e5d74540c23f64a84df5d9efb",
   "respaldo/setas_macrolepiota_procera_zonas_buenas.kml": "1bbda6fdfa242611cca59e8049397d4b83e08f92260cc121ef31d57801119eda",
   "respaldo/setas_morchella_spp_zonas_buenas.kml": "436ce4a9b7e7d714d82955ef949fa7ff9c5bdccfa059aeb43d2ca05153c37f8d",
   "respaldo/setas_pleurotus_eryngii_zonas_buenas.kml": "a52ad9094b679868ea9573b104676d06176ef342551446d7a7cc5dd9296a3d98",
+  "respaldo/setas_pleurotus_ostreatus_zonas_buenas.kml": "fba6bdfc601ae19db0dba223c9a24031412d722dbb45bf2bab47cdc2d354f13f",
   "respaldo/setas_russula_cyanoxantha_zonas_buenas.kml": "2e2e42136390d950a959f459182feaab6a9f5cee616263488efce44bf4c17043",
   "respaldo/setas_suillus_bellinii_zonas_buenas.kml": "2405d0b1603b46342a3f168175c9d384a03ec1c0f4e8d04d4723b878a63fa98c",
   "respaldo/setas_suillus_collinitus_zonas_buenas.kml": "a5259eac5f7c264d150078292f718c2ed12e613ded856bc27490623bdcb0f62b",
@@ -3687,7 +4008,7 @@
   "respaldo/setas_suillus_luteus_zonas_buenas.kml": "0a54cdf017915e57da15ee984a62e3a6b6206536e569903e3e52f84252aca88e",
   "respaldo/setas_terfezia_arenaria_zonas_buenas.kml": "ad522ef8451c18aef58dae93113f6eb2ae7644a11b761a7d909faae50218d45f",
   "respaldo/setas_tricholoma_portentosum_zonas_buenas.kml": "44368b0ca321863ef44c817873647027582e13e4da2c48416ced194cb6de284d",
-  "validacion_citas.md": "86fd515804549c92dd633090c6cd8afadaf810781c68effc77a751bc11456d9c",
+  "validacion_citas.md": "3df300d03787c42fa8cb2ae43262431630e3d2189640655847fa0e3b5c43c3b9",
   "vista_agaricus_campestris.png": "469a345d721aa108af60be5a5054f6db1f30b7a74328a0cdb381dad50e860c06",
   "vista_amanita_caesarea.png": "7cf67b0dc9a840ecd0e7a8de581f752a17aa4c56154fdcf3f23b54d8931395bf",
   "vista_amanita_ponderosa.png": "77d1f2f1277da0465433259e0161b22de91c53dfee484642b235850dec9a05a3",
@@ -3696,13 +4017,15 @@
   "vista_boletus_edulis.png": "ee9b39ae2a383f36b21e14031cbd43f6696c6f8359c9574faad768a54ace9dee",
   "vista_boletus_pinophilus.png": "491f95ebf471da36e778ac9bb5ce764848b15010e2d58e5af004dde7b41ea5d6",
   "vista_cantharellus_cibarius.png": "b6efeb1d38793372dfdcab229cd7af5505fed40057e4e3b8c0865ad6b6da2825",
+  "vista_craterellus_cornucopioides.png": "4e540e9a34e4868052b18d8b7d3c69fdbf2fa19cc87b0dc06438c8995852d12f",
   "vista_hydnum_repandum.png": "dfa0187d5f7d99afefd23cadafc1f16ab2fd5262df0e7b323b9b5d15100a6e5f",
-  "vista_lactarius_deliciosus.png": "45d4f98f659baf97c9ac824e99b0c75cec2fd79046494a58fe545d7c2572ae98",
-  "vista_lactarius_sanguifluus.png": "46e41b3975e68982f38f29eadae29b59c8d8984344e4b37eb0c2ed83cdcdbcdd",
+  "vista_lactarius_deliciosus.png": "a796fc7a0d416329072628b15ba72a36a28a8b393431a360ec9ffbe1e43eff5d",
+  "vista_lactarius_sanguifluus.png": "b661bcdee64a2813398ab4b5a55f922cca1a2b0e0924bb620752859a3a9bd017",
   "vista_lepista_nuda.png": "4360758df844c76d50120bc2c6e7e9a55af3bfd27fd437fe0ff7af9f1da77039",
   "vista_macrolepiota_procera.png": "051d101356489e8c83d1dbe2aae87a217f11b2385f230504924e67ded49a5324",
   "vista_morchella_spp.png": "74603203e74a678742c8585459fa185502c876c970e3a79eeda201787de51871",
   "vista_pleurotus_eryngii.png": "7849864708489ff8773ff831de813b438805d79a95b01ae6a7e7dafbabe24700",
+  "vista_pleurotus_ostreatus.png": "ce2ea897d70118340e87d0d00ac426191881e93f35895c901d390925ee6c4ccc",
   "vista_russula_cyanoxantha.png": "dffd8ffa62f95727dbde71e0f6ce67ea977179af55b079e5660a3ed070987fe7",
   "vista_suillus_bellinii.png": "fdbaa83acea0c9f103202393895a61095b0675022a18b445f1308f48a344ef30",
   "vista_suillus_collinitus.png": "b642d049d964a062509d4d0bb3940aa01f80ce1db4d8387ac9e0042eeb9d28a2",
@@ -3744,18 +4067,22 @@
   "respaldo/setas_cantharellus_cibarius_0m.sqlitedb": 3223552,
   "respaldo/setas_cantharellus_cibarius_400m.mbtiles": 1253376,
   "respaldo/setas_cantharellus_cibarius_400m.sqlitedb": 1277952,
+  "respaldo/setas_craterellus_cornucopioides_0m.mbtiles": 3657728,
+  "respaldo/setas_craterellus_cornucopioides_0m.sqlitedb": 3710976,
+  "respaldo/setas_craterellus_cornucopioides_400m.mbtiles": 1388544,
+  "respaldo/setas_craterellus_cornucopioides_400m.sqlitedb": 1421312,
   "respaldo/setas_hydnum_repandum_0m.mbtiles": 4874240,
   "respaldo/setas_hydnum_repandum_0m.sqlitedb": 4947968,
   "respaldo/setas_hydnum_repandum_400m.mbtiles": 1679360,
   "respaldo/setas_hydnum_repandum_400m.sqlitedb": 1720320,
-  "respaldo/setas_lactarius_deliciosus_0m.mbtiles": 1392640,
-  "respaldo/setas_lactarius_deliciosus_0m.sqlitedb": 1425408,
-  "respaldo/setas_lactarius_deliciosus_400m.mbtiles": 323584,
-  "respaldo/setas_lactarius_deliciosus_400m.sqlitedb": 339968,
-  "respaldo/setas_lactarius_sanguifluus_0m.mbtiles": 1855488,
-  "respaldo/setas_lactarius_sanguifluus_0m.sqlitedb": 1892352,
-  "respaldo/setas_lactarius_sanguifluus_400m.mbtiles": 528384,
-  "respaldo/setas_lactarius_sanguifluus_400m.sqlitedb": 548864,
+  "respaldo/setas_lactarius_deliciosus_0m.mbtiles": 1798144,
+  "respaldo/setas_lactarius_deliciosus_0m.sqlitedb": 1843200,
+  "respaldo/setas_lactarius_deliciosus_400m.mbtiles": 413696,
+  "respaldo/setas_lactarius_deliciosus_400m.sqlitedb": 430080,
+  "respaldo/setas_lactarius_sanguifluus_0m.mbtiles": 2203648,
+  "respaldo/setas_lactarius_sanguifluus_0m.sqlitedb": 2244608,
+  "respaldo/setas_lactarius_sanguifluus_400m.mbtiles": 610304,
+  "respaldo/setas_lactarius_sanguifluus_400m.sqlitedb": 630784,
   "respaldo/setas_lepista_nuda_0m.mbtiles": 6799360,
   "respaldo/setas_lepista_nuda_0m.sqlitedb": 6893568,
   "respaldo/setas_lepista_nuda_400m.mbtiles": 2555904,
@@ -3772,6 +4099,10 @@
   "respaldo/setas_pleurotus_eryngii_0m.sqlitedb": 4882432,
   "respaldo/setas_pleurotus_eryngii_400m.mbtiles": 1798144,
   "respaldo/setas_pleurotus_eryngii_400m.sqlitedb": 1843200,
+  "respaldo/setas_pleurotus_ostreatus_0m.mbtiles": 6885376,
+  "respaldo/setas_pleurotus_ostreatus_0m.sqlitedb": 6975488,
+  "respaldo/setas_pleurotus_ostreatus_400m.mbtiles": 2805760,
+  "respaldo/setas_pleurotus_ostreatus_400m.sqlitedb": 2867200,
   "respaldo/setas_russula_cyanoxantha_0m.mbtiles": 4173824,
   "respaldo/setas_russula_cyanoxantha_0m.sqlitedb": 4243456,
   "respaldo/setas_russula_cyanoxantha_400m.mbtiles": 1564672,
@@ -4182,6 +4513,25 @@
     4159700.0
    ]
   },
+  "idoneidad_craterellus_cornucopioides.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 0.0,
+   "sha256": "fd0dd987bb020271bdeece5eb04f2a3400e45c6fa9240ccd1c0ece90566dd98a",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
   "idoneidad_hydnum_repandum.tif": {
    "crs": "EPSG:25830",
    "dtype": "uint8",
@@ -4210,7 +4560,7 @@
     2451
    ],
    "nodata": 0.0,
-   "sha256": "56b7102fdff8880d3aad255a32bc18624f1224c1211f5823dfd3031d6604b61e",
+   "sha256": "c5e9df4c3276d494c51367333d3fd7222c0c2d8977a2411d4bf02000221d9695",
    "transform": [
     100.0,
     0.0,
@@ -4229,7 +4579,7 @@
     2451
    ],
    "nodata": 0.0,
-   "sha256": "a027f36289df77a3693c9d5e595082a6b45f068e4cc039f0523d526235b72334",
+   "sha256": "4be5c18ced70b991eeecc6e024e2fad1cfce753ea8974aa40f4df892b0da1b60",
    "transform": [
     100.0,
     0.0,
@@ -4306,6 +4656,25 @@
    ],
    "nodata": 0.0,
    "sha256": "d180193b2c75f8c419ccf81a4f2c0a5c26215cae26975606186ac458ee523461",
+   "transform": [
+    100.0,
+    0.0,
+    213900.0,
+    0.0,
+    -100.0,
+    4159700.0
+   ]
+  },
+  "idoneidad_pleurotus_ostreatus.tif": {
+   "crs": "EPSG:25830",
+   "dtype": "uint8",
+   "forma": [
+    1,
+    1751,
+    2451
+   ],
+   "nodata": 0.0,
+   "sha256": "951b82176d2a4cd60df5c1db1d59fd7d572345d7d5d5d4ed173d5e07fd4542c8",
    "transform": [
     100.0,
     0.0,

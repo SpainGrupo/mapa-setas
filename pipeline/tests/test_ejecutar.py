@@ -34,7 +34,7 @@ def test_pasos_de_usan_las_rutas_de_la_region(tmp_path):
     assert p["edificado"][1]() == [r.out / "edificado.tif"]
     assert r.out / "citas.geojson" in p["calibracion"][2]()
     assert r.config in p["relieve"][2]()              # cambiar la config de la región rehace los pasos
-    assert len(p["idoneidad"][1]()) == 22
+    assert len(p["idoneidad"][1]()) == 24
 
 
 def test_cli_rechaza_region_desconocida():

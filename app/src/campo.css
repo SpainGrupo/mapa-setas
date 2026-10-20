@@ -131,3 +131,11 @@ body[data-grabando] .mapa-cab { top: calc(var(--sup) + 140px); }
 .cp-fuente { display: block; color: var(--tinta-2); font-size: 12px; }
 .cp-pendiente { color: var(--tinta-2); font-style: italic; }
 .cp-mapa .ir-mapa-cab { right: auto; }
+/* Ruta a pie por el terreno (campo-ruta.ts) */
+.cp-ruta { display: grid; gap: 8px; padding-top: 8px; border-top: 1px solid var(--regla); }
+.cp-ruta .cp-modo span { min-height: 40px; font-size: 15px; }
+.cp-ruta-datos { font-size: 15px; font-variant-numeric: tabular-nums; }
+.cp-ruta-datos b { font-weight: 800; }
+.cp-ruta[data-estado=sin_ruta] .cp-ruta-datos, .cp-ruta[data-estado=sin_datos] .cp-ruta-datos { color: var(--peligro-tx); }
+.cp-ruta-perfil { min-height: 0; }
+.cp-ruta-dato, .cp-ruta-nota { margin: 0; font-size: 13px; }

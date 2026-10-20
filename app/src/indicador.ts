@@ -80,7 +80,7 @@ export function ayudaIndicador(n: number | null, x: number): string {
   const partes = ['No es un % de probabilidad. Solo sabemos dónde se han encontrado setas, no dónde se buscó y no había nada, así que no se puede calcular la probabilidad de encontrar una.'];
   if (n !== null) {
     const t = textoVeces(n);
-    partes.push(`«≈${t}× la media» quiere decir que en zonas con una puntuación como la de este sitio aparecieron unas ${t} veces más hallazgos que si estuvieran repartidos al azar (comprobado en zonas que no se usaron para hacer el mapa).`);
+    partes.push(`«≈${t}× la media» quiere decir que en zonas con una puntuación como la de este sitio aparecieron ${n >= 1 ? `unas ${t} veces más hallazgos` : `menos hallazgos`} que si estuvieran repartidos al azar${n >= 1 ? '' : ` (unas ${t} veces lo normal)`} (comprobado en zonas que no se usaron para hacer el mapa).`);
   }
   partes.push(`«Top ${pct(x)} hoy» quiere decir que hoy este sitio está entre el ${pct(x)} mejor puntuado de la región para esta seta.`,
     '«Sin validar»: no hay hallazgos suficientes para comprobarlo.');

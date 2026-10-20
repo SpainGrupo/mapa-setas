@@ -90,3 +90,11 @@ describe('percentil del día con la puntuación de ranking.ts', () => {
     expect(parsearValidacion('raro')).toBeUndefined();
   });
 });
+
+describe('ayudaIndicador con N < 1', () => {
+  it('no dice «veces más» si la zona rinde menos que el azar', () => {
+    const a = ayudaIndicador(0.64, 40);
+    expect(a).toContain('aparecieron menos hallazgos que si estuvieran repartidos al azar (unas 0,6 veces lo normal)');
+    expect(a).not.toContain('veces más');
+  });
+});

@@ -399,3 +399,33 @@ def test_zoom_base_max_por_region():
     from setas_pipeline.region import cargar_region
     assert zoom_base_max(cargar_region("marbella")) == 15
     assert zoom_base_max(cargar_region("alicante")) == 14
+
+
+def test_validacion_sitios_desde_calibracion():
+    from setas_pipeline.exportar import validacion_sitios
+    t = [{"desde": 0, "hasta": 25, "obs": 1, "esperados": 4.0, "lift": 0.25},
+         {"desde": 75, "hasta": 101, "obs": 9, "esperados": 2.0, "lift": 4.5}]
+    cal = {"amanita_caesarea": {"n": 31, "lift_validacion": 3.7, "lift_tramos": t},
+           "pleurotus_eryngii": {"n": 12, "lift_validacion": 0.0, "lift_tramos": t},
+           "vieja": {"n": 40, "lift_validacion": 2.5},                              # calibracion.json sin tramos
+           "poca": {"n": 3, "lift_validacion": None, "lift_tramos": []},
+           "_mascara": {"mantener_borde_urbano": False, "bajan": []}}
+    v = validacion_sitios(cal)
+    assert set(v) == {"amanita_caesarea", "pleurotus_eryngii", "vieja", "poca"}
+    assert v["amanita_caesarea"] == {"calibrado": True, "n": 31, "tramos": [
+        {"desde": 0, "hasta": 25, "lift": 0.25, "obs": 1}, {"desde": 75, "hasta": 101, "lift": 4.5, "obs": 9}]}
+    assert v["pleurotus_eryngii"]["calibrado"] is False and v["vieja"]["tramos"] == []
+    assert v["poca"] == {"calibrado": False, "n": 3, "tramos": []}
+
+
+def test_anadir_validacion_lee_calibracion_json(tmp_path):
+    from setas_pipeline.exportar import anadir_validacion
+    reg = dataclasses.replace(cargar_region("marbella"), datos=tmp_path)
+    reg.out.mkdir(parents=True)
+    d = anadir_validacion(reg, {"version": 4, "especies": {}})
+    assert d["validacion"] == {}                                                   # sin calibracion.json
+    (reg.out / "calibracion.json").write_text(json.dumps({"x": {"n": 20, "lift_validacion": 2.0, "lift_tramos": [
+        {"desde": 50, "hasta": 75, "obs": 5, "esperados": 2.5, "lift": 2.0}]}}))
+    d = anadir_validacion(reg, {"version": 4, "especies": {}})
+    assert d["validacion"]["x"] == {"calibrado": True, "n": 20, "tramos": [{"desde": 50, "hasta": 75, "lift": 2.0, "obs": 5}]}
+    assert d["version"] == 4

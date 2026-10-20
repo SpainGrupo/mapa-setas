@@ -127,3 +127,45 @@ def test_descargar_ocurrencias_sin_clave_no_pide_todo(monkeypatch):
     monkeypatch.setattr(calibracion, "clave_taxon", lambda n: None)
     monkeypatch.setattr(calibracion.requests, "get", lambda *a, **k: pytest.fail("sin taxonKey no se pide nada"))
     assert calibracion.descargar_ocurrencias("Terfezia inventada", "POLYGON((0 0,1 0,1 1,0 0))") == []
+
+
+def _tramos(t):
+    return {x["desde"]: x for x in t}
+
+
+def test_lift_tramos_tramo_vacio_da_none():
+    from setas_pipeline.calibracion import lift_tramos, TRAMOS
+    m = Malla(x0=0.0, y1=100.0, ancho=4, alto=1, celda=100.0)
+    r = np.array([[10, 30, 60, 80]], np.uint8)
+    tierra = np.array([[True, True, True, False]])           # la celda de 80 no es tierra: tramo 75–100 sin zona
+    pl = np.zeros_like(r, int)
+    t = _tramos(lift_tramos(m, r, tierra, [(50, 50), (150, 50), (250, 50)], pl, k=1))
+    assert len(t) == len(TRAMOS) - 1
+    assert t[75]["esperados"] == 0 and t[75]["lift"] is None and t[75]["obs"] == 0
+    assert all(t[a]["lift"] == 1.0 for a in (0, 25, 50))       # una obs por celda, una celda por tramo: azar
+
+
+def test_lift_tramos_reparto_uniforme_cerca_de_1():
+    from setas_pipeline.calibracion import lift_tramos
+    m = Malla(x0=0.0, y1=200.0, ancho=4, alto=2, celda=100.0)
+    r = np.array([[10, 30, 60, 90], [10, 30, 60, 90]], np.uint8)
+    tierra = np.ones_like(r, bool)
+    pl = np.array([[0, 0, 1, 1], [0, 0, 1, 1]])
+    xy = [(x * 100 + 50, y * 100 + 50) for x in range(4) for y in range(2)]   # una obs por celda
+    t = lift_tramos(m, r, tierra, xy, pl, k=2)
+    assert [x["lift"] for x in t] == [1.0, 1.0, 1.0, 1.0] and sum(x["obs"] for x in t) == 8
+    assert [x["esperados"] for x in t] == [2.0, 2.0, 2.0, 2.0]
+
+
+def test_lift_tramos_concentracion_mayor_que_1_y_agregado():
+    from setas_pipeline.calibracion import lift_tramos
+    m = Malla(x0=0.0, y1=100.0, ancho=4, alto=1, celda=100.0)
+    r = np.array([[10, 10, 10, 90]], np.uint8)
+    tierra = np.ones_like(r, bool)
+    pl = np.array([[0, 0, 1, 1]])
+    # pliegue 0: 2 obs en 10 (todo su suelo es 0–25) → lift 1 ahí; pliegue 1: 3 obs en 90 (mitad de su suelo 75–100)
+    xy = [(50, 50), (150, 50), (350, 50), (350, 50), (350, 50)]
+    t = _tramos(lift_tramos(m, r, tierra, xy, pl, k=2))
+    assert t[75]["obs"] == 3 and t[75]["esperados"] == 1.5 and t[75]["lift"] == 2.0
+    assert t[0]["obs"] == 2 and t[0]["esperados"] == 3.5 and t[0]["lift"] == round(2 / 3.5, 2)
+    assert lift_tramos(m, r, tierra, [], pl, k=2)[0]["lift"] is None

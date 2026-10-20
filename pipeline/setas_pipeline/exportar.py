@@ -6,6 +6,7 @@
     uv run python -m setas_pipeline.exportar acceso     [--region …]          # Fase 8: acceso.bin/json + aparcamientos.json
     uv run python -m setas_pipeline.exportar rutas      [--region …]          # Fase 8: rutas.pmtiles
     uv run python -m setas_pipeline.exportar sitios     [--region …]          # Fase 9: sitios.json
+    uv run python -m setas_pipeline.exportar validacion [--region …]          # solo la clave `validacion` de sitios.json
     uv run python -m setas_pipeline.exportar altitud    [--region …]          # Fase 9: añade la capa altitud a acceso.bin
     uv run python -m setas_pipeline.exportar titularidad [--region …]         # montes públicos, cotos, vallas OSM, pasos públicos
     uv run python -m setas_pipeline.exportar citas      [--region …]          # citas.pmtiles (citas y sitios conocidos)
@@ -365,6 +366,20 @@ def calibrado(n: int | None, lift_validacion: float | None) -> bool:
 def _calibracion(region: Region) -> dict:
     ruta = region.out / "calibracion.json"
     return json.loads(ruta.read_text()) if ruta.exists() else {}
+
+
+def validacion_sitios(cal: dict) -> dict:
+    """Clave `validacion` de sitios.json (indicador «≈N× la media» de la app) desde calibracion.json en memoria:
+    {especie: {calibrado, n, tramos: [{desde, hasta, lift, obs}]}}. Sin lift_tramos, tramos = []."""
+    return {k: {"calibrado": calibrado(d.get("n"), d.get("lift_validacion")), "n": d.get("n"),
+                "tramos": [{c: t[c] for c in ("desde", "hasta", "lift", "obs")} for t in d.get("lift_tramos") or []]}
+            for k, d in cal.items() if not k.startswith("_") and isinstance(d, dict)}
+
+
+def anadir_validacion(region: Region, datos: dict) -> dict:
+    """Pone `validacion` (de region.out/calibracion.json) en sitios.json en memoria; lo devuelve."""
+    datos["validacion"] = validacion_sitios(_calibracion(region))
+    return datos
 
 
 def especies(region: Region) -> list[dict]:
@@ -735,7 +750,7 @@ def modelo_disponible(out: Path, compartido: Path | None = None) -> dict | None:
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("pasos", nargs="+", choices=["capas", "restricciones", "ccaa", "titularidad", "citas", "lugares", "base",
-                                                 "meteo", "acceso", "altitud", "rutas", "sitios", "micro", "manifest",
+                                                 "meteo", "acceso", "altitud", "rutas", "sitios", "validacion", "micro", "manifest",
                                                  "respaldo", "regiones", "todo"])
     ap.add_argument("--maxzoom", type=int, default=None,
                     help="zoom máximo del mapa base (por defecto zona.base_maxzoom de la región, o 15)")
@@ -780,6 +795,11 @@ def main(argv=None):
     if pasos & {"sitios", "todo"}:
         from .sitios import calcular as calcular_sitios
         print("sitios…", flush=True); calcular_sitios(region)
+    elif "validacion" in pasos:                   # rehace solo `validacion` sobre el sitios.json ya escrito
+        ruta = region.app / "sitios.json"
+        d = anadir_validacion(region, json.loads(ruta.read_text()))
+        ruta.write_text(json.dumps(d, ensure_ascii=False, separators=(",", ":")))
+        print(f"validacion: {sum(1 for v in d['validacion'].values() if v['tramos'])} especies con tramos", flush=True)
     if pasos & {"micro", "todo"}:
         from .micro import exportar_micro
         print("micro…", flush=True); exportar_micro(region, malla)

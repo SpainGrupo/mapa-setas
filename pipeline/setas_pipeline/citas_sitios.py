@@ -393,4 +393,6 @@ if __name__ == "__main__":
     from .sitios import VERSION
     d["version"] = VERSION
     anotar(reg, d)
+    from .exportar import anadir_validacion
+    anadir_validacion(reg, d)
     ruta.write_text(json.dumps(d, ensure_ascii=False, separators=(",", ":")))

@@ -1463,7 +1463,7 @@ iniciarCampo({
   manifest: () => manifest, especie: especieSel, nombre: (id) => nombres[id] ?? id, avisar,
   miniatura: (id) => miniaturaEspecie(id, indiceGuia()),
   ficha: (id) => { const f = fichaGuia(fichaDeEspecieMapa(id)); return f ? { habitat: f.habitat, temporada: f.temporada } : null; },
-  navegar: (p) => { ($('#dlg-campo') as HTMLDialogElement).close(); abrirIr({ lat: p.lat, lon: p.lon, titulo: p.titulo, subtitulo: p.nota }); },
+  navegar: (p) => { ($('#dlg-campo') as HTMLDialogElement).close(); abrirIr({ lat: p.lat, lon: p.lon, titulo: p.titulo, subtitulo: p.nota, ruta: p.ruta }); },
   guardar: (p) => guardarPunto({ lat: p.lat, lon: p.lon, nota: p.nota, especie: p.especie }),
   alCerrar: () => volverAlMapaIr(),
 });

@@ -34,7 +34,12 @@ function capas(m: MapaML) {
   m.addLayer({ id: 'top-hoy-num', type: 'symbol', source: 'top-hoy', layout: { 'text-field': ['to-string', ['get', 'pos']],
     'text-font': ['Noto Sans Medium'], 'text-size': 13, 'text-allow-overlap': true, 'text-ignore-placement': true },
     paint: { 'text-color': '#0d1a13' } });
-  // Modo campo (campo-ui.ts): círculo de búsqueda, iconos de la seta en las microzonas y número de cada una.
+  // Modo campo (campo-ui.ts): círculo de búsqueda, ruta a pie por el terreno (campo-ruta.ts), iconos de la seta en las
+  // microzonas y número de cada una.
+  m.addLayer({ id: 'campo-ruta-fondo', type: 'line', source: 'campo', filter: ['==', ['get', 'tipo'], 'ruta'],
+    layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 8 } });
+  m.addLayer({ id: 'campo-ruta', type: 'line', source: 'campo', filter: ['==', ['get', 'tipo'], 'ruta'],
+    layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#7a4a12', 'line-width': 4 } });
   m.addLayer({ id: 'campo-radio', type: 'line', source: 'campo', filter: ['==', ['get', 'tipo'], 'radio'],
     paint: { 'line-color': '#1565c0', 'line-width': 2, 'line-dasharray': [2, 2], 'line-opacity': 0.7 } });
   m.addLayer({ id: 'campo-yo', type: 'circle', source: 'campo', filter: ['==', ['get', 'tipo'], 'yo'], paint: {

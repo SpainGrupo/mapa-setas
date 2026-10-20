@@ -9,13 +9,18 @@ import type { Map as MapaML, MapMouseEvent } from 'maplibre-gl';
 import type { ManifestApp } from './manifest-region';
 import { escucharGps, ultimaPosicion, type PosicionGps } from './posicion-viva';
 import { distanciaM, rumbo } from './brujula';
-import { buenaMasCercana, pasoZona, RADIO_M, razonCelda, RECALCULAR_M, seleccionarMicrozonas, textoHacia, UMBRAL_BAJA,
+import { buenaMasCercana, MAX_MICROZONAS, pasoZona, RADIO_M, razonCelda, RECALCULAR_M, seleccionarMicrozonas, textoHacia, UMBRAL_BAJA,
   UMBRAL_BUENA, ZONA_INICIAL, type AvisoZona, type EstadoZona, type PerfilMicro, type ValoresCelda } from './micro';
 import { celdaAqui, celdasAlrededor, datosMicro, type DatosMicro } from './micro-datos';
 import { comoBuscar, PENDIENTE, type DatosBuscar } from './como-buscar';
 import * as Mini from './minimapa';
+import * as RC from './campo-ruta';
+import { CANDIDATAS, filtrarPorDesnivel, type DesnivelMicro } from './ruta-pie';
 
-export interface PuntoCampo { lat: number; lon: number; titulo: string; nota: string; especie: string }
+export interface PuntoCampo { lat: number; lon: number; titulo: string; nota: string; especie: string;
+  /** Ruta a pie por el terreno ya trazada hasta el punto (campo-ruta.ts), para seguirla en «Navegar aquí». */
+  ruta?: { linea: [number, number][]; dist: number[]; alt: number[]; via: string } }
+type MicroZ = ValoresCelda & DesnivelMicro;
 export interface ContextoCampo {
   manifest: () => ManifestApp | null;
   /** Especie elegida en el mapa (valor inicial). */
@@ -39,7 +44,8 @@ let datos: DatosMicro | null | undefined;
 let pos: PosicionGps | null = null;
 let centro: { lat: number; lon: number } | null = null;
 let celdas: ValoresCelda[] = [];
-let micro: ValoresCelda[] = [];
+let micro: MicroZ[] = [];
+let ocultas = 0;
 let aqui: ValoresCelda | null = null;
 let zona: EstadoZona = ZONA_INICIAL;
 let sel: number | null = null;
@@ -115,7 +121,11 @@ const nombre = () => ctx.nombre(especie);
 async function recalcular(p: { lat: number; lon: number }) {
   if (!datos) return;
   celdas = await celdasAlrededor(datos, p, especie);
-  micro = seleccionarMicrozonas(celdas, { res: datos.cab.res });
+  // Ruta a pie (campo-ruta.ts): candidatas por idoneidad, desnivel de cada una y filtro por desnivel máximo.
+  const cands = seleccionarMicrozonas(celdas, { res: datos.cab.res, max: CANDIDATAS });
+  await RC.prepararCotas(ctx.manifest(), p);
+  const f = filtrarPorDesnivel(RC.anotar(cands, p), RC.desnivelMaxEfectivo(), MAX_MICROZONAS);
+  micro = f.visibles; ocultas = f.ocultas;
   centro = { lat: p.lat, lon: p.lon };
   if (sel !== null && sel >= micro.length) sel = null;
 }
@@ -161,8 +171,12 @@ function alerta(a: Exclude<AvisoZona, null>) {
 function boton(texto: string, f: () => void, clase = 'btn') {
   const b = document.createElement('button'); b.type = 'button'; b.className = clase; b.textContent = texto; b.onclick = f; return b;
 }
-const punto = (c: ValoresCelda, i: number): PuntoCampo => ({ lat: c.lat, lon: c.lon, especie,
-  titulo: `Microzona ${i + 1} · ${nombre()}`, nota: `Microzona ${i + 1} de ${nombre()} (Modo campo, celda de 100 m): ${razonCelda(c)}` });
+const punto = (c: ValoresCelda, i: number): PuntoCampo => {
+  const r = RC.rutaHacia(c);
+  return { lat: c.lat, lon: c.lon, especie,
+    titulo: `Microzona ${i + 1} · ${nombre()}`, nota: `Microzona ${i + 1} de ${nombre()} (Modo campo, celda de 100 m): ${razonCelda(c)}`,
+    ruta: r ? { linea: r.linea, dist: r.perfil.dist, alt: r.perfil.alt, via: `tu posición (${r.modo === 'directa' ? 'más directa' : 'mínimo desnivel'}, rejilla de ${r.res} m)` } : undefined };
+};
 
 function pintarTarjeta() {
   const t = $('#cp-tarjeta');
@@ -173,17 +187,19 @@ function pintarTarjeta() {
   const h = document.createElement('p'); h.className = 'cp-tit';
   h.textContent = `Microzona ${i + 1} · ${textoHacia(c.dist_m, c.rumbo)}`;
   const r = document.createElement('p'); r.className = 'cp-razon'; r.textContent = razonCelda(c);
+  const ruta = RC.bloqueRuta(c, pos, () => { pintarTarjeta(); pintarMapa(); });
   const acc = document.createElement('div'); acc.className = 'hm-acciones';
   acc.append(boton('Ir aquí', () => { ctx.navegar(punto(c, i)); }, 'btn btn-primario cp-ir'),
     boton('Guardar', async () => { const r2 = await ctx.guardar(punto(c, i)); ctx.avisar(r2 === 'ya' ? 'Ya estaba en Mis sitios' : 'Guardado en Mis sitios'); }, 'btn cp-guardar'));
-  t.replaceChildren(h, r, acc);
+  t.replaceChildren(h, r, ruta, acc);
 }
 
 function pintarLista() {
   const ol = $('#cp-lista');
   ol.replaceChildren(...micro.map((c, i) => {
     const li = document.createElement('li');
-    const b = boton(`${i + 1}. ${c.idon}/100 · ${textoHacia(c.dist_m, c.rumbo)}`, () => { sel = i; seguir = false; $<HTMLInputElement>('#cp-seguir').checked = false; pintar(); centrarEn(c); }, 'cp-fila');
+    const dz = RC.textoDesnivelMicro(c);
+    const b = boton(`${i + 1}. ${c.idon}/100 · ${textoHacia(c.dist_m, c.rumbo)}${dz ? ` · ${dz}` : ''}`, () => { sel = i; seguir = false; $<HTMLInputElement>('#cp-seguir').checked = false; pintar(); centrarEn(c); }, 'cp-fila');
     if (sel === i) b.setAttribute('aria-current', 'true');
     li.append(b);
     return li;
@@ -203,6 +219,7 @@ function circulo(lat: number, lon: number, r: number): [number, number][] {
 function pintarMapa() {
   Mini.datos('campo', { type: 'FeatureCollection', features: [
     ...(centro ? [{ type: 'Feature' as const, properties: { tipo: 'radio' }, geometry: { type: 'LineString' as const, coordinates: circulo(centro.lat, centro.lon, RADIO_M) } }] : []),
+    ...(sel !== null ? RC.featuresRuta() : []),
     ...micro.map((c, i) => ({ type: 'Feature' as const, properties: { tipo: 'micro', n: i + 1, i, icono: icono(especie), sel: sel === i },
       geometry: { type: 'Point' as const, coordinates: [c.lon, c.lat] } })),
     ...(pos && dlg.open ? [{ type: 'Feature' as const, properties: { tipo: 'yo' }, geometry: { type: 'Point' as const, coordinates: [pos.lon, pos.lat] } }] : []),
@@ -236,8 +253,12 @@ function pintar() {
     const b = buenaMasCercana(celdas);
     const n = micro.length;
     const base = `Aquí: ${aqui.idon}/100 (${aqui.idon >= UMBRAL_BUENA ? 'zona buena' : aqui.idon < UMBRAL_BAJA ? 'zona baja' : 'zona media'}). `;
-    est.textContent = base + (n ? `${n} ${n === 1 ? 'microzona' : 'microzonas'} a menos de ${RADIO_M} m${b && aqui.idon < UMBRAL_BUENA ? `; la buena más cercana, ${textoHacia(b.dist_m, b.rumbo)}` : ''}.`
-      : `Ninguna celda buena (≥ ${UMBRAL_BUENA}/100) para ${nombre()} a menos de ${RADIO_M} m.`);
+    const lim = RC.desnivelMaxEfectivo();
+    const filtro = lim === null ? '' : ` con ≤ ${lim} m de desnivel`;
+    est.textContent = base + (n ? `${n} ${n === 1 ? 'microzona' : 'microzonas'}${filtro} a menos de ${RADIO_M} m${b && aqui.idon < UMBRAL_BUENA ? `; la buena más cercana, ${textoHacia(b.dist_m, b.rumbo)}` : ''}.`
+      : `Ninguna celda buena (≥ ${UMBRAL_BUENA}/100) para ${nombre()}${filtro} a menos de ${RADIO_M} m.`)
+      + (ocultas ? ` ${ocultas} ${ocultas === 1 ? 'oculta' : 'ocultas'} por desnivel.` : '')
+      + (RC.desnivelMax() !== null && lim === null ? ' Sin cotas del terreno: no se filtra por desnivel.' : '');
     est.dataset.zona = zona.dentro ? 'dentro' : 'fuera';
   }
   if (!zona.dentro && $('#cp-alerta').dataset.tipo === 'vuelta') $('#cp-alerta').hidden = true;
@@ -290,7 +311,8 @@ function rellenarEspecies() {
 }
 
 function reiniciar() {
-  centro = null; encuadrado = null; celdas = []; micro = []; aqui = null; zona = ZONA_INICIAL; sel = null; avisos = [];
+  centro = null; encuadrado = null; celdas = []; micro = []; ocultas = 0; aqui = null; zona = ZONA_INICIAL; sel = null; avisos = [];
+  RC.limpiarRuta();
   $('#cp-alerta').hidden = true;
 }
 
@@ -337,6 +359,7 @@ export function iniciarCampo(c: ContextoCampo) {
     if (m) await ponerIcono(m, especie);
     programar();
   });
+  $('.cp-especie').after(RC.selectorDesnivel(() => { centro = null; sel = null; RC.limpiarRuta(); programar(); }));
   $('#cp-seguir').addEventListener('change', () => { seguir = $<HTMLInputElement>('#cp-seguir').checked; pintarMapa(); });
   Mini.alCrear((m) => {
     m.on('click', 'campo-iconos', (e: MapMouseEvent & { features?: { properties: Record<string, unknown> }[] }) => {
@@ -353,7 +376,9 @@ export const campoAbierto = () => !!dlg?.open;
 /** Estado para el e2e (window.__setas.campo()). */
 export const estadoCampo = () => (dlg?.open ? { especie, datos: datos ? { origen: datos.estado.origen, teselas: datos.estado.teselas } : datos ?? null,
   pos, aqui: aqui ? { idon: aqui.idon, razon: razonCelda(aqui) } : null, zona, avisos: [...avisos], sel,
-  micro: micro.map((c) => ({ lat: c.lat, lon: c.lon, idon: c.idon, dist_m: c.dist_m, fila: c.fila, col: c.col, razon: razonCelda(c) })),
+  micro: micro.map((c) => ({ lat: c.lat, lon: c.lon, idon: c.idon, dist_m: c.dist_m, rumbo: c.rumbo, fila: c.fila, col: c.col, razon: razonCelda(c),
+    cota_m: c.cota_m, dCota_m: c.dCota_m, desnivel_m: c.desnivel_m, subida_m: c.subida_m, bajada_m: c.bajada_m, motivo: c.motivo })),
+  ocultas, rutaPie: RC.estadoRuta(),
   celdas: celdas.map((c) => ({ lat: c.lat, lon: c.lon, idon: c.idon, fila: c.fila, col: c.col })),
   alerta: $('#cp-alerta').hidden ? null : $('#cp-alerta').textContent, estado: $('#cp-estado').textContent,
   icono: dlg.dataset.icono ?? null } : null);

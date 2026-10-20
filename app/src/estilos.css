@@ -1056,6 +1056,13 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 /* Orden compartido de los listados de top y razón de cada sitio */
 .orden-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0 8px; }
 .orden-top .etq { font-size: 14px; color: var(--tinta-2); margin-right: 2px; }
+.vista-top { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 4px; }
+.tf-zona-especies { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; }
+.tf-zona-especies li { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto auto; align-items: center; gap: 8px; font-size: 14px; }
+.tf-zona-especies li b { line-height: 1.25; }
+.tf-zona-especies .chip-estado { font-size: 12px; padding: 2px 8px; white-space: nowrap; }
+.tf-zona-pts { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--tinta); }
+.tf-google { display: inline-block; margin-top: 4px; font-size: 14px; font-weight: 600; color: var(--tinta); }
 .tf-razon { margin: 4px 0 0; font-size: 14px; line-height: 1.4; color: var(--tinta-2); }
 .ficha-top-sitios { margin: 16px 0; }
 
@@ -1075,3 +1082,4 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .semaforo-fila .esp:has(> .foto-mini), .sitio .meta:has(> .foto-mini) { display: flex; align-items: center; gap: 7px; }
 .semaforo-fila .esp > .foto-mini, .sitio .meta > .foto-mini { margin-right: 0; }
 /* En columnas estrechas (Calendario, Temporada) va en línea con el texto: si no cabe, el nombre pasa debajo sin partirse. */
+.tf-zona-especies .miniatura-especie { width: 28px; height: 28px; border-radius: 9px; }

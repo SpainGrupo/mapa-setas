@@ -16,7 +16,8 @@ import type { Estado } from './semaforo';
 import { detallesTitularidad, esPublico, normaTitularidad, textoTitularidad } from './titularidad';
 import { AVISO_CITAS, filaRefCita, textoCitado, type CitasSitio } from './citas';
 import { clavesEntrada, esOrdenTop, NOMBRE_ORDEN, ORDENES_TOP, ordenarTops, PENDIENTE, type OrdenTop } from './orden-tops';
-import { razonSitio } from './razones';
+import { razonSitio, razonZona } from './razones';
+import { RADIO_ZONA_M, zonasDelDia, type Zona } from './zonas';
 import { especiesDeValor, esValorGrupo, grupoDe, gruposDe, topGrupo, valorGrupo } from './grupos';
 import { AYUDA_MY_MAPS, generarKml, nombreArchivoKml, nombrePlacemark, seleccionarSitios, textoCompartir, urlRutaGoogle,
   urlSitioGoogle, type SitioExport } from './exportar-dia';
@@ -54,13 +55,14 @@ export interface ContextoHoy {
 const CLAVE_DIF = 'setas:dificultad-max';
 const CLAVE_N = 'setas:top-n';
 const CLAVE_ORDEN = 'setas:orden-top';
+const CLAVE_VISTA = 'setas:vista-top';
 const leer = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
 const escribir = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* solo esta sesión */ } };
 
 let ctx: ContextoHoy;
 let sitios: Promise<SitiosJson | null> | null = null;
 let fechaSel: string | null = null;
-let ultimo: { fecha: string; confianza: string; general: FilaGeneral[]; especie: string; top: Entrada[]; calendario: FilaCalendario[]; sinSitios: boolean; temporada: FilaTemporada[]; factorCitas: boolean } | null = null;
+let ultimo: { fecha: string; confianza: string; general: FilaGeneral[]; especie: string; top: Entrada[]; zonas: Zona[]; calendario: FilaCalendario[]; sinSitios: boolean; temporada: FilaTemporada[]; factorCitas: boolean } | null = null;
 
 export const maxDificultad = (): Dificultad | null => {
   const v = leer(CLAVE_DIF);
@@ -152,7 +154,15 @@ export const ordenTop = (): OrdenTop => { const v = leer(CLAVE_ORDEN); return es
 /** Motivo real del semáforo de la última consulta (para la razón de cada sitio). */
 let motivoEn: (especie: string, meteoId: number) => string | null = () => null;
 
-interface ItemTop { principal: Entrada; entradas: Entrada[] }
+/** «Por sitio» (zonas.ts): la fila es una zona con varias setas; su puntuación es la de la zona. */
+interface ItemTop { principal: Entrada; entradas: Entrada[]; zona?: Zona }
+/** Claves de orden de una fila: las de su sitio principal, con la puntuación de la zona si la fila es una zona. */
+const clavesItem = (x: ItemTop, origen: { lat: number; lon: number } | null) =>
+  x.zona ? { ...clavesEntrada(x.principal, origen), score: x.zona.score } : clavesEntrada(x.principal, origen);
+
+/** Vista de «Los 10 mejores»: por seta (el top de la seta o grupo elegido) o por sitio (zonas con varias setas). */
+export type VistaTop = 'seta' | 'sitio';
+export const vistaTop = (): VistaTop => (leer(CLAVE_VISTA) === 'sitio' ? 'sitio' : 'seta');
 /** Listados de top pintados (cada <ol> con sus filas sin ordenar), para repintarlos todos al cambiar el orden. */
 const listas = new Map<HTMLElement, ItemTop[]>();
 
@@ -179,8 +189,8 @@ export function pintarListaTop(ul: HTMLElement, items: ItemTop[]) {
   controlOrden(ul);
   ul.querySelectorAll(':scope > li.top-fila').forEach((li) => li.remove());
   const origen = origenDistancias();
-  ordenarTops(items, ordenTop(), (x) => clavesEntrada(x.principal, origen))
-    .forEach((x, i) => ul.append(fila(x.principal, x.entradas, i + 1)));
+  ordenarTops(items, ordenTop(), (x) => clavesItem(x, origen))
+    .forEach((x, i) => ul.append(fila(x.principal, x.entradas, i + 1, x.zona)));
   ul.dataset.orden = ordenTop();
   if (ul.id === 'top-especie') { cerrarExportar(); alRepintarTop?.(); }
 }
@@ -195,11 +205,13 @@ function repintarListas() {
 
 /** Una fila de top (como un panel de salidas): una o varias setas en el mismo sitio. Una sola acción principal
  * («Ruta a pie»); el resto, en el menú «Más». */
-function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIElement {
+function fila(principal: Entrada, entradas: Entrada[], pos: number, zona?: Zona): HTMLLIElement {
   const s = principal.sitio;
-  const li = document.createElement('li'); li.className = 'top-fila';
+  const li = document.createElement('li'); li.className = zona ? 'top-fila top-zona' : 'top-fila';
   li.dataset.especies = entradas.map((e) => e.especie).join(' ');
-  li.dataset.estado = principal.estado; li.dataset.dificultad = principal.dificultad; li.dataset.puntuacion = String(principal.puntuacion);
+  li.dataset.estado = principal.estado; li.dataset.dificultad = principal.dificultad;
+  li.dataset.puntuacion = String(zona ? zona.puntuacion : principal.puntuacion);
+  if (zona) li.dataset.verdes = String(zona.verdes);
   li.dataset.id = String(s.id);
   const cab = document.createElement('div'); cab.className = 'tf-cab';
   const num = document.createElement('span'); num.className = 'tf-pos'; num.textContent = String(pos);
@@ -238,15 +250,21 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIEleme
   cab.append(num, minis, tit, cif);
   const meta = document.createElement('p'); meta.className = 'tf-meta';
   const dif = document.createElement('span'); dif.className = `insignia-dif dif-${principal.dificultad}`; dif.textContent = NOMBRE_DIFICULTAD[principal.dificultad];
-  const pts = document.createElement('span'); pts.className = 'tf-puntos'; pts.textContent = `Puntuación del día: ${principal.puntuacion} de 100`;
-  pts.title = EXPLICACION_PUNTUACION;
+  const pts = document.createElement('span'); pts.className = 'tf-puntos';
+  pts.textContent = zona ? `Puntuación de la zona: ${zona.puntuacion} de 100` : `Puntuación del día: ${principal.puntuacion} de 100`;
+  pts.title = zona ? EXPLICACION_ZONA : EXPLICACION_PUNTUACION;
   const lej = textoLejania(s);
   meta.append(dif, pts, lej || `Distancia: ${PENDIENTE}`);
   li.append(cab, meta);
   // Por qué este sitio: factores reales del ranking (razones.ts).
   const rz = document.createElement('p'); rz.className = 'tf-razon';
-  rz.textContent = razonSitio(principal, { fiabilidad: fiab(principal.especie), motivo: motivoEn(principal.especie, s.meteo_id) });
+  const cr = { fiabilidad: fiab(principal.especie), motivo: motivoEn(principal.especie, s.meteo_id) };
+  rz.textContent = zona ? razonZona(zona, cr, nombre) : razonSitio(principal, cr);
+  if (zona) li.append(listaZona(zona));
   li.append(rz);
+  if (zona) {
+    li.append(enlace('Abrir en Google Maps', urlSitioGoogle(s), 'tf-google'));
+  }
   // Titularidad: monte público o «probablemente privado» (sin dato del pipeline cuenta como privado).
   const tl = s.titularidad ?? { clase: 'privado' as const };
   const ti = document.createElement('p'); ti.className = 'chip-titularidad tf-titularidad'; ti.dataset.clase = tl.clase;
@@ -278,6 +296,24 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number): HTMLLIEleme
   acc.append(ruta, mas, menu);
   li.append(acc);
   return li;
+}
+
+/** Explicación de la cifra de una zona (zonas.ts). */
+export const EXPLICACION_ZONA = 'Suma de las puntuaciones del día de cada seta de la zona: la mejor entera, la segunda la mitad, la tercera un cuarto…; '
+  + 'si ninguna está en verde, la mitad.';
+
+/** Sublista de una zona: cada seta posible con su semáforo y su puntuación del día en su mejor sitio de la zona. */
+function listaZona(z: Zona): HTMLElement {
+  const ul = document.createElement('ul'); ul.className = 'tf-zona-especies';
+  for (const e of z.entradas) {
+    const li = document.createElement('li'); li.dataset.especie = e.especie; li.dataset.estado = e.estado;
+    const n = document.createElement('b'); n.textContent = nombre(e.especie);
+    const est = document.createElement('span'); est.className = 'chip-estado'; est.dataset.estado = e.estado; est.textContent = NOMBRE_ESTADO[e.estado];
+    const p = document.createElement('span'); p.className = 'tf-zona-pts'; p.textContent = `${e.puntuacion}/100`;
+    li.append(miniatura(e.especie), n, est, p);
+    ul.append(li);
+  }
+  return ul;
 }
 
 function vacio(ul: HTMLElement, texto: string) {
@@ -362,11 +398,37 @@ export function rellenarSelectHoy(sel: HTMLSelectElement, especies: { id: string
 // Nombre común si el contexto ya está iniciado (tests sin ctx: el del manifest).
 const comunSeguro = (e: { id: string; nombre: string }) => { try { return ctx ? nombreComunId(e.id) : e.nombre; } catch { return e.nombre; } };
 
+/** Conmutador «Por seta | Por sitio», título y nota de la sección según la vista. */
+function pintarVista() {
+  const v = vistaTop();
+  document.querySelectorAll<HTMLButtonElement>('#hoy-vista button').forEach((b) => {
+    const on = b.dataset.vista === v; b.setAttribute('aria-pressed', String(on)); b.classList.toggle('activa', on);
+  });
+  $('#tit-top-especie').textContent = v === 'sitio' ? 'Sitios donde coinciden varias setas' : 'Los 10 mejores por seta';
+  const nota = $('#hoy-vista-nota');
+  nota.hidden = v !== 'sitio';
+  nota.textContent = `Hasta 15 zonas: sitios de las setas elegidas (todas, el grupo, o las zonas donde está la seta elegida) a menos de ${RADIO_ZONA_M} m `
+    + `entre sí, sin las que están en rojo ese día. ${EXPLICACION_ZONA} Que coincidan no dice nada de si se pueden recoger o consumir.`;
+}
+
 async function pintarTopEspecie(datos: SitiosJson | null, o: Opciones) {
   const sel = $<HTMLSelectElement>('#hoy-especie');
   const ul = $('#top-especie');
   ul.replaceChildren();
   const id = sel.value;
+  pintarVista();
+  if (vistaTop() === 'sitio') {
+    const todas = ctx.manifest()?.especies.map((e) => e.id) ?? [];
+    const grupo = esValorGrupo(id);
+    const zonas = datos ? zonasDelDia(datos, grupo ? especiesDeValor(id, todas) : todas, o, { requerida: grupo ? undefined : id }) : [];
+    if (!datos) vacio(ul, 'Esta versión de los mapas no trae sitios candidatos.');
+    else if (!zonas.length) vacio(ul, 'Ese día ninguna zona cumple los filtros (todas en rojo o por encima de la dificultad elegida).');
+    pintarListaTop(ul, zonas.map((z) => ({ principal: z.principal, entradas: z.entradas, zona: z })));
+    if (ultimo) { ultimo.especie = id; ultimo.top = zonas.map((z) => z.principal); ultimo.zonas = zonas; }
+    $('#hoy-ver-ficha').hidden = true;
+    return;
+  }
+  if (ultimo) ultimo.zonas = [];
   if (esValorGrupo(id)) {
     const ids = especiesDeValor(id, ctx.manifest()?.especies.map((e) => e.id) ?? []);
     const filas = datos ? topGrupo(datos, ids, o, 10) : [];
@@ -571,7 +633,7 @@ export async function pintarHoy() {
   else if (!general.length) vacio(ul, o.soloPublicos ? 'Ese día ningún sitio en monte público cumple los filtros.'
     : 'Ese día todas las setas están en rojo o ningún sitio cumple la dificultad elegida.');
   pintarListaTop(ul, general);
-  ultimo = { fecha, confianza: confianza(hoy, fecha), general, especie: sel.value, top: [], calendario: [], sinSitios: !datos, temporada: [],
+  ultimo = { fecha, confianza: confianza(hoy, fecha), general, especie: sel.value, top: [], zonas: [], calendario: [], sinSitios: !datos, temporada: [],
     factorCitas: datos?.factor_citas === true };
   ultimo.temporada = pintarTemporada();
   await pintarTopEspecie(datos, o);
@@ -646,7 +708,7 @@ function abrirExportar() {
   if (!panel.hidden) { cerrarExportar(); return; }
   const ul = $('#top-especie');
   const origen = origenDistancias();
-  const items = seleccionarSitios(ordenarTops(listas.get(ul) ?? [], ordenTop(), (x) => clavesEntrada(x.principal, origen)));
+  const items = seleccionarSitios(ordenarTops(listas.get(ul) ?? [], ordenTop(), (x) => clavesItem(x, origen)));
   const fecha = ultimo?.fecha ?? acotarDia(ctx.hoy(), fechaSel);
   const filtro = textoFiltro();
   panel.replaceChildren();
@@ -708,7 +770,7 @@ function abrirExportar() {
 export function topActualMapa() {
   const ul = document.querySelector<HTMLElement>('#top-especie');
   const origen = origenDistancias();
-  const items = ul ? ordenarTops(listas.get(ul) ?? [], ordenTop(), (x) => clavesEntrada(x.principal, origen)) : [];
+  const items = ul ? ordenarTops(listas.get(ul) ?? [], ordenTop(), (x) => clavesItem(x, origen)) : [];
   return { fecha: ultimo?.fecha ?? acotarDia(ctx.hoy(), fechaSel), filtro: textoFiltro(),
     sitios: items.map((it, i) => ({ ...sitioExport(it), pos: i + 1, id: it.principal.sitio.id, especies: it.entradas.map((e) => e.especie),
       nombres: it.entradas.map((e) => nombre(e.especie)), lejania: textoLejania(it.principal.sitio) })) };
@@ -721,6 +783,8 @@ export function resumenHoy() {
     titularidad: x.sitio.titularidad?.clase ?? 'privado', citas: x.sitio.citas ? { n: x.sitio.citas.n, nivel: x.sitio.citas.nivel } : null });
   return { fecha: ultimo.fecha, confianza: ultimo.confianza, sinSitios: ultimo.sinSitios, factorCitas: ultimo.factorCitas,
     general: ultimo.general.map((f) => ({ ...e(f.principal), especies: f.especies })), especie: ultimo.especie, top: ultimo.top.map(e),
+    vista: vistaTop(), zonas: ultimo.zonas.map((z) => ({ puntuacion: z.puntuacion, score: z.score, verdes: z.verdes, extension_m: z.extension_m,
+      lat: z.principal.sitio.lat, lon: z.principal.sitio.lon, entradas: z.entradas.map(e) })),
     calendario: ultimo.calendario.map((f) => ({ id: f.id, clase: f.estado.clase, texto: f.estado.texto })),
     temporada: ultimo.temporada.map((f) => ({ id: f.id, tipo: f.ventana?.tipo ?? null, fin: f.fin, estados: f.dias.map((d) => d.estado) })) };
 }
@@ -739,6 +803,11 @@ export function iniciarHoy(c: ContextoHoy) {
     const fecha = acotarDia(ctx.hoy(), fechaSel);
     cargarSitios().then((d) => pintarTopEspecie(d, opciones(fecha)));
   });
+  document.querySelectorAll<HTMLButtonElement>('#hoy-vista button').forEach((b) => b.addEventListener('click', () => {
+    escribir(CLAVE_VISTA, b.dataset.vista === 'sitio' ? 'sitio' : 'seta');
+    const fecha = acotarDia(ctx.hoy(), fechaSel);
+    cargarSitios().then((d) => pintarTopEspecie(d, opciones(fecha)));
+  }));
   $('#hoy-ver-ficha').addEventListener('click', () => ctx.verFicha($<HTMLSelectElement>('#hoy-especie').value));
   $('#hoy-zona').addEventListener('click', () => ctx.irZona());
   $('#hoy-exportar').addEventListener('click', abrirExportar);

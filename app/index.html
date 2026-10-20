@@ -244,6 +244,10 @@
           <label class="campo"><span class="etq">Seta</span><select id="hoy-especie"></select></label>
           <button id="hoy-ver-ficha" class="btn" type="button" hidden><svg class="ico" aria-hidden="true"><use href="#i-libro"/></svg>Ficha</button>
         </div>
+        <div id="hoy-vista" class="vista-top" role="group" aria-label="Ver por">
+          <button class="chip" type="button" data-vista="seta" aria-pressed="true">Por seta</button><button class="chip" type="button" data-vista="sitio" aria-pressed="false">Por sitio</button>
+        </div>
+        <p id="hoy-vista-nota" class="nota" hidden></p>
         <ol id="top-especie" class="tops"></ol>
         <button id="hoy-exportar" class="btn btn-ancho" type="button" aria-expanded="false" aria-controls="exportar-dia"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>Exportar día</button>
         <section id="exportar-dia" class="exportar-dia" hidden aria-label="Exportar los sitios del día"></section>

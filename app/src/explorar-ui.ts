@@ -1,6 +1,11 @@
 // «Explorar aquí» (2026-10-25): pantalla completa con la cámara trasera, el rumbo del teléfono y un barrido de 8 fotos
 // (una cada 45°) que se guarda en el teléfono como observación (observaciones.ts). Patrón de ir-sitio.ts y campo-ui.ts.
-//  - Sin conexión y sin coste: nada sale del teléfono. (El análisis con Gemini y las marcas AR vienen en otras tareas.)
+//  - Sin conexión y sin coste: nada sale del teléfono. (El análisis con Gemini viene en otra tarea.)
+//  - AR ligera: sobre el vídeo, una marca por microzona (la misma selección que Modo campo: seleccionarMicrozonas + filtro de
+//    desnivel de campo-ruta.ts, misma seta) colocada con la brújula y la inclinación (explorar-geo.ts: proyectar). No está
+//    anclada al paisaje: se mueve con el error de la brújula. Fuera de cuadro, un chip en el borde. Desnivel = cota de la
+//    celda − tu cota, las dos del modelo del terreno (no la altitud del GPS). Se repinta en cada lectura de brújula (rAF) y
+//    se recalcula al moverte más de 50 m.
 //  - Brújula: iOS pide permiso tras un toque («Activar brújula»); Android da deviceorientationabsolute sin permiso.
 //    Sin brújula, o con la cámara en modo archivo (camara.ts), se hace una foto por dirección con un botón cada una.
 //  - Disparo automático (solo con cámara en vivo): rumbo a ±10° del objetivo, móvil casi vertical y quieto
@@ -11,14 +16,16 @@
 import './campo.css';
 import type { ManifestApp } from './manifest-region';
 import { escucharGps, ultimaPosicion, type PosicionGps } from './posicion-viva';
-import { cardinal, cardinalCorto, normalizar, orientacionDe, suavizarAngulo } from './brujula';
-import { ARBOL, type ValoresCelda } from './micro';
+import { cardinal, cardinalCorto, distanciaM, normalizar, orientacionDe, suavizarAngulo } from './brujula';
+import { ARBOL, MAX_MICROZONAS, seleccionarMicrozonas, UMBRAL_BUENA, type ValoresCelda } from './micro';
 import { celdaAqui, celdasAlrededor, datosMicro, type DatosMicro } from './micro-datos';
 import { cotasEn } from './mdt-datos';
-import { cajaAlrededor } from './ruta-pie';
+import { cajaAlrededor, CANDIDATAS, filtrarPorDesnivel, type DesnivelMicro } from './ruta-pie';
+import * as RC from './campo-ruta';
 import { cotaEn } from './mdt';
 import { abrirCamara, capturar, type Camara } from './camara';
-import { deltaAngulo, enSector, estaQuieto, listoParaDisparar, mediaCircular, PASO_BARRIDO, PRECISION_BRUJULA_MAX, rumbosBarrido } from './explorar-geo';
+import { celdasMarca, deltaAngulo, enSector, estaQuieto, FOV_H, FOV_V, listoParaDisparar, mediaCircular, PASO_BARRIDO, PRECISION_BRUJULA_MAX, proyectar, rumbosBarrido,
+  type Marca } from './explorar-geo';
 import { notaDeObservacion, nuevaObservacion, type DireccionObs, type Observacion } from './observaciones-datos';
 import { guardarObservacion } from './observaciones';
 import { anadirNotaExterna } from './grabar-ui';
@@ -30,6 +37,8 @@ export interface ContextoExplorar {
   region: () => string;
   /** Manifest de la región: de él salen los datos de microzonas y de cotas. */
   manifest: () => ManifestApp | null;
+  /** URL de la miniatura de la guía de una seta (o null): icono de las marcas. */
+  miniatura?: (id: string) => string | null;
   /** Setas de la región con su nombre (para «¿Qué encontraste?»). */
   especies: () => { id: string; nombre: string }[];
   /** Guardar un punto en Mis sitios (sin duplicarlo). */
@@ -77,6 +86,17 @@ let bloqueo: { release(): Promise<void> } | null = null;
 let estadoBrujula = '';
 let toquesRumbo: number[] = [];
 let sesion = 0;
+type MicroAR = ValoresCelda & DesnivelMicro;
+let datosAR: DatosMicro | null | undefined;
+let celdasAR: ValoresCelda[] = [];
+let microAR: MicroAR[] = [];
+let centroAR: { lat: number; lon: number } | null = null;
+let calculandoAR = false;
+let pendienteAR = false;
+let rafAR = 0;
+let ultimoAR: { estado: 'ok' | 'sin-datos' | 'sin-brujula' | 'cargando'; ancho: number; alto: number; dentro: boolean; marcas: (Marca & { fila: number; col: number; idon: number })[] } | null = null;
+const MOVER_AR_M = 50;
+const elMarcas = new Map<string, HTMLElement>();
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => dlg.querySelector(s) as T;
 const DOE = () => (typeof DeviceOrientationEvent === 'undefined' ? null : DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> });
@@ -99,6 +119,9 @@ function html() {
       <div id="ex-camara" class="ex-camara"></div>
       <div id="ex-sin-camara" class="ex-sin-camara" hidden></div>
       <div id="ex-marcas" class="ex-marcas" aria-hidden="true"></div>
+      <p id="ex-dentro" class="ex-dentro" role="status" hidden>Estás en una zona buena</p>
+      <p id="ex-ar-aviso" class="ex-ar-aviso" hidden>Cada marca es una celda de 100 m, no un punto exacto</p>
+      <p id="ex-ar-estado" class="ex-ar-estado" role="status" hidden></p>
       <div class="ex-mira" aria-hidden="true"></div>
       <div class="ex-anillo" aria-hidden="true">
         <ul id="ex-anillo"></ul>
@@ -170,6 +193,7 @@ function alOrientar(ev: DeviceOrientationEvent) {
   pintarRumbo();
   pintarAviso();
   pintarGuia();
+  pedirAR();
   evaluarBarrido();
 }
 
@@ -275,6 +299,7 @@ function pintarAcciones() {
   $('#ex-escena').hidden = fase === 'fin';
   $('#ex-acciones').hidden = fase === 'fin' || fase === 'guardando';
   $('#ex-estado').hidden = fase === 'fin';
+  pedirAR();
   $('#ex-gps').hidden = fase === 'fin';
   $('#ex-rumbo').hidden = fase === 'fin';
   dlg.dataset.fase = fase;
@@ -330,8 +355,9 @@ async function arrancarSensores() {
   else if (!pidePermiso) escucharBrujula();
   else { estadoBrujula = 'Pulsa «Activar brújula» para ver el rumbo.'; escucharBrujula(false); }
   dejarGps?.();
-  dejarGps = escucharGps((p) => { pos = p; pintarGps(); }, (m) => { $('#ex-gps').textContent = m; });
+  dejarGps = escucharGps((p) => { pos = p; pintarGps(); void calcularAR(); }, (m) => { $('#ex-gps').textContent = m; });
   pos = ultimaPosicion();
+  void cargarAR();
   pedirBloqueo();
   camara?.parar();
   camara = null;
@@ -343,6 +369,7 @@ async function arrancarSensores() {
   sc.hidden = c.modo === 'vivo';
   sc.textContent = c.modo === 'vivo' ? '' : 'Sin vista de cámara: haz cada foto con la cámara de tu móvil.';
   repintar(); pintarGps();
+  pedirAR();
 }
 
 function detenerSensores() {
@@ -351,6 +378,7 @@ function detenerSensores() {
   dejarBrujula();
   camara?.parar(); camara = null;
   bloqueo?.release().catch(() => {}); bloqueo = null;
+  cancelAnimationFrame(rafAR); rafAR = 0;
 }
 
 async function pedirBloqueo() {
@@ -374,6 +402,120 @@ async function reanudar() {
   delete dlg.dataset.pausado;
   tocar();
   await arrancarSensores();
+}
+
+// ---------------------------------------------------------------- AR ligera
+
+const faltaMicro = () => datosAR === null || (datosAR !== undefined && (!especie || !datosAR.cab.especies.includes(especie)));
+
+async function cargarAR() {
+  const m = ctx.manifest();
+  if (datosAR !== undefined && datosAR !== null) { void calcularAR(); return; }
+  datosAR = m?.micro ? await datosMicro(m).catch((e) => { console.warn('micro (AR)', e); return null; }) : null;
+  void calcularAR();
+}
+
+/** Microzonas como en Modo campo, con tu posición; se repite al moverte más de MOVER_AR_M. */
+async function calcularAR() {
+  const p = pos;
+  if (!p || !datosAR || faltaMicro() || !abierto) { pedirAR(); return; }
+  if (centroAR && distanciaM(centroAR, p) <= MOVER_AR_M && microAR.length + celdasAR.length > 0) return;
+  if (calculandoAR) { pendienteAR = true; return; }
+  calculandoAR = true;
+  try {
+    const m = ctx.manifest();
+    celdasAR = await celdasAlrededor(datosAR, p, especie);
+    const cands = seleccionarMicrozonas(celdasAR, { res: datosAR.cab.res, max: CANDIDATAS });
+    await RC.prepararCotas(m, p);
+    microAR = filtrarPorDesnivel(RC.anotar(cands, p), RC.desnivelMaxEfectivo(), MAX_MICROZONAS).visibles;
+    centroAR = { lat: p.lat, lon: p.lon };
+  } catch (e) {
+    console.warn('AR', e);
+  } finally {
+    calculandoAR = false;
+    if (pendienteAR) { pendienteAR = false; void calcularAR(); }
+  }
+  pedirAR();
+}
+
+const arActiva = () => abierto && !pausado && camara?.modo === 'vivo' && (fase === 'visor' || fase === 'barrido');
+
+function pedirAR() {
+  if (rafAR || !abierto) return;
+  rafAR = requestAnimationFrame(() => { rafAR = 0; pintarMarcas(); });
+}
+
+function iconoMarca() {
+  const d = document.createElement('div'); d.className = 'ex-icono';
+  const url = ctx.miniatura?.(especie) ?? null;
+  if (url) d.style.backgroundImage = `url("${url}")`;
+  else d.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-seta"/></svg>';
+  return d;
+}
+
+/** «180 m · ↑ 35 m · 72» (sin cifra de desnivel si falta una de las dos cotas). */
+function textoMarca(c: MicroAR, desnivel: number | null) {
+  const d = desnivel === null ? '' : Math.abs(desnivel) < 5 ? ' · casi llano' : ` · ${desnivel > 0 ? '↑' : '↓'} ${Math.round(Math.abs(desnivel) / 5) * 5} m`;
+  return `${Math.round(c.dist_m / 10) * 10} m${d} · ${c.idon}`;
+}
+
+function pintarMarcas() {
+  const capa = $('#ex-marcas');
+  const nota = $('#ex-ar-aviso'), est = $('#ex-ar-estado'), dentro = $('#ex-dentro');
+  const limpiar = (t: string, estado: NonNullable<typeof ultimoAR>['estado']) => {
+    capa.replaceChildren(); elMarcas.clear();
+    dentro.hidden = true; nota.hidden = true; est.textContent = t; est.hidden = !t;
+    ultimoAR = { estado, ancho: 0, alto: 0, dentro: false, marcas: [] };
+  };
+  if (!arActiva()) { capa.replaceChildren(); elMarcas.clear(); dentro.hidden = true; nota.hidden = true; est.hidden = true; ultimoAR = null; return; }
+  if (faltaMicro()) { limpiar('Sin datos de microzonas aquí', 'sin-datos'); return; }
+  if (orient === null) { limpiar(estadoBrujula === SIN_BRUJULA ? 'Sin brújula: no se pueden colocar las marcas' : '', 'sin-brujula'); return; }
+  const caja = $('#ex-escena').getBoundingClientRect();
+  const w = caja.width, h = caja.height;
+  if (!w || !h) return;
+  const vertical = anguloPantalla() % 180 === 0;
+  const fov = vertical ? { h: FOV_H.vertical, v: FOV_V.vertical } : { h: FOV_H.apaisado, v: FOV_V.apaisado };
+  const aqui = pos ? RC.cotaModelo(pos.lat, pos.lon) : null;
+  const lista = microAR.map((c) => ({ c, desnivel: c.cota_m !== null && aqui !== null ? c.cota_m - aqui : null }));
+  const { marcas } = celdasMarca(lista.map((x) => ({ ...x, dist_m: x.c.dist_m })));
+  const esta = celdasMarca(celdasAR.filter((c) => c.idon >= UMBRAL_BUENA));
+  est.hidden = true; nota.hidden = false; dentro.hidden = !esta.dentro;
+  const vistas = new Set<string>();
+  const calc = marcas.map((x) => ({ ...x, m: proyectar({ rumbo: x.c.rumbo, dist_m: x.c.dist_m, desnivel: x.desnivel }, orient!, beta ?? 90, fov, { w, h }) }));
+  const fuera: Record<'izq' | 'der', typeof calc[number] | undefined> = { izq: undefined, der: undefined };
+  for (const x of calc) {
+    const k = `${x.c.fila},${x.c.col}`;
+    if (!x.m.visible) {
+      const lado = x.m.lado!;
+      if (!fuera[lado] || x.c.dist_m < fuera[lado]!.c.dist_m) fuera[lado] = x;
+      continue;
+    }
+    vistas.add(k);
+    let el = elMarcas.get(k);
+    if (!el) {
+      el = document.createElement('div'); el.className = 'ex-marca'; el.dataset.fila = String(x.c.fila); el.dataset.col = String(x.c.col);
+      el.append(iconoMarca(), Object.assign(document.createElement('span'), { className: 'ex-marca-txt' }));
+      capa.append(el); elMarcas.set(k, el);
+    }
+    // La etiqueta no se sale del cuadro (x e y informadas siguen siendo las proyectadas).
+    const px = Math.min(w - 84, Math.max(84, x.m.x)), py = Math.min(h - 96, Math.max(26, x.m.y));
+    el.style.transform = `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px) translate(-50%, -22px)`;
+    const t = textoMarca(x.c, x.desnivel);
+    const sp = el.lastElementChild as HTMLElement;
+    if (sp.textContent !== t) sp.textContent = t;
+  }
+  for (const lado of ['izq', 'der'] as const) {
+    const k = `chip-${lado}`, x = fuera[lado];
+    let el = elMarcas.get(k);
+    if (!x) { el?.remove(); elMarcas.delete(k); continue; }
+    vistas.add(k);
+    if (!el) { el = document.createElement('div'); el.className = 'ex-chip'; el.dataset.lado = lado; capa.append(el); elMarcas.set(k, el); }
+    const t = `${lado === 'izq' ? '← ' : ''}buena zona, ${Math.round(x.c.dist_m / 10) * 10} m${lado === 'der' ? ' →' : ''}`;
+    if (el.textContent !== t) el.textContent = t;
+    el.style.top = `${Math.min(h - 80, Math.max(48, x.m.y)).toFixed(0)}px`;
+  }
+  for (const [k, el] of [...elMarcas]) if (!vistas.has(k)) { el.remove(); elMarcas.delete(k); }
+  ultimoAR = { estado: 'ok', ancho: w, alto: h, dentro: esta.dentro, marcas: calc.map((x) => ({ ...x.m, fila: x.c.fila, col: x.c.col, idon: x.c.idon })) };
 }
 
 // ---------------------------------------------------------------- barrido
@@ -513,6 +655,7 @@ function reiniciar() {
   fase = 'visor'; hechas = new Map(); objetivos = []; siguiente = 0; obs = null; posBarrido = null;
   orient = null; beta = null; precBrujula = null; lecturas = []; tLectura = 0; hayBrujula = false; disparando = false;
   estadoBrujula = ''; pausado = false; toquesRumbo = [];
+  celdasAR = []; microAR = []; centroAR = null; ultimoAR = null; elMarcas.clear(); $('#ex-marcas').replaceChildren();
   $('#ex-pausa').hidden = true; delete dlg.dataset.pausado;
   $('#ex-diag').hidden = true;
 }
@@ -586,4 +729,7 @@ export const exploracionAbierta = () => !!dlg?.open;
 export const estadoExplorar = () => (dlg?.open ? {
   fase, camara: camara?.modo ?? null, manual: modoManual(), orientacion: orient, beta, precBrujula, hayBrujula, pausado,
   objetivos: [...objetivos], siguiente, hechas: [...hechas.keys()].sort((a, b) => a - b), pos, aviso: $('#ex-aviso').hidden ? null : $('#ex-aviso').textContent,
-  estado: $('#ex-estado').textContent, guia: $('#ex-guia').hidden ? null : $('#ex-guia').textContent, obsId: obs?.id ?? null } : null);
+  estado: $('#ex-estado').textContent, guia: $('#ex-guia').hidden ? null : $('#ex-guia').textContent, obsId: obs?.id ?? null,
+  ar: { estado: ultimoAR?.estado ?? 'cargando', centro: centroAR, ancho: ultimoAR?.ancho ?? 0, dentro: ultimoAR?.dentro ?? false, marcas: ultimoAR?.marcas ?? [],
+    chips: [...dlg.querySelectorAll('.ex-chip')].map((c) => ({ lado: (c as HTMLElement).dataset.lado, texto: c.textContent })),
+    micro: microAR.map((c) => ({ fila: c.fila, col: c.col, idon: c.idon, dist_m: c.dist_m, rumbo: c.rumbo, cota_m: c.cota_m })), celdas: celdasAR.length } } : null);

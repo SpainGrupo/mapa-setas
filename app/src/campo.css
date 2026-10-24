@@ -189,3 +189,17 @@ body[data-grabando] .mapa-cab { top: calc(var(--sup) + 140px); }
 .ex-diag { margin: 0; padding: 8px 10px; border-radius: 12px; background: var(--lavado); font: 12px/1.4 var(--cifras); white-space: pre-wrap; }
 .ex-nota { margin: 0; }
 @media (prefers-reduced-motion: reduce) { .ex-aguja { transition: none; } .ex-destello.on { animation: none; } }
+
+/* AR ligera (marcas de microzonas sobre la cámara) */
+.ex-marca { position: absolute; left: 0; top: 0; display: grid; justify-items: center; gap: 2px; will-change: transform; }
+.ex-icono { width: 44px; height: 44px; border-radius: 50%; border: 3px solid var(--bosque); background: oklch(100% 0 0) center / cover no-repeat; display: grid; place-items: center; color: var(--bosque); box-shadow: 0 2px 8px oklch(0% 0 0 / 0.45); }
+.ex-marca-txt { padding: 2px 8px; border-radius: 999px; font: 700 13px/1.3 var(--cifras); white-space: nowrap; background: oklch(14% 0.01 160 / 0.78); color: oklch(100% 0 0); }
+.ex-chip { position: absolute; max-width: 46%; padding: 6px 10px; border-radius: 12px; font: 800 13px/1.25 var(--texto); background: oklch(14% 0.01 160 / 0.78); color: oklch(100% 0 0); }
+.ex-chip[data-lado=izq] { left: 6px; }
+.ex-chip[data-lado=der] { right: 6px; text-align: right; }
+.ex-dentro { position: absolute; left: 10px; top: 10px; max-width: calc(100% - 118px); margin: 0; padding: 8px 14px; border-radius: 14px; font-weight: 800; background: var(--bosque); color: oklch(100% 0 0); }
+.ex-dentro[hidden] { display: none; }
+.ex-ar-aviso, .ex-ar-estado { position: absolute; left: 10px; top: 112px; right: 10px; margin: 0; font-size: 12px; line-height: 1.3; text-shadow: 0 1px 3px oklch(0% 0 0 / 0.8); pointer-events: none; }
+.ex-ar-aviso[hidden], .ex-ar-estado[hidden] { display: none; }
+.ex-ar-aviso { top: auto; bottom: 64px; }
+.ex-ar-estado { font-weight: 800; font-size: 14px; top: 50%; text-align: center; }

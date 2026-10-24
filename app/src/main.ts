@@ -1471,6 +1471,7 @@ iniciarCampo({
 });
 iniciarExplorar({
   especie: especieSel, region: () => manifest?.region?.id ?? '', manifest: () => manifest, avisar,
+  miniatura: (id) => miniaturaEspecie(id, indiceGuia()),
   especies: () => (manifest?.especies ?? []).map((e) => ({ id: e.id, nombre: nombres[e.id] ?? e.id })),
   guardar: (p) => guardarPunto(p),
 });

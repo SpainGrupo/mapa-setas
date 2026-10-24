@@ -16,7 +16,7 @@ Spec: `docs/specs/2026-10-20-explorar-aqui-design.md` §2, §4.4, §7 (fase 0). 
 - [ ] Estabilidad en el monte: en un punto fijo, girar 360° despacio y volver al mismo árbol. ¿Cuántos grados de diferencia? (objetivo ≤ 20°). ¿Sale «Brújula poco fiable»?
 
 ## Campo de visión (provisional: `FOV_H`/`FOV_V` en `app/src/explorar-geo.ts`)
-Los valores actuales (52° horizontal en vertical y 68° en apaisado; 68° y 52° vertical) **no están medidos**.
+Los valores actuales **no están medidos**: horizontal 52° con el móvil en vertical y 68° en apaisado; vertical 68° en vertical y 52° en apaisado.
 - [ ] Poner dos objetos a ±X° del centro con la brújula (por ejemplo ±20°) y mirar si caen justo en el borde de la imagen. Repetir con el móvil en vertical y en apaisado.
 - [ ] Anotar el campo de visión real: horizontal ____° / vertical ____° (vertical y apaisado).
 - [ ] Marcas AR: con el mini-mapa de Modo campo al lado, ¿la marca de una microzona señala hacia el mismo lado que el mapa?

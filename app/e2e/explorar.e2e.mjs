@@ -261,6 +261,51 @@ try {
   await p.locator('.pestanas [data-p=p-sitios]').click();
   await p.waitForFunction(() => /Observación \d/.test(document.querySelector('#lista-sitios')?.textContent ?? ''), null, { timeout: 10000 });
   ok('el sitio «Observación …» aparece en Mis sitios');
+  // ---- Mis observaciones: lista, resumen, detalle, exportación y borrado
+  comprobar(/^Mis observaciones \(1\)$/.test((await p.locator('#btn-observaciones').innerText()).trim()), 'Mis sitios tiene «Mis observaciones (1)» junto a Mis rutas');
+  await p.locator('#btn-observaciones').click();
+  await p.waitForSelector('#dlg-observaciones[open] #ob-lista li', { timeout: 10000 });
+  comprobar(await p.locator('#ob-lista li').count() === 1 && await p.locator('#ob-lista li img').count() === 1, 'la lista tiene la observación, con la miniatura de su primera foto');
+  const itemTxt = await p.locator('#ob-lista li').innerText();
+  comprobar(/Encontraste algo/.test(itemTxt) && /modelo \d+\/100 aquí/.test(itemTxt), `fila: «${itemTxt.replace(/\n+/g, ' · ')}»`);
+  await p.waitForFunction(() => /^Mejor: \S+ \d+°$/.test(document.querySelector('#ob-lista .ob-mejor')?.textContent ?? ''), null, { timeout: 8000 });
+  ok('la fila enseña «Mejor: …» porque está analizada');
+  const resTxt = await p.locator('#ob-resumen').innerText();
+  comprobar(/Modelo ≥ 50 y encontraste: 1 · Modelo ≥ 50 y nada: 0 · Modelo < 50 y encontraste: 0/.test(resTxt) && !/%/.test(resTxt) && /Árbol visto distinto del modelo: 1 caso/.test(resTxt),
+    `resumen con 1 observación, sin porcentajes (${resTxt.split('\n').join(' | ')})`);
+  const [bajada] = await Promise.all([p.waitForEvent('download'), p.locator('#ob-exportar').click()]);
+  comprobar(/^observaciones-\d{4}-\d{2}-\d{2}\.geojson$/.test(bajada.suggestedFilename()), `la exportación se llama ${bajada.suggestedFilename()}`);
+  const gj = readFileSync(await bajada.path(), 'utf8');
+  const fc = JSON.parse(gj);
+  comprobar(fc.type === 'FeatureCollection' && fc.features.length === 1 && fc.features[0].geometry.coordinates[0] === YO.lon && !/foto|jpeg|base64|\/9j\//i.test(gj) && fc.features[0].properties.direcciones.length === 8,
+    'GeoJSON con 1 punto, 8 direcciones analizadas y sin fotos');
+  await p.locator('#ob-lista .ob-ver').click();
+  await p.waitForSelector('#ob-volver');
+  comprobar(await p.locator('.ob-foto img').count() === 8 && await p.locator('#ob-analisis li').count() === 8, 'detalle: 8 fotos con su rumbo y el análisis de las 8 direcciones');
+  comprobar(!PROHIBIDO.test(await p.locator('#dlg-observaciones').innerText()), 'el detalle no dice «comestible»');
+  await p.screenshot({ path: join(CAPTURAS, 'observaciones-detalle.png') });
+  await p.locator('#ob-h').selectOption('nada');
+  await p.locator('#ob-nota').fill('Zona seca, sin hojarasca.');
+  await p.locator('#ob-guardar').click();
+  await p.waitForFunction(() => document.querySelector('#ob-nota')?.value === 'Zona seca, sin hojarasca.' && document.querySelector('#ob-h')?.value === 'nada');
+  obs = await observaciones(p);
+  comprobar(obs[0].hallazgo === 'nada' && obs[0].especieHallada === '' && obs[0].nota === 'Zona seca, sin hojarasca.' && obs[0].estado === 'analizada', 'editar el hallazgo y la nota se guarda (y sigue analizada)');
+  await p.locator('#ob-volver').click();
+  await p.waitForFunction(() => /Modelo ≥ 50 y nada: 1/.test(document.querySelector('#ob-resumen')?.textContent ?? ''));
+  ok('el resumen se actualiza con el nuevo hallazgo');
+  await p.locator('#ob-lista .ob-ver').click();
+  await p.waitForSelector('#ob-volver');
+  await p.getByRole('button', { name: 'Ver en el mapa' }).click();
+  await p.waitForFunction(() => !document.querySelector('#dlg-observaciones[open]') && document.querySelector('#p-mapa.activa'));
+  ok('«Ver en el mapa» cierra Mis observaciones y lleva al mapa');
+  await p.locator('.pestanas [data-p=p-sitios]').click();
+  await p.locator('#btn-observaciones').click();
+  await p.waitForSelector('#ob-lista li');
+  await p.locator('#ob-lista .ob-ver').click();
+  await p.getByRole('button', { name: 'Borrar' }).click();
+  await p.waitForFunction(() => document.querySelectorAll('#ob-lista li').length === 0 && /Aún no hay observaciones/.test(document.querySelector('#ob-cuerpo')?.textContent ?? ''));
+  comprobar((await observaciones(p)).length === 0, '«Borrar» (con confirmación) elimina la observación de IndexedDB');
+  await p.locator('#ob-cerrar').click();
   // La cámara se apaga al cerrar
   comprobar(await p.evaluate(() => !document.querySelector('#ex-camara video')), 'al cerrar, la cámara se apaga');
   await p.context().close();

@@ -44,6 +44,7 @@ import { abrirIr, estadoIr, iniciarIr, volverAlMapaIr } from './ir-sitio';
 import { abrirCampo, bloqueComoBuscar, campoAbierto, estadoCampo, iniciarCampo, limpiarCampo } from './campo-ui';
 import { abrirExplorar, estadoExplorar, iniciarExplorar } from './explorar-ui';
 import { estadoGrabacion, iniciarGrabar, pintarRutas } from './grabar-ui';
+import { iniciarObservaciones, pintarEntradaObservaciones } from './observaciones-ui';
 import { elegirEnMapaTop, iniciarHoyMapa } from './hoy-mapa';
 import { abrirEnlaceDeUrl, iniciarEnlace, puntosEnlace } from './enlace-ui';
 import { puntosDeKml } from './enlaces';
@@ -117,7 +118,7 @@ function irA(id: string) {
     if (b.dataset.p === id) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
   });
   if (id === 'p-mapa') mapa?.resize();
-  if (id === 'p-sitios') { pintarLista(); pintarRutas(); }
+  if (id === 'p-sitios') { pintarLista(); pintarRutas(); void pintarEntradaObservaciones(); }
   if (id === 'p-ajustes') pintarAjustes();
   if (id === 'p-zona') pintarZona();
   if (id === 'p-hoy') pintarHoy();
@@ -1483,6 +1484,17 @@ iniciarEnlace({
   guardar: (p) => guardarPunto({ lat: p.lat, lon: p.lon, nota: [p.nombre, p.nota].filter(Boolean).join(' — ') }),
 });
 iniciarGrabar({ avisar, mapa: () => mapa, irA });
+iniciarObservaciones({
+  especies: () => (manifest?.especies ?? []).map((e) => ({ id: e.id, nombre: nombres[e.id] ?? e.id })),
+  avisar,
+  verEnMapa: (p) => {
+    irA('p-mapa');
+    const sel = $<HTMLSelectElement>('#sel-especie');
+    if (p.especie && sel.value !== p.especie && [...sel.options].some((o) => o.value === p.especie)) { sel.value = p.especie; sel.dispatchEvent(new Event('change')); }
+    mapa?.jumpTo({ center: [p.lon, p.lat], zoom: Math.max(15, mapa.getZoom()) });
+    mostrarAcceso(p.lat, p.lon);
+  },
+});
 
 iniciarHoy({
   irAlSitio,

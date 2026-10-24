@@ -226,3 +226,24 @@ body[data-grabando] .mapa-cab { top: calc(var(--sup) + 140px); }
 .ex-mejor-chip[data-lado=izq] { left: 6px; }
 .ex-mejor-chip[data-lado=der] { left: auto; right: 6px; }
 #ex-mejor-capa { z-index: 3; }
+
+/* «Mis observaciones» (2026-10-25) */
+.dlg-obs .ob-cab { grid-template-columns: 1fr auto auto; }
+.ob-cuerpo { display: grid; gap: 12px; align-content: start; }
+.ob-cuerpo p, .ob-cuerpo h3 { margin: 0; }
+.ob-resumen { display: grid; gap: 4px; padding: 10px 14px; border-radius: 14px; background: var(--lavado); font-size: 15px; }
+.ob-distinto { margin: 4px 0 0; padding-left: 18px; font-size: 14px; }
+.ob-lista { display: grid; gap: 8px; }
+.ob-item { display: grid; grid-template-columns: 64px 1fr auto; gap: 10px; align-items: center; }
+.ob-mini { width: 64px; height: 64px; border-radius: 10px; overflow: hidden; background: var(--lavado); }
+.ob-mini img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ob-item-cab { display: grid; gap: 2px; min-width: 0; }
+.ob-mejor:empty { display: none; }
+.ob-fecha { font-size: 20px; }
+.ob-fotos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.ob-foto { margin: 0; display: grid; gap: 2px; font-size: 13px; font-weight: 700; }
+.ob-foto img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 10px; background: var(--lavado); }
+.ob-form { display: grid; gap: 10px; }
+.ob-form select, .ob-form textarea { font: inherit; border-radius: 12px; padding: 8px 10px; border: 1px solid var(--regla); background: var(--papel); color: var(--tinta); }
+.ob-form select { min-height: var(--toque); }
+.ob-form label[hidden] { display: none; }

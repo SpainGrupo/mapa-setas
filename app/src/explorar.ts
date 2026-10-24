@@ -60,7 +60,7 @@ export function puntuarObservado(d: DireccionGemini, p: PerfilMicro | null): { v
 }
 
 /** Contradicción solo con árbol visto con confianza media/alta y un árbol del modelo comparable (no «sin arbolado»). */
-function contradiccion(d: DireccionGemini, arbolModelo: string | null): string | null {
+export function contradiccion(d: DireccionGemini, arbolModelo: string | null): string | null {
   if (!arbolModelo || d.arbol_dominante === 'no_se_ve' || d.arbol_dominante === 'otro' || d.confianza_arbol === 'baja') return null;
   const clave = CLAVE_MODELO[arbolModelo];
   if (!clave || clave === d.arbol_dominante) return null;

@@ -3,7 +3,7 @@ type: Reference
 title: Especies modeladas y grupos
 description: Qué especies tiene cada región, sus nombres comunes (ES/RU), su grupo en la app y candidatas aún sin modelar.
 tags: [especies, grupos, regiones, app]
-timestamp: 2026-10-18T13:00:00Z
+timestamp: 2026-10-20T22:00:00Z
 ---
 
 # Notes
@@ -41,8 +41,24 @@ timestamp: 2026-10-18T13:00:00Z
 | Russula cyanoxantha (`russula_cyanoxantha`) | carbonera | сыроежка сине-жёлтая | Rúsulas (carbonera) | sí (150) | no modelada |
 | Tricholoma portentosum (`tricholoma_portentosum`) | capuchina, ratón | рядовка серая | Capuchinas (Tricholoma) | sí (75) | no modelada |
 | Morchella spp. (`morchella_spp`) | colmenilla, cagarria | сморчок (сморчки) | Colmenillas | sí (4) | sí (5) |
+| Craterellus cornucopioides y C. lutescens (`craterellus_cornucopioides`) | trompeta de los muertos, trompeta negra; angula de monte, trompeta amarilla | вороночник рожковидный (C. cornucopioides; PENDIENTE verificar) | Rebozuelos | sí (150) | no modelada |
+| Pleurotus ostreatus (`pleurotus_ostreatus`) | seta de ostra, seta de chopo, orellana | вёшенка обыкновенная | Setas de ostra (Pleurotus) | sí (150) | no modelada |
 
-Resumen: Marbella 22 especies modeladas (todas con sitios; morchella solo 4). Alicante 11 activas (boletus_aereus con 1 sitio, morchella con 5) y 6 «sin hábitat» en gris (aestivalis, edulis, pinophilus, caesarea, cantharellus, ponderosa).
+Resumen: Marbella 24 especies modeladas (desde 2026-10-20; 22 antes) (todas con sitios; morchella solo 4). Alicante 11 activas (boletus_aereus con 1 sitio, morchella con 5) y 6 «sin hábitat» en gris (aestivalis, edulis, pinophilus, caesarea, cantharellus, ponderosa).
+
+### Marbella, ampliación del 2026-10-20 (Craterellus y Pleurotus ostreatus)
+
+Aprobada por Alexander el 2026-10-20 (en el chat): entran con la excepción SIN_CONF, es decir, sin seta tóxica concreta citada en las fuentes. La ficha lo dice así, lleva el aviso general y no afirma comestibilidad. La excepción consta en `app/src/seguridad-regiones.test.ts` (`EXCEPCIONES_APROBADAS`) y en el comentario de `SIN_CONF` en `guia/_build/build.py`.
+
+| Especie | GBIF ≤200 km | citas en citas.geojson | n calibración | lift validación | fiabilidad | sitios |
+|---|---|---|---|---|---|---|
+| craterellus_cornucopioides (C. cornucopioides 20 + C. lutescens 6, una ficha) | 26 | 26 | 13 | 11,21 | buena | 150 |
+| pleurotus_ostreatus | 88 | 80 tras el dedupe | 41 | 2,26 (ajuste 1,71) | buena | 150 |
+
+- Perfiles en `pipeline/especies.yaml` (bloque «Marbella, 2026-10-20»), todo heurístico y con PENDIENTE donde las fuentes no cifran. *P. ostreatus* es lignícola (no micorrícica): el modelo usa el arbolado de frondosas del MFE y la humedad, no el sustrato real (chopos y fresnos de ribera caen en «otro arbolado»).
+- Fuentes de las fichas: AmanitaCesarea.com (C. lutescens, P. ostreatus), First Nature (C. cornucopioides, P. ostreatus) y GBIF. No se encontró ficha de AmanitaCesarea.com de C. cornucopioides.
+- Grupos: Craterellus en «Rebozuelos»; *P. ostreatus* en un grupo nuevo «Setas de ostra (Pleurotus)», aparte de «Setas de cardo».
+- Dobles tóxicos: ninguno citado. Para C. lutescens AmanitaCesarea.com solo cita C. tubaeformis; para P. ostreatus solo otros Pleurotus y alguna bibliografía que da la var. columbinus por ligeramente purgante.
 
 ### Marbella, ampliación del 2026-10-18
 
@@ -68,8 +84,7 @@ Descartadas el 2026-10-18 (no añadidas):
 - Hygrophorus latitabundus: 1 cita GBIF a ≤200 km, en Jaén (fuera de la zona ≤2 h).
 - Tuber aestivum (1 cita, Cambil, Jaén), T. melanosporum (0), T. borchii (0): sin evidencia en la zona.
 - Calocybe gambosa: 0 citas GBIF a ≤200 km.
-- Craterellus cornucopioides (20 citas, Los Alcornocales) y C. lutescens (6): las fuentes no citan doble tóxico (Fichas Micológicas, MicoAragón); entrarían solo con una excepción SIN_CONF aprobada por Alexander. PENDIENTE de su decisión.
-- Pleurotus ostreatus (88 citas): AmanitaCesarea.com y First Nature solo citan Pleurotus comestibles; sin doble tóxico documentado. Misma PENDIENTE que Craterellus.
+- Craterellus cornucopioides (20 citas, Los Alcornocales) y C. lutescens (6) y Pleurotus ostreatus (88): sin doble tóxico documentado; **aprobadas por Alexander el 2026-10-20** con excepción SIN_CONF y añadidas (sección de arriba).
 - Con citas pero fuera de este encargo (nueva ficha con dobles tóxicos por documentar): Coprinus comatus (158), Infundibulicybe geotropa (41), Leccinellum lepidum (47), Cantharellus pallens (32), Hygrophorus russula (3). No propuestas: Amanita rubescens (88; doble A. pantherina) y Tricholoma equestre (ficha mortal). Alicante 11 activas (boletus_aereus con 1 sitio, morchella con 5) y 6 «sin hábitat» en gris (aestivalis, edulis, pinophilus, caesarea, cantharellus, ponderosa).
 
 ## Candidatas no modeladas aún
@@ -80,14 +95,14 @@ No están en el modelo; NO añadir sin el proceso de especies.yaml (ficha, confu
 |---|---|---|---|---|---|
 | Tuber melanosporum | trufa negra | чёрный (перигорский) трюфель | Criadillas y trufas | Alicante (interior, encinar calizo) | PENDIENTE: presencia y normativa (cultivo/propiedad) |
 | Tuber aestivum | trufa de verano | летний трюфель | Criadillas y trufas | Alicante / Andalucía | PENDIENTE |
-| Craterellus cornucopioides / C. lutescens | trompeta de los muertos / angula de monte | вороночник рожковидный | Rebozuelos | Marbella (alcornocal, castañar) | 20 / 6 citas GBIF en la zona; sin doble tóxico documentado: PENDIENTE de excepción de Alexander (ver arriba) |
+| Craterellus cornucopioides / C. lutescens | trompeta de los muertos / angula de monte | вороночник рожковидный | Rebozuelos | Marbella (alcornocal, castañar) | Ya modelada en Marbella desde 2026-10-20 (excepción SIN_CONF aprobada por Alexander) |
 | Cantharellus en Alicante | rebozuelo | лисички | Rebozuelos | Alicante | hoy «sin hábitat» (INV §2); revisar solo con citas nuevas |
 | Hygrophorus russula / H. latitabundus en Marbella | llenega, hongo rosado | гигрофор | Llenegas | Marbella | H. latitabundus: 1 cita (Jaén), descartada; H. russula: 3 (Ronda/Grazalema), PENDIENTE de ficha |
 | Tricholoma terreum | negrilla | рядовка землистая | Tricholoma | Alicante | Excluida a propósito (spec §1.3/§3.5: ficha tóxica por decisión de Alexander). No proponer |
 | Macrolepiota procera en Alicante | parasol | гриб-зонтик | Parasoles | Alicante | PENDIENTE |
 | Amanita caesarea en Alicante | oronja | цезарский гриб | Amanitas | Alicante | hoy «sin hábitat»; no proponer sin citas |
 | Calocybe gambosa | perrechico, seta de San Jorge | рядовка майская | (nuevo) | Andalucía (sierras) | 0 citas GBIF a ≤200 km de Marbella (2026-10-18): no se añade |
-| Pleurotus ostreatus | seta de ostra | вёшенка обыкновенная | Setas de cardo (o nuevo) | ambas | 88 citas en Marbella; sin doble tóxico documentado: PENDIENTE de excepción de Alexander |
+| Pleurotus ostreatus | seta de ostra | вёшенка обыкновенная | Setas de ostra (Pleurotus) | ambas | Ya modelada en Marbella desde 2026-10-20 (excepción SIN_CONF aprobada por Alexander); Alicante PENDIENTE |
 | Tuber aestivum / T. melanosporum / T. borchii | trufa de verano / negra / blanquilla | трюфель | Criadillas y trufas | Marbella | 1 / 0 / 0 citas (la de T. aestivum en Jaén): no se añaden |
 
 # Citations

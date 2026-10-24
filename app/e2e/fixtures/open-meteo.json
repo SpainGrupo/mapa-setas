@@ -1,5 +1,5 @@
 {
-  "_nota": "Fixture del e2e: días relativos a «hoy», fijado a 2026-10-14 con ?hoy= (solo en modo e2e) para que la temporada de cada especie no dependa del mes en que se ejecute. 30 mm hace 17 días (el episodio) más lluvias sueltas que suman 4 días de lluvia en 30; tmin 13 y tmax 23 en todos los días; ET0 2 mm/día (balance 30 d = 46 − 60 = −14 mm); HR mínima 55 %; humedad del suelo 0,2 m³/m³ en todas las horas. La elevación del modelo se iguala a alt_media de cada punto (sin corrección por altitud). Con el manifest v2 (12 especies): L. deliciosus/sanguifluus esperan (ventana 20–40 días); A. ponderosa y T. arenaria quedan en amarillo «fuera de temporada, pero llovió fuerte» (30 mm ≥ 1,5 × episodio y suelo húmedo). Con 22 especies (2026-10-18): Agaricus en rojo (ventana 5–15 días ya cerrada); L. nuda y H. repandum en amarillo (tmin o tmax fuera de rango); T. portentosum espera (ventana 20–40); Morchella amarilla fuera de temporada por la lluvia fuerte.",
+  "_nota": "Fixture del e2e: días relativos a «hoy», fijado a 2026-10-14 con ?hoy= (solo en modo e2e) para que la temporada de cada especie no dependa del mes en que se ejecute. 30 mm hace 17 días (el episodio) más lluvias sueltas que suman 4 días de lluvia en 30; tmin 13 y tmax 23 en todos los días; ET0 2 mm/día (balance 30 d = 46 − 60 = −14 mm); HR mínima 55 %; humedad del suelo 0,2 m³/m³ en todas las horas. La elevación del modelo se iguala a alt_media de cada punto (sin corrección por altitud). Con el manifest v2 (12 especies): L. deliciosus/sanguifluus esperan (ventana 20–40 días); A. ponderosa y T. arenaria quedan en amarillo «fuera de temporada, pero llovió fuerte» (30 mm ≥ 1,5 × episodio y suelo húmedo). Con 22 especies (2026-10-18): Agaricus en rojo (ventana 5–15 días ya cerrada); L. nuda y H. repandum en amarillo (tmin o tmax fuera de rango); T. portentosum espera (ventana 20–40); Morchella amarilla fuera de temporada por la lluvia fuerte. Con 24 especies (2026-10-20): Craterellus y P. ostreatus en verde (tmin 13 y tmax 23 dentro de sus rangos, ventana de 10–25 y 10–20 días con el episodio a 17).",
   "lluvia": {
     "-22": 8,
     "-20": 6,
@@ -31,7 +31,9 @@
     "suillus_luteus": "verde",
     "suillus_granulatus": "verde",
     "russula_cyanoxantha": "verde",
-    "tricholoma_portentosum": "amarillo"
+    "tricholoma_portentosum": "amarillo",
+    "craterellus_cornucopioides": "verde",
+    "pleurotus_ostreatus": "verde"
   },
   "et0": 2,
   "hr_min": 55,

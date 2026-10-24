@@ -22,9 +22,12 @@ export interface DestinoIr {
   lon: number;
   titulo: string;
   subtitulo?: string;
+  /** Ruta a pie por el terreno ya trazada desde tu posición (Modo campo, ruta-pie.ts): se sigue en vez del sendero. */
+  ruta?: SenderoApp;
 }
 
-export interface SenderoApp extends Sendero { via: string }
+/** `terreno` = ruta a pie por el terreno del Modo campo (sin él, sendero desde el aparcamiento). */
+export interface SenderoApp extends Sendero { via: string; tipo?: 'terreno' }
 
 export interface ContextoIr {
   manifest: () => ManifestApp | null;
@@ -113,6 +116,9 @@ function html() {
   return d;
 }
 
+const deLa = () => (sendero?.tipo === 'terreno' ? 'de la ruta' : 'del sendero');
+const porEl = () => (sendero?.tipo === 'terreno' ? 'por la ruta' : 'por el sendero');
+
 function pintarFuente() {
   const t = fuente === 'brujula' ? 'Flecha según la brújula del teléfono. Sujétalo en horizontal, lejos del coche.'
     : fuente === 'marcha' ? 'Sin brújula: la flecha usa el rumbo de tu marcha (GPS). Camina para que se actualice.'
@@ -135,8 +141,8 @@ function alerta(tipo: 'llegada' | 'fuera' | 'vuelta') {
   const a = $('#ir-alerta');
   a.dataset.tipo = tipo;
   a.textContent = tipo === 'llegada' ? `Has llegado: estás a menos de ${LLEGADA_M} m del punto.`
-    : tipo === 'fuera' ? `Te has salido del sendero: estás a ${textoDistancia(nav?.aSendero_m ?? 0)}. Vuelve hacia la línea azul.`
-      : 'De vuelta en el sendero.';
+    : tipo === 'fuera' ? `Te has salido ${deLa()}: estás a ${textoDistancia(nav?.aSendero_m ?? 0)}. Vuelve hacia la línea azul.`
+      : `De vuelta en ${sendero?.tipo === 'terreno' ? 'la ruta' : 'el sendero'}.`;
   a.hidden = false;
   avisosVistos.push(tipo);
   try { navigator.vibrate?.(tipo === 'vuelta' ? 80 : [200, 100, 200]); } catch { /* sin vibración */ }
@@ -160,7 +166,7 @@ function pintar() {
     dlg.dataset.estado = ahora.llegado ? 'llegado' : 'ok';
     dlg.dataset.fuera = String(!!ahora.fuera);
     $('#ir-distancia').textContent = ahora.llegado ? 'Has llegado' : textoDistancia(ahora.restante_m);
-    $('#ir-medida').textContent = ahora.llegado ? `a menos de ${LLEGADA_M} m` : ahora.medida === 'sendero' ? 'por el sendero' : 'en línea recta';
+    $('#ir-medida').textContent = ahora.llegado ? `a menos de ${LLEGADA_M} m` : ahora.medida === 'sendero' ? porEl() : 'en línea recta';
     $('#ir-rumbo').textContent = ahora.llegado ? '' : `Destino ${textoRumbo(ahora.rumbo)}`;
     const giro = giroFlecha(ahora.rumbo, orientacionActual());
     flecha.style.transform = `rotate(${giro.toFixed(1)}deg)`;
@@ -170,7 +176,7 @@ function pintar() {
   // Desnivel: por el perfil del sendero si vas por él; si no, altitud del sitio − GPS; sin datos, PENDIENTE.
   const des = $('#ir-desnivel');
   if (nav?.subidaSendero_m != null) {
-    des.textContent = nav.subidaSendero_m < 10 ? 'Casi sin subida por el sendero' : `≈ ${Math.round(nav.subidaSendero_m / 5) * 5} m de subida por el sendero`;
+    des.textContent = nav.subidaSendero_m < 10 ? `Casi sin subida ${porEl()}` : `≈ ${Math.round(nav.subidaSendero_m / 5) * 5} m de subida ${porEl()}`;
     des.dataset.desnivel = String(nav.subidaSendero_m);
   } else {
     const dn = altSitio === undefined ? null : desnivel(pos?.alt, altSitio);
@@ -180,7 +186,7 @@ function pintar() {
   }
   $('#ir-sendero').textContent = sendero === undefined ? 'Buscando el sendero a pie…'
     : sendero === null ? 'Sin sendero a pie de la app para este punto: solo línea recta.'
-      : `Sendero a pie desde ${sendero.via}${nav && !nav.unido && nav.aSendero_m !== null ? ` (te queda a ${textoDistancia(nav.aSendero_m)})` : ''}.`;
+      : `${sendero.tipo === 'terreno' ? 'Ruta a pie por el terreno desde' : 'Sendero a pie desde'} ${sendero.via}${nav && !nav.unido && nav.aSendero_m !== null ? ` (te queda a ${textoDistancia(nav.aSendero_m)})` : ''}.`;
   dlg.dataset.sendero = sendero ? 'si' : sendero === null ? 'no' : 'buscando';
   pintarMapa();
 }
@@ -299,7 +305,7 @@ async function cerrar() {
 /** Abre el modo «Navegar aquí» hacia `d` y empieza a grabar el track (si no se estaba grabando ya). */
 export async function abrirIr(d: DestinoIr) {
   if (!dlg) return;
-  destino = d; altSitio = undefined; sendero = undefined; pos = ultimaPosicion(); nav = null; orient = null; fuente = 'norte'; estadoBrujula = '';
+  destino = d; altSitio = undefined; sendero = d.ruta ? { ...d.ruta, tipo: 'terreno' } : undefined; pos = ultimaPosicion(); nav = null; orient = null; fuente = 'norte'; estadoBrujula = '';
   avisosVistos = [];
   $('#ir-alerta').hidden = true;
   $('#ir-titulo').textContent = d.titulo || 'Punto del mapa';
@@ -327,7 +333,7 @@ export async function abrirIr(d: DestinoIr) {
   dejarGps?.();
   dejarGps = escucharGps(alGps, (m) => { $('#ir-gps').textContent = m; });
   ctx.altitudEn(d.lat, d.lon).catch(() => null).then((a) => { if (destino === d) { altSitio = a; pintar(); } });
-  ctx.sendero(d.lat, d.lon).catch(() => null).then((s) => { if (destino === d) { sendero = s; nav = null; pintar(); } });
+  if (!d.ruta) ctx.sendero(d.lat, d.lon).catch(() => null).then((s) => { if (destino === d) { sendero = s; nav = null; pintar(); } });
   const m = await Mini.miniMapa(ctx.manifest());
   if (m && destino === d) Mini.alCargar(() => { if (!pos) vistaGeneral(); pintar(); });
 }
@@ -370,7 +376,7 @@ export function volverAlMapaIr() {
 
 /** Estado para el e2e (window.__setas.ir()). */
 export const estadoIr = () => (dlg?.open && destino ? { destino, fuente, orientacion: orient, pos, altSitio: altSitio ?? null, nav,
-  sendero: sendero ? { via: sendero.via, n: sendero.linea.length, linea: sendero.linea } : sendero ?? null, avisos: [...avisosVistos],
+  sendero: sendero ? { via: sendero.via, tipo: sendero.tipo ?? 'aparcamiento', n: sendero.linea.length, linea: sendero.linea } : sendero ?? null, avisos: [...avisosVistos],
   giro: Number($('#ir-flecha').dataset.giro ?? NaN), distancia: $('#ir-distancia').textContent, desnivel: $('#ir-desnivel').textContent,
   alerta: $('#ir-alerta').hidden ? null : $('#ir-alerta').textContent, rumboMapa: Mini.mapaListo()?.getBearing() ?? null,
   centroMapa: Mini.mapaListo()?.getCenter().toArray() ?? null } : null);

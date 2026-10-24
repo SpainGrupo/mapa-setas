@@ -19,8 +19,12 @@ function el<K extends keyof SVGElementTagNameMap>(tag: K, at: Record<string, str
 }
 const m = (v: number) => `${Math.round(v).toLocaleString('es-ES')} m`;
 
+/** Textos del gráfico; por defecto, la ruta a pie del coche al punto. */
+export interface TextosPerfil { titulo: string; marcaInicio: string; desde: string; aria: string }
+const TEXTOS_COCHE: TextosPerfil = { titulo: 'Altura (m) · del coche al punto', marcaInicio: 'P ', desde: 'del coche', aria: 'en el coche' };
+
 /** Dibuja el perfil en `contenedor`; `alDato` recibe el texto del punto tocado. Sin altitudes deja un aviso. */
-export function pintarPerfil(contenedor: HTMLElement, p: Perfil, alDato: (t: string) => void) {
+export function pintarPerfil(contenedor: HTMLElement, p: Perfil, alDato: (t: string) => void, tx: TextosPerfil = TEXTOS_COCHE) {
   contenedor.replaceChildren();
   const idx = p.alt.map((a, i) => (Number.isFinite(a) ? i : -1)).filter((i) => i >= 0);
   if (idx.length < 2 || !(p.total_m > 0)) {
@@ -32,7 +36,7 @@ export function pintarPerfil(contenedor: HTMLElement, p: Perfil, alDato: (t: str
   const x = (d: number) => IZQ + (d / p.total_m) * (W - IZQ - DER);
   const y = (a: number) => ABA - ((a - lo) / (hi - lo)) * (ABA - ARR);
   const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', role: 'img', class: 'perfil-svg',
-    'aria-label': `Perfil de altura: de ${m(p.alt[idx[0]])} en el coche a ${m(p.alt[idx[idx.length - 1]])} en el punto, máximo ${m(p.max)}, ${textoDistancia(p.total_m)}` }, contenedor);
+    'aria-label': `Perfil de altura: de ${m(p.alt[idx[0]])} ${tx.aria} a ${m(p.alt[idx[idx.length - 1]])} en el punto, máximo ${m(p.max)}, ${textoDistancia(p.total_m)}` }, contenedor);
 
   const ejes = el('g', { 'font-size': 12, fill: TINTA_2 }, svg);
   for (let v = lo; v <= hi + 1e-9; v += paso) {
@@ -44,7 +48,7 @@ export function pintarPerfil(contenedor: HTMLElement, p: Perfil, alDato: (t: str
     el('text', { x: x(d), y: ABA + 18, 'text-anchor': d === 0 ? 'start' : 'middle', 'font-size': 12, fill: TINTA_2 }, svg,
       d === 0 ? '0' : textoDistancia(d));
   }
-  el('text', { x: IZQ, y: ARR - 8, 'font-size': 13, fill: TINTA, 'font-weight': 700 }, svg, 'Altura (m) · del coche al punto');
+  el('text', { x: IZQ, y: ARR - 8, 'font-size': 13, fill: TINTA, 'font-weight': 700 }, svg, tx.titulo);
 
   const pts = idx.map((i) => [x(p.dist[i]), y(p.alt[i])] as const);
   const linea = pts.map(([px, py], k) => `${k ? 'L' : 'M'}${px.toFixed(1)},${py.toFixed(1)}`).join('');
@@ -63,14 +67,14 @@ export function pintarPerfil(contenedor: HTMLElement, p: Perfil, alDato: (t: str
   const conMax = iMax !== i0 && iMax !== i1 && p.alt[iMax] - Math.max(p.alt[i0], p.alt[i1]) >= paso / 4;
   // Etiquetas que chocarían (a menos de 90 px en horizontal): la del final va debajo de la línea.
   const cerca = (a: number, b: number) => Math.abs(x(p.dist[a]) - x(p.dist[b])) < 90;
-  marca(i0, `P ${m(p.alt[i0])}`, 'start', conMax && cerca(i0, iMax));
+  marca(i0, `${tx.marcaInicio}${m(p.alt[i0])}`, 'start', conMax && cerca(i0, iMax));
   marca(i1, m(p.alt[i1]), 'end', conMax && cerca(i1, iMax));
   if (conMax) marca(iMax, `máx. ${m(p.alt[iMax])}`, 'middle');
 
   // Toque: cruz vertical y dato del punto más cercano
   const cruz = el('line', { y1: ARR, y2: ABA, stroke: TINTA, 'stroke-width': 1, visibility: 'hidden' }, svg);
   const punto = el('circle', { r: 5, fill: '#fff', stroke: TINTA, 'stroke-width': 2, visibility: 'hidden' }, svg);
-  const texto = (i: number) => `A ${textoDistancia(p.dist[i])} del coche: ${m(p.alt[i])} de altura`;
+  const texto = (i: number) => `A ${textoDistancia(p.dist[i])} ${tx.desde}: ${m(p.alt[i])} de altura`;
   const señalar = (vx: number) => {
     const d = ((vx - IZQ) / (W - IZQ - DER)) * p.total_m;
     const i = idx.reduce((a, k) => (Math.abs(p.dist[k] - d) < Math.abs(p.dist[a] - d) ? k : a), idx[0]);

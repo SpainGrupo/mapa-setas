@@ -111,9 +111,15 @@ especies:                                       # orden = el de especies.yaml (e
             macrolepiota_procera, pleurotus_eryngii, terfezia_arenaria,
             # 2026-10-18: con citas GBIF a ≤200 km (ver especies.yaml y knowledge/reference/especies-y-grupos.md)
             suillus_collinitus, lepista_nuda, agaricus_campestris, hydnum_repandum, morchella_spp,
-            suillus_bellinii, suillus_luteus, suillus_granulatus, russula_cyanoxantha, tricholoma_portentosum]
+            suillus_bellinii, suillus_luteus, suillus_granulatus, russula_cyanoxantha, tricholoma_portentosum,
+            # 2026-10-20: excepción SIN_CONF aprobada por Alexander (guia/_build/build.py)
+            craterellus_cornucopioides, pleurotus_ostreatus]
   sin_habitat: []
-overrides_especies: {}
+overrides_especies:                             # 2026-10-20, aprobado por Alexander: docs/investigacion/2026-10-18-citas-abiertas.md §4.1
+  # Níscalos a nivel del mar en los pinares costeros del Estrecho: 9 de 24 citas de L. deliciosus que calibran están
+  # por debajo de 200 m. Solo Marbella; Alicante no cambia.
+  lactarius_deliciosus: {altitud: {min: 0, opt_min: 300, opt_max: 1500, max: 1900}}
+  lactarius_sanguifluus: {altitud: {min: 0, opt_min: 300, opt_max: 1500, max: 1900}}
 
 edificado:                                      # edificado.py (2026-10-15); ATOM nacional en fuentes.yaml catastro_bu
   catastro_provincias: ["11", "14", "18", "29", "41"]   # Cádiz, Córdoba, Granada, Málaga, Sevilla (antes PROVINCIAS)
@@ -130,6 +136,8 @@ citas:                                          # citas.py (2026-10-15)
     suillus_granulatus: ["Suillus granulatus"]
     morchella_spp: ["Morchella esculenta", "Morchella elata", "Morchella conica"]
     tricholoma_portentosum: ["Tricholoma portentosum"]
+    craterellus_cornucopioides: ["Craterellus cornucopioides", "Craterellus lutescens"]   # 2026-10-20: una ficha para las dos
+    pleurotus_ostreatus: ["Pleurotus ostreatus"]
 
 legal:
   aviso: &aviso "Málaga (Res. 23-09-2026, BOJA 196, vigente hasta 31-05-2027): autoconsumo ≤3 kg por persona y día sin autorización en montes públicos, salvo Zonas de Reserva; de día, sin rastrillos ni remover el mantillo. Fincas privadas: permiso del propietario. Cádiz: la última resolución encontrada es de 2019, sin confirmar su vigencia."

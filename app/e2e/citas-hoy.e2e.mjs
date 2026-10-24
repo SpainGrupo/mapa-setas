@@ -1,6 +1,7 @@
 // e2e de las citas en el Top de «Hoy» (2026-10-17): una fila del Top muestra «Citado: …» y al pulsarla se despliega la
 // lista de fuentes con al menos un enlace (target=_blank rel=noopener) y su atribución · licencia, más el aviso de las
 // citas. También comprueba que Marbella trae factor_citas en sitios.json y que nada de lo nuevo dice «comestible».
+// Indicador «≈N× la media · top X % hoy» (2026-10-20): formato, N del tramo de cada sitio, ayuda «?» y móvil a 375 px.
 // Requiere `npm run build` y el servidor: php -S 127.0.0.1:8765 -t dist servidor.php
 import { createRequire } from 'node:module';
 import { mkdirSync, readFileSync } from 'node:fs';
@@ -40,6 +41,51 @@ try {
   await p.waitForSelector('#top-general .top-fila');
   comprobar(await p.evaluate(() => window.__setas.tops().factorCitas) === sitios.factor_citas,
     `la pestaña Hoy lee factor_citas (${sitios.factor_citas})`);
+  // Indicador «≈N× la media · top X % hoy» (indicador.ts, 2026-10-20): en cada fila de los tops, con ayuda «?».
+  const IND = /^(?:.+ · )?(?:≈\d+(?:,\d)?× la media|sin validar) · top \d{1,3}\s% hoy$/;
+  const vc = sitios.validacion?.amanita_caesarea;
+  comprobar(vc && typeof vc.calibrado === 'boolean' && vc.tramos.length === 4 && vc.tramos.every((t) => 'lift' in t && Number.isInteger(t.obs)),
+    `sitios.json trae validacion (A. caesarea: calibrado ${vc?.calibrado}, ${vc?.tramos.length} tramos)`);
+  const filasG = await p.$$eval('#top-general .top-fila', (ls) => ls.map((l) => [...l.querySelectorAll('.tf-ind')].map((x) => x.textContent)));
+  comprobar(filasG.length > 0 && filasG.every((f) => f.length >= 1 && f.every((t) => IND.test(t))),
+    `indicador en las ${filasG.length} filas del top general («${filasG[0]?.[0]}»)`);
+  await p.locator('#hoy-especie').selectOption('amanita_caesarea');
+  await p.waitForFunction(() => window.__setas.tops().especie === 'amanita_caesarea');
+  const filasC = await p.$$eval('#top-especie .top-fila', (ls) => ls.map((l) => ({ id: Number(l.dataset.id), t: l.querySelector('.tf-ind')?.textContent ?? '' })));
+  const esperado = (s) => {
+    const t = vc.calibrado ? vc.tramos.find((x) => s.punt_media >= x.desde && s.punt_media < x.hasta) : null;
+    const n = t && t.obs >= 3 && t.lift !== null ? t.lift : null;
+    return n === null ? 'sin validar' : `≈${Math.round(n * 10) / 10 < 10 ? n.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : Math.round(n)}× la media`;
+  };
+  const porId = new Map(sitios.especies.amanita_caesarea.map((s) => [s.id, s]));
+  comprobar(filasC.length > 0 && filasC.every((f) => IND.test(f.t) && f.t.startsWith(esperado(porId.get(f.id)) + ' · top ')),
+    `top de A. caesarea: N del tramo de cada sitio («${filasC[0]?.t}»)`);
+  const pcts = filasC.map((f) => Number(f.t.match(/top (\d+)/)[1]));
+  comprobar(pcts[0] >= 1 && pcts.every((x, i) => !i || pcts[i - 1] <= x), `top X % crece con el puesto (${pcts.join(', ')})`);
+  const caja = p.locator('#top-especie .top-fila .tf-indicador').first();
+  const btAyuda = caja.locator('.tf-ind-ayuda');
+  comprobar(await caja.locator('.tf-ind').getAttribute('title').then((t) => /^No es un % de probabilidad\./.test(t ?? ''))
+    && await caja.locator('.tf-ind-nota').isHidden() && await btAyuda.getAttribute('aria-expanded') === 'false',
+    'el indicador lleva la ayuda en title y la nota plegada');
+  await btAyuda.click();
+  const nota = caja.locator('.tf-ind-nota');
+  await nota.waitFor({ state: 'visible' });
+  const textoNota = await nota.innerText();
+  comprobar(await btAyuda.getAttribute('aria-expanded') === 'true' && /^No es un % de probabilidad\./.test(textoNota)
+    && /«Top \d+\s% hoy» quiere decir que hoy este sitio está entre el \d+\s% mejor puntuado de la región para esta seta\./.test(textoNota)
+    && /«Sin validar»: no hay hallazgos suficientes para comprobarlo\./.test(textoNota) && !PROHIBIDO.test(textoNota),
+    'el botón «?» despliega la nota: no es un % de probabilidad, top X %, sin validar; sin «comestible»');
+  await p.setViewportSize({ width: 375, height: 812 });
+  await caja.scrollIntoViewIfNeeded();
+  const desborda = await p.$$eval('#p-hoy .top-fila', (ls) => ls.some((l) => {
+    const r = l.getBoundingClientRect();
+    return [...l.querySelectorAll('.tf-indicador, .tf-indicador > *')].some((x) => { const b = x.getBoundingClientRect(); return b.width && (b.left < r.left - 0.5 || b.right > r.right + 0.5); });
+  }) || document.documentElement.scrollWidth > window.innerWidth);
+  comprobar(!desborda, 'a 375 px el indicador y su nota caben en la fila (sin scroll horizontal)');
+  await p.screenshot({ path: join(CAPTURAS, 'hoy-indicador-375.png') });
+  await btAyuda.click();
+  comprobar(await nota.isHidden(), 'volver a pulsar «?» pliega la nota');
+  await p.setViewportSize(devices['Pixel 7'].viewport);
   // Una seta cuyo top 10 tenga algún sitio con citas.
   const ids = await p.$$eval('#hoy-especie option', (os) => os.map((o) => o.value).filter((v) => !v.startsWith('grupo:')));
   let especie = null;
@@ -99,6 +145,8 @@ try {
   comprobar(espFilas.length > 0 && espFilas.flat().every((e) => e.startsWith('boletus_')) && new Set(espFilas.flat()).size >= 2
     && await p.locator('#hoy-ver-ficha').isHidden(),
     `top del grupo Boletus: ${espFilas.length} filas con ${[...new Set(espFilas.flat())].join(', ')}, sin «Ver ficha»`);
+  const indG = await p.$$eval('#top-especie .top-fila', (ls) => ls.map((l) => l.querySelectorAll('.tf-indicador').length));
+  comprobar(indG.every((x) => x >= 1), 'indicador en cada fila del top del grupo');
   await p.locator('#tit-top-especie').scrollIntoViewIfNeeded();
   await p.screenshot({ path: join(CAPTURAS, 'hoy-grupo-boletus.png'), fullPage: false });
   // «Exportar día» (exportar-dia.ts): ruta de Google Maps, KML con los sitios del top y sin «comestible».
@@ -132,6 +180,8 @@ try {
   const nCand = (sitios.especies[espTop] ?? []).length;
   comprobar(nGuia <= 7 && (nGuia >= Math.min(5, nCand) || nCand < 5) && await p.locator('#top-guia').locator('xpath=preceding-sibling::div[1]').getAttribute('class') === 'orden-top',
     `ficha de ${espTop}: Top de ${nGuia} sitios con control de orden`);
+  const indGuia = await p.$$eval('#top-guia .top-fila .tf-ind', (xs) => xs.map((x) => x.textContent));
+  comprobar(indGuia.length === nGuia && indGuia.every((t) => IND.test(t)), `indicador en los ${nGuia} sitios del Top de la ficha («${indGuia[0]}»)`);
   await p.screenshot({ path: join(CAPTURAS, 'guia-top-sitios.png'), fullPage: false });
   comprobar(!errores.length, `sin errores de página${errores.length ? `: ${errores.join(' | ')}` : ''}`);
   console.log('e2e de citas en Hoy: OK');

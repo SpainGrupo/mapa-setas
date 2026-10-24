@@ -19,11 +19,13 @@ export const GRUPOS: readonly Grupo[] = [
   // Solo las del mapa: las Amanita tóxicas de la guía nunca se modelan ni entran aquí.
   { id: 'amanita', nombre: 'Amanitas (oronja y gurumelo)', especies: ['amanita_caesarea', 'amanita_ponderosa'] },
   { id: 'niscalos', nombre: 'Níscalos', especies: ['lactarius_deliciosus', 'lactarius_sanguifluus'] },
-  { id: 'rebozuelos', nombre: 'Rebozuelos', especies: ['cantharellus_cibarius'], prefijos: ['cantharellus_', 'craterellus_'] },
+  { id: 'rebozuelos', nombre: 'Rebozuelos', especies: ['cantharellus_cibarius', 'craterellus_cornucopioides'], prefijos: ['cantharellus_', 'craterellus_'] },
   { id: 'babosillos', nombre: 'Babosillos (Suillus)', especies: ['suillus_collinitus'], prefijos: ['suillus_'] },
   { id: 'trufas', nombre: 'Criadillas y trufas', especies: ['terfezia_arenaria', 'terfezia_claveryi'], prefijos: ['terfezia_', 'tuber_'] },
   { id: 'parasoles', nombre: 'Parasoles', especies: ['macrolepiota_procera'], prefijos: ['macrolepiota_'] },
   { id: 'cardo', nombre: 'Setas de cardo', especies: ['pleurotus_eryngii'] },
+  // 2026-10-20: la seta de ostra va aparte para no confundirla con la de cardo (AmanitaCesarea.com avisa de que se confunden a propósito).
+  { id: 'ostra', nombre: 'Setas de ostra (Pleurotus)', especies: ['pleurotus_ostreatus'] },
   { id: 'hydnum', nombre: 'Lenguas de gato (Hydnum)', especies: ['hydnum_repandum'], prefijos: ['hydnum_'] },
   { id: 'llenegas', nombre: 'Llenegas (Hygrophorus)', especies: ['hygrophorus_latitabundus'] },
   { id: 'pie_azul', nombre: 'Pie azul', especies: ['lepista_nuda'] },

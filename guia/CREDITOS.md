@@ -90,6 +90,12 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | fotos/pleurotus_eryngii_1.jpg | Pleurotus eryngii | MottaW | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Pleurotus-eryngii-seta-de-cardo-sandoval-de-la-reina-2020.jpg |
 | fotos/pleurotus_eryngii_2.jpg | Pleurotus eryngii | Teknad | CC0 | https://commons.wikimedia.org/wiki/File:Seta_de_cardo_(Pleurotus_eryngii)_silvestre_en_Gran_Canaria,_Islas_Canarias,_Espa%C3%B1a.jpg |
 | fotos/pleurotus_eryngii_3.jpg | Pleurotus eryngii | Jose Angel Urquia Goitia | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Pleurotus_eryngii_3.jpg |
+| fotos/craterellus_cornucopioides_1.jpg | Craterellus cornucopioides | Holger Krisp | CC BY 3.0 | https://commons.wikimedia.org/wiki/File:Black_trumpet_Craterellus_cornucopioides.jpg |
+| fotos/craterellus_cornucopioides_2.jpg | Craterellus cornucopioides | Albarubescens | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Craterellus_cornucopioides,_Monte_Rocca_Romana.jpg |
+| fotos/craterellus_cornucopioides_3.jpg | Craterellus cornucopioides | Andreas Kunze | CC BY-SA 3.0 | https://commons.wikimedia.org/wiki/File:2007-11-10_Craterellus_lutescens.jpg |
+| fotos/pleurotus_ostreatus_1.jpg | Pleurotus ostreatus | Holger Krisp | CC BY 3.0 | https://commons.wikimedia.org/wiki/File:Austernpilz_Pleurotus_ostreatus.jpg |
+| fotos/pleurotus_ostreatus_2.jpg | Pleurotus ostreatus | Dominicus Johannes Bergsma | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Gewone_oesterzwam_(Pleurotus_ostreatus)._Paddenstoel_op_els_01.JPG |
+| fotos/pleurotus_ostreatus_3.jpg | Pleurotus ostreatus | Nativeplants garden | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Pleurotus_ostreatus_4.jpg |
 | fotos/terfezia_arenaria_1.jpg | Terfezia arenaria | Santos-Silva C., Louro R., Natário B. y Nobre T. (MycoKeys 84, 2021) | CC BY 4.0 | https://commons.wikimedia.org/wiki/File:Terfezia_(10.3897-mycokeys.84.71372)_Figure_3.jpg |
 | fotos/terfezia_arenaria_2.jpg | Terfezia arenaria | Gerhard Koller (Gerhard), Mushroom Observer | CC BY-SA 3.0 | https://commons.wikimedia.org/wiki/File:2008-05-02_Terfezia_arenaria_(Moris)_Trappe_220243.jpg |
 | fotos/terfezia_arenaria_3.jpg | Terfezia arenaria | Claude Lemmel & Zahora Attioui | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Tirmania_nivea_et_Trefezia_claveryi_(Souk_de_Rissani,_Maroc).jpg |
@@ -148,12 +154,14 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Boletus aereus | https://www.amanitacesarea.com/boletus-aereus.html | boletus_aereus |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Boletus reticulatus | https://www.amanitacesarea.com/boletus-reticulatus.html | boletus_reticulatus |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Chlorophyllum rhacodes | https://www.amanitacesarea.com/chlorophyllum-rhacodes.html | chlorophyllum_rhacodes |
+| AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Craterellus lutescens | https://www.amanitacesarea.com/craterellus-lutescens.html | craterellus_cornucopioides |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Gyromitra esculenta | https://www.amanitacesarea.com/gyromitra-esculenta.html | gyromitra_esculenta |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Hydnum repandum | https://www.amanitacesarea.com/hydnum-repandum.html | hydnum_repandum |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Lactarius torminosus | https://www.amanitacesarea.com/lactarius-torminosus.html | lactarius_torminosus |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Lepista nuda | https://www.amanitacesarea.com/lepista-nuda.html | lepista_nuda |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Morchella esculenta | https://www.amanitacesarea.com/morchella-esculenta.html | morchella_spp |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Pleurotus eryngii | https://www.amanitacesarea.com/pleurotus-eryngii.html | pleurotus_eryngii |
+| AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Pleurotus ostreatus | https://www.amanitacesarea.com/pleurotus-ostreatus.html | pleurotus_ostreatus |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Russula cyanoxantha | https://www.amanitacesarea.com/russula-cyanoxantha.html | russula_cyanoxantha |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Scleroderma verrucosum | https://www.amanitacesarea.com/scleroderma-verrucosum.html | scleroderma_citrinum |
 | AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Tricholoma equestre | https://www.amanitacesarea.com/tricholoma-equestre.html | tricholoma_equestre |
@@ -177,6 +185,7 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | First Nature (P. O'Reilly), ficha de Caloboletus calopus | https://www.first-nature.com/fungi/caloboletus-calopus.php | caloboletus_calopus |
 | First Nature (P. O'Reilly), ficha de Cantharellus cibarius | https://www.first-nature.com/fungi/cantharellus-cibarius.php | cantharellus_cibarius |
 | First Nature (P. O'Reilly), ficha de Chlorophyllum rhacodes | https://www.first-nature.com/fungi/chlorophyllum-rhacodes.php | chlorophyllum_rhacodes |
+| First Nature (P. O'Reilly), ficha de Craterellus cornucopioides | https://www.first-nature.com/fungi/craterellus-cornucopioides.php | craterellus_cornucopioides |
 | First Nature (P. O'Reilly), ficha de Gyromitra esculenta | https://www.first-nature.com/fungi/gyromitra-esculenta.php | gyromitra_esculenta |
 | First Nature (P. O'Reilly), ficha de Hydnum repandum | https://www.first-nature.com/fungi/hydnum-repandum.php | hydnum_repandum |
 | First Nature (P. O'Reilly), ficha de Hygrophorus latitabundus | https://www.first-nature.com/fungi/hygrophorus-latitabundus.php | hygrophorus_latitabundus |
@@ -188,6 +197,7 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | First Nature (P. O'Reilly), ficha de Macrolepiota procera | https://www.first-nature.com/fungi/macrolepiota-procera.php | macrolepiota_procera |
 | First Nature (P. O'Reilly), ficha de Morchella esculenta | https://www.first-nature.com/fungi/morchella-esculenta.php | morchella_spp |
 | First Nature (P. O'Reilly), ficha de Omphalotus olearius | https://www.first-nature.com/fungi/omphalotus-olearius.php | omphalotus_olearius |
+| First Nature (P. O'Reilly), ficha de Pleurotus ostreatus | https://www.first-nature.com/fungi/pleurotus-ostreatus.php | pleurotus_ostreatus |
 | First Nature (P. O'Reilly), ficha de Rubroboletus satanas | https://www.first-nature.com/fungi/rubroboletus-satanas.php | rubroboletus_satanas |
 | First Nature (P. O'Reilly), ficha de Russula cyanoxantha | https://www.first-nature.com/fungi/russula-cyanoxantha.php | russula_cyanoxantha |
 | First Nature (P. O'Reilly), ficha de Scleroderma citrinum | https://www.first-nature.com/fungi/scleroderma-citrinum.php | scleroderma_citrinum |
@@ -207,6 +217,8 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | GBIF, Amanita verna: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/5240320 | amanita_verna |
 | GBIF, Boletus aereus: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/8733688 | boletus_aereus |
 | GBIF, Clitocybe rivulosa (= C. dealbata): registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/2531052 | clitocybe_dealbata |
+| GBIF, Craterellus cornucopioides: registros en la zona de Marbella (consulta 18-10-2026) | https://www.gbif.org/species/2554662 | craterellus_cornucopioides |
+| GBIF, Craterellus lutescens: registros en la zona de Marbella (consulta 18-10-2026) | https://www.gbif.org/species/8871787 | craterellus_cornucopioides |
 | GBIF, Hydnum repandum: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/2554716 | hydnum_repandum |
 | GBIF, Hygrophorus latitabundus: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/2538733 | hygrophorus_latitabundus |
 | GBIF, Lactarius chrysorrheus: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/5248610 | lactarius_chrysorrheus |
@@ -219,6 +231,7 @@ Fotos de Wikimedia Commons e iNaturalist con licencia libre (CC0, CC BY, CC BY-S
 | GBIF, Morchella esculenta: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/2594602 | morchella_spp |
 | GBIF, Omphalotus olearius: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/2538088 | omphalotus_olearius |
 | GBIF, Pleurotus eryngii: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/9075265 | pleurotus_eryngii |
+| GBIF, Pleurotus ostreatus: registros en la zona de Marbella (consulta 18-10-2026) | https://www.gbif.org/species/2526530 | pleurotus_ostreatus |
 | GBIF, Rubroboletus satanas: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/7722553 | rubroboletus_satanas |
 | GBIF, Suillus bellinii: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/7552504 | suillus_bellinii |
 | GBIF, Suillus collinitus: registros, también en la zona de Alicante (consulta 14-10-2026) | https://www.gbif.org/species/9104622 | suillus_bellinii |

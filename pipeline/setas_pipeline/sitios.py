@@ -280,6 +280,8 @@ def calcular(region, out: Path | None = None, verbose: bool = True) -> dict:
             print(f"  sitios {e['id']}: {len(lista)}", flush=True)
     from .citas_sitios import anotar
     anotar(region, datos, malla, verbose=verbose)
+    from .exportar import anadir_validacion
+    anadir_validacion(region, datos)
     out.mkdir(parents=True, exist_ok=True)
     (out / "sitios.json").write_text(json.dumps(datos, ensure_ascii=False, separators=(",", ":")))
     return datos

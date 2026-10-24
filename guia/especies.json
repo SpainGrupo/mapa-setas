@@ -2699,6 +2699,138 @@
     ]
   },
   {
+    "id": "craterellus_cornucopioides",
+    "nombre_cientifico": "Craterellus cornucopioides (L.) Pers. y C. lutescens (Fr.) Fr.",
+    "nombres_comunes": [
+      "trompeta de los muertos",
+      "trompeta negra",
+      "angula de monte",
+      "trompeta amarilla"
+    ],
+    "grupo": "apreciada",
+    "toxicidad_nota": "Apreciada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). Las fuentes no dan ninguna confusión peligrosa de la trompeta de los muertos; para la angula de monte AmanitaCesarea.com dice que las confusiones peligrosas son difíciles y solo cita la parecida C. tubaeformis. Las fuentes consultadas no citan una seta tóxica concreta con la que se confunda; el reconocedor sigue listando las peligrosas de su grupo. Eso no garantiza nada: confírmalo con un experto.",
+    "sombrero": "De 4 a 8 cm en la trompeta de los muertos y de 2 a 6 cm en la angula de monte. En forma de embudo profundo, con el borde enrollado y ondulado. En la trompeta de los muertos, gris pardo a casi negro, con estrías en el margen; en la angula de monte, pardo amarillento con líneas radiales.",
+    "himenio": "Casi liso, con pliegues longitudinales muy discretos a modo de vetas, sin láminas. Gris ceniciento y como con polvillo en la trompeta de los muertos; amarillo con tonos anaranjados o rosados en la angula de monte.",
+    "pie": "Hueco hasta la base, sin separarse del sombrero: toda la seta es una trompeta. Gris y arrugado en la trompeta de los muertos; amarillo rojizo y de base casi blanca en la angula de monte.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Escasa, fibrosa y elástica. En la angula de monte, amarillenta.",
+    "olor_sabor": "Sin olor ni sabor característicos en la trompeta de los muertos (First Nature); olor afrutado y sabor suave en la angula de monte (AmanitaCesarea.com).",
+    "esporada": "Blanca.",
+    "habitat": "Bajo frondosas, sobre todo haya y robles, la trompeta de los muertos; sobre todo en bosques de coníferas y, bajo la hojarasca de zonas húmedas, también en robles, la angula de monte. GBIF tiene registros de la trompeta de los muertos en Los Alcornocales y de la angula de monte en la zona de Marbella (consulta 18-10-2026).",
+    "temporada": "De otoño al invierno. First Nature dice que en la Península Ibérica se encuentra hasta bien entrado el año nuevo.",
+    "rasgos_clave": [
+      "Toda la seta es un embudo hueco hasta la base del pie",
+      "Sin láminas: himenio casi liso, con vetas muy discretas",
+      "Trompeta de los muertos gris oscura o negra; angula de monte pardo amarillenta por arriba y amarilla por abajo",
+      "Esporada blanca"
+    ],
+    "no_confundir_con": [],
+    "fotos": [
+      {
+        "archivo": "fotos/craterellus_cornucopioides_1.jpg",
+        "autor": "Holger Krisp",
+        "licencia": "CC BY 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Black_trumpet_Craterellus_cornucopioides.jpg"
+      },
+      {
+        "archivo": "fotos/craterellus_cornucopioides_2.jpg",
+        "autor": "Albarubescens",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Craterellus_cornucopioides,_Monte_Rocca_Romana.jpg",
+        "descripcion": "Trompeta de los muertos: embudo hueco y oscuro"
+      },
+      {
+        "archivo": "fotos/craterellus_cornucopioides_3.jpg",
+        "autor": "Andreas Kunze",
+        "licencia": "CC BY-SA 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:2007-11-10_Craterellus_lutescens.jpg",
+        "descripcion": "C. lutescens: pie amarillo anaranjado y sombrero pardo"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Craterellus cornucopioides",
+        "url": "https://www.first-nature.com/fungi/craterellus-cornucopioides.php"
+      },
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Craterellus lutescens",
+        "url": "https://www.amanitacesarea.com/craterellus-lutescens.html"
+      },
+      {
+        "titulo": "GBIF, Craterellus cornucopioides: registros en la zona de Marbella (consulta 18-10-2026)",
+        "url": "https://www.gbif.org/species/2554662"
+      },
+      {
+        "titulo": "GBIF, Craterellus lutescens: registros en la zona de Marbella (consulta 18-10-2026)",
+        "url": "https://www.gbif.org/species/8871787"
+      }
+    ]
+  },
+  {
+    "id": "pleurotus_ostreatus",
+    "nombre_cientifico": "Pleurotus ostreatus (Jacq.) P. Kumm.",
+    "nombres_comunes": [
+      "seta de ostra",
+      "seta de chopo",
+      "orellana"
+    ],
+    "grupo": "apreciada",
+    "toxicidad_nota": "Apreciada en la bibliografía micológica. No la consumas sin la confirmación de un experto (micólogo, sociedad micológica o farmacia). AmanitaCesarea.com solo cita confusiones con otros Pleurotus (P. pulmonarius, P. cornucopiae), que no son tóxicos, y dice que se confunde a veces con la seta de cardo; recoge que alguna bibliografía considera ligeramente purgante la variedad columbinus. Las fuentes consultadas no citan una seta tóxica concreta con la que se confunda; el reconocedor sigue listando las peligrosas de su grupo. Eso no garantiza nada: confírmalo con un experto.",
+    "sombrero": "De 5 a 15 cm, a veces mucho más; en forma de ostra o de concha, de convexo a plano y algo hundido. Color muy variable, de gris claro a marrón oscuro, a veces con reflejos azulados. Margen fino y enrollado.",
+    "himenio": "Láminas apretadas y muy decurrentes, blancas al principio y crema con la edad.",
+    "pie": "Corto, a veces casi ausente, de modo que el sombrero nace directamente de la madera. Blanco o crema, algo lanoso en la base, sin anillo.",
+    "volva": "No tiene.",
+    "anillo": "No tiene.",
+    "carne_y_corte": "Blanca, con tonos crema cuando está mojada. Correosa y dura en el pie y en los ejemplares viejos.",
+    "olor_sabor": "Olor y sabor agradables, sin nada característico.",
+    "esporada": "Blanca cremosa o gris lila pálida.",
+    "habitat": "Casi siempre en troncos y tocones de frondosas en descomposición, a veces como parásita: choperas cortadas, hayedos, álamos, fresnos y olmos. Crece en grupos apretados, con los ejemplares unidos o solapados. GBIF tiene registros en la zona de Marbella (consulta 18-10-2026).",
+    "temporada": "Verano, otoño y principio del invierno; en el sur de Europa, a veces hasta enero o febrero (First Nature).",
+    "rasgos_clave": [
+      "Nace de madera de frondosas, no del suelo",
+      "En grupos solapados, con forma de ostra",
+      "Láminas muy decurrentes y pie corto o ausente, sin anillo",
+      "Esporada blanca cremosa o gris lila pálida"
+    ],
+    "no_confundir_con": [],
+    "fotos": [
+      {
+        "archivo": "fotos/pleurotus_ostreatus_1.jpg",
+        "autor": "Holger Krisp",
+        "licencia": "CC BY 3.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Austernpilz_Pleurotus_ostreatus.jpg"
+      },
+      {
+        "archivo": "fotos/pleurotus_ostreatus_2.jpg",
+        "autor": "Dominicus Johannes Bergsma",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Gewone_oesterzwam_(Pleurotus_ostreatus)._Paddenstoel_op_els_01.JPG"
+      },
+      {
+        "archivo": "fotos/pleurotus_ostreatus_3.jpg",
+        "autor": "Nativeplants garden",
+        "licencia": "CC BY-SA 4.0",
+        "url_fuente": "https://commons.wikimedia.org/wiki/File:Pleurotus_ostreatus_4.jpg",
+        "descripcion": "Láminas decurrentes sobre madera"
+      }
+    ],
+    "fuentes": [
+      {
+        "titulo": "AmanitaCesarea.com (J. Cuesta y J. Jiménez), ficha de Pleurotus ostreatus",
+        "url": "https://www.amanitacesarea.com/pleurotus-ostreatus.html"
+      },
+      {
+        "titulo": "First Nature (P. O'Reilly), ficha de Pleurotus ostreatus",
+        "url": "https://www.first-nature.com/fungi/pleurotus-ostreatus.php"
+      },
+      {
+        "titulo": "GBIF, Pleurotus ostreatus: registros en la zona de Marbella (consulta 18-10-2026)",
+        "url": "https://www.gbif.org/species/2526530"
+      }
+    ]
+  },
+  {
     "id": "terfezia_arenaria",
     "nombre_cientifico": "Terfezia arenaria (Moris) Trappe y T. claveryi Chatin",
     "nombres_comunes": [

@@ -1,0 +1,589 @@
+// «Explorar aquí» (2026-10-25): pantalla completa con la cámara trasera, el rumbo del teléfono y un barrido de 8 fotos
+// (una cada 45°) que se guarda en el teléfono como observación (observaciones.ts). Patrón de ir-sitio.ts y campo-ui.ts.
+//  - Sin conexión y sin coste: nada sale del teléfono. (El análisis con Gemini y las marcas AR vienen en otras tareas.)
+//  - Brújula: iOS pide permiso tras un toque («Activar brújula»); Android da deviceorientationabsolute sin permiso.
+//    Sin brújula, o con la cámara en modo archivo (camara.ts), se hace una foto por dirección con un botón cada una.
+//  - Disparo automático (solo con cámara en vivo): rumbo a ±10° del objetivo, móvil casi vertical y quieto
+//    (explorar-geo.ts). Para decidir, el rumbo es la media de las últimas lecturas, no el valor suavizado de la pantalla.
+//  - En apaisado no hay inclinación fiable (beta cambia de eje): sin disparo automático, el botón «Foto ahora» sigue valiendo.
+//  - Batería: sin toques durante 2 min se paran cámara, GPS y sensores («Reanudar»). Wake Lock mientras está activa.
+//  - Cuatro toques seguidos en el rumbo enseñan un diagnóstico (webkitCompassAccuracy, cámara, orientación) para la fase 0.
+import './campo.css';
+import type { ManifestApp } from './manifest-region';
+import { escucharGps, ultimaPosicion, type PosicionGps } from './posicion-viva';
+import { cardinal, cardinalCorto, normalizar, orientacionDe, suavizarAngulo } from './brujula';
+import { ARBOL, type ValoresCelda } from './micro';
+import { celdaAqui, celdasAlrededor, datosMicro, type DatosMicro } from './micro-datos';
+import { cotasEn } from './mdt-datos';
+import { cajaAlrededor } from './ruta-pie';
+import { cotaEn } from './mdt';
+import { abrirCamara, capturar, type Camara } from './camara';
+import { deltaAngulo, enSector, estaQuieto, listoParaDisparar, mediaCircular, PASO_BARRIDO, PRECISION_BRUJULA_MAX, rumbosBarrido } from './explorar-geo';
+import { notaDeObservacion, nuevaObservacion, type DireccionObs, type Observacion } from './observaciones-datos';
+import { guardarObservacion } from './observaciones';
+import { anadirNotaExterna } from './grabar-ui';
+
+export interface ContextoExplorar {
+  /** Seta elegida en el mapa (valor inicial si quien abre no da otra). */
+  especie: () => string;
+  /** Id de la región activa (diagnóstico). */
+  region: () => string;
+  /** Manifest de la región: de él salen los datos de microzonas y de cotas. */
+  manifest: () => ManifestApp | null;
+  /** Setas de la región con su nombre (para «¿Qué encontraste?»). */
+  especies: () => { id: string; nombre: string }[];
+  /** Guardar un punto en Mis sitios (sin duplicarlo). */
+  guardar: (p: { lat: number; lon: number; nota: string; especie: string }) => Promise<'guardado' | 'ya'>;
+  avisar: (texto: string) => void;
+}
+
+type Fase = 'visor' | 'barrido' | 'guardando' | 'fin';
+const ESPERA_BRUJULA_MS = 3000;
+const INACTIVIDAD_MS = 120000;
+const MIN_ENTRE_LECTURAS_MS = 40;
+const LECTURAS_QUIETO = 8;
+const LECTURAS_RUMBO = 5;
+const TOQUES_DIAGNOSTICO = 4;
+const RADIO_SECTORES_M = 500;
+const RADIO_COTA_M = 150;
+const SIN_BRUJULA = 'Este móvil no da la brújula al navegador.';
+const AVISO_BRUJULA = 'Brújula poco fiable: aléjate del coche y haz un 8 con el teléfono.';
+
+let ctx: ContextoExplorar;
+let dlg: HTMLDialogElement;
+let camara: Camara | null = null;
+let especie = '';
+let fase: Fase = 'visor';
+let pos: PosicionGps | null = null;
+let orient: number | null = null;
+let beta: number | null = null;
+let precBrujula: number | null = null;
+let lecturas: number[] = [];
+let tLectura = 0;
+let hayBrujula = false;
+let objetivos: number[] = [];
+let hechas = new Map<number, DireccionObs>();
+let siguiente = 0;
+let posBarrido: PosicionGps | null = null;
+let disparando = false;
+let obs: Observacion | null = null;
+let dejarGps: (() => void) | null = null;
+let tBrujula = 0;
+let tInactivo = 0;
+let ultimoToque = 0;
+let pausado = false;
+let abierto = false;
+let bloqueo: { release(): Promise<void> } | null = null;
+let estadoBrujula = '';
+let toquesRumbo: number[] = [];
+let sesion = 0;
+
+const $ = <T extends HTMLElement = HTMLElement>(s: string) => dlg.querySelector(s) as T;
+const DOE = () => (typeof DeviceOrientationEvent === 'undefined' ? null : DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> });
+const anguloPantalla = () => (typeof screen !== 'undefined' && screen.orientation ? screen.orientation.angle : Number((window as any).orientation) || 0);
+const inactividadMs = () => Number((window as any).__setasInactividadMs) || INACTIVIDAD_MS;
+const modoManual = () => camara?.modo === 'archivo' || !hayBrujula;
+
+function html() {
+  const d = document.createElement('dialog');
+  d.id = 'dlg-explorar'; d.className = 'dlg dlg-ir dlg-explorar'; d.setAttribute('aria-labelledby', 'ex-titulo');
+  d.innerHTML = `
+    <div class="ex-cab">
+      <h2 id="ex-titulo">Explorar aquí</h2>
+      <button id="ex-rumbo" class="ex-rumbo" type="button" aria-label="Rumbo del teléfono">—</button>
+      <button id="ex-cerrar" class="btn" type="button">Cerrar</button>
+    </div>
+    <p id="ex-gps" class="nota ex-gps" role="status">Esperando el GPS…</p>
+    <p id="ex-aviso" class="ex-aviso" role="status" hidden></p>
+    <div id="ex-escena" class="ex-escena">
+      <div id="ex-camara" class="ex-camara"></div>
+      <div id="ex-sin-camara" class="ex-sin-camara" hidden></div>
+      <div id="ex-marcas" class="ex-marcas" aria-hidden="true"></div>
+      <div class="ex-mira" aria-hidden="true"></div>
+      <div class="ex-anillo" aria-hidden="true">
+        <ul id="ex-anillo"></ul>
+        <svg id="ex-aguja" class="ex-aguja" viewBox="0 0 100 100"><path d="M50 8 62 50 50 42 38 50z"/></svg>
+      </div>
+      <p id="ex-guia" class="ex-guia" hidden></p>
+      <div id="ex-destello" class="ex-destello" aria-hidden="true"></div>
+      <div id="ex-pausa" class="ex-pausa" hidden>
+        <p>Pausado para ahorrar batería</p>
+        <button id="ex-reanudar" class="btn btn-primario" type="button">Reanudar</button>
+      </div>
+    </div>
+    <p id="ex-estado" class="ex-estado" role="status">Apunta hacia donde quieras y pulsa «Barrer 360°»: harás 8 fotos, una cada 45°.</p>
+    <div id="ex-acciones" class="ex-acciones">
+      <button id="ex-activar" class="btn btn-ancho" type="button" hidden>Activar brújula</button>
+      <button id="ex-barrer" class="btn btn-primario" type="button" disabled>Barrer 360°</button>
+      <button id="ex-foto" class="btn" type="button" hidden>Foto ahora</button>
+      <button id="ex-terminar" class="btn" type="button" hidden>Terminar</button>
+      <button id="ex-cancelar" class="btn" type="button" hidden>Cancelar</button>
+    </div>
+    <div id="ex-direcciones" class="ex-direcciones" role="group" aria-label="Fotos por dirección" hidden></div>
+    <section id="ex-fin" class="ex-fin" hidden aria-labelledby="ex-fin-tit">
+      <h3 id="ex-fin-tit">Barrido guardado</h3>
+      <p id="ex-fin-res" class="nota"></p>
+      <p class="ex-pregunta" id="ex-pregunta">¿Encontraste algo aquí?</p>
+      <div class="ex-hallazgo" role="group" aria-labelledby="ex-pregunta">
+        <button id="ex-h-nada" class="btn" type="button">Nada</button>
+        <button id="ex-h-si" class="btn" type="button">Sí</button>
+        <button id="ex-h-luego" class="btn" type="button">Luego</button>
+      </div>
+      <div id="ex-h-cual" class="ex-cual" hidden>
+        <label class="campo"><span class="etq">¿Qué encontraste?</span><select id="ex-h-especie"></select></label>
+        <button id="ex-h-ok" class="btn btn-primario" type="button">Guardar</button>
+      </div>
+      <p id="ex-h-estado" class="nota" role="status"></p>
+      <div class="ex-fin-acciones">
+        <button id="ex-sitio" class="btn" type="button">Guardar como sitio</button>
+        <button id="ex-otro" class="btn" type="button">Otro barrido</button>
+      </div>
+    </section>
+    <pre id="ex-diag" class="ex-diag" hidden></pre>
+    <p class="nota ex-nota">Las fotos se quedan en tu móvil. La brújula del teléfono se desvía ±10–20° en el monte: orienta, no apunta.</p>`;
+  document.body.append(d);
+  return d;
+}
+
+// ---------------------------------------------------------------- brújula
+
+function alOrientar(ev: DeviceOrientationEvent) {
+  const e = ev as DeviceOrientationEvent & { webkitCompassHeading?: number; webkitCompassAccuracy?: number };
+  const ang = anguloPantalla();
+  beta = typeof ev.beta === 'number' && Number.isFinite(ev.beta) && ang % 180 === 0 ? ev.beta : null;
+  if (typeof e.webkitCompassAccuracy === 'number' && Number.isFinite(e.webkitCompassAccuracy)) precBrujula = e.webkitCompassAccuracy;
+  const o = orientacionDe({ webkitCompassHeading: e.webkitCompassHeading, alpha: ev.alpha, absolute: ev.absolute || ev.type === 'deviceorientationabsolute' }, ang);
+  if (o === null) return;
+  const t = performance.now();
+  if (!hayBrujula) {
+    hayBrujula = true; estadoBrujula = '';
+    clearTimeout(tBrujula);
+    $('#ex-activar').hidden = true;
+    pintarAcciones();
+  }
+  orient = suavizarAngulo(orient, o, 0.3);
+  if (t - tLectura >= MIN_ENTRE_LECTURAS_MS) {
+    tLectura = t;
+    lecturas.push(o);
+    if (lecturas.length > LECTURAS_QUIETO) lecturas.shift();
+  }
+  pintarRumbo();
+  pintarAviso();
+  pintarGuia();
+  evaluarBarrido();
+}
+
+function escucharBrujula(conPlazo = true) {
+  dejarBrujula();
+  window.addEventListener('deviceorientationabsolute', alOrientar as EventListener);
+  window.addEventListener('deviceorientation', alOrientar as EventListener);
+  if (!conPlazo) return;
+  tBrujula = window.setTimeout(() => {
+    if (hayBrujula) return;
+    estadoBrujula = SIN_BRUJULA;
+    pintarAviso(); pintarAcciones(); pintarGuia();
+  }, ESPERA_BRUJULA_MS);
+}
+
+function dejarBrujula() {
+  window.removeEventListener('deviceorientationabsolute', alOrientar as EventListener);
+  window.removeEventListener('deviceorientation', alOrientar as EventListener);
+  clearTimeout(tBrujula);
+}
+
+async function activarBrujula() {
+  const D = DOE();
+  try {
+    const r = await D!.requestPermission!();
+    if (r === 'granted') { estadoBrujula = ''; escucharBrujula(); pintarAviso(); return; }
+    estadoBrujula = 'Sin permiso para la brújula (se puede dar en Ajustes › Safari › Movimiento y orientación).';
+  } catch {
+    estadoBrujula = 'No se pudo activar la brújula.';
+  }
+  pintarAviso();
+}
+
+/** Rumbo para decidir (media de las últimas lecturas crudas), no el suavizado de la pantalla. */
+const rumboRapido = () => mediaCircular(lecturas.slice(-LECTURAS_RUMBO));
+const brujulaDudosa = () => precBrujula !== null && (precBrujula < 0 || precBrujula > PRECISION_BRUJULA_MAX);
+
+// ---------------------------------------------------------------- pintar
+
+const nombreDir = (r: number) => `${cardinalCorto(r)} ${Math.round(normalizar(r)) % 360}°`;
+
+function pintarRumbo() {
+  $('#ex-rumbo').textContent = orient === null ? '—' : nombreDir(orient);
+  $('#ex-aguja').style.transform = `rotate(${(orient ?? 0).toFixed(1)}deg)`;
+}
+
+function pintarAviso() {
+  const a = $('#ex-aviso');
+  const t = hayBrujula && brujulaDudosa() ? AVISO_BRUJULA : estadoBrujula;
+  if (a.textContent !== t) a.textContent = t;
+  a.hidden = !t;
+}
+
+function pintarGps() {
+  $('#ex-gps').textContent = pos ? `GPS ±${Math.round(pos.precision)} m${pos.alt !== null ? ` · altitud ${Math.round(pos.alt)} m` : ' · sin altitud'}` : 'Esperando el GPS…';
+  pintarAcciones();
+}
+
+function pintarAnillo() {
+  const ul = $('#ex-anillo');
+  const base = objetivos.length ? objetivos : Array.from({ length: 8 }, (_, i) => i * PASO_BARRIDO);
+  ul.replaceChildren(...base.map((r, i) => {
+    const li = document.createElement('li');
+    li.style.setProperty('--giro', `${r}deg`);
+    li.dataset.rumbo = String(r);
+    li.dataset.estado = !objetivos.length ? 'libre' : hechas.has(i) ? 'hecha' : i === siguiente && fase === 'barrido' && !modoManual() ? 'siguiente' : 'pendiente';
+    return li;
+  }));
+}
+
+/** Texto de guía sobre la cámara según la fase. */
+function pintarGuia() {
+  const g = $('#ex-guia');
+  if (fase !== 'barrido' || modoManual() || !camara || camara.modo !== 'vivo') { g.hidden = true; return; }
+  const obj = objetivos[siguiente];
+  const act = rumboRapido();
+  let t: string;
+  if (act === null) t = 'Buscando la brújula…';
+  else {
+    const d = deltaAngulo(obj, act);
+    if (Math.abs(d) > 10) t = `Gira a la ${d > 0 ? 'derecha' : 'izquierda'}: faltan ${Math.round(Math.abs(d))}°`;
+    else if (beta === null) t = 'Gira el móvil a vertical para el disparo automático, o pulsa «Foto ahora»';
+    else if (beta < 70 || beta > 110) t = 'Pon el móvil en vertical';
+    else t = 'Mantén el móvil quieto…';
+  }
+  g.textContent = t; g.hidden = false;
+}
+
+function pintarAcciones() {
+  const enBarrido = fase === 'barrido';
+  const visor = fase === 'visor';
+  const D = DOE();
+  const pidePermiso = typeof D?.requestPermission === 'function';
+  $('#ex-activar').hidden = hayBrujula || !pidePermiso || fase === 'fin' || fase === 'guardando';
+  const b = $<HTMLButtonElement>('#ex-barrer');
+  b.hidden = !visor;
+  b.disabled = !pos || !camara;
+  $('#ex-foto').hidden = !(enBarrido && !modoManual());
+  $('#ex-terminar').hidden = !(enBarrido && hechas.size >= 1);
+  $('#ex-cancelar').hidden = !enBarrido;
+  $('#ex-direcciones').hidden = !(enBarrido && modoManual());
+  $('#ex-fin').hidden = fase !== 'fin';
+  $('#ex-escena').hidden = fase === 'fin';
+  $('#ex-acciones').hidden = fase === 'fin' || fase === 'guardando';
+  $('#ex-estado').hidden = fase === 'fin';
+  $('#ex-gps').hidden = fase === 'fin';
+  $('#ex-rumbo').hidden = fase === 'fin';
+  dlg.dataset.fase = fase;
+  dlg.dataset.modo = camara ? (modoManual() ? 'manual' : 'auto') : 'sin-camara';
+  $('#ex-estado').textContent = textoEstado();
+}
+
+function textoEstado(): string {
+  if (fase === 'guardando') return 'Guardando el barrido…';
+  if (fase === 'barrido') {
+    const n = hechas.size;
+    if (modoManual()) {
+      return `${n} de ${objetivos.length} fotos. ${camara?.modo === 'archivo' ? '' : 'Mira hacia cada dirección y pulsa su botón. '}Puedes hacerlas en el orden que quieras y terminar cuando tengas las que necesites.`;
+    }
+    return `Foto ${Math.min(n + 1, objetivos.length)} de ${objetivos.length} · hacia el ${cardinal(objetivos[siguiente] ?? 0)}. Salta sola al apuntar bien; si no, «Foto ahora».`;
+  }
+  if (!camara) return 'Abriendo la cámara…';
+  if (!pos) return 'Esperando el GPS para situar el barrido…';
+  if (camara.modo === 'archivo') return 'No se pudo abrir la cámara en vivo. Haz una foto por dirección con la cámara del móvil.';
+  return 'Apunta hacia donde quieras y pulsa «Barrer 360°»: harás 8 fotos, una cada 45°.';
+}
+
+function pintarDirecciones() {
+  const cont = $('#ex-direcciones');
+  cont.replaceChildren(...objetivos.map((r, i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'btn ex-dir'; b.dataset.rumbo = String(r); b.dataset.hecha = hechas.has(i) ? '1' : '';
+    b.textContent = hechas.has(i) ? `✓ ${cardinalCorto(r)}` : `Foto hacia el ${cardinal(r)}`;
+    b.setAttribute('aria-label', hechas.has(i) ? `Foto hacia el ${cardinal(r)} hecha. Pulsa para repetirla.` : `Foto hacia el ${cardinal(r)}`);
+    b.onclick = () => { void disparar(i); };
+    return b;
+  }));
+}
+
+function repintar() {
+  pintarAnillo(); pintarDirecciones(); pintarAcciones(); pintarGuia(); pintarRumbo(); pintarAviso();
+}
+
+function destello() {
+  const d = $('#ex-destello');
+  d.classList.remove('on'); void d.offsetWidth; d.classList.add('on');
+  try { navigator.vibrate?.(60); } catch { /* sin vibración */ }
+}
+
+// ---------------------------------------------------------------- cámara y sensores
+
+async function arrancarSensores() {
+  const mia = ++sesion;
+  const D = DOE();
+  const pidePermiso = typeof D?.requestPermission === 'function';
+  hayBrujula = false; estadoBrujula = '';
+  if (!D) { estadoBrujula = 'Este navegador no da la brújula.'; }
+  else if (!pidePermiso) escucharBrujula();
+  else { estadoBrujula = 'Pulsa «Activar brújula» para ver el rumbo.'; escucharBrujula(false); }
+  dejarGps?.();
+  dejarGps = escucharGps((p) => { pos = p; pintarGps(); }, (m) => { $('#ex-gps').textContent = m; });
+  pos = ultimaPosicion();
+  pedirBloqueo();
+  camara?.parar();
+  camara = null;
+  repintar(); pintarGps();
+  const c = await abrirCamara($('#ex-camara'));
+  if (mia !== sesion || !abierto) { c.parar(); return; }
+  camara = c;
+  const sc = $('#ex-sin-camara');
+  sc.hidden = c.modo === 'vivo';
+  sc.textContent = c.modo === 'vivo' ? '' : 'Sin vista de cámara: haz cada foto con la cámara de tu móvil.';
+  repintar(); pintarGps();
+}
+
+function detenerSensores() {
+  sesion++;
+  dejarGps?.(); dejarGps = null;
+  dejarBrujula();
+  camara?.parar(); camara = null;
+  bloqueo?.release().catch(() => {}); bloqueo = null;
+}
+
+async function pedirBloqueo() {
+  try { bloqueo = await (navigator as any).wakeLock?.request('screen') ?? null; } catch { bloqueo = null; }
+}
+
+function tocar() { ultimoToque = Date.now(); }
+
+function pausar() {
+  if (pausado || !abierto) return;
+  pausado = true;
+  detenerSensores();
+  $('#ex-pausa').hidden = false;
+  dlg.dataset.pausado = '1';
+}
+
+async function reanudar() {
+  if (!pausado) return;
+  pausado = false;
+  $('#ex-pausa').hidden = true;
+  delete dlg.dataset.pausado;
+  tocar();
+  await arrancarSensores();
+}
+
+// ---------------------------------------------------------------- barrido
+
+function evaluarBarrido() {
+  if (fase !== 'barrido' || modoManual() || disparando || pausado || camara?.modo !== 'vivo') return;
+  const obj = objetivos[siguiente];
+  if (obj === undefined) return;
+  if (listoParaDisparar(obj, rumboRapido(), beta, estaQuieto(lecturas))) void disparar(siguiente);
+}
+
+function empezarBarrido() {
+  if (!pos || !camara) return;
+  posBarrido = pos;
+  objetivos = rumbosBarrido(modoManual() ? 0 : orient ?? 0);
+  hechas = new Map();
+  siguiente = 0;
+  fase = 'barrido';
+  tocar();
+  repintar();
+}
+
+function cancelarBarrido() {
+  if (hechas.size && !confirm('¿Cancelar el barrido? Las fotos hechas se descartan.')) return;
+  fase = 'visor'; hechas = new Map(); objetivos = []; siguiente = 0;
+  repintar();
+}
+
+/** Hace la foto de la dirección `idx` (la siguiente en el barrido automático, la elegida en el manual). */
+async function disparar(idx: number) {
+  if (disparando || !camara || fase !== 'barrido' || objetivos[idx] === undefined) return;
+  disparando = true; tocar();
+  try {
+    const foto = await capturar(camara);
+    const medido = modoManual() ? null : rumboRapido();
+    hechas.set(idx, { rumbo: Math.round(normalizar(medido ?? objetivos[idx])) % 360, precBrujula: medido !== null ? precBrujula : null, foto, analisis: null });
+    destello();
+    siguiente = modoManual() ? objetivos.findIndex((_, i) => !hechas.has(i)) : idx + 1;
+    if (hechas.size >= objetivos.length) { disparando = false; await terminarBarrido(); return; }
+    if (siguiente < 0) siguiente = 0;
+  } catch (e) {
+    ctx.avisar(e instanceof Error && e.message ? e.message : 'No se pudo hacer la foto.');
+  } finally {
+    disparando = false;
+    if (fase === 'barrido') repintar();
+  }
+}
+
+/** Datos del modelo en el punto: tu celda, idoneidad máxima y árbol por sector de 45° y altitud del terreno. */
+async function datosDelModelo(p: { lat: number; lon: number }, rumbos: number[]) {
+  const m = ctx.manifest();
+  const vacio = { modelo: null as Observacion['modelo'], modeloSector: rumbos.map(() => null as number | null), arbolSector: rumbos.map(() => null as string | null), altModelo: null as number | null };
+  if (!m) return vacio;
+  const out = { ...vacio };
+  const d: DatosMicro | null = m.micro ? await datosMicro(m).catch((e) => { console.warn('micro', e); return null; }) : null;
+  if (d && especie && d.cab.especies.includes(especie)) {
+    try {
+      const aqui = await celdaAqui(d, p, especie);
+      if (aqui) { const { dist_m: _d, rumbo: _r, ...resto } = aqui; out.modelo = resto; }
+      const celdas = await celdasAlrededor(d, p, especie, RADIO_SECTORES_M);
+      rumbos.forEach((r, i) => {
+        const mejor = enSector<ValoresCelda>(celdas, r).reduce<ValoresCelda | null>((a, c) => (!a || c.idon > a.idon ? c : a), null);
+        out.modeloSector[i] = mejor ? mejor.idon : null;
+        out.arbolSector[i] = mejor && mejor.arbol !== null ? ARBOL[mejor.arbol] ?? null : null;
+      });
+    } catch (e) { console.warn('modelo en el barrido', e); }
+  }
+  try {
+    const c = await cotasEn(m, cajaAlrededor(p, RADIO_COTA_M));
+    const v = c ? cotaEn(c.rejilla, p.lat, p.lon) : NaN;
+    out.altModelo = Number.isFinite(v) ? v : null;
+  } catch { /* sin cotas */ }
+  return out;
+}
+
+async function terminarBarrido() {
+  if (!posBarrido || !hechas.size) return;
+  fase = 'guardando';
+  repintar();
+  const idx = [...hechas.keys()].sort((a, b) => a - b);
+  const p = posBarrido;
+  const o = nuevaObservacion({ lat: p.lat, lon: p.lon, precGps: p.precision, altGps: p.alt, altModelo: null, especie, rutaId: null });
+  o.direcciones = idx.map((i) => hechas.get(i)!);
+  const mod = await datosDelModelo(p, idx.map((i) => objetivos[i]));
+  o.modelo = mod.modelo; o.modeloSector = mod.modeloSector; o.arbolSector = mod.arbolSector; o.altModelo = mod.altModelo;
+  // Si se está grabando una ruta, la observación queda como nota suya (y waypoint en el GPX).
+  o.rutaId = anadirNotaExterna(notaDeObservacion(o));
+  try {
+    await guardarObservacion(o);
+  } catch (e) {
+    console.warn('guardar observación', e);
+    ctx.avisar('No se pudo guardar el barrido en el móvil.');
+    fase = 'barrido'; repintar();
+    return;
+  }
+  obs = o;
+  detenerSensores();
+  fase = 'fin';
+  pintarFin();
+  repintar();
+}
+
+// ---------------------------------------------------------------- después del barrido
+
+function pintarFin() {
+  if (!obs) return;
+  const n = obs.direcciones.length;
+  $('#ex-fin-res').textContent = `${n} ${n === 1 ? 'foto guardada' : 'fotos guardadas'} en tu móvil${obs.modelo ? ` · el modelo da ${obs.modelo.idon}/100 en esta celda` : ' · sin datos del modelo en este punto'}.`;
+  $('#ex-h-cual').hidden = true;
+  const dicho = obs.hallazgo === 'nada' ? 'Anotado: no encontraste nada aquí.' : obs.hallazgo === 'encontrada' ? 'Anotado: encontraste algo aquí.' : '';
+  $('#ex-h-estado').textContent = dicho;
+  const sel = $<HTMLSelectElement>('#ex-h-especie');
+  const lista = ctx.especies();
+  sel.replaceChildren(...lista.map((e) => Object.assign(document.createElement('option'), { value: e.id, textContent: e.nombre })),
+    Object.assign(document.createElement('option'), { value: '', textContent: 'Otra cosa / no lo sé' }));
+  if (especie && lista.some((e) => e.id === especie)) sel.value = especie;
+}
+
+async function marcarHallazgo(h: Observacion['hallazgo'], hallada = '') {
+  if (!obs) return;
+  obs.hallazgo = h; obs.especieHallada = hallada;
+  try { await guardarObservacion(obs); } catch (e) { console.warn('hallazgo', e); ctx.avisar('No se pudo guardar la respuesta.'); return; }
+  pintarFin();
+}
+
+async function guardarComoSitio() {
+  if (!obs) return;
+  const d = new Date(obs.t);
+  const fecha = `${d.toLocaleDateString('es-ES')} ${d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
+  const r = await ctx.guardar({ lat: obs.lat, lon: obs.lon, nota: `Observación ${fecha}`, especie: obs.hallazgo === 'encontrada' && obs.especieHallada ? obs.especieHallada : obs.especie });
+  ctx.avisar(r === 'ya' ? 'Ya estaba en Mis sitios' : 'Guardado en Mis sitios');
+}
+
+// ---------------------------------------------------------------- abrir / cerrar
+
+function reiniciar() {
+  fase = 'visor'; hechas = new Map(); objetivos = []; siguiente = 0; obs = null; posBarrido = null;
+  orient = null; beta = null; precBrujula = null; lecturas = []; tLectura = 0; hayBrujula = false; disparando = false;
+  estadoBrujula = ''; pausado = false; toquesRumbo = [];
+  $('#ex-pausa').hidden = true; delete dlg.dataset.pausado;
+  $('#ex-diag').hidden = true;
+}
+
+/** Abre «Explorar aquí» (por defecto con la seta elegida en el mapa). */
+export async function abrirExplorar(idEspecie?: string) {
+  if (!dlg) return;
+  especie = idEspecie ?? ctx.especie();
+  reiniciar();
+  abierto = true;
+  tocar();
+  if (!dlg.open) dlg.showModal();
+  clearInterval(tInactivo);
+  tInactivo = window.setInterval(() => { if (Date.now() - ultimoToque > inactividadMs()) pausar(); }, Math.min(5000, Math.max(200, inactividadMs() / 4)));
+  repintar();
+  await arrancarSensores();
+}
+
+function cerrar() {
+  abierto = false;
+  clearInterval(tInactivo);
+  detenerSensores();
+  fase = 'visor'; hechas = new Map(); obs = null;
+}
+
+const sinGuardar = () => abierto && fase === 'barrido' && hechas.size > 0;
+
+function diagnostico() {
+  const v = camara?.resolucion?.() ?? null;
+  const pre = $('#ex-diag');
+  pre.textContent = [
+    `webkitCompassAccuracy: ${precBrujula === null ? 'sin dato' : precBrujula}`,
+    `brújula: ${hayBrujula ? 'sí' : 'no'} · beta: ${beta === null ? 'sin dato' : Math.round(beta)}`,
+    `cámara: ${camara ? camara.modo : 'cerrada'}${v ? ` ${v.w}×${v.h}` : ''}`,
+    `pantalla: ${anguloPantalla()}° · ventana ${window.innerWidth}×${window.innerHeight}`,
+    `región: ${ctx.region()} · seta: ${especie || 'ninguna'}`,
+  ].join('\n');
+  pre.hidden = false;
+}
+
+export function iniciarExplorar(c: ContextoExplorar) {
+  ctx = c;
+  dlg = html();
+  $('#ex-cerrar').addEventListener('click', () => { if (!sinGuardar() || confirm('¿Salir? Las fotos de este barrido no se guardarán.')) dlg.close(); });
+  dlg.addEventListener('cancel', (e) => { if (sinGuardar() && !confirm('¿Salir? Las fotos de este barrido no se guardarán.')) e.preventDefault(); });
+  dlg.addEventListener('close', cerrar);
+  dlg.addEventListener('pointerdown', tocar, true);
+  $('#ex-activar').addEventListener('click', () => { tocar(); void activarBrujula(); });
+  $('#ex-barrer').addEventListener('click', empezarBarrido);
+  $('#ex-foto').addEventListener('click', () => { void disparar(siguiente); });
+  $('#ex-terminar').addEventListener('click', () => { void terminarBarrido(); });
+  $('#ex-cancelar').addEventListener('click', cancelarBarrido);
+  $('#ex-reanudar').addEventListener('click', () => { void reanudar(); });
+  $('#ex-rumbo').addEventListener('click', () => {
+    const t = Date.now();
+    toquesRumbo = [...toquesRumbo.filter((x) => t - x < 2500), t];
+    if (toquesRumbo.length >= TOQUES_DIAGNOSTICO) { toquesRumbo = []; diagnostico(); }
+  });
+  $('#ex-h-nada').addEventListener('click', () => { $('#ex-h-cual').hidden = true; void marcarHallazgo('nada'); });
+  $('#ex-h-si').addEventListener('click', () => { $('#ex-h-cual').hidden = false; });
+  $('#ex-h-luego').addEventListener('click', () => { $('#ex-h-cual').hidden = true; void marcarHallazgo('no_mirado'); });
+  $('#ex-h-ok').addEventListener('click', () => { void marcarHallazgo('encontrada', $<HTMLSelectElement>('#ex-h-especie').value); });
+  $('#ex-sitio').addEventListener('click', () => { void guardarComoSitio(); });
+  $('#ex-otro').addEventListener('click', () => { reiniciar(); void abrirExplorar(especie); });
+  document.addEventListener('visibilitychange', () => { if (abierto && !pausado && document.visibilityState === 'visible') pedirBloqueo(); });
+}
+
+export const exploracionAbierta = () => !!dlg?.open;
+
+/** Estado para el e2e (window.__setas.explorar()). */
+export const estadoExplorar = () => (dlg?.open ? {
+  fase, camara: camara?.modo ?? null, manual: modoManual(), orientacion: orient, beta, precBrujula, hayBrujula, pausado,
+  objetivos: [...objetivos], siguiente, hechas: [...hechas.keys()].sort((a, b) => a - b), pos, aviso: $('#ex-aviso').hidden ? null : $('#ex-aviso').textContent,
+  estado: $('#ex-estado').textContent, guia: $('#ex-guia').hidden ? null : $('#ex-guia').textContent, obsId: obs?.id ?? null } : null);

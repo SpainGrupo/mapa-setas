@@ -42,6 +42,7 @@ import { guardarNav, leerNav, type EstadoNav } from './estado-nav';
 import { celdaDe } from './acceso';
 import { abrirIr, estadoIr, iniciarIr, volverAlMapaIr } from './ir-sitio';
 import { abrirCampo, bloqueComoBuscar, campoAbierto, estadoCampo, iniciarCampo, limpiarCampo } from './campo-ui';
+import { abrirExplorar, estadoExplorar, iniciarExplorar } from './explorar-ui';
 import { estadoGrabacion, iniciarGrabar, pintarRutas } from './grabar-ui';
 import { elegirEnMapaTop, iniciarHoyMapa } from './hoy-mapa';
 import { abrirEnlaceDeUrl, iniciarEnlace, puntosEnlace } from './enlace-ui';
@@ -328,7 +329,7 @@ async function iniciarMapa() {
     olvidarGps: () => { if (gps) gps.ultima = null; }, vista: vistaMapa,
     lugarHoy: (id: string) => lugarRef(id),
     sitioEditando: () => editando && { ...editando, foto: undefined }, accesoSitio: () => accesoSitio,
-    ir: estadoIr, campo: estadoCampo, abrirCampo, grabacion: estadoGrabacion, elegirEnMapaTop, altitudEn, abrirIr, miniMapa: mapaListo, puntosEnlace, abrirEnlaceDeUrl,
+    ir: estadoIr, campo: estadoCampo, explorar: estadoExplorar, abrirCampo, grabacion: estadoGrabacion, elegirEnMapaTop, altitudEn, abrirIr, miniMapa: mapaListo, puntosEnlace, abrirEnlaceDeUrl,
     resumenSemaforo: () => Object.fromEntries((manifest?.especies ?? []).map((e) => {
       const n: Record<string, number> = { verde: 0, amarillo: 0, rojo: 0, gris: 0 };
       for (const p of puntosMeteo) n[estadoEn(p, e.id)?.estado ?? 'gris']++;
@@ -1466,6 +1467,12 @@ iniciarCampo({
   navegar: (p) => { ($('#dlg-campo') as HTMLDialogElement).close(); abrirIr({ lat: p.lat, lon: p.lon, titulo: p.titulo, subtitulo: p.nota, ruta: p.ruta }); },
   guardar: (p) => guardarPunto({ lat: p.lat, lon: p.lon, nota: p.nota, especie: p.especie }),
   alCerrar: () => volverAlMapaIr(),
+  explorar: (id) => { void abrirExplorar(id); },
+});
+iniciarExplorar({
+  especie: especieSel, region: () => manifest?.region?.id ?? '', manifest: () => manifest, avisar,
+  especies: () => (manifest?.especies ?? []).map((e) => ({ id: e.id, nombre: nombres[e.id] ?? e.id })),
+  guardar: (p) => guardarPunto(p),
 });
 document.getElementById('dlg-ir')?.addEventListener('close', () => { if (!campoAbierto()) limpiarCampo(); });
 ponerBloqueBuscar((idFicha) => bloqueComoBuscar(especieMapaDeFicha(idFicha, (manifest?.especies ?? []).map((e) => e.id))));

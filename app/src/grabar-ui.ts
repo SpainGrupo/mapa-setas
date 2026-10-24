@@ -8,7 +8,7 @@
 import './campo.css';
 import type { Map as MapaML, GeoJSONSource } from 'maplibre-gl';
 import { anadirNota, anadirPunto, nombreArchivoGpx, nuevoSegmento, nuevoTrack, resumen, textoDuracion, textoKm, textoResumen,
-  trackAGeojson, trackAGpx, type Track } from './grabacion';
+  trackAGeojson, trackAGpx, type NotaTrack, type Track } from './grabacion';
 import { borrarGrabacion, borrarRuta, guardarGrabacion, guardarRuta, leerGrabacion, leerRuta, listarRutas } from './rutas';
 import { escucharGps, type PosicionGps } from './posicion-viva';
 import { nuevoId } from './intercambio';
@@ -193,6 +193,16 @@ function abrirFin(tr: Track) {
   if (r.segmentos > 1) fila('Tramos', `${r.segmentos} (el GPS se pausó o la página se recargó)`);
   dlgFin.dataset.id = tr.id;
   dlgFin.showModal();
+}
+
+/** Añade una nota ya hecha (la de una observación de «Explorar aquí») a la ruta que se está grabando. Devuelve el id de
+ * la ruta, o null si no se graba nada. */
+export function anadirNotaExterna(n: NotaTrack): string | null {
+  if (!grabando) return null;
+  grabando.notas.push(n);
+  persistir(true);
+  pintarPanel();
+  return grabando.id;
 }
 
 /** Abre la nota en el punto actual (también desde «Navegar aquí»). */

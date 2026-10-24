@@ -117,7 +117,7 @@ function html() {
   d.innerHTML = `
     <div class="ex-cab">
       <h2 id="ex-titulo">Explorar aquí</h2>
-      <button id="ex-rumbo" class="ex-rumbo" type="button" aria-label="Rumbo del teléfono">—</button>
+      <button id="ex-rumbo" class="ex-rumbo" type="button" aria-label="Rumbo del teléfono">sin rumbo</button>
       <button id="ex-cerrar" class="btn" type="button">Cerrar</button>
     </div>
     <p id="ex-gps" class="nota ex-gps" role="status">Esperando el GPS…</p>
@@ -177,7 +177,7 @@ function html() {
       </div>
     </section>
     <pre id="ex-diag" class="ex-diag" hidden></pre>
-    <p class="nota ex-nota">Las fotos se quedan en tu móvil. La brújula del teléfono se desvía ±10–20° en el monte: orienta, no apunta.</p>`;
+    <p class="nota ex-nota">Las fotos se quedan en tu móvil hasta que pulses «Analizar». En el monte la brújula se desvía de 10 a 20°, así que sirve para orientarte, no para apuntar con precisión.</p>`;
   document.body.append(d);
   return d;
 }
@@ -250,7 +250,7 @@ const brujulaDudosa = () => precBrujula !== null && (precBrujula < 0 || precBruj
 const nombreDir = (r: number) => `${cardinalCorto(r)} ${Math.round(normalizar(r)) % 360}°`;
 
 function pintarRumbo() {
-  $('#ex-rumbo').textContent = orient === null ? '—' : nombreDir(orient);
+  $('#ex-rumbo').textContent = orient === null ? 'sin rumbo' : nombreDir(orient);
   $('#ex-aguja').style.transform = `rotate(${(orient ?? 0).toFixed(1)}deg)`;
 }
 

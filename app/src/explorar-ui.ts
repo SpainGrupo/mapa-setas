@@ -1,6 +1,8 @@
 // «Explorar aquí» (2026-10-25): pantalla completa con la cámara trasera, el rumbo del teléfono y un barrido de 8 fotos
 // (una cada 45°) que se guarda en el teléfono como observación (observaciones.ts). Patrón de ir-sitio.ts y campo-ui.ts.
-//  - Sin conexión y sin coste: nada sale del teléfono. (El análisis con Gemini viene en otra tarea.)
+//  - Sin conexión y sin coste: nada sale del teléfono hasta que pulsas «Analizar» (explorar-resultado.ts: aviso de privacidad
+//    la primera vez, envío a POST /explorar, cola de pendientes). El resultado son 8 direcciones con su puntuación y una
+//    «Mejor dirección» que calcula explorar.ts (Gemini solo describe); «Ver en la cámara» la saca como marca grande.
 //  - AR ligera: sobre el vídeo, una marca por microzona (la misma selección que Modo campo: seleccionarMicrozonas + filtro de
 //    desnivel de campo-ruta.ts, misma seta) colocada con la brújula y la inclinación (explorar-geo.ts: proyectar). No está
 //    anclada al paisaje: se mueve con el error de la brújula. Fuera de cuadro, un chip en el borde. Desnivel = cota de la
@@ -27,8 +29,9 @@ import { abrirCamara, capturar, type Camara } from './camara';
 import { celdasMarca, deltaAngulo, enSector, estaQuieto, FOV_H, FOV_V, listoParaDisparar, mediaCircular, PASO_BARRIDO, PRECISION_BRUJULA_MAX, proyectar, rumbosBarrido,
   type Marca } from './explorar-geo';
 import { notaDeObservacion, nuevaObservacion, type DireccionObs, type Observacion } from './observaciones-datos';
-import { guardarObservacion } from './observaciones';
 import { anadirNotaExterna } from './grabar-ui';
+import { guardarObservacion, leerObservacion } from './observaciones';
+import { analizarObservacion, EVENTO_CAMBIO, iniciarAnalisis, mejorDe, perfilDe, pintarResultado, reintentarPendientes, urlAnalisis } from './explorar-resultado';
 
 export interface ContextoExplorar {
   /** Seta elegida en el mapa (valor inicial si quien abre no da otra). */
@@ -97,6 +100,10 @@ let rafAR = 0;
 let ultimoAR: { estado: 'ok' | 'sin-datos' | 'sin-brujula' | 'cargando'; ancho: number; alto: number; dentro: boolean; marcas: (Marca & { fila: number; col: number; idon: number })[] } | null = null;
 const MOVER_AR_M = 50;
 const elMarcas = new Map<string, HTMLElement>();
+/** Mejor dirección del último análisis, para sacarla como marca grande en la cámara (solo a ≤ MEJOR_AR_M del punto del barrido). */
+let mejorAR: { rumbo: number; lat: number; lon: number } | null = null;
+let ultimoMejor: { visible: boolean; x: number } | null = null;
+const MEJOR_AR_M = 150;
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => dlg.querySelector(s) as T;
 const DOE = () => (typeof DeviceOrientationEvent === 'undefined' ? null : DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> });
@@ -119,6 +126,7 @@ function html() {
       <div id="ex-camara" class="ex-camara"></div>
       <div id="ex-sin-camara" class="ex-sin-camara" hidden></div>
       <div id="ex-marcas" class="ex-marcas" aria-hidden="true"></div>
+      <div id="ex-mejor-capa" class="ex-marcas" role="status"></div>
       <p id="ex-dentro" class="ex-dentro" role="status" hidden>Estás en una zona buena</p>
       <p id="ex-ar-aviso" class="ex-ar-aviso" hidden>Cada marca es una celda de 100 m, no un punto exacto</p>
       <p id="ex-ar-estado" class="ex-ar-estado" role="status" hidden></p>
@@ -157,6 +165,12 @@ function html() {
         <button id="ex-h-ok" class="btn btn-primario" type="button">Guardar</button>
       </div>
       <p id="ex-h-estado" class="nota" role="status"></p>
+      <div class="ex-analisis">
+        <button id="ex-analizar" class="btn btn-primario btn-ancho" type="button" hidden>Analizar</button>
+        <p id="ex-an-estado" class="nota" role="status"></p>
+        <div id="ex-an-res" class="ex-an-res"></div>
+        <button id="ex-ver-camara" class="btn btn-ancho" type="button" hidden>Ver la mejor dirección en la cámara</button>
+      </div>
       <div class="ex-fin-acciones">
         <button id="ex-sitio" class="btn" type="button">Guardar como sitio</button>
         <button id="ex-otro" class="btn" type="button">Otro barrido</button>
@@ -442,7 +456,7 @@ const arActiva = () => abierto && !pausado && camara?.modo === 'vivo' && (fase =
 
 function pedirAR() {
   if (rafAR || !abierto) return;
-  rafAR = requestAnimationFrame(() => { rafAR = 0; pintarMarcas(); });
+  rafAR = requestAnimationFrame(() => { rafAR = 0; pintarMarcas(); pintarMejor(); });
 }
 
 function iconoMarca() {
@@ -516,6 +530,35 @@ function pintarMarcas() {
   }
   for (const [k, el] of [...elMarcas]) if (!vistas.has(k)) { el.remove(); elMarcas.delete(k); }
   ultimoAR = { estado: 'ok', ancho: w, alto: h, dentro: esta.dentro, marcas: calc.map((x) => ({ ...x.m, fila: x.c.fila, col: x.c.col, idon: x.c.idon })) };
+}
+
+/** Mejor dirección del análisis como marca grande (o chip en el borde si queda fuera de cuadro). */
+function pintarMejor() {
+  const capa = $('#ex-mejor-capa');
+  const quitar = () => { if (capa.firstChild) capa.replaceChildren(); ultimoMejor = null; };
+  if (!arActiva() || !mejorAR || orient === null || !pos || distanciaM(mejorAR, pos) > MEJOR_AR_M) { quitar(); return; }
+  const caja = $('#ex-escena').getBoundingClientRect();
+  const w = caja.width, h = caja.height;
+  if (!w || !h) return;
+  const vertical = anguloPantalla() % 180 === 0;
+  const fov = vertical ? { h: FOV_H.vertical, v: FOV_V.vertical } : { h: FOV_H.apaisado, v: FOV_V.apaisado };
+  const m = proyectar({ rumbo: mejorAR.rumbo, dist_m: 1000, desnivel: null }, orient, beta ?? 90, fov, { w, h });
+  const texto = `Mejor dirección: ${nombreDir(mejorAR.rumbo)}`;
+  let marca = capa.firstElementChild as HTMLElement | null;
+  if (!marca) { marca = document.createElement('div'); capa.append(marca); }
+  if (m.visible) {
+    marca.className = 'ex-mejor';
+    marca.style.transform = `translate(${Math.min(w - 90, Math.max(90, m.x)).toFixed(1)}px, ${(h * 0.3).toFixed(1)}px) translate(-50%, 0)`;
+    marca.style.top = ''; marca.style.left = '';
+    if (marca.textContent !== texto) marca.textContent = texto;
+  } else {
+    marca.className = 'ex-mejor-chip'; marca.dataset.lado = m.lado!;
+    marca.style.transform = '';
+    marca.style.top = `${(h * 0.3).toFixed(0)}px`;
+    const t = m.lado === 'izq' ? `← ${texto}` : `${texto} →`;
+    if (marca.textContent !== t) marca.textContent = t;
+  }
+  ultimoMejor = { visible: m.visible, x: m.x };
 }
 
 // ---------------------------------------------------------------- barrido
@@ -632,6 +675,56 @@ function pintarFin() {
   sel.replaceChildren(...lista.map((e) => Object.assign(document.createElement('option'), { value: e.id, textContent: e.nombre })),
     Object.assign(document.createElement('option'), { value: '', textContent: 'Otra cosa / no lo sé' }));
   if (especie && lista.some((e) => e.id === especie)) sel.value = especie;
+  void pintarAnalisis();
+}
+
+/** Botón «Analizar», estado y resultado (lista de direcciones) de la observación en pantalla. */
+async function pintarAnalisis() {
+  const o = obs;
+  if (!o) return;
+  const btn = $<HTMLButtonElement>('#ex-analizar');
+  btn.hidden = !urlAnalisis() || o.estado === 'analizada';
+  btn.textContent = o.estado === 'error' ? 'Probar otra vez' : o.estado === 'pendiente' ? 'Analizar ahora' : 'Analizar';
+  $('#ex-an-estado').textContent = o.estado === 'sin_analizar' && urlAnalisis() ? 'Las fotos no salen del móvil hasta que pulses «Analizar».' : '';
+  const perfil = o.estado === 'analizada' ? await perfilDe(o.especie).catch(() => null) : null;
+  const mejor = o.estado === 'analizada' ? await mejorDe(o).catch(() => null) : null;
+  if (obs !== o) return;
+  pintarResultado($('#ex-an-res'), o, perfil);
+  $('#ex-ver-camara').hidden = !mejor;
+}
+
+async function analizarAhora() {
+  const o = obs;
+  if (!o) return;
+  const btn = $<HTMLButtonElement>('#ex-analizar');
+  btn.disabled = true; $('#ex-an-estado').textContent = 'Analizando el barrido…';
+  try {
+    const r = await analizarObservacion(o);
+    if (r && obs && obs.id === r.id) {
+      // Si cambiaste el hallazgo mientras tanto, se conserva.
+      const nueva = { ...r, hallazgo: obs.hallazgo, especieHallada: obs.especieHallada, nota: obs.nota };
+      if (nueva.hallazgo !== r.hallazgo || nueva.especieHallada !== r.especieHallada) await guardarObservacion(nueva);
+      obs = nueva;
+    }
+  } catch (e) {
+    console.warn('analizar', e);
+    ctx.avisar('No se pudo analizar el barrido. Prueba otra vez.');
+  } finally {
+    btn.disabled = false;
+    void pintarAnalisis();
+  }
+}
+
+/** Vuelve a la cámara con la mejor dirección marcada (mientras estés a ≤ MEJOR_AR_M del punto del barrido). */
+async function verMejorEnCamara() {
+  const o = obs;
+  const m = o && await mejorDe(o).catch(() => null);
+  if (!o || !m) return;
+  reiniciar();
+  mejorAR = { rumbo: m.rumbo, lat: o.lat, lon: o.lon };
+  tocar();
+  repintar();
+  await arrancarSensores();
 }
 
 async function marcarHallazgo(h: Observacion['hallazgo'], hallada = '') {
@@ -656,6 +749,8 @@ function reiniciar() {
   orient = null; beta = null; precBrujula = null; lecturas = []; tLectura = 0; hayBrujula = false; disparando = false;
   estadoBrujula = ''; pausado = false; toquesRumbo = [];
   celdasAR = []; microAR = []; centroAR = null; ultimoAR = null; elMarcas.clear(); $('#ex-marcas').replaceChildren();
+  mejorAR = null; ultimoMejor = null; $('#ex-mejor-capa').replaceChildren();
+  $('#ex-an-res').replaceChildren(); $('#ex-an-estado').textContent = ''; $('#ex-ver-camara').hidden = true;
   $('#ex-pausa').hidden = true; delete dlg.dataset.pausado;
   $('#ex-diag').hidden = true;
 }
@@ -671,6 +766,7 @@ export async function abrirExplorar(idEspecie?: string) {
   clearInterval(tInactivo);
   tInactivo = window.setInterval(() => { if (Date.now() - ultimoToque > inactividadMs()) pausar(); }, Math.min(5000, Math.max(200, inactividadMs() / 4)));
   repintar();
+  void reintentarPendientes();
   await arrancarSensores();
 }
 
@@ -698,6 +794,7 @@ function diagnostico() {
 
 export function iniciarExplorar(c: ContextoExplorar) {
   ctx = c;
+  iniciarAnalisis({ manifest: c.manifest, especies: c.especies, avisar: c.avisar });
   dlg = html();
   $('#ex-cerrar').addEventListener('click', () => { if (!sinGuardar() || confirm('¿Salir? Las fotos de este barrido no se guardarán.')) dlg.close(); });
   dlg.addEventListener('cancel', (e) => { if (sinGuardar() && !confirm('¿Salir? Las fotos de este barrido no se guardarán.')) e.preventDefault(); });
@@ -719,6 +816,13 @@ export function iniciarExplorar(c: ContextoExplorar) {
   $('#ex-h-luego').addEventListener('click', () => { $('#ex-h-cual').hidden = true; void marcarHallazgo('no_mirado'); });
   $('#ex-h-ok').addEventListener('click', () => { void marcarHallazgo('encontrada', $<HTMLSelectElement>('#ex-h-especie').value); });
   $('#ex-sitio').addEventListener('click', () => { void guardarComoSitio(); });
+  $('#ex-analizar').addEventListener('click', () => { void analizarAhora(); });
+  $('#ex-ver-camara').addEventListener('click', () => { void verMejorEnCamara(); });
+  document.addEventListener(EVENTO_CAMBIO, () => {
+    const id = obs?.id;
+    if (!abierto || fase !== 'fin' || !id) return;
+    void leerObservacion(id).then((r) => { if (r && obs?.id === id) { obs = r; void pintarAnalisis(); } });
+  });
   $('#ex-otro').addEventListener('click', () => { reiniciar(); void abrirExplorar(especie); });
   document.addEventListener('visibilitychange', () => { if (abierto && !pausado && document.visibilityState === 'visible') pedirBloqueo(); });
 }
@@ -732,4 +836,5 @@ export const estadoExplorar = () => (dlg?.open ? {
   estado: $('#ex-estado').textContent, guia: $('#ex-guia').hidden ? null : $('#ex-guia').textContent, obsId: obs?.id ?? null,
   ar: { estado: ultimoAR?.estado ?? 'cargando', centro: centroAR, ancho: ultimoAR?.ancho ?? 0, dentro: ultimoAR?.dentro ?? false, marcas: ultimoAR?.marcas ?? [],
     chips: [...dlg.querySelectorAll('.ex-chip')].map((c) => ({ lado: (c as HTMLElement).dataset.lado, texto: c.textContent })),
+    mejor: mejorAR ? { rumbo: mejorAR.rumbo, ...(ultimoMejor ?? { visible: false, x: 0 }) } : null,
     micro: microAR.map((c) => ({ fila: c.fila, col: c.col, idon: c.idon, dist_m: c.dist_m, rumbo: c.rumbo, cota_m: c.cota_m })), celdas: celdasAR.length } } : null);

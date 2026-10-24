@@ -2,7 +2,9 @@
 // con eventos deviceorientation y GPS simulado. Barrido de 8 fotos con disparo automático, observación guardada en
 // IndexedDB (8 direcciones, JPEG ≤ 400 KB, sin EXIF, con lo que decía el modelo), nota en la ruta que se graba, pregunta de
 // hallazgo, «Guardar como sitio», respaldo sin cámara en vivo (una foto por dirección con el selector de archivos) y
-// pausa por inactividad. Datos reales de Marbella (como campo-micro.e2e.mjs).
+// pausa por inactividad, y el análisis con un Worker simulado (aviso de privacidad la primera vez, petición con coordenadas a
+// 2 decimales, mejor dirección, marca grande en la cámara, pendiente sin conexión y error 429). Datos reales de Marbella
+// (como campo-micro.e2e.mjs).
 // Requiere `npm run build` y el servidor: php -S 127.0.0.1:8765 -t dist servidor.php (o URL_APP=…).
 import { createRequire } from 'node:module';
 import { mkdtempSync, readFileSync } from 'node:fs';
@@ -43,6 +45,13 @@ function sensoresFalsos(inicial) {
     window.dispatchEvent(e);
   }, 30);
 }
+/** URL del Worker simulado: la app la lee de localStorage en ?e2e=1 (urlWorker). */
+const conWorker = () => { try { localStorage.setItem('setas:e2e-worker-url', 'https://worker.test/identificar'); } catch { /* sin almacenamiento */ } };
+const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type', 'access-control-allow-methods': 'POST, OPTIONS' };
+/** Respuesta fija: la 3.ª foto es un alcornocal abierto y húmedo; el resto, pinar cerrado y seco; una nota dice «comestible». */
+const respuestaFalsa = (cuerpo) => ({ aviso: 'x', direcciones: cuerpo.fotos.map((f, i) => (i === 2
+  ? { rumbo: f.rumbo, arbol_dominante: 'alcornoque', confianza_arbol: 'alta', densidad_copas: 'media', sotobosque: 'despejado', suelo_visible: ['hojarasca', 'musgo'], humedad_aparente: 'humeda', notas: 'Alcornocal abierto, hojarasca húmeda.' }
+  : { rumbo: f.rumbo, arbol_dominante: i === 5 ? 'no_se_ve' : 'pino', confianza_arbol: i === 5 ? 'baja' : 'media', densidad_copas: 'cerrada', sotobosque: 'matorral_denso', suelo_visible: ['roca'], humedad_aparente: 'seca', notas: i === 0 ? 'Bosque comestible y denso.' : '' })) });
 const sinCamara = () => { Object.defineProperty(navigator.mediaDevices, 'getUserMedia', { value: () => Promise.reject(new DOMException('denegado', 'NotAllowedError')), configurable: true }); };
 
 const nav = await chromium.launch({ args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'] });
@@ -57,7 +66,21 @@ async function pagina(extra = []) {
   const p = await ctx.newPage();
   p.on('pageerror', (e) => errores.push(String(e)));
   p.on('console', (m) => { if (/cámara:/.test(m.text())) console.log('  [consola]', m.text()); });
-  p.on('dialog', (d) => d.accept());
+  p.dialogos = [];
+  p.on('dialog', (d) => { p.dialogos.push(d.message()); d.accept(); });
+  // Worker simulado: modo 'ok' | '429' | 'caido' (sin conexión).
+  const w = { modo: 'ok', peticiones: [] };
+  p.w = w;
+  await ctx.route('https://worker.test/**', async (r) => {
+    const req = r.request();
+    if (w.modo === 'caido') return r.abort('internetdisconnected');
+    if (req.method() === 'OPTIONS') return r.fulfill({ status: 204, headers: CORS });
+    const cuerpo = JSON.parse(req.postData() ?? '{}');
+    w.peticiones.push(cuerpo);
+    const json = { ...CORS, 'content-type': 'application/json' };
+    if (w.modo === '429') return r.fulfill({ status: 429, headers: json, body: JSON.stringify({ error: { codigo: 'limite_diario_superado', mensaje: 'Has alcanzado el límite de 10 barridos por día.' } }) });
+    return r.fulfill({ status: 200, headers: json, body: JSON.stringify(respuestaFalsa(cuerpo)) });
+  });
   await p.goto(BASE + Q);
   const b = p.getByRole('button', { name: 'Entendido' });
   if (await b.isVisible({ timeout: 8000 }).catch(() => false)) await b.click();
@@ -106,7 +129,7 @@ const delta = (a, b) => Math.abs(((a - b + 540) % 360) - 180);
 
 try {
   // ------------------------------------------------------------ 1. barrido automático de 8 fotos
-  const p = await pagina();
+  const p = await pagina([conWorker]);
   // Se graba una ruta para comprobar que la observación queda como nota suya.
   await p.locator('.pestanas [data-p=p-sitios]').click();
   await p.locator('#btn-grabar-ruta').click();
@@ -194,6 +217,43 @@ try {
   await p.locator('#ex-sitio').click();
   await p.waitForFunction(() => /Ya estaba en Mis sitios/.test(document.querySelector('#aviso')?.textContent ?? ''));
   ok('«Guardar como sitio» lo añade a Mis sitios (y no lo duplica)');
+  // ---- Análisis con Gemini (Worker simulado)
+  comprobar(await p.locator('#ex-analizar').isVisible() && (await p.locator('#ex-an-res li').count()) === 0, '«Analizar» está visible y no se ha enviado nada todavía');
+  comprobar(p.w.peticiones.length === 0 && p.dialogos.length === 0, 'hasta pulsar «Analizar» no sale ninguna petición ni aviso');
+  await p.locator('#ex-analizar').click();
+  await p.waitForSelector('#ex-an-res li', { timeout: 15000 });
+  comprobar(p.dialogos.length === 1 && p.dialogos[0].startsWith('Las 8 fotos se envían a Google (Gemini) para describir el bosque. No se guardan en nuestro servidor.'), 'la primera vez sale el aviso de privacidad con el texto fijado');
+  comprobar(await p.evaluate(() => localStorage.getItem('setas:explorar-privacidad')) === '1', 'el aviso se recuerda en localStorage');
+  const pet = p.w.peticiones[0];
+  const dec = (x) => (String(x).split('.')[1] ?? '').length;
+  comprobar(p.w.peticiones.length === 1 && pet.fotos.length === 8 && pet.fotos.every((f) => Number.isInteger(f.rumbo) && f.rumbo >= 0 && f.rumbo < 360 && f.jpeg.startsWith('/9j/')), 'la petición lleva 8 fotos JPEG en base64 con rumbo entero 0–359');
+  comprobar(dec(pet.contexto.lat) <= 2 && dec(pet.contexto.lon) <= 2 && pet.contexto.lat === Math.round(YO.lat * 100) / 100, `latitud y longitud con ≤ 2 decimales (${pet.contexto.lat}, ${pet.contexto.lon})`);
+  comprobar(JSON.stringify(Object.keys(pet.contexto).sort()) === JSON.stringify(['altitud', 'arboles_region', 'especie', 'especie_nombre', 'lat', 'lon', 'mes', 'modelo_sector']) && pet.contexto.modelo_sector.length === 8 && pet.contexto.mes === 10,
+    `contexto solo con los campos del contrato (${Object.keys(pet.contexto).join(', ')})`);
+  comprobar(JSON.stringify(pet).indexOf(String(YO.lat)) < 0 && JSON.stringify(pet).indexOf(String(YO.lon)) < 0, 'el punto exacto no sale del teléfono');
+  comprobar(await p.locator('#ex-an-res li').count() === 8 && await p.locator('#ex-an-res li[data-mejor="1"]').count() === 1, 'resultado: 8 direcciones y una sola marcada como mejor');
+  const mejorTxt = await p.locator('#ex-an-res .ex-mejor-txt').innerText();
+  comprobar(/^Mejor dirección: (N|NE|E|SE|S|SO|O|NO) \d+°$/.test(mejorTxt), `«${mejorTxt}»`);
+  comprobar(/no garantiza setas/.test(await p.locator('#ex-an-res').innerText()), 'lleva la línea «Es una orientación por el aspecto del bosque, no garantiza setas»');
+  comprobar(!PROHIBIDO.test(await p.locator('#dlg-explorar').innerText()), 'ni las razones ni las notas de Gemini dicen «comestible»');
+  comprobar(!(await p.locator('#ex-analizar').isVisible()), '«Analizar» desaparece una vez analizada');
+  obs = await observaciones(p);
+  comprobar(obs[0].estado === 'analizada' && obs[0].direcciones.every((d) => d.analisis) && obs[0].direcciones.every((d) => d.tipo === 'image/jpeg'), 'la observación queda «analizada» y conserva las fotos');
+  await p.locator('#ex-an-res').scrollIntoViewIfNeeded();
+  await p.screenshot({ path: join(CAPTURAS, 'explorar-analisis.png') });
+  // ---- La mejor dirección sobre la cámara
+  const mejorRumbo = Number(await p.locator('#ex-an-res li[data-mejor="1"]').getAttribute('data-rumbo'));
+  await p.locator('#ex-ver-camara').click();
+  await p.waitForFunction(() => window.__setas.explorar()?.camara === 'vivo' && window.__setas.explorar()?.fase === 'visor', null, { timeout: 15000 });
+  await p.evaluate((h) => { window.__H = h; }, mejorRumbo);
+  await p.waitForFunction((h) => { const x = window.__setas.explorar(); return x?.orientacion !== null && Math.abs(x.orientacion - h) < 1 && x.ar.mejor?.visible; }, mejorRumbo, { timeout: 8000 });
+  await p.waitForTimeout(150);
+  e = await explorar(p);
+  comprobar(e.ar.mejor.rumbo === mejorRumbo && Math.abs(e.ar.mejor.x - e.ar.ancho / 2) < e.ar.ancho * 0.25 && await p.locator('.ex-mejor').count() === 1, `mirando a ${mejorRumbo}° la mejor dirección sale como marca grande, centrada`);
+  await p.screenshot({ path: join(CAPTURAS, 'explorar-mejor.png') });
+  await p.evaluate((h) => { window.__H = h; }, (mejorRumbo + 180) % 360);
+  await p.waitForFunction(() => window.__setas.explorar()?.ar.mejor?.visible === false, null, { timeout: 8000 });
+  comprobar(await p.locator('.ex-mejor-chip').count() === 1 && await p.locator('.ex-mejor').count() === 0, 'girando 180° queda un chip en el borde');
   await p.locator('#ex-cerrar').click();
   await p.waitForFunction(() => !document.querySelector('#dlg-explorar[open]'));
   await p.locator('#cp-cerrar').click();
@@ -204,6 +264,39 @@ try {
   // La cámara se apaga al cerrar
   comprobar(await p.evaluate(() => !document.querySelector('#ex-camara video')), 'al cerrar, la cámara se apaga');
   await p.context().close();
+
+  // ------------------------------------------------------------ 1b. pendiente sin conexión y error 429
+  const z = await pagina([conWorker]);
+  await z.evaluate(() => { localStorage.setItem('setas:explorar-privacidad', '1'); });
+  await abrirExplorar(z);
+  await z.waitForFunction(() => !document.querySelector('#ex-barrer').disabled, null, { timeout: 10000 });
+  await z.evaluate(() => { window.__H = 0; });
+  await z.waitForFunction(() => window.__setas.explorar()?.hayBrujula, null, { timeout: 8000 });
+  await z.locator('#ex-barrer').click();
+  for (let i = 0; i < 8; i++) {
+    const obj = (await explorar(z)).objetivos[i];
+    await z.evaluate((h) => { window.__H = h + 1; }, obj);
+    await z.waitForFunction((n) => (window.__setas.explorar()?.hechas.length ?? 0) >= n || window.__setas.explorar()?.fase === 'fin', i + 1, { timeout: 10000 });
+  }
+  await z.waitForSelector('#ex-fin:not([hidden])', { timeout: 20000 });
+  z.w.modo = 'caido';
+  await z.locator('#ex-analizar').click();
+  await z.waitForFunction(() => /Pendiente: se analizará con conexión/.test(document.querySelector('#ex-an-res')?.textContent ?? ''), null, { timeout: 15000 });
+  comprobar(z.dialogos.length === 0 && (await observaciones(z))[0].estado === 'pendiente', 'sin conexión: «Pendiente: se analizará con conexión» y la observación queda pendiente (sin repetir el aviso)');
+  z.w.modo = '429';
+  await z.locator('#ex-analizar').click();
+  await z.waitForFunction(() => /barridos/.test(document.querySelector('#ex-an-res')?.textContent ?? ''), null, { timeout: 15000 });
+  const t429 = await z.locator('#ex-an-res').innerText();
+  comprobar(/10 barridos por día/.test(t429) && (await observaciones(z))[0].estado === 'error' && /Probar otra vez/.test(await z.locator('#ex-analizar').innerText()), `429: se enseña el mensaje del Worker («${t429}») y «Probar otra vez»`);
+  z.w.modo = 'caido';
+  await z.locator('#ex-analizar').click();
+  await z.waitForFunction(() => /Pendiente/.test(document.querySelector('#ex-an-res')?.textContent ?? ''), null, { timeout: 15000 });
+  z.w.modo = 'ok';
+  await z.evaluate(() => window.dispatchEvent(new Event('online')));
+  await z.waitForSelector('#ex-an-res li', { timeout: 15000 });
+  comprobar((await observaciones(z))[0].estado === 'analizada' && z.w.peticiones.length === 2, 'al volver la conexión («online») se analiza la pendiente (una sola petición nueva) y se repinta el resultado');
+  await z.context().unrouteAll({ behavior: 'ignoreErrors' }).catch(() => {});
+  await z.context().close();
 
   // ------------------------------------------------------------ 2. sin cámara en vivo: una foto por dirección
   const q = await pagina([sinCamara]);

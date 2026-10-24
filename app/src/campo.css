@@ -203,3 +203,26 @@ body[data-grabando] .mapa-cab { top: calc(var(--sup) + 140px); }
 .ex-ar-aviso[hidden], .ex-ar-estado[hidden] { display: none; }
 .ex-ar-aviso { top: auto; bottom: 64px; }
 .ex-ar-estado { font-weight: 800; font-size: 14px; top: 50%; text-align: center; }
+
+/* «Explorar aquí»: análisis del barrido (2026-10-25) */
+.ex-analisis { display: grid; gap: 8px; }
+.ex-analisis p { margin: 0; }
+.ex-an-res { display: grid; gap: 8px; }
+.ex-an-res:empty { display: none; }
+.ex-an-error { color: var(--tinta); background: var(--ambar-t); padding: 10px 14px; border-radius: 14px; font-weight: 700; }
+.ex-mejor-txt { margin: 0; font-weight: 800; font-size: 18px; }
+.ex-res { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.ex-res-dir { display: grid; grid-template-columns: 32px 1fr; gap: 8px; align-items: start; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--regla); background: var(--papel); }
+.ex-res-dir[data-mejor="1"] { border: 2px solid var(--bosque); background: var(--lavado); }
+.ex-flecha { display: grid; place-items: center; width: 32px; height: 32px; font: 800 22px/1 var(--texto); color: var(--bosque); }
+.ex-res-cab { display: flex; justify-content: space-between; gap: 8px; }
+.ex-total { font: 800 16px/1 var(--cifras); font-variant-numeric: tabular-nums; }
+.ex-razones { font-size: 14px; line-height: 1.35; }
+.ex-res-nota { font-size: 13px; line-height: 1.35; opacity: 0.8; font-style: italic; }
+.ex-orientacion { font-weight: 700; }
+.ex-mejor, .ex-mejor-chip { position: absolute; left: 0; top: 0; padding: 10px 16px; border-radius: 16px; font: 800 17px/1.25 var(--texto); background: var(--bosque); color: oklch(100% 0 0); box-shadow: 0 2px 10px oklch(0% 0 0 / 0.5); white-space: nowrap; will-change: transform; }
+.ex-mejor { font-size: 20px; padding: 14px 20px; }
+.ex-mejor::before { content: '↑'; display: block; text-align: center; font-size: 30px; line-height: 1; }
+.ex-mejor-chip[data-lado=izq] { left: 6px; }
+.ex-mejor-chip[data-lado=der] { left: auto; right: 6px; }
+#ex-mejor-capa { z-index: 3; }

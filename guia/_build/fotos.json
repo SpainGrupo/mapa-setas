@@ -752,5 +752,45 @@
    "licencia": "CC BY-SA 4.0",
    "url_fuente": "https://commons.wikimedia.org/wiki/File:R%C3%A9colte_de_Tricholoma_portentosum_(Haute-Loire,_France).jpg"
   }
+ ],
+ "craterellus_cornucopioides": [
+  {
+   "archivo": "fotos/craterellus_cornucopioides_1.jpg",
+   "autor": "Holger Krisp",
+   "licencia": "CC BY 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Black_trumpet_Craterellus_cornucopioides.jpg"
+  },
+  {
+   "archivo": "fotos/craterellus_cornucopioides_2.jpg",
+   "autor": "Albarubescens",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Craterellus_cornucopioides,_Monte_Rocca_Romana.jpg"
+  },
+  {
+   "archivo": "fotos/craterellus_cornucopioides_3.jpg",
+   "autor": "Andreas Kunze",
+   "licencia": "CC BY-SA 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:2007-11-10_Craterellus_lutescens.jpg"
+  }
+ ],
+ "pleurotus_ostreatus": [
+  {
+   "archivo": "fotos/pleurotus_ostreatus_1.jpg",
+   "autor": "Holger Krisp",
+   "licencia": "CC BY 3.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Austernpilz_Pleurotus_ostreatus.jpg"
+  },
+  {
+   "archivo": "fotos/pleurotus_ostreatus_2.jpg",
+   "autor": "Dominicus Johannes Bergsma",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Gewone_oesterzwam_(Pleurotus_ostreatus)._Paddenstoel_op_els_01.JPG"
+  },
+  {
+   "archivo": "fotos/pleurotus_ostreatus_3.jpg",
+   "autor": "Nativeplants garden",
+   "licencia": "CC BY-SA 4.0",
+   "url_fuente": "https://commons.wikimedia.org/wiki/File:Pleurotus_ostreatus_4.jpg"
+  }
  ]
 }

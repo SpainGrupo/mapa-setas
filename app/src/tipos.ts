@@ -36,6 +36,8 @@ export interface Manifest {
   acceso?: { cabecera: string; datos: string; aparcamientos: string } | null;
   /** Modo campo (pipeline micro.py): idoneidad y factores por celda de 100 m en teselas gzip. */
   micro?: { cabecera: string; datos: string } | null;
+  /** Modo campo, ruta a pie (pipeline mdt_campo.py): MDT25 a 25 m en teselas gzip alineadas con micro. */
+  mdt_campo?: { cabecera: string; datos: string } | null;
   /** Rutas y senderos (GR/PR/SL), PMTiles con la capa 'rutas'. */
   rutas?: string | null;
   /** Recintos donde recoger exige autorización (capa 'restricciones': tipo, nombre, zona, texto), textos por tipo y aviso legal. */

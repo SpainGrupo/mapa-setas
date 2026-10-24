@@ -12,6 +12,8 @@ EXPERTO = "No la consumas sin la confirmación de un experto (micólogo, socieda
 AV_GRUPO = {"apreciada": "Apreciada en la bibliografía micológica. " + EXPERTO,
             "comestible_menor": "Poco valorada en la bibliografía micológica. " + EXPERTO}
 # Decisión 2 de Alexander (2026-10-15): especies buscables sin parecida tóxica documentada en las fuentes.
+# Ampliada por Alexander el 2026-10-20 a craterellus_cornucopioides y pleurotus_ostreatus (Marbella); lista en
+# app/src/seguridad-regiones.test.ts (EXCEPCIONES_APROBADAS).
 SIN_CONF = "Las fuentes consultadas no citan una seta tóxica concreta con la que se confunda; el reconocedor sigue listando las peligrosas de su grupo. Eso no garantiza nada: confírmalo con un experto."
 
 # ---------- fuentes ----------
@@ -577,6 +579,38 @@ sp(id="pleurotus_eryngii", nombre_cientifico="Pleurotus eryngii (DC.) Quél.", n
      {"id": "clitocybe_dealbata", "diferencias": ["AmanitaCesarea.com cita como posible confusión algunas Clitocybe tóxicas, de cutícula más clara, pie más central, láminas menos decurrentes y otro olor", "Clitocybe dealbata es pequeña (1 a 6 cm), blanca y como escarchada"]}],
    fuentes=[ac("pleurotus-eryngii", "Pleurotus eryngii"), GUIA, wp("es", "Pleurotus_eryngii", "Pleurotus eryngii"), sf(170772, "Pleurotus eryngii"), gbif(9075265, "Pleurotus eryngii")])
 
+sp(id="craterellus_cornucopioides", nombre_cientifico="Craterellus cornucopioides (L.) Pers. y C. lutescens (Fr.) Fr.", nombres_comunes=["trompeta de los muertos", "trompeta negra", "angula de monte", "trompeta amarilla"],
+   grupo="apreciada",
+   toxicidad_nota=AV + " Las fuentes no dan ninguna confusión peligrosa de la trompeta de los muertos; para la angula de monte AmanitaCesarea.com dice que las confusiones peligrosas son difíciles y solo cita la parecida C. tubaeformis. " + SIN_CONF,
+   sombrero="De 4 a 8 cm en la trompeta de los muertos y de 2 a 6 cm en la angula de monte. En forma de embudo profundo, con el borde enrollado y ondulado. En la trompeta de los muertos, gris pardo a casi negro, con estrías en el margen; en la angula de monte, pardo amarillento con líneas radiales.",
+   himenio="Casi liso, con pliegues longitudinales muy discretos a modo de vetas, sin láminas. Gris ceniciento y como con polvillo en la trompeta de los muertos; amarillo con tonos anaranjados o rosados en la angula de monte.",
+   pie="Hueco hasta la base, sin separarse del sombrero: toda la seta es una trompeta. Gris y arrugado en la trompeta de los muertos; amarillo rojizo y de base casi blanca en la angula de monte.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Escasa, fibrosa y elástica. En la angula de monte, amarillenta.",
+   olor_sabor="Sin olor ni sabor característicos en la trompeta de los muertos (First Nature); olor afrutado y sabor suave en la angula de monte (AmanitaCesarea.com).",
+   esporada="Blanca.",
+   habitat="Bajo frondosas, sobre todo haya y robles, la trompeta de los muertos; sobre todo en bosques de coníferas y, bajo la hojarasca de zonas húmedas, también en robles, la angula de monte. GBIF tiene registros de la trompeta de los muertos en Los Alcornocales y de la angula de monte en la zona de Marbella (consulta 18-10-2026).",
+   temporada="De otoño al invierno. First Nature dice que en la Península Ibérica se encuentra hasta bien entrado el año nuevo.",
+   rasgos_clave=["Toda la seta es un embudo hueco hasta la base del pie", "Sin láminas: himenio casi liso, con vetas muy discretas", "Trompeta de los muertos gris oscura o negra; angula de monte pardo amarillenta por arriba y amarilla por abajo", "Esporada blanca"],
+   no_confundir_con=[],
+   fuentes=[fn("craterellus-cornucopioides", "Craterellus cornucopioides"), ac("craterellus-lutescens", "Craterellus lutescens"), GBM(2554662, "Craterellus cornucopioides"), GBM(8871787, "Craterellus lutescens")])
+
+sp(id="pleurotus_ostreatus", nombre_cientifico="Pleurotus ostreatus (Jacq.) P. Kumm.", nombres_comunes=["seta de ostra", "seta de chopo", "orellana"],
+   grupo="apreciada",
+   toxicidad_nota=AV + " AmanitaCesarea.com solo cita confusiones con otros Pleurotus (P. pulmonarius, P. cornucopiae), que no son tóxicos, y dice que se confunde a veces con la seta de cardo; recoge que alguna bibliografía considera ligeramente purgante la variedad columbinus. " + SIN_CONF,
+   sombrero="De 5 a 15 cm, a veces mucho más; en forma de ostra o de concha, de convexo a plano y algo hundido. Color muy variable, de gris claro a marrón oscuro, a veces con reflejos azulados. Margen fino y enrollado.",
+   himenio="Láminas apretadas y muy decurrentes, blancas al principio y crema con la edad.",
+   pie="Corto, a veces casi ausente, de modo que el sombrero nace directamente de la madera. Blanco o crema, algo lanoso en la base, sin anillo.",
+   volva="No tiene.", anillo="No tiene.",
+   carne_y_corte="Blanca, con tonos crema cuando está mojada. Correosa y dura en el pie y en los ejemplares viejos.",
+   olor_sabor="Olor y sabor agradables, sin nada característico.",
+   esporada="Blanca cremosa o gris lila pálida.",
+   habitat="Casi siempre en troncos y tocones de frondosas en descomposición, a veces como parásita: choperas cortadas, hayedos, álamos, fresnos y olmos. Crece en grupos apretados, con los ejemplares unidos o solapados. GBIF tiene registros en la zona de Marbella (consulta 18-10-2026).",
+   temporada="Verano, otoño y principio del invierno; en el sur de Europa, a veces hasta enero o febrero (First Nature).",
+   rasgos_clave=["Nace de madera de frondosas, no del suelo", "En grupos solapados, con forma de ostra", "Láminas muy decurrentes y pie corto o ausente, sin anillo", "Esporada blanca cremosa o gris lila pálida"],
+   no_confundir_con=[],
+   fuentes=[ac("pleurotus-ostreatus", "Pleurotus ostreatus"), fn("pleurotus-ostreatus", "Pleurotus ostreatus"), GBM(2526530, "Pleurotus ostreatus")])
+
 sp(id="terfezia_arenaria", nombre_cientifico="Terfezia arenaria (Moris) Trappe y T. claveryi Chatin", nombres_comunes=["criadilla de tierra", "turma", "turma de tierra", "patata de tierra"],
    grupo="apreciada",
    toxicidad_nota=AV + " Crece bajo tierra y se reconoce peor que una seta con sombrero. Según Cesta y Setas, la confusión más peligrosa es con las falsas trufas blancas del género Choiromyces (C. meandriformis es tóxica y tiene la carne con venas blancas en forma de meandro). La criadilla jarera (Choiromyces magnusii), asociada a las jaras, es otra especie parecida. Las Scleroderma, tóxicas, también se han confundido con trufas.",
@@ -786,6 +820,9 @@ DESC = {
  "fotos/terfezia_arenaria_1.jpg": "Varias especies de Terfezia de Portugal (lámina de MycoKeys)",
  "fotos/terfezia_arenaria_2.jpg": "Abierta: carne clara, crema rosada",
  "fotos/terfezia_arenaria_3.jpg": "T. claveryi y Tirmania nivea en un mercado de Marruecos",
+ "fotos/craterellus_cornucopioides_2.jpg": "Trompeta de los muertos: embudo hueco y oscuro",
+ "fotos/craterellus_cornucopioides_3.jpg": "C. lutescens: pie amarillo anaranjado y sombrero pardo",
+ "fotos/pleurotus_ostreatus_3.jpg": "Láminas decurrentes sobre madera",
  "fotos/scleroderma_citrinum_1.jpg": "Ejemplar maduro abierto: interior pardo y pulverulento",
  "fotos/scleroderma_citrinum_2.jpg": "Corte: interior negro violáceo",
  "fotos/scleroderma_citrinum_3.jpg": "S. verrucosum: interior oscuro al corte",

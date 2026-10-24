@@ -77,3 +77,19 @@ export function razonSitio(e: Entrada, c: ContextoRazon): string {
   const cob = textoCubierta(s);
   return `${primera}${cob ? ` ${cob}` : ''} ${tiempo}.${fiab}`;
 }
+
+/** Lo que razonZona necesita de una zona (zonas.ts), sin importar el módulo. */
+export interface ZonaRazon { entradas: Entrada[]; verdes: number; extension_m: number; puntuacion: number }
+
+/**
+ * «Por qué esta zona» (Hoy «Por sitio»): cuántas setas posibles concentra y a qué distancia, cuántas en verde, y la
+ * razón real del mejor sitio (razonSitio). `nombre` da el nombre de cada especie.
+ */
+export function razonZona(z: ZonaRazon, c: ContextoRazon, nombre: (especie: string) => string): string {
+  const n = z.entradas.length;
+  const radio = Math.max(50, Math.ceil(z.extension_m / 50) * 50);
+  const cuantas = n === 1 ? `Solo ${nombre(z.entradas[0].especie)} posible en la zona ese día`
+    : `${n} setas posibles a menos de ${fmt(radio)} m entre sí`;
+  const verdes = z.verdes === 0 ? 'ninguna en verde' : z.verdes === n ? (n === 1 ? 'en verde' : 'todas en verde') : `${z.verdes} en verde`;
+  return `Zona ${z.puntuacion}/100: ${cuantas} (${verdes}). Mejor sitio, ${nombre(z.entradas[0].especie)}: ${razonSitio(z.entradas[0], c)}`;
+}

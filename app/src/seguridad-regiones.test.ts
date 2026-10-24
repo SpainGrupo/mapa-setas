@@ -11,8 +11,9 @@ const porId = new Map(fichas.map((f) => [f.id, f]));
 const DIR = fileURLToPath(new URL('../../pipeline/regiones/', import.meta.url));
 
 /**
- * Excepciones aprobadas por Alexander el 2026-10-15 (decisión 2 del plan D1; fuentes en
- * docs/investigacion/2026-10-15-fichas-alicante.md §3): id de ficha → motivo. Cada una lleva en su ficha el texto
+ * Excepciones aprobadas por Alexander: las cuatro primeras el 2026-10-15 (decisión 2 del plan D1; fuentes en
+ * docs/investigacion/2026-10-15-fichas-alicante.md §3) y las dos últimas el 2026-10-20 (en el chat de la integración de
+ * Marbella; fuentes en knowledge/reference/especies-y-grupos.md): id de ficha → motivo. Cada una lleva en su ficha el texto
  * fijo SIN_CONF de guia/_build/build.py. Nunca se rellena para que el test pase.
  */
 const EXCEPCIONES_APROBADAS: Record<string, string> = {
@@ -20,6 +21,9 @@ const EXCEPCIONES_APROBADAS: Record<string, string> = {
   suillus_bellinii: 'First Nature (S. collinitus) cita S. granulatus y S. luteus, ninguna tóxica',
   lepista_nuda: 'las fuentes citan Cortinarius violetas, sin ficha ni toxicidad concreta',
   hygrophorus_latitabundus: 'First Nature cita H. hypothejus, sin toxicidad',
+  // Aprobadas el 2026-10-20:
+  craterellus_cornucopioides: 'AmanitaCesarea.com (C. lutescens) dice que las confusiones peligrosas son difíciles y solo cita C. tubaeformis; First Nature (C. cornucopioides) cita Cantharellus, sin toxicidad',
+  pleurotus_ostreatus: 'AmanitaCesarea.com solo cita otros Pleurotus (P. pulmonarius, P. cornucopiae), sin toxicidad',
 };
 const SIN_CONF = /Las fuentes consultadas no citan una seta tóxica concreta con la que se confunda/;
 

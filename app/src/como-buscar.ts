@@ -10,10 +10,12 @@ import type { PerfilMicro } from './micro';
 export const PENDIENTE = 'PENDIENTE';
 export const FUENTE_MODELO = 'Modelo de la app (perfil heurístico de la especie)';
 export const FUENTE_GUIA = 'Guía de la app (ficha de la especie y sus fuentes)';
+export const FUENTE_FIRST_NATURE = 'First Nature (P. O\'Reilly), fichas de la especie, citadas en la guía de la app';
+export const FUENTE_AMANITA = 'AmanitaCesarea.com (J. Cuesta y J. Jiménez), fichas de la especie, citadas en la guía de la app';
 export const FUENTE_INVESTIGACION = 'Investigación de la app, 14-10-2026 (foros, guías y estudios citados)';
 
 export interface LineaBuscar {
-  clave: 'arboles' | 'orientacion' | 'humedad' | 'copas' | 'altitud' | 'suelo' | 'hojarasca' | 'tronco' | 'evitar' | 'temporada' | 'senales' | 'habitat';
+  clave: 'arboles' | 'orientacion' | 'humedad' | 'copas' | 'altitud' | 'suelo' | 'hojarasca' | 'tronco' | 'evitar' | 'temporada' | 'senales' | 'habitat' | 'madera' | 'aviso';
   titulo: string;
   /** PENDIENTE si no hay fuente. */
   texto: string;
@@ -36,6 +38,23 @@ const SENALES: Record<string, string> = {
   macrolepiota_procera: 'Claros, bordes y pastizal; no en bosque cerrado.',
   pleurotus_eryngii: 'Sobre las raíces del cardo corredor (Eryngium campestre) en pastizales, cunetas y caminos ganaderos.',
   terfezia_arenaria: 'Bajo Helianthemum en primavera.',
+};
+
+/** Aviso de especie lignícola: el modelo solo ve el tipo de bosque (MFE), no la madera muerta. Lo usan la ficha de campo y «Hoy». */
+export const AVISO_LIGNICOLA = 'Crece sobre madera (tocones, troncos caídos o árboles debilitados de frondosas). El modelo solo ve el tipo de bosque, no la madera muerta: busca tocones y troncos, no basta con estar en la zona marcada.';
+export const esLignicola = (id: string) => id === 'pleurotus_ostreatus';
+
+/** Líneas con texto propio por especie (sustituyen a PENDIENTE en hojarasca/tronco), cada una con su fuente. */
+const PROPIO: Record<string, Partial<Record<LineaBuscar['clave'], { texto: string; fuente: string }>>> = {
+  craterellus_cornucopioides: {
+    hojarasca: { texto: 'Bajo frondosas, sobre todo haya y robles (trompeta de los muertos), y bajo la hojarasca de zonas húmedas (angula de monte). Busca en suelo de bosque umbrío y fresco.', fuente: `${FUENTE_FIRST_NATURE}; ${FUENTE_AMANITA}` },
+    senales: { texto: 'Sale en grupos y es de difícil localización («hard-to-spot»): la trompeta de los muertos es gris oscura a casi negra y se camufla con la hojarasca; mira a ras de suelo y, al encontrar una, repasa los alrededores. Musgo: PENDIENTE (ninguna fuente lo dice). Lejos de aparcamientos y pistas quedan más sitios intactos.', fuente: `${FUENTE_FIRST_NATURE}; ${FUENTE_GUIA}` },
+  },
+  pleurotus_ostreatus: {
+    madera: { texto: 'Casi siempre en troncos y tocones de frondosas en descomposición, a veces como parásita débil, o en árboles moribundos o muertos en pie y troncos caídos: choperas cortadas, hayedos, álamos, fresnos, olmos y robles. Alcornoque y encina: PENDIENTE (ninguna fuente los cita). Crece en grupos apretados, con los ejemplares unidos o solapados.', fuente: `${FUENTE_FIRST_NATURE}; ${FUENTE_AMANITA}` },
+    aviso: { texto: AVISO_LIGNICOLA, fuente: FUENTE_MODELO },
+    senales: { texto: 'Recorre tocones y troncos caídos de frondosas; los racimos solapados se ven de lejos en la madera. Que salga tras frío: PENDIENTE (First Nature no da el desencadenante). Lejos de aparcamientos y pistas quedan más sitios intactos.', fuente: `${FUENTE_FIRST_NATURE}; ${FUENTE_INVESTIGACION}` },
+  },
 };
 const TACTICA = 'Lejos de aparcamientos y pistas quedan más sitios intactos.';
 
@@ -85,8 +104,11 @@ export function comoBuscar(id: string, d: DatosBuscar): LineaBuscar[] {
   const su = Object.entries(p?.suelo ?? {}).filter(([k, v]) => v >= 1 && NOMBRE_SUELO[k]).map(([k]) => NOMBRE_SUELO[k]);
   out.push(su.length ? { clave: 'suelo', titulo: 'Suelo', fuente: FUENTE_MODELO, texto: `Mejor en suelo ${lista(su)}.` } : pend('suelo', 'Suelo'));
   // Sin fuente en la app: no se inventan.
-  out.push(pend('hojarasca', 'Hojarasca y musgo'));
-  out.push(pend('tronco', 'Distancia al tronco'));
+  const pr = PROPIO[id] ?? {};
+  out.push(pr.hojarasca ? { clave: 'hojarasca', titulo: 'Hojarasca y musgo', ...pr.hojarasca } : pend('hojarasca', 'Hojarasca y musgo'));
+  if (pr.madera) out.push({ clave: 'madera', titulo: 'Sobre qué madera', ...pr.madera });
+  else out.push(pend('tronco', 'Distancia al tronco'));
+  if (pr.aviso) out.push({ clave: 'aviso', titulo: 'Aviso del modelo', ...pr.aviso });
   // Qué evitar (lo que el modelo penaliza).
   if (p) {
     const ev: string[] = [];
@@ -106,7 +128,8 @@ export function comoBuscar(id: string, d: DatosBuscar): LineaBuscar[] {
       texto: [tg, meses.length ? `Meses que usa el semáforo: ${meses.map((m) => MESES[m - 1]).join(', ')}.` : ''].filter(Boolean).join(' ') });
   } else out.push(pend('temporada', 'Temporada'));
   const s = SENALES[id];
-  out.push({ clave: 'senales', titulo: 'Señales en el terreno', texto: s ? `${s} ${TACTICA}` : TACTICA, fuente: FUENTE_INVESTIGACION });
+  out.push(pr.senales ? { clave: 'senales', titulo: 'Señales en el terreno', ...pr.senales }
+    : { clave: 'senales', titulo: 'Señales en el terreno', texto: s ? `${s} ${TACTICA}` : TACTICA, fuente: FUENTE_INVESTIGACION });
   const hab = d.ficha?.habitat?.trim();
   out.push(hab ? { clave: 'habitat', titulo: 'Hábitat según la guía', texto: hab, fuente: FUENTE_GUIA } : pend('habitat', 'Hábitat según la guía'));
   return out;

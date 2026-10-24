@@ -12,7 +12,7 @@ import { distanciaM, rumbo } from './brujula';
 import { buenaMasCercana, MAX_MICROZONAS, pasoZona, RADIO_M, razonCelda, RECALCULAR_M, seleccionarMicrozonas, textoHacia, UMBRAL_BAJA,
   UMBRAL_BUENA, ZONA_INICIAL, type AvisoZona, type EstadoZona, type PerfilMicro, type ValoresCelda } from './micro';
 import { celdaAqui, celdasAlrededor, datosMicro, type DatosMicro } from './micro-datos';
-import { comoBuscar, PENDIENTE, type DatosBuscar } from './como-buscar';
+import { AVISO_LIGNICOLA, comoBuscar, esLignicola, PENDIENTE, type DatosBuscar } from './como-buscar';
 import * as Mini from './minimapa';
 import * as RC from './campo-ruta';
 import { CANDIDATAS, filtrarPorDesnivel, type DesnivelMicro } from './ruta-pie';
@@ -191,7 +191,8 @@ function pintarTarjeta() {
   const acc = document.createElement('div'); acc.className = 'hm-acciones';
   acc.append(boton('Ir aquí', () => { ctx.navegar(punto(c, i)); }, 'btn btn-primario cp-ir'),
     boton('Guardar', async () => { const r2 = await ctx.guardar(punto(c, i)); ctx.avisar(r2 === 'ya' ? 'Ya estaba en Mis sitios' : 'Guardado en Mis sitios'); }, 'btn cp-guardar'));
-  t.replaceChildren(h, r, ruta, acc);
+  const av = esLignicola(especie) ? Object.assign(document.createElement('p'), { className: 'nota cp-aviso-lignicola', textContent: AVISO_LIGNICOLA }) : null;
+  t.replaceChildren(h, r, ...(av ? [av] : []), ruta, acc);
 }
 
 function pintarLista() {

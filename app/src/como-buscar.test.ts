@@ -37,4 +37,20 @@ describe('Cómo buscar', () => {
     const txt = comoBuscar('amanita_caesarea', { perfil: { ...PERFIL_AEREUS, orientacion: 'solana' } }).map((x) => x.texto).join(' ');
     expect(txt).not.toMatch(/comestib|se puede comer/i);
   });
+  it('Craterellus y Pleurotus ostreatus tienen texto propio con fuente, sin comestible', () => {
+    for (const id of ['craterellus_cornucopioides', 'pleurotus_ostreatus']) {
+      const l = comoBuscar(id, { perfil: PERFIL_AEREUS });
+      const propias = l.filter((x) => ['hojarasca', 'madera', 'aviso', 'senales'].includes(x.clave) && x.texto !== PENDIENTE);
+      expect(propias.length).toBeGreaterThanOrEqual(2);
+      for (const x of propias) expect(x.fuente).toBeTruthy();
+      expect(l.map((x) => x.texto).join(' ')).not.toMatch(/comestib|se puede comer/i);
+    }
+    const c = comoBuscar('craterellus_cornucopioides', {});
+    expect(c.find((x) => x.clave === 'hojarasca')!.texto).toMatch(/hojarasca/);
+    expect(c.find((x) => x.clave === 'senales')!.texto).toMatch(/grupos/);
+    const p = comoBuscar('pleurotus_ostreatus', {});
+    expect(p.find((x) => x.clave === 'madera')!.texto).toMatch(/troncos y tocones/);
+    expect(p.find((x) => x.clave === 'aviso')!.texto).toMatch(/solo ve el tipo de bosque, no la madera muerta/);
+    expect(comoBuscar('boletus_aereus', {}).some((x) => x.clave === 'aviso')).toBe(false);
+  });
 });

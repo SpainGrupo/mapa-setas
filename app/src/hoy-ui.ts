@@ -17,6 +17,7 @@ import { detallesTitularidad, esPublico, normaTitularidad, textoTitularidad } fr
 import { AVISO_CITAS, filaRefCita, textoCitado, type CitasSitio } from './citas';
 import { clavesEntrada, esOrdenTop, NOMBRE_ORDEN, ORDENES_TOP, ordenarTops, PENDIENTE, type OrdenTop } from './orden-tops';
 import { razonSitio, razonZona } from './razones';
+import { AVISO_LIGNICOLA, esLignicola } from './como-buscar';
 import { RADIO_ZONA_M, zonasDelDia, type Zona } from './zonas';
 import { ayudaIndicador, crearPercentil, textoIndicador, veces, type Validacion } from './indicador';
 import { especiesDeValor, esValorGrupo, grupoDe, gruposDe, topGrupo, valorGrupo } from './grupos';
@@ -289,6 +290,7 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number, zona?: Zona,
   rz.textContent = zona ? razonZona(zona, cr, nombre) : razonSitio(principal, cr);
   if (zona) li.append(listaZona(zona));
   li.append(rz);
+  if (esLignicola(principal.especie)) li.append(Object.assign(document.createElement('p'), { className: 'nota', textContent: AVISO_LIGNICOLA }));
   if (zona) {
     li.append(enlace('Abrir en Google Maps', urlSitioGoogle(s), 'tf-google'));
   }

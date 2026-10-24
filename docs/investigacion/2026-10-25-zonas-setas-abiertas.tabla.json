@@ -1,0 +1,1387 @@
+[
+ {
+  "id": "M01",
+  "reg": "marbella",
+  "nombre": "Sendero de Valdeinfierno (monte público)",
+  "mun": "Los Barrios (Cádiz)",
+  "lat": 36.227583333333335,
+  "lon": -5.585624999999999,
+  "prec": "punto",
+  "esp": [
+   [
+    "amanita_caesarea",
+    "Amanita caesarea"
+   ],
+   [
+    "boletus_aereus",
+    "Boletus aereus"
+   ],
+   [
+    "macrolepiota_procera",
+    "Macrolepiota procera"
+   ],
+   [
+    "pleurotus_ostreatus",
+    "Pleurotus ostreatus"
+   ],
+   [
+    null,
+    "Cantharellus subpruinosus"
+   ],
+   [
+    null,
+    "Lactarius chrysorrheus"
+   ]
+  ],
+  "src": "JA-CUSSTA",
+  "hab": "quejigal, alcornocal y canutos (aliso)",
+  "gpx": true,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "Amanita caesarea",
+    "id": "amanita_caesarea",
+    "max700": 67,
+    "med700": 29.7,
+    "max3k": 99,
+    "frac3k": 32.0,
+    "dmin_sitio_km": 1.6,
+    "n_sitios_especie": 150,
+    "citas_2km": 2
+   },
+   {
+    "especie": "Boletus aereus",
+    "id": "boletus_aereus",
+    "max700": 52,
+    "med700": 21.0,
+    "max3k": 95,
+    "frac3k": 13.4,
+    "dmin_sitio_km": 3.4,
+    "n_sitios_especie": 150,
+    "citas_2km": 1
+   },
+   {
+    "especie": "Macrolepiota procera",
+    "id": "macrolepiota_procera",
+    "max700": 94,
+    "med700": 56.2,
+    "max3k": 100,
+    "frac3k": 75.5,
+    "dmin_sitio_km": 1.4,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   },
+   {
+    "especie": "Pleurotus ostreatus",
+    "id": "pleurotus_ostreatus",
+    "max700": 45,
+    "med700": 24.7,
+    "max3k": 96,
+    "frac3k": 1.8,
+    "dmin_sitio_km": 6.8,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   },
+   {
+    "especie": "Cantharellus subpruinosus",
+    "id": null
+   },
+   {
+    "especie": "Lactarius chrysorrheus",
+    "id": null
+   }
+  ],
+  "top700": [
+   [
+    94,
+    "macrolepiota_procera"
+   ],
+   [
+    67,
+    "amanita_caesarea"
+   ],
+   [
+    66,
+    "russula_cyanoxantha"
+   ]
+  ],
+  "cibarius700": 65
+ },
+ {
+  "id": "M02",
+  "reg": "marbella",
+  "nombre": "Alhama: La Fuente / barranco de Tutalán (ruta Pantaneta)",
+  "mun": "Alhama de Granada (Granada)",
+  "lat": 36.980541011111114,
+  "lon": -3.985294975,
+  "prec": "punto",
+  "esp": [
+   [
+    "pleurotus_ostreatus",
+    "Pleurotus ostreatus"
+   ],
+   [
+    null,
+    "Tricholoma populinum"
+   ],
+   [
+    null,
+    "Lactarius controversus"
+   ]
+  ],
+  "src": "JA-CUSSTA",
+  "hab": "bosque de ribera, alamedas",
+  "gpx": true,
+  "en_region": false,
+  "res": [
+   {
+    "especie": "Pleurotus ostreatus",
+    "id": "pleurotus_ostreatus",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 0,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 26.3,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   },
+   {
+    "especie": "Tricholoma populinum",
+    "id": null
+   },
+   {
+    "especie": "Lactarius controversus",
+    "id": null
+   }
+  ],
+  "top700": [],
+  "cibarius700": null
+ },
+ {
+  "id": "M03",
+  "reg": "marbella",
+  "nombre": "Alhama: Robledal (ruta Pantaneta)",
+  "mun": "Alhama de Granada (Granada)",
+  "lat": 36.92720524722222,
+  "lon": -3.994937927777778,
+  "prec": "punto",
+  "esp": [
+   [
+    "lepista_nuda",
+    "Lepista nuda"
+   ],
+   [
+    "tricholoma_portentosum",
+    "Tricholoma portentosum"
+   ],
+   [
+    null,
+    "Tricholoma equestre"
+   ],
+   [
+    null,
+    "Coprinus comatus"
+   ]
+  ],
+  "src": "JA-CUSSTA",
+  "hab": "cedros, pino resinero, castaño, encina, coscoja",
+  "gpx": true,
+  "en_region": false,
+  "res": [
+   {
+    "especie": "Lepista nuda",
+    "id": "lepista_nuda",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 0,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 8.5,
+    "n_sitios_especie": 150,
+    "citas_2km": 2
+   },
+   {
+    "especie": "Tricholoma portentosum",
+    "id": "tricholoma_portentosum",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 0,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 6.7,
+    "n_sitios_especie": 75,
+    "citas_2km": 0
+   },
+   {
+    "especie": "Tricholoma equestre",
+    "id": null
+   },
+   {
+    "especie": "Coprinus comatus",
+    "id": null
+   }
+  ],
+  "top700": [],
+  "cibarius700": null
+ },
+ {
+  "id": "M04",
+  "reg": "marbella",
+  "nombre": "Alhama: zona alta de la ruta (entre Robledal y Loma de Castro, sin coordenada propia)",
+  "mun": "Alhama de Granada (Granada)",
+  "lat": 36.932037529166664,
+  "lon": -3.9894477597222227,
+  "prec": "paraje",
+  "esp": [
+   [
+    "lactarius_deliciosus",
+    "Lactarius deliciosus"
+   ],
+   [
+    "lactarius_sanguifluus",
+    "Lactarius sanguifluus"
+   ],
+   [
+    "boletus_aereus",
+    "Boletus aereus"
+   ],
+   [
+    "boletus_aestivalis",
+    "Boletus aestivalis"
+   ],
+   [
+    "lepista_nuda",
+    "Lepista nuda"
+   ]
+  ],
+  "src": "JA-CUSSTA",
+  "hab": "ruta Pantaneta, tramo alto con vistas al P. N. Tejeda-Almijara-Alhama (punto medio de dos paradas; ubicación aproximada)",
+  "gpx": true,
+  "en_region": false,
+  "res": [
+   {
+    "especie": "Lactarius deliciosus",
+    "id": "lactarius_deliciosus",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 0,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 8.1,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   },
+   {
+    "especie": "Lactarius sanguifluus",
+    "id": "lactarius_sanguifluus",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 0,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 8.4,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   },
+   {
+    "especie": "Boletus aereus",
+    "id": "boletus_aereus",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 0,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 82.7,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   },
+   {
+    "especie": "Boletus aestivalis",
+    "id": "boletus_aestivalis",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 0,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 10.4,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   },
+   {
+    "especie": "Lepista nuda",
+    "id": "lepista_nuda",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 0,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 9.2,
+    "n_sitios_especie": 150,
+    "citas_2km": 2
+   }
+  ],
+  "top700": [],
+  "cibarius700": null
+ },
+ {
+  "id": "M05",
+  "reg": "marbella",
+  "nombre": "Alhama: Cortijo Loma de Castro (era abandonada)",
+  "mun": "Alhama de Granada (Granada)",
+  "lat": 36.93686981111111,
+  "lon": -3.9839575916666665,
+  "prec": "punto",
+  "esp": [
+   [
+    "pleurotus_eryngii",
+    "Pleurotus eryngii"
+   ],
+   [
+    "agaricus_campestris",
+    "Agaricus campestris"
+   ]
+  ],
+  "src": "JA-CUSSTA",
+  "hab": "era y entorno de cortijo en ruinas",
+  "gpx": true,
+  "en_region": false,
+  "res": [
+   {
+    "especie": "Pleurotus eryngii",
+    "id": "pleurotus_eryngii",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 0,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 11.3,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   },
+   {
+    "especie": "Agaricus campestris",
+    "id": "agaricus_campestris",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 0,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 13.5,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   }
+  ],
+  "top700": [],
+  "cibarius700": null
+ },
+ {
+  "id": "M06",
+  "reg": "marbella",
+  "nombre": "«Sendero Micológico» (camino con ese nombre en OSM)",
+  "mun": "Granada (por confirmar)",
+  "lat": 36.8799975,
+  "lon": -3.9158975,
+  "prec": "punto",
+  "esp": [],
+  "src": "OSM",
+  "hab": "sin datos de especies; solo el nombre del camino (way 639947092)",
+  "gpx": true,
+  "en_region": false,
+  "res": [],
+  "top700": [],
+  "cibarius700": null
+ },
+ {
+  "id": "M07",
+  "reg": "marbella",
+  "nombre": "P. N. Montes de Málaga",
+  "mun": "Málaga / Colmenar (Málaga)",
+  "lat": 36.8209711,
+  "lon": -4.3801589,
+  "prec": "paraje",
+  "esp": [
+   [
+    "lactarius_deliciosus",
+    "níscalo"
+   ],
+   [
+    null,
+    "rebozuelo"
+   ],
+   [
+    "amanita_caesarea",
+    "Amanita caesarea"
+   ]
+  ],
+  "src": "DEBATE",
+  "hab": "pinares, encinares y alcornocales (según la fuente)",
+  "gpx": true,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "níscalo",
+    "id": "lactarius_deliciosus",
+    "max700": 25,
+    "med700": 18.6,
+    "max3k": 96,
+    "frac3k": 25.9,
+    "dmin_sitio_km": 1.2,
+    "n_sitios_especie": 150,
+    "citas_2km": 1
+   },
+   {
+    "especie": "rebozuelo",
+    "id": null
+   },
+   {
+    "especie": "Amanita caesarea",
+    "id": "amanita_caesarea",
+    "max700": 12,
+    "med700": 7.5,
+    "max3k": 87,
+    "frac3k": 1.3,
+    "dmin_sitio_km": 46.2,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   }
+  ],
+  "top700": [
+   [
+    98,
+    "suillus_collinitus"
+   ],
+   [
+    97,
+    "lepista_nuda"
+   ],
+   [
+    88,
+    "macrolepiota_procera"
+   ]
+  ],
+  "cibarius700": 19
+ },
+ {
+  "id": "M08",
+  "reg": "marbella",
+  "nombre": "Finca La Moheda (alcornocal), salida de campo de las Jornadas de Monda",
+  "mun": "Monda (Málaga)",
+  "lat": 36.6076048,
+  "lon": -4.8345914,
+  "prec": "paraje",
+  "esp": [],
+  "src": "SINATUR-MONDA",
+  "hab": "alcornocal al borde de Sierra de las Nieves; especies no listadas en la fuente permitida",
+  "gpx": true,
+  "en_region": true,
+  "res": [],
+  "top700": [
+   [
+    95,
+    "macrolepiota_procera"
+   ],
+   [
+    91,
+    "lepista_nuda"
+   ],
+   [
+    91,
+    "boletus_aereus"
+   ]
+  ],
+  "cibarius700": 72
+ },
+ {
+  "id": "M09",
+  "reg": "marbella",
+  "nombre": "Alpujata (zona recreativa), jornadas de Monda",
+  "mun": "Monda (Málaga)",
+  "lat": 36.6126693,
+  "lon": -4.8211489,
+  "prec": "paraje",
+  "esp": [],
+  "src": "MITECO-MONDA",
+  "hab": "entorno del P. N. Sierra de las Nieves; sin especies en la fuente",
+  "gpx": true,
+  "en_region": true,
+  "res": [],
+  "top700": [
+   [
+    95,
+    "macrolepiota_procera"
+   ],
+   [
+    93,
+    "boletus_aereus"
+   ],
+   [
+    86,
+    "lepista_nuda"
+   ]
+  ],
+  "cibarius700": 86
+ },
+ {
+  "id": "M10",
+  "reg": "marbella",
+  "nombre": "P. N. Sierra de las Nieves (zona de pinsapar y castañar)",
+  "mun": "Sierra de las Nieves (Málaga)",
+  "lat": 36.6763835,
+  "lon": -4.9792703,
+  "prec": "paraje",
+  "esp": [
+   [
+    "lactarius_deliciosus",
+    "níscalo"
+   ],
+   [
+    null,
+    "boletus (genérico)"
+   ]
+  ],
+  "src": "DEBATE",
+  "hab": "más de 400 taxones según la fuente; el texto no concreta paraje",
+  "gpx": false,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "níscalo",
+    "id": "lactarius_deliciosus",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 70,
+    "frac3k": 0.1,
+    "dmin_sitio_km": 3.8,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   },
+   {
+    "especie": "boletus (genérico)",
+    "id": null
+   }
+  ],
+  "top700": [
+   [
+    60,
+    "macrolepiota_procera"
+   ],
+   [
+    44,
+    "pleurotus_eryngii"
+   ],
+   [
+    44,
+    "agaricus_campestris"
+   ]
+  ],
+  "cibarius700": 0
+ },
+ {
+  "id": "M11",
+  "reg": "marbella",
+  "nombre": "Montes de propios de Cortes de la Frontera",
+  "mun": "Cortes de la Frontera (Málaga)",
+  "lat": 36.6170845,
+  "lon": -5.3426714,
+  "prec": "municipio",
+  "esp": [],
+  "src": "CORTES",
+  "hab": "salida de campo en vehículo por los montes de propios (programa 2019); sin especies",
+  "gpx": false,
+  "en_region": true,
+  "res": [],
+  "top700": [
+   [
+    0,
+    "tricholoma_portentosum"
+   ],
+   [
+    0,
+    "terfezia_arenaria"
+   ],
+   [
+    0,
+    "suillus_luteus"
+   ]
+  ],
+  "cibarius700": 0
+ },
+ {
+  "id": "M12",
+  "reg": "marbella",
+  "nombre": "Garganta del Candelar (cabecera), bosque de niebla de quejigo moruno",
+  "mun": "Algeciras (Cádiz)",
+  "lat": 36.11306482117463,
+  "lon": -5.54977495084495,
+  "prec": "cuadricula",
+  "utm": [
+   270500.0,
+   3999500.0
+  ],
+  "esp": [
+   [
+    null,
+    "Cantharellus ferruginascens"
+   ]
+  ],
+  "src": "SGHN",
+  "hab": "Quercus canariensis, 750 m, 15/11/2013 (cuadrícula UTM 30STF 70 99 → 1 km)",
+  "gpx": true,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "Cantharellus ferruginascens",
+    "id": null
+   }
+  ],
+  "top700": [
+   [
+    96,
+    "macrolepiota_procera"
+   ],
+   [
+    93,
+    "boletus_aereus"
+   ],
+   [
+    85,
+    "craterellus_cornucopioides"
+   ]
+  ],
+  "cibarius700": 85
+ },
+ {
+  "id": "A01",
+  "reg": "alicante",
+  "nombre": "Carrascal de la Font Roja",
+  "mun": "Alcoy / Ibi (Alicante)",
+  "lat": 38.665109,
+  "lon": -0.5400643,
+  "prec": "paraje",
+  "esp": [
+   [
+    "lactarius_deliciosus",
+    "rovellons"
+   ],
+   [
+    "lactarius_sanguifluus",
+    "esclatasangs"
+   ],
+   [
+    null,
+    "bolets"
+   ]
+  ],
+  "src": "SALIR",
+  "hab": "carrascal y pinar de umbría",
+  "gpx": true,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "rovellons",
+    "id": "lactarius_deliciosus",
+    "max700": 87,
+    "med700": 6.2,
+    "max3k": 95,
+    "frac3k": 0.5,
+    "dmin_sitio_km": 1.0,
+    "n_sitios_especie": 84,
+    "citas_2km": 1
+   },
+   {
+    "especie": "esclatasangs",
+    "id": "lactarius_sanguifluus",
+    "max700": 91,
+    "med700": 15.4,
+    "max3k": 100,
+    "frac3k": 29.0,
+    "dmin_sitio_km": 3.0,
+    "n_sitios_especie": 150,
+    "citas_2km": 2
+   },
+   {
+    "especie": "bolets",
+    "id": null
+   }
+  ],
+  "top700": [
+   [
+    95,
+    "suillus_collinitus"
+   ],
+   [
+    91,
+    "lepista_nuda"
+   ],
+   [
+    91,
+    "lactarius_sanguifluus"
+   ]
+  ],
+  "cibarius700": null
+ },
+ {
+  "id": "A02",
+  "reg": "alicante",
+  "nombre": "Serra de Mariola (Agres, Cocentaina, Muro d'Alcoi, Bocairent)",
+  "mun": "Alcoià / Comtat (Alicante)",
+  "lat": 38.6989759,
+  "lon": -0.6394738,
+  "prec": "paraje",
+  "esp": [
+   [
+    "lactarius_deliciosus",
+    "níscalo"
+   ],
+   [
+    null,
+    "boletus"
+   ],
+   [
+    null,
+    "rebozuelo"
+   ]
+  ],
+  "src": "DDA",
+  "hab": "encinares y pinares con umbrías",
+  "gpx": true,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "níscalo",
+    "id": "lactarius_deliciosus",
+    "max700": 52,
+    "med700": 5.5,
+    "max3k": 53,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 6.5,
+    "n_sitios_especie": 84,
+    "citas_2km": 0
+   },
+   {
+    "especie": "boletus",
+    "id": null
+   },
+   {
+    "especie": "rebozuelo",
+    "id": null
+   }
+  ],
+  "top700": [
+   [
+    82,
+    "lepista_nuda"
+   ],
+   [
+    74,
+    "suillus_collinitus"
+   ],
+   [
+    61,
+    "lactarius_sanguifluus"
+   ]
+  ],
+  "cibarius700": null
+ },
+ {
+  "id": "A03",
+  "reg": "alicante",
+  "nombre": "Maigmó–Carrasqueta (Xixona, Tibi, Agost)",
+  "mun": "L'Alacantí / Alcoià (Alicante)",
+  "lat": 38.544,
+  "lon": -0.559,
+  "prec": "paraje",
+  "esp": [
+   [
+    "lactarius_deliciosus",
+    "níscalo"
+   ],
+   [
+    "macrolepiota_procera",
+    "parasol"
+   ]
+  ],
+  "src": "DDA",
+  "hab": "pinares con jaral y brezal (punto medio entre Carrasqueta 38.603,-0.487 y Maigmó 38.502,-0.631)",
+  "gpx": true,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "níscalo",
+    "id": "lactarius_deliciosus",
+    "max700": 23,
+    "med700": 11.1,
+    "max3k": 51,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 12.9,
+    "n_sitios_especie": 84,
+    "citas_2km": 0
+   },
+   {
+    "especie": "parasol",
+    "id": "macrolepiota_procera",
+    "sin_capa": true
+   }
+  ],
+  "top700": [
+   [
+    93,
+    "suillus_collinitus"
+   ],
+   [
+    92,
+    "lepista_nuda"
+   ],
+   [
+    89,
+    "terfezia_claveryi"
+   ]
+  ],
+  "cibarius700": null
+ },
+ {
+  "id": "A04",
+  "reg": "alicante",
+  "nombre": "Valle de Guadalest",
+  "mun": "El Castell de Guadalest (Alicante)",
+  "lat": 38.6754609,
+  "lon": -0.1995862,
+  "prec": "paraje",
+  "esp": [
+   [
+    "lactarius_deliciosus",
+    "níscalos"
+   ],
+   [
+    "pleurotus_eryngii",
+    "setas de cardo"
+   ]
+  ],
+  "src": "SALIR",
+  "hab": "valle; la fuente no da hábitat",
+  "gpx": true,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "níscalos",
+    "id": "lactarius_deliciosus",
+    "max700": 25,
+    "med700": 3.2,
+    "max3k": 55,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 30.5,
+    "n_sitios_especie": 84,
+    "citas_2km": 0
+   },
+   {
+    "especie": "setas de cardo",
+    "id": "pleurotus_eryngii",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 81,
+    "frac3k": 0.7,
+    "dmin_sitio_km": 24.0,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   }
+  ],
+  "top700": [
+   [
+    91,
+    "suillus_collinitus"
+   ],
+   [
+    91,
+    "lepista_nuda"
+   ],
+   [
+    71,
+    "lactarius_sanguifluus"
+   ]
+  ],
+  "cibarius700": null
+ },
+ {
+  "id": "A05",
+  "reg": "alicante",
+  "nombre": "Sierra de Aitana",
+  "mun": "La Marina Baixa / Comtat (Alicante)",
+  "lat": 38.6486239,
+  "lon": -0.2478181,
+  "prec": "paraje",
+  "esp": [
+   [
+    "lactarius_sanguifluus",
+    "esclata-sang"
+   ],
+   [
+    "lactarius_deliciosus",
+    "llenega / níscalo"
+   ],
+   [
+    null,
+    "setas de chopo"
+   ]
+  ],
+  "src": "SALIR",
+  "hab": "pinares de sierra",
+  "gpx": true,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "esclata-sang",
+    "id": "lactarius_sanguifluus",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 93,
+    "frac3k": 13.0,
+    "dmin_sitio_km": 3.4,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   },
+   {
+    "especie": "llenega / níscalo",
+    "id": "lactarius_deliciosus",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 28,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 26.4,
+    "n_sitios_especie": 84,
+    "citas_2km": 0
+   },
+   {
+    "especie": "setas de chopo",
+    "id": null
+   }
+  ],
+  "top700": [
+   [
+    40,
+    "pleurotus_eryngii"
+   ],
+   [
+    37,
+    "agaricus_campestris"
+   ],
+   [
+    0,
+    "terfezia_claveryi"
+   ]
+  ],
+  "cibarius700": null
+ },
+ {
+  "id": "A06",
+  "reg": "alicante",
+  "nombre": "Sierra de Bernia",
+  "mun": "Altea / Callosa d'en Sarrià (Alicante)",
+  "lat": 38.6592204,
+  "lon": -0.0415142,
+  "prec": "paraje",
+  "esp": [
+   [
+    "lactarius_deliciosus",
+    "níscalos"
+   ]
+  ],
+  "src": "ESPANOL",
+  "hab": "pinares de sierra",
+  "gpx": true,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "níscalos",
+    "id": "lactarius_deliciosus",
+    "max700": 41,
+    "med700": 3.6,
+    "max3k": 55,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 44.3,
+    "n_sitios_especie": 84,
+    "citas_2km": 0
+   }
+  ],
+  "top700": [
+   [
+    100,
+    "terfezia_claveryi"
+   ],
+   [
+    74,
+    "suillus_collinitus"
+   ],
+   [
+    71,
+    "lepista_nuda"
+   ]
+  ],
+  "cibarius700": null
+ },
+ {
+  "id": "A07",
+  "reg": "alicante",
+  "nombre": "Molí l'Ombria (ruta micològica programada)",
+  "mun": "Banyeres de Mariola (Alicante)",
+  "lat": 38.7075648,
+  "lon": -0.6637733,
+  "prec": "punto",
+  "esp": [],
+  "src": "MANCOM",
+  "hab": "ruta micològica guiada; sin especies en la fuente",
+  "gpx": true,
+  "en_region": true,
+  "res": [],
+  "top700": [
+   [
+    96,
+    "suillus_collinitus"
+   ],
+   [
+    94,
+    "lepista_nuda"
+   ],
+   [
+    92,
+    "lactarius_sanguifluus"
+   ]
+  ],
+  "cibarius700": null
+ },
+ {
+  "id": "A08",
+  "reg": "alicante",
+  "nombre": "Sierra de Onil",
+  "mun": "Onil (Alicante)",
+  "lat": 38.6301237,
+  "lon": -0.6670343,
+  "prec": "municipio",
+  "esp": [
+   [
+    "lactarius_deliciosus",
+    "llenega / níscalo"
+   ]
+  ],
+  "src": "ESPANOL",
+  "hab": "pinares; centroide del casco de Onil",
+  "gpx": false,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "llenega / níscalo",
+    "id": "lactarius_deliciosus",
+    "max700": 19,
+    "med700": 1.7,
+    "max3k": 49,
+    "frac3k": 0.0,
+    "dmin_sitio_km": 7.7,
+    "n_sitios_especie": 84,
+    "citas_2km": 0
+   }
+  ],
+  "top700": [
+   [
+    81,
+    "suillus_collinitus"
+   ],
+   [
+    79,
+    "lepista_nuda"
+   ],
+   [
+    62,
+    "lactarius_sanguifluus"
+   ]
+  ],
+  "cibarius700": null
+ },
+ {
+  "id": "A09",
+  "reg": "alicante",
+  "nombre": "Pinares de Confrides y Alcoleja",
+  "mun": "Confrides / Alcoleja (Alicante)",
+  "lat": 38.6794,
+  "lon": -0.2998,
+  "prec": "municipio",
+  "esp": [],
+  "src": "DDA",
+  "hab": "pinares de montaña y umbrías; punto medio de ambos cascos",
+  "gpx": false,
+  "en_region": true,
+  "res": [],
+  "top700": [
+   [
+    91,
+    "suillus_collinitus"
+   ],
+   [
+    87,
+    "lepista_nuda"
+   ],
+   [
+    84,
+    "lactarius_sanguifluus"
+   ]
+  ],
+  "cibarius700": null
+ },
+ {
+  "id": "A10",
+  "reg": "alicante",
+  "nombre": "Foia de Castalla",
+  "mun": "Castalla (Alicante)",
+  "lat": 38.5957233,
+  "lon": -0.6702617,
+  "prec": "municipio",
+  "esp": [
+   [
+    "agaricus_campestris",
+    "champiñones"
+   ],
+   [
+    "pleurotus_eryngii",
+    "setas de cardo"
+   ]
+  ],
+  "src": "ESPANOL",
+  "hab": "campos y bancales (Castalla, Villena, Beneixama)",
+  "gpx": false,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "champiñones",
+    "id": "agaricus_campestris",
+    "max700": 62,
+    "med700": 4.7,
+    "max3k": 64,
+    "frac3k": 0.3,
+    "dmin_sitio_km": 12.0,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   },
+   {
+    "especie": "setas de cardo",
+    "id": "pleurotus_eryngii",
+    "max700": 68,
+    "med700": 5.2,
+    "max3k": 68,
+    "frac3k": 0.9,
+    "dmin_sitio_km": 12.0,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   }
+  ],
+  "top700": [
+   [
+    97,
+    "terfezia_claveryi"
+   ],
+   [
+    68,
+    "pleurotus_eryngii"
+   ],
+   [
+    62,
+    "agaricus_campestris"
+   ]
+  ],
+  "cibarius700": null
+ },
+ {
+  "id": "A11",
+  "reg": "alicante",
+  "nombre": "Campos de Villena",
+  "mun": "Villena (Alicante)",
+  "lat": 38.6360967,
+  "lon": -0.8659745,
+  "prec": "municipio",
+  "esp": [
+   [
+    "agaricus_campestris",
+    "champiñones"
+   ],
+   [
+    "pleurotus_eryngii",
+    "setas de cardo"
+   ]
+  ],
+  "src": "ESPANOL",
+  "hab": "campos y bancales",
+  "gpx": false,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "champiñones",
+    "id": "agaricus_campestris",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 86,
+    "frac3k": 1.6,
+    "dmin_sitio_km": 24.5,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   },
+   {
+    "especie": "setas de cardo",
+    "id": "pleurotus_eryngii",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 91,
+    "frac3k": 7.9,
+    "dmin_sitio_km": 24.5,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   }
+  ],
+  "top700": [
+   [
+    0,
+    "terfezia_claveryi"
+   ],
+   [
+    0,
+    "suillus_collinitus"
+   ],
+   [
+    0,
+    "pleurotus_eryngii"
+   ]
+  ],
+  "cibarius700": null
+ },
+ {
+  "id": "A12",
+  "reg": "alicante",
+  "nombre": "Campos de Beneixama",
+  "mun": "Beneixama (Alicante)",
+  "lat": 38.7008815,
+  "lon": -0.7641359,
+  "prec": "municipio",
+  "esp": [
+   [
+    "agaricus_campestris",
+    "champiñones"
+   ],
+   [
+    "pleurotus_eryngii",
+    "setas de cardo"
+   ]
+  ],
+  "src": "ESPANOL",
+  "hab": "campos y bancales",
+  "gpx": false,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "champiñones",
+    "id": "agaricus_campestris",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 84,
+    "frac3k": 0.3,
+    "dmin_sitio_km": 25.1,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   },
+   {
+    "especie": "setas de cardo",
+    "id": "pleurotus_eryngii",
+    "max700": 0,
+    "med700": 0.0,
+    "max3k": 81,
+    "frac3k": 0.8,
+    "dmin_sitio_km": 25.1,
+    "n_sitios_especie": 150,
+    "citas_2km": 0
+   }
+  ],
+  "top700": [
+   [
+    0,
+    "terfezia_claveryi"
+   ],
+   [
+    0,
+    "suillus_collinitus"
+   ],
+   [
+    0,
+    "pleurotus_eryngii"
+   ]
+  ],
+  "cibarius700": null
+ },
+ {
+  "id": "A13",
+  "reg": "alicante",
+  "nombre": "Río Serpis (ribera de chopos)",
+  "mun": "Alcoià / Comtat (Alicante)",
+  "lat": 38.8467499,
+  "lon": -0.3203071,
+  "prec": "municipio",
+  "esp": [
+   [
+    "pleurotus_ostreatus",
+    "setas de ostra"
+   ]
+  ],
+  "src": "ESPANOL",
+  "hab": "bosque de ribera; punto de un tramo del río (impreciso)",
+  "gpx": false,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "setas de ostra",
+    "id": "pleurotus_ostreatus",
+    "sin_capa": true
+   }
+  ],
+  "top700": [
+   [
+    68,
+    "suillus_collinitus"
+   ],
+   [
+    67,
+    "lepista_nuda"
+   ],
+   [
+    33,
+    "terfezia_claveryi"
+   ]
+  ],
+  "cibarius700": null
+ },
+ {
+  "id": "A14",
+  "reg": "alicante",
+  "nombre": "Cabecera del Vinalopó (Banyeres de Mariola)",
+  "mun": "Banyeres de Mariola (Alicante)",
+  "lat": 38.7156535,
+  "lon": -0.6577745,
+  "prec": "municipio",
+  "esp": [
+   [
+    "pleurotus_ostreatus",
+    "setas de ostra"
+   ]
+  ],
+  "src": "ESPANOL",
+  "hab": "bosque de ribera; centroide de Banyeres",
+  "gpx": false,
+  "en_region": true,
+  "res": [
+   {
+    "especie": "setas de ostra",
+    "id": "pleurotus_ostreatus",
+    "sin_capa": true
+   }
+  ],
+  "top700": [
+   [
+    85,
+    "suillus_collinitus"
+   ],
+   [
+    81,
+    "lepista_nuda"
+   ],
+   [
+    73,
+    "lactarius_sanguifluus"
+   ]
+  ],
+  "cibarius700": null
+ }
+]

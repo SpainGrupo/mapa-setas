@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Mapa de setas" xmlns="http://www.topografix.com/GPX/1/1" xmlns:setas="https://setas.local/gpx/1">
+  <wpt lat="36.22758" lon="-5.58562">
+    <time>2026-10-25T00:00:00Z</time>
+    <name>★☆☆ Sendero de Valdeinfierno (monte público)</name>
+    <desc>Zona documentada, no garantía. Sendero de Valdeinfierno (monte público) (Los Barrios (Cádiz)). Especies citadas: Amanita caesarea, Boletus aereus, Macrolepiota procera, Pleurotus ostreatus, Cantharellus subpruinosus, Lactarius chrysorrheus. Hábitat según la fuente: quejigal, alcornocal y canutos (aliso). Ubicación punto (aprox.). Fuente: Información obtenida del Portal de la Junta de Andalucía (Plan CUSSTA, «Rutas micológicas por Andalucía», PDF de la ruta, sin alterar el sentido) — https://www.juntadeandalucia.es/medioambiente/portal/landing-page-documento/-/asset_publisher/jXKpcWryrKar/content/rutas-micol-c3-b3gicas/20151 — Textos con licencia tipo CC BY 3.0: citar «Información obtenida del Portal de la Junta de Andalucía», no alterar el sentido (aviso legal). robots.txt sin bloqueo de /medioambiente.</desc>
+    <extensions><setas:sitio id="9adf77a0-b1e5-52a9-a506-5d578b704bbd" estrellas="1" especie="amanita_caesarea"/></extensions>
+  </wpt>
+  <wpt lat="36.82097" lon="-4.38016">
+    <time>2026-10-25T00:00:00Z</time>
+    <name>★☆☆ P. N. Montes de Málaga</name>
+    <desc>Zona documentada, no garantía. P. N. Montes de Málaga (Málaga / Colmenar (Málaga)). Especies citadas: níscalo, rebozuelo, Amanita caesarea. Hábitat según la fuente: pinares, encinares y alcornocales (según la fuente). Ubicación paraje (aprox.). Fuente: El Debate, 25/10/2025, «cómo coger setas en Málaga» — https://www.eldebate.com/espana/andalucia/malaga/20251025/como-coger-setas-malaga-este-otono-menos-media-hora-ciudad_347988.html — robots.txt sin bloqueo para rastreadores genéricos; solo se toma el nombre del paraje y las especies.</desc>
+    <extensions><setas:sitio id="b418fc39-da70-570d-b0b6-86296194594b" estrellas="1" especie="lactarius_deliciosus"/></extensions>
+  </wpt>
+  <wpt lat="36.60760" lon="-4.83459">
+    <time>2026-10-25T00:00:00Z</time>
+    <name>★☆☆ Finca La Moheda (alcornocal), salida de campo de las Jornadas de Monda</name>
+    <desc>Zona documentada, no garantía. Finca La Moheda (alcornocal), salida de campo de las Jornadas de Monda (Monda (Málaga)). Especies citadas: sin especies concretas en la fuente. Hábitat según la fuente: alcornocal al borde de Sierra de las Nieves; especies no listadas en la fuente permitida. Ubicación paraje (aprox.). Fuente: Sinatur, programa de las V Jornadas Micológicas de Monda — https://sinatur.es/v-jornadas-micologicas-montes-de-monda/ — robots.txt solo cierra /wp-admin/; solo se toma el nombre del paraje.</desc>
+    <extensions><setas:sitio id="8831b089-bdd8-53c8-8ffd-11750e4f64d8" estrellas="1" especie=""/></extensions>
+  </wpt>
+  <wpt lat="36.61267" lon="-4.82115">
+    <time>2026-10-25T00:00:00Z</time>
+    <name>★☆☆ Alpujata (zona recreativa), jornadas de Monda</name>
+    <desc>Zona documentada, no garantía. Alpujata (zona recreativa), jornadas de Monda (Monda (Málaga)). Especies citadas: sin especies concretas en la fuente. Hábitat según la fuente: entorno del P. N. Sierra de las Nieves; sin especies en la fuente. Ubicación paraje (aprox.). Fuente: MITECO-CENEAM, ficha de las Jornadas Micológicas de Monda — https://www.miteco.gob.es/es/ceneam/formacion-ambiental/congresos/-xv-jornadas-micologicas-de-monda.html — Web institucional; solo se toman hechos (lugar y fecha).</desc>
+    <extensions><setas:sitio id="18458f46-84b0-556e-b1f5-b2fb55b23754" estrellas="1" especie=""/></extensions>
+  </wpt>
+  <wpt lat="36.11306" lon="-5.54977">
+    <time>2026-10-25T00:00:00Z</time>
+    <name>★☆☆ Garganta del Candelar (cabecera), bosque de niebla de quejigo moruno</name>
+    <desc>Zona documentada, no garantía. Garganta del Candelar (cabecera), bosque de niebla de quejigo moruno (Algeciras (Cádiz)). Especies citadas: Cantharellus ferruginascens. Hábitat según la fuente: Quercus canariensis, 750 m, 15/11/2013 (cuadrícula UTM 30STF 70 99 → 1 km). Ubicación cuadricula (aprox.). Fuente: Becerra, Robles y Gaona (2015), Rev. Soc. Gad. Hist. Nat. 9: 19-20 (Cantharellus ferruginascens, Garganta del Candelar) — http://sociedadgaditanahistorianatural.com/wp-content/uploads/2015/03/04_Becerra-et-al_Cantharellus_RSGHN9_web.pdf — Publicación científica; solo localidad y especie (cita bibliográfica).</desc>
+    <extensions><setas:sitio id="0079c2f0-2d11-5d71-9e92-ed546a5a234f" estrellas="1" especie=""/></extensions>
+  </wpt>
+  <wpt lat="38.66511" lon="-0.54006">
+    <time>2026-10-25T00:00:00Z</time>
+    <name>★☆☆ Carrascal de la Font Roja</name>
+    <desc>Zona documentada, no garantía. Carrascal de la Font Roja (Alcoy / Ibi (Alicante)). Especies citadas: rovellons, esclatasangs, bolets. Hábitat según la fuente: carrascal y pinar de umbría. Ubicación paraje (aprox.). Fuente: salir.com, «Sitios para recoger setas en Alicante» — https://www.salir.com/sitios-para-recoger-setas-en-alicante-401.html — robots.txt sin bloqueo total; solo nombres de parajes y especies.</desc>
+    <extensions><setas:sitio id="f81aa042-fae7-5ffa-9156-c1b9988ee093" estrellas="1" especie="lactarius_deliciosus"/></extensions>
+  </wpt>
+  <wpt lat="38.69898" lon="-0.63947">
+    <time>2026-10-25T00:00:00Z</time>
+    <name>★☆☆ Serra de Mariola (Agres, Cocentaina, Muro d'Alcoi, Bocairent)</name>
+    <desc>Zona documentada, no garantía. Serra de Mariola (Agres, Cocentaina, Muro d'Alcoi, Bocairent) (Alcoià / Comtat (Alicante)). Especies citadas: níscalo, boletus, rebozuelo. Hábitat según la fuente: encinares y pinares con umbrías. Ubicación paraje (aprox.). Fuente: Diario de Alicante, guía de setas (octubre 2025 / octubre 2026) — https://diariodealicante.net/donde-buscar-setas-alicante/ — robots.txt con 3 reglas, sin bloqueo del contenido; solo nombres y especies.</desc>
+    <extensions><setas:sitio id="e60c90c2-7a90-5695-b9e2-4e5acbcf7f66" estrellas="1" especie="lactarius_deliciosus"/></extensions>
+  </wpt>
+  <wpt lat="38.54400" lon="-0.55900">
+    <time>2026-10-25T00:00:00Z</time>
+    <name>★☆☆ Maigmó–Carrasqueta (Xixona, Tibi, Agost)</name>
+    <desc>Zona documentada, no garantía. Maigmó–Carrasqueta (Xixona, Tibi, Agost) (L'Alacantí / Alcoià (Alicante)). Especies citadas: níscalo, parasol. Hábitat según la fuente: pinares con jaral y brezal (punto medio entre Carrasqueta 38.603,-0.487 y Maigmó 38.502,-0.631). Ubicación paraje (aprox.). Fuente: Diario de Alicante, guía de setas (octubre 2025 / octubre 2026) — https://diariodealicante.net/donde-buscar-setas-alicante/ — robots.txt con 3 reglas, sin bloqueo del contenido; solo nombres y especies.</desc>
+    <extensions><setas:sitio id="eb67e2d2-d6d8-5c49-999c-545b941966cb" estrellas="1" especie="lactarius_deliciosus"/></extensions>
+  </wpt>
+  <wpt lat="38.67546" lon="-0.19959">
+    <time>2026-10-25T00:00:00Z</time>
+    <name>★☆☆ Valle de Guadalest</name>
+    <desc>Zona documentada, no garantía. Valle de Guadalest (El Castell de Guadalest (Alicante)). Especies citadas: níscalos, setas de cardo. Hábitat según la fuente: valle; la fuente no da hábitat. Ubicación paraje (aprox.). Fuente: salir.com, «Sitios para recoger setas en Alicante» — https://www.salir.com/sitios-para-recoger-setas-en-alicante-401.html — robots.txt sin bloqueo total; solo nombres de parajes y especies.</desc>
+    <extensions><setas:sitio id="b3d51b2e-1e63-5fb8-bbd5-71e097494e25" estrellas="1" especie="lactarius_deliciosus"/></extensions>
+  </wpt>
+  <wpt lat="38.64862" lon="-0.24782">
+    <time>2026-10-25T00:00:00Z</time>
+    <name>★☆☆ Sierra de Aitana</name>
+    <desc>Zona documentada, no garantía. Sierra de Aitana (La Marina Baixa / Comtat (Alicante)). Especies citadas: esclata-sang, llenega / níscalo, setas de chopo. Hábitat según la fuente: pinares de sierra. Ubicación paraje (aprox.). Fuente: salir.com, «Sitios para recoger setas en Alicante» — https://www.salir.com/sitios-para-recoger-setas-en-alicante-401.html — robots.txt sin bloqueo total; solo nombres de parajes y especies.</desc>
+    <extensions><setas:sitio id="ec7a04e0-6e1b-5a76-af51-aad61248d48e" estrellas="1" especie="lactarius_sanguifluus"/></extensions>
+  </wpt>
+  <wpt lat="38.65922" lon="-0.04151">
+    <time>2026-10-25T00:00:00Z</time>
+    <name>★☆☆ Sierra de Bernia</name>
+    <desc>Zona documentada, no garantía. Sierra de Bernia (Altea / Callosa d'en Sarrià (Alicante)). Especies citadas: níscalos. Hábitat según la fuente: pinares de sierra. Ubicación paraje (aprox.). Fuente: El Español (Alicante), 21/10/2023, mejores lugares para recoger setas — https://elespanol.com/alicante/vivir/gastronomia/20231021/bosques-sierras-campos-mejores-lugares-recoger-setas-alicante/803420008_0.html — robots.txt sin bloqueo total; solo nombres y especies.</desc>
+    <extensions><setas:sitio id="3c51463d-8010-53e9-b248-197f4e0f1276" estrellas="1" especie="lactarius_deliciosus"/></extensions>
+  </wpt>
+  <wpt lat="38.70756" lon="-0.66377">
+    <time>2026-10-25T00:00:00Z</time>
+    <name>★☆☆ Molí l'Ombria (ruta micològica programada)</name>
+    <desc>Zona documentada, no garantía. Molí l'Ombria (ruta micològica programada) (Banyeres de Mariola (Alicante)). Especies citadas: sin especies concretas en la fuente. Hábitat según la fuente: ruta micològica guiada; sin especies en la fuente. Ubicación punto (aprox.). Fuente: Mancomunitat de l'Alcoià i el Comtat, programa «Rutes guiades 20Mils» — https://lamancomunitat.org/events/rutes-guiades-20mils/ — robots.txt sin bloqueo; solo el hecho (ruta micològica en Banyeres de Mariola).</desc>
+    <extensions><setas:sitio id="43a516de-0ce8-5fa6-9184-5737832dd2cc" estrellas="1" especie=""/></extensions>
+  </wpt>
+</gpx>

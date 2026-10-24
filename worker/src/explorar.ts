@@ -283,8 +283,12 @@ export function postProcesarExplorar(bruto: unknown, rumbos: number[]): Respuest
   }
   const candidatas = bruto.direcciones.filter(esObjeto);
   const usadas = new Set<number>();
-  const direcciones = rumbos.map((rumbo) => {
-    const i = candidatas.findIndex((c, k) => !usadas.has(k) && c.rumbo === rumbo);
+  // Primero por rumbo exacto; si Gemini cambió el rumbo pero devolvió una entrada por foto, por posición (las fotos
+  // van en orden, cada una precedida de «Foto rumbo N°»).
+  const porPosicion = candidatas.length === rumbos.length;
+  const direcciones = rumbos.map((rumbo, k0) => {
+    let i = candidatas.findIndex((c, k) => !usadas.has(k) && c.rumbo === rumbo);
+    if (i < 0 && porPosicion && !usadas.has(k0) && !rumbos.includes(candidatas[k0]?.rumbo as number)) i = k0;
     if (i < 0) return direccionVacia(rumbo);
     usadas.add(i);
     return normalizar(rumbo, candidatas[i] as Record<string, unknown>);

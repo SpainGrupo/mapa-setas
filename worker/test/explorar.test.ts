@@ -401,3 +401,13 @@ describe("POST /explorar: acceso y cuota", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });
+
+describe("postProcesarExplorar: emparejado por posición", () => {
+  it("si Gemini cambia los rumbos pero da una entrada por foto, empareja por orden", async () => {
+    const { postProcesarExplorar } = await import("../src/explorar");
+    const d = (rumbo: number, arbol: string) => ({ rumbo, arbol_dominante: arbol, confianza_arbol: "media", densidad_copas: "media",
+      sotobosque: "despejado", suelo_visible: [], humedad_aparente: "media", notas: "" });
+    const r = postProcesarExplorar({ direcciones: [d(1, "encina"), d(46, "pino")] }, [0, 45]);
+    expect(r.direcciones.map((x) => [x.rumbo, x.arbol_dominante])).toEqual([[0, "encina"], [45, "pino"]]);
+  });
+});

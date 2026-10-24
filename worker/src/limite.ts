@@ -19,18 +19,37 @@ export function limiteGlobal(valor: string | undefined): number {
   return entero(valor, LIMITE_GLOBAL_POR_DEFECTO);
 }
 
-export function claveDia(ip: string, ahora: Date): string {
-  return `rl:${ahora.toISOString().slice(0, 10)}:${ip}`;
+export const LIMITE_EXPLORAR_DIARIO_POR_DEFECTO = 10;
+export const LIMITE_EXPLORAR_GLOBAL_POR_DEFECTO = 60;
+
+/** Prefijo de claves de /identificar (el de siempre). /explorar usa `exp:` para llevar su propia cuenta. */
+export const PREFIJO_IDENTIFICAR = "rl:";
+export const PREFIJO_EXPLORAR = "exp:";
+
+export function limiteExplorarDiario(valor: string | undefined): number {
+  return entero(valor, LIMITE_EXPLORAR_DIARIO_POR_DEFECTO);
 }
 
-export function claveGlobal(ahora: Date): string {
-  return claveDia("__global__", ahora);
+export function limiteExplorarGlobal(valor: string | undefined): number {
+  return entero(valor, LIMITE_EXPLORAR_GLOBAL_POR_DEFECTO);
+}
+
+export function claveDia(ip: string, ahora: Date, prefijo = PREFIJO_IDENTIFICAR): string {
+  return `${prefijo}${ahora.toISOString().slice(0, 10)}:${ip}`;
+}
+
+export function claveGlobal(ahora: Date, prefijo = PREFIJO_IDENTIFICAR): string {
+  return claveDia("__global__", ahora, prefijo);
 }
 
 export interface OpcionesLimite {
   limiteGlobal?: number;
   /** Si es true, sin KV o con fallo de lectura se responde 503 (fail closed). */
   requerirKv?: boolean;
+  /** Prefijo de las claves de KV; contadores separados por ruta. Por defecto `rl:` (/identificar). */
+  prefijo?: string;
+  /** Qué se cuenta, para el mensaje del 429. Por defecto «reconocimientos». */
+  unidad?: string;
 }
 
 const TTL = 60 * 60 * 48;
@@ -60,8 +79,9 @@ export async function consumir(
     console.warn("RATE_LIMIT (KV) no configurado: límite diario desactivado.");
     return null;
   }
-  const clave = claveDia(ip, ahora);
-  const claveG = claveGlobal(ahora);
+  const prefijo = opciones.prefijo ?? PREFIJO_IDENTIFICAR;
+  const clave = claveDia(ip, ahora, prefijo);
+  const claveG = claveGlobal(ahora, prefijo);
   let usadas = 0;
   let usadasGlobal = 0;
   try {
@@ -79,7 +99,7 @@ export async function consumir(
     throw new ErrorHttp(429, "limite_global_superado", "El servicio ha alcanzado su límite diario. Vuelve a intentarlo mañana.");
   }
   if (usadas >= limite) {
-    throw new ErrorHttp(429, "limite_diario_superado", `Has alcanzado el límite de ${limite} reconocimientos por día.`);
+    throw new ErrorHttp(429, "limite_diario_superado", `Has alcanzado el límite de ${limite} ${opciones.unidad ?? "reconocimientos"} por día.`);
   }
   try {
     await kv.put(clave, String(usadas + 1), { expirationTtl: TTL });

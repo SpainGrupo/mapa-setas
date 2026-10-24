@@ -19,6 +19,11 @@ DAILY_LIMIT = "50"
 # Tope global de reconocimientos por día (todas las IPs). Cubre la rotación de IP: la cabecera
 # Origin la falsifica cualquier cliente que no sea un navegador, así que el límite por IP no basta.
 GLOBAL_DAILY_LIMIT = "300"
+# POST /explorar (barrido de 8 fotos): cupo propio, aparte del de /identificar para que explorar no
+# se coma los reconocimientos. Barridos por IP y día, y tope global por día (todas las IPs).
+# Valores de partida del spec explorar-aqui §4.3 / plan Decisiones §2; ajustar al gasto asumible.
+EXPLORAR_DAILY_LIMIT = "10"
+EXPLORAR_GLOBAL_LIMIT = "60"
 # "true" en producción: sin KV (o si KV falla) el Worker responde 503 y no llama a Gemini.
 # Poner "false" solo en desarrollo local sin KV.
 REQUIRE_KV = "true"

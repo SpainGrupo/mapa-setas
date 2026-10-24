@@ -6,7 +6,7 @@ import { ErrorHttp } from "./http";
 export const LIMITE_DIARIO_POR_DEFECTO = 50;
 export const LIMITE_GLOBAL_POR_DEFECTO = 300;
 
-function entero(valor: string | undefined, porDefecto: number): number {
+export function entero(valor: string | undefined, porDefecto: number): number {
   const n = Number(valor);
   return Number.isInteger(n) && n > 0 ? n : porDefecto;
 }
@@ -19,18 +19,24 @@ export function limiteGlobal(valor: string | undefined): number {
   return entero(valor, LIMITE_GLOBAL_POR_DEFECTO);
 }
 
-export function claveDia(ip: string, ahora: Date): string {
-  return `rl:${ahora.toISOString().slice(0, 10)}:${ip}`;
+export function claveDia(ip: string, ahora: Date, prefijo = "rl"): string {
+  return `${prefijo}:${ahora.toISOString().slice(0, 10)}:${ip}`;
 }
 
-export function claveGlobal(ahora: Date): string {
-  return claveDia("__global__", ahora);
+export function claveGlobal(ahora: Date, prefijo = "rl"): string {
+  return claveDia("__global__", ahora, prefijo);
 }
 
 export interface OpcionesLimite {
   limiteGlobal?: number;
   /** Si es true, sin KV o con fallo de lectura se responde 503 (fail closed). */
   requerirKv?: boolean;
+  /** Prefijo de las claves KV (por defecto "rl"; /chat usa "chat" para no mezclar contadores). */
+  prefijo?: string;
+  /** true = sin tope global (el chat tiene su propio tope de gasto). */
+  sinGlobal?: boolean;
+  /** Mensaje del 429 por IP; por defecto el de /identificar. */
+  mensajeLimite?: string;
 }
 
 const TTL = 60 * 60 * 48;
@@ -60,13 +66,14 @@ export async function consumir(
     console.warn("RATE_LIMIT (KV) no configurado: límite diario desactivado.");
     return null;
   }
-  const clave = claveDia(ip, ahora);
-  const claveG = claveGlobal(ahora);
+  const clave = claveDia(ip, ahora, opciones.prefijo);
+  const claveG = claveGlobal(ahora, opciones.prefijo);
+  const usarGlobal = !opciones.sinGlobal;
   let usadas = 0;
   let usadasGlobal = 0;
   try {
     usadas = Number((await kv.get(clave)) ?? "0") || 0;
-    usadasGlobal = Number((await kv.get(claveG)) ?? "0") || 0;
+    if (usarGlobal) usadasGlobal = Number((await kv.get(claveG)) ?? "0") || 0;
   } catch (e) {
     if (opciones.requerirKv) {
       console.error("Fallo leyendo KV con REQUIRE_KV=true: se rechaza la petición.", e);
@@ -75,15 +82,15 @@ export async function consumir(
     console.error("Fallo leyendo KV; se continúa sin limitar esta petición.", e);
     return null;
   }
-  if (usadasGlobal >= topeGlobal) {
+  if (usarGlobal && usadasGlobal >= topeGlobal) {
     throw new ErrorHttp(429, "limite_global_superado", "El servicio ha alcanzado su límite diario. Vuelve a intentarlo mañana.");
   }
   if (usadas >= limite) {
-    throw new ErrorHttp(429, "limite_diario_superado", `Has alcanzado el límite de ${limite} reconocimientos por día.`);
+    throw new ErrorHttp(429, "limite_diario_superado", opciones.mensajeLimite ?? `Has alcanzado el límite de ${limite} reconocimientos por día.`);
   }
   try {
     await kv.put(clave, String(usadas + 1), { expirationTtl: TTL });
-    await kv.put(claveG, String(usadasGlobal + 1), { expirationTtl: TTL });
+    if (usarGlobal) await kv.put(claveG, String(usadasGlobal + 1), { expirationTtl: TTL });
   } catch (e) {
     console.error("Fallo escribiendo KV.", e);
   }

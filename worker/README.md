@@ -133,3 +133,75 @@ parte en teselas de 258 tokens, unos 1.000–1.100 tokens por foto:
 Con 1 foto sale por ~0,009 $. Desde 2027, el doble (~0,025 $ con 4 fotos). El peor caso por IP
 con el límite de 50 al día es ~0,65 $/día. Los tokens de razonamiento son la parte más
 incierta: la cifra real está en `usageMetadata` de cada respuesta de Google.
+
+## `/chat` («Pregunta a Claude»)
+
+Segunda ruta del mismo Worker: proxy hacia la API de Claude (SDK oficial `@anthropic-ai/sdk`,
+versión fijada en `package.json`). Spec: `docs/specs/2026-10-20-pregunta-a-claude-design.md`.
+Sin estado: la app reenvía la conversación entera; las herramientas (`src/chat-herramientas.ts`,
+fuente única) las ejecuta la app en el iPhone y el Worker solo reenvía a Claude con el system
+prompt (`src/chat-prompt.ts`, constante para no romper la caché de prompt).
+
+`POST /chat` · mismo CORS, lista de orígenes, OPTIONS/405/415 que `/identificar`.
+
+```json
+{ "messages": [ { "role": "user", "content": [{ "type": "text", "text": "<contexto_app>{…}</contexto_app> ¿adónde voy hoy?" }] } ] }
+```
+
+- `messages` en formato de la API de Anthropic: 1–39 mensajes (máx. 40), alternando `user`/`assistant`,
+  empieza y termina en `user`. En `user` solo bloques `text` y `tool_result` (o string). Los `assistant`
+  se aceptan tal cual (incluidos los bloques de razonamiento) y nunca se modifican. Cuerpo ≤ 200 KB.
+- Consulta nueva = el último `user` tiene `text` y ningún `tool_result`: consume `CHAT_DAILY_LIMIT`
+  por IP y día (claves KV `chat:…`, separadas de `rl:…`). Si es una ronda de herramientas no consume,
+  pero a la 7.ª ronda de una misma consulta responde 429 `demasiadas_rondas`.
+
+Respuesta 200 (cabecera `X-Restantes-Hoy` solo en consultas nuevas):
+
+```json
+{ "content": [ …bloques de Claude, SIN filtrar: guardarlos tal cual como historial… ],
+  "stop_reason": "end_turn | tool_use | refusal | max_tokens …",
+  "texto": "texto para mostrar, ya filtrado (sin afirmaciones de comestibilidad)",
+  "aviso": "No consumas ninguna seta sin la confirmación de un experto." }
+```
+
+Si `stop_reason` es `refusal`, `texto` es «No puedo responder a eso; prueba a reformularlo.».
+
+| Estado | código | Cuándo |
+|---|---|---|
+| 400 | `solicitud_invalida` | JSON roto, roles/bloques no permitidos, no alterna, no acaba en `user` |
+| 400 | `conversacion_larga` | Más de 40 mensajes («Empieza una conversación nueva.») |
+| 413 | `carga_demasiado_grande` | Cuerpo > 200 KB |
+| 429 | `limite_diario_superado` | Más de `CHAT_DAILY_LIMIT` consultas nuevas por IP y día |
+| 429 | `demasiadas_rondas` | 6 rondas de herramientas ya hechas en la consulta |
+| 429 | `tope_gasto` | Gasto del día ≥ `CHAT_DAILY_USD` o del mes ≥ `CHAT_MONTHLY_USD`; no se llama a Claude |
+| 500 | `configuracion_incompleta` | Falta el secreto `ANTHROPIC_API_KEY` |
+| 502 | `claude_error` | Cualquier otro fallo de Claude (el detalle solo va al log, nunca al cliente) |
+| 503 | `claude_saturado` | Claude devolvió 429 o 529 |
+| 503 | `servicio_no_disponible` | Sin KV (o KV falla) con `REQUIRE_KV="true"`; no se llama a Claude |
+| 504 | `claude_tiempo_agotado` | Claude tardó más de 45 s (1 reintento del SDK) |
+
+### Configuración del chat
+
+| Nombre | Tipo | Valor |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | secreto | Clave de console.anthropic.com. Nunca en `wrangler.toml` ni en git. |
+| `CLAUDE_MODEL` | var | `claude-opus-5-5` (alternativas: `claude-sonnet-5-5`, `claude-haiku-5-5`; este último sin reintento por rechazos) |
+| `CLAUDE_EFFORT` | var | `low` (también `medium`/`high`) |
+| `CHAT_DAILY_LIMIT` | var | Consultas nuevas por IP y día. Por defecto 30 |
+| `CHAT_DAILY_USD` / `CHAT_MONTHLY_USD` | var | Topes globales de gasto (UTC). Por defecto 1,5 y 25 |
+
+El gasto se estima con `usage` × precio de lista (tabla en `src/chat-gasto.ts`; modelo desconocido =
+precios de Opus) y se guarda en KV en microdólares (`chatusd:d:AAAA-MM-DD`, `chatusd:m:AAAA-MM`).
+Es aproximado (KV es eventualmente consistente): la red de seguridad real es el límite de gasto
+del workspace en Anthropic.
+
+Se llama con `tool_choice: auto` (los forzados dan 400 en estos modelos), `output_config.effort`,
+caché automática (`cache_control` superior) y, salvo en Haiku, `fallbacks: "default"` con la beta
+`server-side-fallback-2026-07-01`. No se envía `thinking` (adaptativo por defecto en Opus 5.5).
+
+### Lo que tiene que hacer Alexander
+
+1. Crear una clave de API en https://console.anthropic.com (con método de pago) y fijar un
+   **límite de gasto mensual del workspace**.
+2. Guardarla en el Worker: `cd worker && npx wrangler secret put ANTHROPIC_API_KEY` (la pega él por teclado).
+3. Autorizar el `npx wrangler deploy` (nadie lo hace por él) y la publicación en Pages.

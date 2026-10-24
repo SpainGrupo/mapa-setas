@@ -15,7 +15,13 @@ export type CodigoError =
   | "gemini_saturado"
   | "gemini_error"
   | "contenido_bloqueado"
-  | "respuesta_invalida";
+  | "respuesta_invalida"
+  | "conversacion_larga"
+  | "demasiadas_rondas"
+  | "tope_gasto"
+  | "claude_tiempo_agotado"
+  | "claude_saturado"
+  | "claude_error";
 
 export class ErrorHttp extends Error {
   constructor(

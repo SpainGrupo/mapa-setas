@@ -23,6 +23,17 @@ GLOBAL_DAILY_LIMIT = "300"
 # Poner "false" solo en desarrollo local sin KV.
 REQUIRE_KV = "true"
 
+# --- Chat «Pregunta a Claude» (POST /chat; spec docs/specs/2026-10-20-pregunta-a-claude-design.md) ---
+# Modelo y esfuerzo de razonamiento. Alternativas: claude-sonnet-5-5 (más barato) o claude-haiku-5-5 (sin reintento por rechazos).
+CLAUDE_MODEL = "claude-opus-5-5"
+CLAUDE_EFFORT = "low"
+# Consultas nuevas por IP y día (las rondas de herramientas de una misma consulta no cuentan).
+CHAT_DAILY_LIMIT = "30"
+# Topes de gasto globales en USD (día y mes UTC). Superados -> 429 tope_gasto sin llamar a Claude.
+# La red de seguridad real es el límite de gasto del workspace en console.anthropic.com.
+CHAT_DAILY_USD = "1.5"
+CHAT_MONTHLY_USD = "25"
+
 # Contador del límite diario. Crear con `npx wrangler kv namespace create RATE_LIMIT`
 # y pegar aquí el id que devuelve. Con REQUIRE_KV="true", sin este binding el Worker responde 503.
 [[kv_namespaces]]
@@ -30,3 +41,4 @@ binding = "RATE_LIMIT"
 id = "0277e4003a8a4dbdb1c7726ef9c3dd3b"
 
 # GEMINI_API_KEY es un secreto: `npx wrangler secret put GEMINI_API_KEY` (nunca en este archivo).
+# ANTHROPIC_API_KEY (chat) también es un secreto: `npx wrangler secret put ANTHROPIC_API_KEY`.

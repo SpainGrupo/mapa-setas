@@ -5,7 +5,7 @@
 import { cajaAlrededor, desnivelMicrozonas, DESNIVELES_MAX, MAX_NODOS, NOMBRE_MODO, notaResolucion, rutaPie, textoMinutos,
   type DesnivelMicro, type ModoRuta, type ResultadoRuta, type RutaPie } from './ruta-pie';
 import { cotasEn, type Cotas } from './mdt-datos';
-import { celdaLatLon } from './mdt';
+import { celdaLatLon, cotaEn } from './mdt';
 import { pintarPerfil } from './perfil-grafico';
 import { textoDistancia } from './ruta';
 import { RADIO_M } from './micro';
@@ -31,6 +31,12 @@ let bloque: HTMLElement | null = null;
 let alCambiar: () => void = () => {};
 
 export const modoRuta = () => modo;
+/** Cota (m) del modelo del terreno en el punto, con las cotas ya cargadas (prepararCotas); null sin cotas o fuera de ellas. */
+export function cotaModelo(lat: number, lon: number): number | null {
+  if (!cotas) return null;
+  const z = cotaEn(cotas.rejilla, lat, lon);
+  return Number.isFinite(z) ? z : null;
+}
 export const fuenteCotas = () => (cotas ? cotas.fuente : cotas === null ? 'ninguna' : 'cargando');
 /** Desnivel máximo elegido (null = sin límite). Sin cotas no se puede filtrar: null. */
 export const desnivelMax = () => max;

@@ -42,7 +42,9 @@ import { guardarNav, leerNav, type EstadoNav } from './estado-nav';
 import { celdaDe } from './acceso';
 import { abrirIr, estadoIr, iniciarIr, volverAlMapaIr } from './ir-sitio';
 import { abrirCampo, bloqueComoBuscar, campoAbierto, estadoCampo, iniciarCampo, limpiarCampo } from './campo-ui';
+import { abrirExplorar, estadoExplorar, iniciarExplorar } from './explorar-ui';
 import { estadoGrabacion, iniciarGrabar, pintarRutas } from './grabar-ui';
+import { iniciarObservaciones, pintarEntradaObservaciones } from './observaciones-ui';
 import { elegirEnMapaTop, iniciarHoyMapa } from './hoy-mapa';
 import { abrirEnlaceDeUrl, iniciarEnlace, puntosEnlace } from './enlace-ui';
 import { puntosDeKml } from './enlaces';
@@ -116,7 +118,7 @@ function irA(id: string) {
     if (b.dataset.p === id) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
   });
   if (id === 'p-mapa') mapa?.resize();
-  if (id === 'p-sitios') { pintarLista(); pintarRutas(); }
+  if (id === 'p-sitios') { pintarLista(); pintarRutas(); void pintarEntradaObservaciones(); }
   if (id === 'p-ajustes') pintarAjustes();
   if (id === 'p-zona') pintarZona();
   if (id === 'p-hoy') pintarHoy();
@@ -328,7 +330,7 @@ async function iniciarMapa() {
     olvidarGps: () => { if (gps) gps.ultima = null; }, vista: vistaMapa,
     lugarHoy: (id: string) => lugarRef(id),
     sitioEditando: () => editando && { ...editando, foto: undefined }, accesoSitio: () => accesoSitio,
-    ir: estadoIr, campo: estadoCampo, abrirCampo, grabacion: estadoGrabacion, elegirEnMapaTop, altitudEn, abrirIr, miniMapa: mapaListo, puntosEnlace, abrirEnlaceDeUrl,
+    ir: estadoIr, campo: estadoCampo, explorar: estadoExplorar, abrirCampo, grabacion: estadoGrabacion, elegirEnMapaTop, altitudEn, abrirIr, miniMapa: mapaListo, puntosEnlace, abrirEnlaceDeUrl,
     resumenSemaforo: () => Object.fromEntries((manifest?.especies ?? []).map((e) => {
       const n: Record<string, number> = { verde: 0, amarillo: 0, rojo: 0, gris: 0 };
       for (const p of puntosMeteo) n[estadoEn(p, e.id)?.estado ?? 'gris']++;
@@ -1466,6 +1468,13 @@ iniciarCampo({
   navegar: (p) => { ($('#dlg-campo') as HTMLDialogElement).close(); abrirIr({ lat: p.lat, lon: p.lon, titulo: p.titulo, subtitulo: p.nota, ruta: p.ruta }); },
   guardar: (p) => guardarPunto({ lat: p.lat, lon: p.lon, nota: p.nota, especie: p.especie }),
   alCerrar: () => volverAlMapaIr(),
+  explorar: (id) => { void abrirExplorar(id); },
+});
+iniciarExplorar({
+  especie: especieSel, region: () => manifest?.region?.id ?? '', manifest: () => manifest, avisar,
+  miniatura: (id) => miniaturaEspecie(id, indiceGuia()),
+  especies: () => (manifest?.especies ?? []).map((e) => ({ id: e.id, nombre: nombres[e.id] ?? e.id })),
+  guardar: (p) => guardarPunto(p),
 });
 document.getElementById('dlg-ir')?.addEventListener('close', () => { if (!campoAbierto()) limpiarCampo(); });
 ponerBloqueBuscar((idFicha) => bloqueComoBuscar(especieMapaDeFicha(idFicha, (manifest?.especies ?? []).map((e) => e.id))));
@@ -1475,6 +1484,17 @@ iniciarEnlace({
   guardar: (p) => guardarPunto({ lat: p.lat, lon: p.lon, nota: [p.nombre, p.nota].filter(Boolean).join(' — ') }),
 });
 iniciarGrabar({ avisar, mapa: () => mapa, irA });
+iniciarObservaciones({
+  especies: () => (manifest?.especies ?? []).map((e) => ({ id: e.id, nombre: nombres[e.id] ?? e.id })),
+  avisar,
+  verEnMapa: (p) => {
+    irA('p-mapa');
+    const sel = $<HTMLSelectElement>('#sel-especie');
+    if (p.especie && sel.value !== p.especie && [...sel.options].some((o) => o.value === p.especie)) { sel.value = p.especie; sel.dispatchEvent(new Event('change')); }
+    mapa?.jumpTo({ center: [p.lon, p.lat], zoom: Math.max(15, mapa.getZoom()) });
+    mostrarAcceso(p.lat, p.lon);
+  },
+});
 
 iniciarHoy({
   irAlSitio,

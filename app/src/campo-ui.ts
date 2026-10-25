@@ -34,6 +34,8 @@ export interface ContextoCampo {
   guardar: (p: PuntoCampo) => Promise<'guardado' | 'ya'>;
   /** «Navegar aquí» abierto debajo: al cerrar el modo campo el mini-mapa vuelve allí. */
   alCerrar?: () => void;
+  /** «Explorar aquí» (explorar-ui.ts) encima de esta vista, con la seta elegida aquí; sin él, no hay botón. */
+  explorar?: (especie: string) => void;
   avisar: (t: string) => void;
 }
 
@@ -74,6 +76,7 @@ function html() {
       <div id="cp-hueco" class="ir-hueco"></div>
       <div class="ir-mapa-cab vidrio"><label class="ir-girar"><input id="cp-seguir" type="checkbox" checked /><span>Seguirme</span></label></div>
     </div>
+    <button id="cp-explorar" class="btn btn-ancho cp-explorar" type="button" hidden>Explorar aquí</button>
     <div id="cp-tarjeta" class="cp-tarjeta" hidden></div>
     <ol id="cp-lista" class="cp-lista" aria-label="Microzonas cercanas"></ol>
     <details id="cp-buscar" class="cp-buscar"><summary id="cp-buscar-tit">Cómo buscar</summary><dl id="cp-buscar-dl"></dl></details>
@@ -351,6 +354,8 @@ export function iniciarCampo(c: ContextoCampo) {
   ctx = c;
   dlg = html();
   $('#cp-cerrar').addEventListener('click', () => { limpiarCampo(); dlg.close(); });
+  $('#cp-explorar').hidden = !c.explorar;
+  $('#cp-explorar').addEventListener('click', () => c.explorar?.(especie));
   dlg.addEventListener('close', cerrar);
   $('#cp-especie').addEventListener('change', async () => {
     especie = $<HTMLSelectElement>('#cp-especie').value;

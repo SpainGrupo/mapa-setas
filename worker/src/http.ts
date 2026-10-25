@@ -3,6 +3,7 @@
 export type CodigoError =
   | "origen_no_permitido"
   | "ruta_no_encontrada"
+  | "asistente_no_activado"
   | "metodo_no_permitido"
   | "tipo_contenido_no_soportado"
   | "carga_demasiado_grande"
@@ -15,7 +16,13 @@ export type CodigoError =
   | "gemini_saturado"
   | "gemini_error"
   | "contenido_bloqueado"
-  | "respuesta_invalida";
+  | "respuesta_invalida"
+  | "conversacion_larga"
+  | "demasiadas_rondas"
+  | "tope_gasto"
+  | "claude_tiempo_agotado"
+  | "claude_saturado"
+  | "claude_error";
 
 export class ErrorHttp extends Error {
   constructor(

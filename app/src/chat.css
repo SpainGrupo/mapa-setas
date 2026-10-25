@@ -1,0 +1,77 @@
+/* «Pregunta a Claude» (2026-10-25): hoja inferior con el chat sobre el mapa. Archivo aparte de estilos.css para no pisar
+   los cambios de diseño en paralelo; usa sus tokens (:root y tema oscuro). Objetivo táctil >= 48 px, una mano, al sol. */
+
+/* botones de entrada: atenuados sin conexión (siguen recibiendo el toque para explicar el motivo) */
+.atenuado, [aria-disabled=true].fab, [aria-disabled=true].btn { opacity: 0.5; }
+/* Abajo a la izquierda, fuera de la columna de botones de la derecha (no tapa los avisos del mapa) */
+.fab-chat { position: absolute; z-index: 10; left: 12px; bottom: calc(var(--pie) + 34px); }
+body[data-hoja] .fab-chat { display: none; }
+body[data-zona] .fab-chat { bottom: calc(var(--pie) + 172px); }
+#hoy-pregunta { margin-bottom: 4px; }
+#hoy-pregunta .ico { color: var(--bosque-tx); }
+
+/* ---------------------------------------------------------------- hoja */
+.hoja-chat { z-index: 30; height: calc(100vh - var(--sup) - var(--pie) - 84px); height: calc(100dvh - var(--sup) - var(--pie) - 84px); }
+.hoja-chat .ta-cab { cursor: pointer; }
+.hoja-chat:not([data-reten="2"]) #chat-cupo::after { content: ' · toca aquí para abrir el chat'; font-weight: 800; color: var(--bosque-tx); }
+.chat-mensajes { flex: 1; align-content: start; gap: 12px; padding-top: 8px; }
+
+.chat-vacio { margin: 0; padding: 14px 16px; border-radius: 16px; background: var(--velo); color: var(--tinta-2); font-size: 16px; line-height: 1.4; }
+
+/* ---------------------------------------------------------------- burbujas */
+.chat-usuario {
+  margin: 0; justify-self: end; max-width: 86%; padding: 10px 14px; border-radius: 18px 18px 6px 18px;
+  background: var(--bosque); color: oklch(100% 0 0); font-size: 17px; line-height: 1.35; overflow-wrap: anywhere;
+}
+.chat-asistente { display: grid; gap: 10px; justify-items: start; min-width: 0; }
+.chat-burbuja {
+  max-width: 94%; padding: 10px 14px; border-radius: 18px 18px 18px 6px; background: var(--hoja); border: 1.5px solid var(--regla);
+  font-size: 17px; line-height: 1.4; display: grid; gap: 8px; overflow-wrap: anywhere; user-select: text; -webkit-user-select: text;
+}
+.chat-burbuja p, .chat-burbuja ul { margin: 0; }
+.chat-burbuja ul { padding-left: 20px; display: grid; gap: 4px; }
+.chat-pensando { margin: 0; justify-self: start; padding: 10px 14px; border-radius: 18px 18px 18px 6px; background: var(--velo); color: var(--tinta-2); font-weight: 700; font-size: 16px; }
+@media (prefers-reduced-motion: no-preference) { .chat-pensando { animation: chat-latido 1.4s ease-in-out infinite; } }
+@keyframes chat-latido { 50% { opacity: 0.55; } }
+.chat-error { margin: 0; padding: 12px 14px; border-radius: 14px; background: var(--peligro-t); color: var(--peligro-tx); font-weight: 800; font-size: 16px; }
+
+/* pie fijo de seguridad bajo cada respuesta (lo pone la app, no el modelo) */
+.chat-aviso { display: flex; gap: 8px; align-items: center; margin: 0; padding: 8px 12px; border-radius: 12px; background: var(--hoja); border: 2px solid var(--tinta); font-size: 14.5px; font-weight: 800; line-height: 1.25; }
+.chat-aviso .ico { width: 20px; height: 20px; color: var(--peligro-tx); }
+
+/* ---------------------------------------------------------------- tarjetas de sitio */
+.chat-tarjetas { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; width: 100%; }
+.chat-tarjeta {
+  display: grid; gap: 8px; padding: 12px; border-radius: 18px; background: var(--papel);
+  border: 1.5px solid oklch(62% 0.017 158 / 0.55); border-left: 6px solid var(--regla);
+}
+.chat-tarjeta[data-estado=verde] { border-left-color: oklch(62% 0.18 145); }
+.chat-tarjeta[data-estado=amarillo] { border-left-color: oklch(82% 0.16 80); }
+.chat-tarjeta[data-estado=rojo] { border-left-color: oklch(58% 0.19 27); }
+.chat-tarjeta p { margin: 0; }
+.ct-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ct-nombre { font-size: 18px; line-height: 1.2; min-width: 0; overflow-wrap: anywhere; }
+.ct-datos { font-size: 16px; color: var(--tinta-2); font-weight: 700; }
+.ct-datos b { font-family: var(--cifras); font-size: 26px; letter-spacing: -0.03em; color: var(--tinta); margin-right: 1px; }
+.ct-aparcar { font-weight: 700; font-size: 15.5px; }
+.ct-nuevo { font-size: 15px; color: var(--tinta); padding: 8px 10px; border-radius: 12px; background: var(--bosque-t); }
+.ct-razon summary { min-height: 44px; display: flex; align-items: center; font-weight: 800; font-size: 15px; color: var(--bosque-tx); cursor: pointer; }
+.ct-razon p { font-size: 15px; line-height: 1.4; color: var(--tinta-2); }
+.ct-botones { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 8px; }
+.ct-botones .btn { min-height: 52px; padding: 8px 6px; font-size: 16px; min-width: 0; }
+
+/* acciones reversibles («Guardado… Deshacer») */
+.chat-accion { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 8px 8px 8px 14px; border-radius: 14px; background: var(--bosque-t); color: var(--bosque-tx); font-weight: 800; font-size: 15.5px; }
+.chat-accion .btn { min-height: 48px; padding: 6px 14px; font-size: 16px; flex: none; }
+
+/* ---------------------------------------------------------------- caja de escribir */
+.chat-form { flex: none; display: grid; gap: 8px; padding: 8px 14px 10px; border-top: 1px solid oklch(62% 0.017 158 / 0.35); background: var(--vidrio-tinte-denso); }
+.chat-sugerencias { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.chat-sugerencias::-webkit-scrollbar { display: none; }
+.chat-sugerencia { flex: none; min-height: 48px; font-size: 16px; }
+.chat-fila { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; }
+.chat-fila textarea { min-height: 52px; max-height: 120px; resize: none; padding: 12px 14px; font-size: 17px; line-height: 1.3; }
+.chat-fila .btn { min-height: 52px; min-width: 88px; }
+.chat-pie-form { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 48px; }
+.chat-pie-form .nota { font-weight: 800; color: var(--peligro-tx); min-width: 0; }
+.chat-pie-form .btn { min-height: 48px; padding: 6px 14px; font-size: 15.5px; flex: none; margin-left: auto; }

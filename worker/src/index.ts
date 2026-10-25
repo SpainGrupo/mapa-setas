@@ -19,6 +19,7 @@ import {
   limiteGlobal,
 } from "./limite";
 import { MAX_BYTES_CUERPO_EXPLORAR, cuerpoGeminiExplorar, postProcesarExplorar, validarPeticionExplorar } from "./explorar";
+import { manejarChat } from "./chat";
 
 export interface Env {
   GEMINI_API_KEY?: string;
@@ -30,6 +31,12 @@ export interface Env {
   EXPLORAR_DAILY_LIMIT?: string;
   EXPLORAR_GLOBAL_LIMIT?: string;
   REQUIRE_KV?: string;
+  ANTHROPIC_API_KEY?: string;
+  CLAUDE_MODEL?: string;
+  CLAUDE_EFFORT?: string;
+  CHAT_DAILY_LIMIT?: string;
+  CHAT_DAILY_USD?: string;
+  CHAT_MONTHLY_USD?: string;
   RATE_LIMIT?: KVNamespace;
 }
 
@@ -47,7 +54,8 @@ export default {
     const cors = cabecerasCors(origen);
 
     const esExplorar = url.pathname === "/explorar";
-    if (url.pathname !== "/identificar" && !esExplorar) {
+    const esChat = url.pathname === "/chat";
+    if (url.pathname !== "/identificar" && !esExplorar && !esChat) {
       return respuestaError(new ErrorHttp(404, "ruta_no_encontrada", "Ruta no encontrada."), cors);
     }
     if (request.method === "OPTIONS") {
@@ -62,6 +70,7 @@ export default {
       if (!/^application\/json\b/i.test(tipo)) {
         throw new ErrorHttp(415, "tipo_contenido_no_soportado", "Envía Content-Type: application/json.");
       }
+      if (esChat) return await manejarChat(request, env, cors);
       if (!env.GEMINI_API_KEY) {
         throw new ErrorHttp(500, "configuracion_incompleta", "El servicio no está configurado.");
       }
@@ -110,7 +119,7 @@ export default {
     } catch (e) {
       if (e instanceof ErrorHttp) return respuestaError(e, cors);
       console.error("Error inesperado", e instanceof Error ? e.message : e);
-      return respuestaError(new ErrorHttp(500, "gemini_error", "Error interno."), cors);
+      return respuestaError(new ErrorHttp(500, esChat ? "claude_error" : "gemini_error", "Error interno."), cors);
     }
   },
 } satisfies ExportedHandler<Env>;

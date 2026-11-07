@@ -228,7 +228,9 @@ try {
   const dec = (x) => (String(x).split('.')[1] ?? '').length;
   comprobar(p.w.peticiones.length === 1 && pet.fotos.length === 8 && pet.fotos.every((f) => Number.isInteger(f.rumbo) && f.rumbo >= 0 && f.rumbo < 360 && f.jpeg.startsWith('/9j/')), 'la petición lleva 8 fotos JPEG en base64 con rumbo entero 0–359');
   comprobar(dec(pet.contexto.lat) <= 2 && dec(pet.contexto.lon) <= 2 && pet.contexto.lat === Math.round(YO.lat * 100) / 100, `latitud y longitud con ≤ 2 decimales (${pet.contexto.lat}, ${pet.contexto.lon})`);
-  comprobar(JSON.stringify(Object.keys(pet.contexto).sort()) === JSON.stringify(['altitud', 'arboles_region', 'especie', 'especie_nombre', 'lat', 'lon', 'mes', 'modelo_sector']) && pet.contexto.modelo_sector.length === 8 && pet.contexto.mes === 10,
+  comprobar(JSON.stringify(Object.keys(pet.contexto).sort()) === JSON.stringify(['altitud', 'arboles_region', 'especie', 'especie_nombre', 'lat', 'lon', 'mes', 'modelo_sector']) && pet.contexto.modelo_sector.length === 8
+    // El mes es el de la observación (reloj real del barrido, no el ?hoy= del e2e).
+    && pet.contexto.mes === await p.evaluate(() => new Date().getMonth() + 1),
     `contexto solo con los campos del contrato (${Object.keys(pet.contexto).join(', ')})`);
   comprobar(JSON.stringify(pet).indexOf(String(YO.lat)) < 0 && JSON.stringify(pet).indexOf(String(YO.lon)) < 0, 'el punto exacto no sale del teléfono');
   comprobar(await p.locator('#ex-an-res li').count() === 8 && await p.locator('#ex-an-res li[data-mejor="1"]').count() === 1, 'resultado: 8 direcciones y una sola marcada como mejor');

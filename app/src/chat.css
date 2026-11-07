@@ -55,7 +55,7 @@ body[data-zona] .fab-chat { bottom: calc(var(--pie) + 172px); }
 .ct-datos b { font-family: var(--cifras); font-size: 26px; letter-spacing: -0.03em; color: var(--tinta); margin-right: 1px; }
 .ct-aparcar { font-weight: 700; font-size: 15.5px; }
 .ct-nuevo { font-size: 15px; color: var(--tinta); padding: 8px 10px; border-radius: 12px; background: var(--bosque-t); }
-.ct-razon summary { min-height: 44px; display: flex; align-items: center; font-weight: 800; font-size: 15px; color: var(--bosque-tx); cursor: pointer; }
+.ct-razon summary { min-height: var(--toque); display: flex; align-items: center; font-weight: 800; font-size: 15px; color: var(--bosque-tx); cursor: pointer; }
 .ct-razon p { font-size: 15px; line-height: 1.4; color: var(--tinta-2); }
 .ct-botones { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 8px; }
 .ct-botones .btn { min-height: 52px; padding: 8px 6px; font-size: 16px; min-width: 0; }

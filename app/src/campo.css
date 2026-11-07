@@ -46,7 +46,7 @@
 .ir-mapa .ir-hueco { flex: 1; min-height: 260px; display: flex; }
 .ir-mapa .minimapa { flex: 1; height: auto; }
 .ir-mapa .ir-mapa-cab { position: absolute; z-index: 2; top: 8px; left: 8px; right: 52px; padding: 0 10px; border-radius: 14px; display: flex; flex-wrap: wrap; gap: 0 14px; }
-.ir-mapa .ir-girar { min-height: 40px; font-size: 15px; }
+.ir-mapa .ir-girar { min-height: var(--toque); font-size: 15px; }
 .ir-grab { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; }
 .ir-grab-txt { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; }
 .dlg-ir:not([data-grabando="1"]) .ir-grab .gr-punto { background: var(--regla); animation: none; }
@@ -69,7 +69,7 @@
 .ir-rumbo, .ir-desnivel { font-weight: 700; }
 .ir-fuente { margin: 0; }
 .ir-mapa-cab { display: flex; align-items: center; }
-.ir-girar { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 700; }
+.ir-girar { display: inline-flex; align-items: center; gap: 8px; min-height: var(--toque); font-weight: 700; }
 .ir-girar input { width: 22px; height: 22px; accent-color: var(--bosque); }
 .ir-girar:has(input:disabled) { opacity: 0.5; }
 .ir-acciones { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -87,7 +87,7 @@
 .gr-datos { margin: 0; font-size: 15px; font-family: var(--cifras); }
 .gr-aviso { margin: 0; font-size: 12.5px; line-height: 1.3; color: var(--tinta-2); }
 .gr-acciones { display: flex; gap: 8px; }
-.gr-acciones .btn { flex: 1; min-height: 44px; }
+.gr-acciones .btn { flex: 1; min-height: var(--toque); }
 @keyframes latir { 50% { opacity: 0.35; } }
 @media (prefers-reduced-motion: reduce) { .gr-punto { animation: none; } }
 /* Con el panel abierto, la cabecera de cada pantalla baja lo que ocupa. */
@@ -105,7 +105,7 @@ body[data-grabando] .mapa-cab { top: calc(var(--sup) + 140px); }
 .estrellas-nota legend { font-weight: 700; color: var(--tinta-2); font-size: 15px; margin-bottom: 6px; }
 .estrellas-nota label { position: relative; }
 .estrellas-nota input { position: absolute; opacity: 0; }
-.estrellas-nota span { display: grid; place-items: center; min-width: 56px; min-height: var(--toque); padding: 0 10px; border-radius: 12px; border: 2px solid var(--regla); color: var(--oxido); font-size: 18px; cursor: pointer; }
+.estrellas-nota span { display: grid; place-items: center; min-width: 56px; min-height: var(--toque); padding: 0 10px; border-radius: 12px; border: 2px solid var(--regla); color: var(--oxido-tx); font-size: 18px; cursor: pointer; }
 .estrellas-nota input:checked + span { border-color: var(--tinta); background: var(--lavado); }
 .estrellas-nota input:focus-visible + span { outline: 3px solid var(--ruta); }
 
@@ -121,10 +121,10 @@ body[data-grabando] .mapa-cab { top: calc(var(--sup) + 140px); }
 .cp-tit { font-weight: 800; font-size: 17px; }
 .cp-razon { font-size: 15px; color: var(--tinta-2); }
 .cp-lista { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
-.cp-fila { min-height: 40px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--regla); background: var(--papel); color: var(--tinta); font: inherit; font-size: 14px; }
+.cp-fila { min-height: var(--toque); padding: 0 12px; border-radius: 999px; border: 1px solid var(--regla); background: var(--papel); color: var(--tinta); font: inherit; font-size: 14px; }
 .cp-fila[aria-current=true] { background: var(--bosque); color: oklch(100% 0 0); border-color: var(--bosque); }
 .cp-buscar { padding: 10px 12px; border-radius: 18px; background: var(--papel); border: 1px solid oklch(62% 0.017 158 / 0.4); }
-.cp-buscar summary { font-weight: 800; min-height: 32px; cursor: pointer; }
+.cp-buscar summary { display: flex; align-items: center; font-weight: 800; min-height: var(--toque); cursor: pointer; }
 .cp-buscar dl, .cp-dl { margin: 8px 0 0; display: grid; gap: 2px; }
 .cp-buscar dt, .cp-dl dt { font-weight: 700; margin-top: 8px; }
 .cp-buscar dd, .cp-dl dd { margin: 0; }
@@ -133,7 +133,7 @@ body[data-grabando] .mapa-cab { top: calc(var(--sup) + 140px); }
 .cp-mapa .ir-mapa-cab { right: auto; }
 /* Ruta a pie por el terreno (campo-ruta.ts) */
 .cp-ruta { display: grid; gap: 8px; padding-top: 8px; border-top: 1px solid var(--regla); }
-.cp-ruta .cp-modo span { min-height: 40px; font-size: 15px; }
+.cp-ruta .cp-modo span { min-height: var(--toque); font-size: 15px; }
 .cp-ruta-datos { font-size: 15px; font-variant-numeric: tabular-nums; }
 .cp-ruta-datos b { font-weight: 800; }
 .cp-ruta[data-estado=sin_ruta] .cp-ruta-datos, .cp-ruta[data-estado=sin_datos] .cp-ruta-datos { color: var(--peligro-tx); }
@@ -214,7 +214,7 @@ body[data-grabando] .mapa-cab { top: calc(var(--sup) + 140px); }
 .ex-res { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
 .ex-res-dir { display: grid; grid-template-columns: 32px 1fr; gap: 8px; align-items: start; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--regla); background: var(--papel); }
 .ex-res-dir[data-mejor="1"] { border: 2px solid var(--bosque); background: var(--lavado); }
-.ex-flecha { display: grid; place-items: center; width: 32px; height: 32px; font: 800 22px/1 var(--texto); color: var(--bosque); }
+.ex-flecha { display: grid; place-items: center; width: 32px; height: 32px; font: 800 22px/1 var(--texto); color: var(--bosque-tx); }
 .ex-res-cab { display: flex; justify-content: space-between; gap: 8px; }
 .ex-total { font: 800 16px/1 var(--cifras); font-variant-numeric: tabular-nums; }
 .ex-razones { font-size: 14px; line-height: 1.35; }

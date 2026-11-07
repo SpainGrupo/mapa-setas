@@ -49,6 +49,7 @@
       <div id="mira" class="mira" aria-hidden="true" hidden><svg class="ico"><use href="#i-mira"/></svg></div>
 
       <header class="mapa-cab">
+        <h1 class="sr">Mapa de setas</h1>
         <div class="fila-especie">
           <span class="sr" id="etq-especie">Especie</span>
           <!-- El <select> oculto guarda el valor (lo leen el mapa, la Zona y los sitios); se elige con el selector con fotos. -->
@@ -212,7 +213,10 @@
           <p class="ta-aviso">Trazado aproximado (rejilla de 100 m). Puede cruzar fincas, vallas o barrancos: manda lo que veas.</p>
         </div>
       </div>
-      <p id="sin-datos" class="sin-datos vidrio" role="status" hidden>No hay mapas. Conéctate a internet o descárgalos en Ajustes.</p>
+      <div id="sin-datos" class="sin-datos vidrio" role="status" hidden>
+        <p>No hay mapas. Conéctate a internet o descárgalos en Ajustes.</p>
+        <button id="sin-datos-ajustes" class="btn btn-primario btn-ancho" type="button">Ir a descargas</button>
+      </div>
     </section>
 
     <section id="p-sitios" class="pantalla" aria-label="Mis sitios">
@@ -256,7 +260,11 @@
           <label id="hoy-solo-publicos-campo" class="campo interruptor-hoy"><input id="hoy-solo-publicos" type="checkbox" /><span>Solo montes públicos</span></label>
         </div>
         <h2 id="tit-top-general">Mejores sitios</h2>
-        <p id="hoy-explicacion-puntos" class="nota explicacion-puntos"><b>Puntuación del día</b>: hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa × citas cercanas (si la región lo aplica) × comodidad del terreno (cómodo ×1, algo de sube y baja ×0,85, quebrado ×0,65; en tercios de los sitios de la región). «Citado: …» dice qué citas publicadas hay junto al sitio. «≈ N %» es la probabilidad estimada de que esa seta esté saliendo ese día según la lluvia, la temperatura y la temporada: orientativa, no una garantía.</p>
+        <details class="creditos explicacion-puntos">
+          <summary>Cómo se ordenan los sitios</summary>
+          <p class="nota">Arriba, los sitios con mejor bosque y mejor tiempo ese día. «≈ N %» es lo probable que es que esa seta esté saliendo: orientativo, no una garantía.</p>
+          <p id="hoy-explicacion-puntos" class="nota"><b>Puntuación del día</b>: hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa × citas cercanas (si la región lo aplica) × comodidad del terreno (cómodo ×1, algo de sube y baja ×0,85, quebrado ×0,65; en tercios de los sitios de la región). «Citado: …» dice qué citas publicadas hay junto al sitio. «≈ N %» es la probabilidad estimada de que esa seta esté saliendo ese día según la lluvia, la temperatura y la temporada: orientativa, no una garantía.</p>
+        </details>
         <ol id="top-general" class="tops"></ol>
         <p id="hoy-general-nota" class="nota"></p>
         <section id="hoy-publico" class="hoy-publico" aria-labelledby="tit-top-publico" hidden>
@@ -354,9 +362,9 @@
     <section id="p-reconocer" class="pantalla" aria-label="Reconocer">
       <header class="cab"><h1>Reconocer una seta</h1></header>
       <div class="cuerpo">
-        <p class="nota">Con conexión responde Gemini; sin conexión, el reconocedor descargado. Ninguno confirma nada y nunca dice si una seta se come.</p>
+        <p class="nota">Ni Gemini ni el reconocedor confirman nada, y nunca dicen si una seta se come.</p>
         <p id="rec-estado" class="estado">Comprobando…</p>
-        <button id="rec-ir-ajustes" class="btn" type="button" hidden>Ir a la descarga</button>
+        <button id="rec-ir-ajustes" class="btn" type="button" hidden>Descargarlo en Ajustes</button>
         <div class="captura">
           <label class="btn btn-primario"><svg class="ico" aria-hidden="true"><use href="#i-camara"/></svg>Hacer foto<input id="rec-camara" type="file" accept="image/*" capture="environment" hidden /></label>
           <label class="btn"><svg class="ico" aria-hidden="true"><use href="#i-fotos"/></svg>Elegir fotos<input id="rec-galeria" type="file" accept="image/*" multiple hidden /></label>
@@ -366,6 +374,8 @@
         <button id="rec-analizar" class="btn btn-primario btn-ancho" type="button" disabled>Reconocer</button>
         <p id="rec-progreso" class="nota" role="status" hidden>Comparando…</p>
         <div id="rec-resultado" class="rec-resultado" hidden>
+          <!-- Fijo arriba, bajo la cabecera (como la banda de la ficha de Guía): deja libre la zona del pulgar para responder. -->
+          <div id="rec-aviso-final" class="aviso-fijo" role="note">No consumas ninguna seta sin la confirmación de un experto.</div>
           <div id="rec-alertas"></div>
           <div id="rec-motor" class="rec-motor" role="status"></div>
           <h2>Candidatos probables</h2>
@@ -394,7 +404,6 @@
             <button id="rec-guardar" class="btn" type="button"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>Guardar sitio</button>
           </div>
           <p id="rec-gemini-nota" class="nota"></p>
-          <div id="rec-aviso-final" class="aviso-fijo" role="note">No consumas ninguna seta sin la confirmación de un experto.</div>
         </div>
       </div>
     </section>
@@ -509,7 +518,8 @@
       </fieldset>
       <label class="campo"><span class="etq">Especie</span><select name="especie" id="sitio-especie"></select></label>
       <label class="campo"><span class="etq">Nota</span><textarea name="nota" rows="3" maxlength="2000"></textarea></label>
-      <label class="campo"><span class="etq">Foto (opcional)</span><input name="foto" type="file" accept="image/*" capture="environment" /></label>
+      <div class="campo"><span class="etq">Foto (opcional)</span>
+        <label class="btn"><svg class="ico" aria-hidden="true"><use href="#i-camara"/></svg>Añadir foto<input name="foto" type="file" accept="image/*" capture="environment" hidden /></label></div>
       <img id="foto-sitio" class="foto" alt="" hidden />
       <div class="fila-botones">
         <button type="button" id="btn-sitio-borrar" class="btn btn-peligro" hidden>Borrar</button>

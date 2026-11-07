@@ -99,6 +99,10 @@ try {
   comprobar(await caja.locator('.tf-ind').getAttribute('title').then((t) => /^No es un % de probabilidad\./.test(t ?? ''))
     && await caja.locator('.tf-ind-nota').isHidden() && await btAyuda.getAttribute('aria-expanded') === 'false',
     'el indicador lleva la ayuda en title y la nota plegada');
+  // El indicador va dentro de «Por qué este sitio», plegado: se abre primero.
+  const porque = p.locator('#top-especie .top-fila .tf-porque').first();
+  comprobar(!(await porque.evaluate((d) => d.open)) && await porque.locator('summary').innerText() === 'Por qué este sitio', '«Por qué este sitio» empieza plegado');
+  await porque.locator('summary').click();
   await btAyuda.click();
   const nota = caja.locator('.tf-ind-nota');
   await nota.waitFor({ state: 'visible' });

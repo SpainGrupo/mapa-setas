@@ -105,8 +105,7 @@ p { text-wrap: pretty; }
 .cab {
   position: sticky; top: 0; z-index: 5;
   padding: calc(var(--sup) + 10px) 20px 12px;
-  background: var(--cab-fondo);
-  -webkit-backdrop-filter: var(--vidrio-filtro); backdrop-filter: var(--vidrio-filtro);
+  background: var(--papel);   /* opaca y sin desenfoque: el vidrio queda para el cromo flotante del mapa (menos GPU al desplazar) */
   border-bottom: 1px solid oklch(62% 0.017 158 / 0.28);
 }
 @media (prefers-reduced-transparency: reduce) { .cab { background: var(--papel); -webkit-backdrop-filter: none; backdrop-filter: none; } }
@@ -192,7 +191,7 @@ details > summary { cursor: pointer; }
   border: 0; border-radius: 22px; background: none; color: var(--tinta-2); padding: 4px 1px 2px;
   transition: transform 100ms var(--curva);
 }
-.pestanas button span { font-size: 12px; font-weight: 700; letter-spacing: -0.005em; white-space: nowrap; }
+.pestanas button span { font-size: clamp(11px, 3.1vw, 12px); font-weight: 700; letter-spacing: -0.005em; white-space: nowrap; }
 .pestanas button .ico { width: 24px; height: 24px; }
 .pestanas button:active { transform: scale(0.94); }
 .pestanas button.activa { background: var(--bosque); color: oklch(100% 0 0); }
@@ -277,7 +276,9 @@ body[data-hoja] .fabs, body[data-hoja] .pista-mapa { display: none; }
 .barra-mira { position: absolute; z-index: 20; left: 8px; right: 8px; bottom: calc(var(--pie) + 8px); border-radius: 28px; padding: 16px; display: grid; gap: 12px; background: var(--vidrio-tinte-denso); }
 .barra-mira p { margin: 0; font-weight: 700; }
 
-.sin-datos { position: absolute; z-index: 10; left: 16px; right: 16px; top: 45%; margin: 0; padding: 16px; border-radius: 22px; font-weight: 700; text-align: center; }
+.sin-datos { position: absolute; z-index: 10; left: 16px; right: 16px; top: 45%; margin: 0; padding: 16px; border-radius: 22px; font-weight: 700; text-align: center; display: grid; gap: 12px; }
+.sin-datos[hidden] { display: none; }
+.sin-datos p { margin: 0; }
 
 .tarjeta-zona {
   position: absolute; z-index: 15; left: 8px; right: 8px; bottom: calc(var(--pie) + 8px);
@@ -603,7 +604,7 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .tg-texto i { font-size: 15px; color: var(--tinta-2); }
 .sin-guia { margin: 0; padding: 14px; border-radius: 14px; background: var(--ambar-t); color: var(--ambar-tx); font-weight: 700; }
 .ficha { min-height: 100%; }
-.ficha-fija { position: sticky; top: 0; z-index: 5; background: var(--cab-fondo); -webkit-backdrop-filter: var(--vidrio-filtro); backdrop-filter: var(--vidrio-filtro); padding-top: var(--sup); border-bottom: 1px solid oklch(62% 0.017 158 / 0.28); }
+.ficha-fija { position: sticky; top: 0; z-index: 5; background: var(--papel); padding-top: var(--sup); border-bottom: 1px solid oklch(62% 0.017 158 / 0.28); }
 .ficha-barra { display: flex; align-items: center; gap: 4px; padding: 4px 12px 4px; min-height: 52px; }
 .ficha-barra .btn-volver { margin-left: 0; }
 .ficha-barra-tit { font-weight: 800; font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -667,6 +668,7 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .miniatura .btn-x { position: absolute; top: -12px; right: -12px; width: var(--toque); height: var(--toque); background: none; }
 .miniatura .btn-x::after { content: ''; position: absolute; inset: 10px; border-radius: 50%; background: var(--tinta) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M7 7l10 10M17 7 7 17'/%3E%3C/svg%3E") center / 14px no-repeat; border: 2px solid var(--hoja); }
 .rec-resultado { display: grid; gap: 14px; }
+#p-reconocer { scroll-padding-top: calc(var(--cab-alto, 96px) + 84px); }   /* cabecera + aviso fijo del experto */
 .rec-resultado > h2 { margin-top: 10px; }
 .titulo-peligro { color: var(--peligro-tx); }
 .alerta-roja { padding: 14px; border-radius: 16px; background: var(--peligro); color: oklch(100% 0 0); display: grid; gap: 4px; }
@@ -776,8 +778,8 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .rec-otras-mortales .btn-chico { justify-self: start; }
 #rec-progreso[data-error=si] { color: var(--peligro-tx); font-weight: 700; }
 .aviso-fijo {
-  position: sticky; bottom: calc(var(--pie) + 8px); z-index: 4; margin-top: 4px;
-  padding: 12px 14px 12px 46px; border-radius: 16px; background: var(--aviso-fondo); color: oklch(100% 0 0); border: 1px solid oklch(100% 0 0 / 0.18); font-weight: 800; font-size: 16px; line-height: 1.3;
+  position: sticky; top: calc(var(--cab-alto, 96px) + 6px); z-index: 4;
+  padding: 10px 14px 10px 46px; border-radius: 16px; background: var(--aviso-fondo); color: oklch(100% 0 0); border: 1px solid oklch(100% 0 0 / 0.18); font-weight: 800; font-size: 16px; line-height: 1.3;
   box-shadow: 0 6px 20px oklch(15% 0.02 160 / 0.3);
 }
 .aviso-fijo::before { content: '!'; position: absolute; left: 12px; top: 50%; translate: 0 -50%; width: 24px; height: 24px; border-radius: 6px; display: grid; place-items: center; background: var(--peligro); font-family: var(--cifras); }
@@ -1006,7 +1008,8 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .chip-titularidad b { font-weight: 800; font-size: 15px; color: var(--tinta); display: block; }
 .chip-titularidad b .ico { width: 18px; height: 18px; vertical-align: -3px; margin-right: 6px; }
 .chip-titularidad span { color: var(--tinta-2); }
-.chip-titularidad small { font-size: 12px; color: var(--tinta-2); }
+.chip-titularidad small { font-size: 13px; line-height: 1.4; color: var(--tinta-2); }
+.ley-titularidad summary { display: inline-flex; align-items: center; min-height: var(--toque); font-size: 14px; font-weight: 700; color: var(--bosque-tx); }
 .tz-titularidad { margin-top: 6px; }
 .tf-titularidad { font-size: 14px; font-weight: 700; padding: 6px 10px; }
 /* Citas reales cerca del sitio (Top de «Hoy»): etiqueta que despliega la lista de fuentes. */
@@ -1096,6 +1099,12 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .tf-zona-pts { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--tinta); }
 .tf-google { display: inline-block; margin-top: 4px; font-size: 14px; font-weight: 600; color: var(--tinta); }
 .tf-razon { margin: 4px 0 0; font-size: 14px; line-height: 1.4; color: var(--tinta-2); }
+.tf-porque { display: grid; gap: 6px; }
+.tf-porque > summary { display: flex; align-items: center; gap: 6px; min-height: var(--toque); width: fit-content; font-size: 15px; font-weight: 800; color: var(--bosque-tx); }
+/* Flecha de plegable (la misma del <select>) para los <summary> en flex, que pierden el triángulo del navegador. */
+:is(.tf-porque, .creditos) > summary::before { content: ''; flex: none; width: 18px; height: 18px; background: var(--flecha) center / contain no-repeat; transform: rotate(-90deg); transition: transform 120ms var(--curva); }
+:is(.tf-porque, .creditos)[open] > summary::before { transform: none; }
+.creditos > summary { gap: 6px; }
 .ficha-top-sitios { margin: 16px 0; }
 
 /* Chips de grupo en la hoja del selector de especie (grupos.ts) */

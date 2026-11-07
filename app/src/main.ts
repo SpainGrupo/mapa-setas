@@ -116,7 +116,14 @@ function recargarTrasCambioDeMapas(aviso: string) {
 const avisoPendiente = sessionStorage.getItem(CLAVE_AVISO_RECARGA);
 if (avisoPendiente) { sessionStorage.removeItem(CLAVE_AVISO_RECARGA); avisar(avisoPendiente, 5000); }
 
+/** Pantalla desde la que se abrió Zona (Mapa u Hoy): su botón «‹» vuelve allí. */
+let origenZona: 'p-mapa' | 'p-hoy' = 'p-hoy';
 function irA(id: string) {
+  if (id === 'p-zona') {
+    const antes = document.querySelector('.pantalla.activa')?.id;
+    if (antes === 'p-mapa' || antes === 'p-hoy') origenZona = antes;
+    const v = $('#zona-volver'); v.lastChild!.textContent = origenZona === 'p-mapa' ? 'Mapa' : 'Hoy';
+  }
   document.querySelectorAll('.pantalla').forEach((p) => p.classList.toggle('activa', p.id === id));
   document.querySelectorAll<HTMLButtonElement>('.pestanas button[data-p]').forEach((b) => {
     b.classList.toggle('activa', b.dataset.p === id);
@@ -620,7 +627,13 @@ async function pintarTitularidad(el: HTMLElement, lat: number, lon: number, vige
   b.insertAdjacentHTML('afterbegin', `<svg class="ico" aria-hidden="true"><use href="#${esPublico(t) ? 'i-pin' : 'i-alerta'}"/></svg>`);
   el.append(b);
   for (const d of detallesTitularidad(t)) { const s = document.createElement('span'); s.textContent = d; el.append(s); }
-  if (conNorma) { const n = document.createElement('small'); n.textContent = normaTitularidad(); el.append(n); }
+  // La cita legal, plegada: el titular («Probablemente privado…») y los refuerzos siguen siempre a la vista.
+  if (conNorma) {
+    const d = document.createElement('details'); d.className = 'ley-titularidad';
+    const sm = document.createElement('summary'); sm.textContent = 'Qué dice la ley';
+    const n = document.createElement('small'); n.textContent = normaTitularidad();
+    d.append(sm, n); el.append(d);
+  }
   el.title = normaTitularidad();
   el.hidden = false;
   return t;
@@ -1154,7 +1167,14 @@ $('#tz-ver').addEventListener('click', () => irA('p-zona'));
 $('#tz-navegar').addEventListener('click', () => { if (ultimoToque) abrirIr({ lat: ultimoToque.lat, lon: ultimoToque.lon, titulo: 'Punto del mapa' }); });
 $('#tz-guardar').addEventListener('click', () => { if (ultimoToque) abrirSitio(null, ultimoToque); });
 $('#zona-ir-mapa').addEventListener('click', () => irA('p-mapa'));
-$('#zona-volver').addEventListener('click', () => irA('p-hoy'));
+$('#zona-volver').addEventListener('click', () => irA(origenZona));
+// Escape cierra la hoja de encima del mapa (teclado o lector de pantalla); los <dialog> ya lo hacen solos.
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape' || document.querySelector('dialog[open]')) return;
+  for (const [hoja, x] of [['#chat', '#chat-cerrar'], ['#capas', '#capas-cerrar'], ['#tarjeta-ruta', '#ru-cerrar'], ['#tarjeta-acceso', '#ta-cerrar'], ['#tarjeta-zona', '#tz-cerrar']])
+    if (!$(hoja).hidden) { $(x).click(); return; }
+});
+$('#sin-datos-ajustes').addEventListener('click', () => { irA('p-ajustes'); $('#tit-mapas-offline').scrollIntoView({ block: 'start' }); });
 
 function pintarEstadoMeteo() {
   const el = $('#estado-meteo');

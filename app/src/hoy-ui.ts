@@ -111,9 +111,9 @@ export function miniatura(id: string): HTMLElement {
   const url = e ? datosEspecie(e).miniatura : null;
   if (url) {
     const img = document.createElement('img'); img.alt = ''; img.decoding = 'async'; img.loading = 'lazy'; img.width = 128; img.height = 128;
-    img.onerror = () => { img.remove(); caja.classList.add('sin-foto'); caja.innerHTML = '<svg class="ico"><use href="#i-seta"/></svg>'; };
+    img.onerror = () => { img.remove(); caja.classList.add('sin-foto'); caja.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-seta"/></svg>'; };
     img.src = url; caja.append(img);
-  } else { caja.classList.add('sin-foto'); caja.innerHTML = '<svg class="ico"><use href="#i-seta"/></svg>'; }
+  } else { caja.classList.add('sin-foto'); caja.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-seta"/></svg>'; }
   return caja;
 }
 
@@ -320,14 +320,18 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number, zona?: Zona,
     li.dataset.terreno = tc.dataset.clase;
   }
   li.append(cab, meta);
-  // Cuánto mejor que el azar es su tramo de puntuación y su puesto del día en la región (no es una probabilidad).
-  if (ind) for (const e of entradas) li.append(bloqueIndicador(e, ind, varias ? `${nombreCorto(nombre(e.especie))} · ` : ''));
-  // Por qué este sitio: factores reales del ranking (razones.ts).
+  if (zona) li.append(listaZona(zona));
+  // «Por qué este sitio», plegado para que «Ruta a pie» quede cerca: el indicador (cuánto mejor que el azar es su tramo
+  // de puntuación y su puesto del día en la región; no es una probabilidad) y los factores reales del ranking (razones.ts).
+  const porque = document.createElement('details'); porque.className = 'tf-porque';
+  const pq = document.createElement('summary'); pq.textContent = 'Por qué este sitio';
+  porque.append(pq);
+  if (ind) for (const e of entradas) porque.append(bloqueIndicador(e, ind, varias ? `${nombreCorto(nombre(e.especie))} · ` : ''));
   const rz = document.createElement('p'); rz.className = 'tf-razon';
   const cr = { fiabilidad: fiab(principal.especie), motivo: motivoEn(principal.especie, s.meteo_id) };
   rz.textContent = zona ? razonZona(zona, cr, nombre) : razonSitio(principal, cr);
-  if (zona) li.append(listaZona(zona));
-  li.append(rz);
+  porque.append(rz);
+  li.append(porque);
   if (esLignicola(principal.especie)) li.append(Object.assign(document.createElement('p'), { className: 'nota', textContent: AVISO_LIGNICOLA }));
   if (zona) {
     li.append(enlace('Abrir en Google Maps', urlSitioGoogle(s), 'tf-google'));

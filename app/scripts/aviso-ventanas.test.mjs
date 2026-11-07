@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { componer, PIE } from './aviso-ventanas.mts';
 
 const ap = { especie: 'boletus_edulis', nombre: 'Boletus edulis', grupo: 'Boletus', fecha: '2026-10-21', dias: 5, motivo: 'ventana abierta: 30 mm',
-  sitios: [{ puntuacion: 80, t_pie_min: 10, subida_m: 50, km: 12.34, titularidad: 'Monte público', mapa: 'https://www.google.com/maps/search/?api=1&query=36.6,-4.8', razon: 'Buen hábitat' }] };
+  sitios: [{ probabilidad: 62, puntuacion: 80, t_pie_min: 10, subida_m: 50, km: 12.34, titularidad: 'Monte público', mapa: 'https://www.google.com/maps/search/?api=1&query=36.6,-4.8', razon: 'Buen hábitat' }] };
 
 describe('componer aviso', () => {
   it('sin aperturas: hay_aviso=false y pie', () => {
@@ -17,6 +17,8 @@ describe('componer aviso', () => {
     expect(r.texto).toContain('miércoles 21/10');
     expect(r.html).toContain('<h2>Boletus</h2>');
     expect(r.html).toContain('query=36.6,-4.8');
+    expect(r.texto).toContain('probabilidad estimada ≈ 62 % · puntuación 80');
+    expect(r.html).toContain('probabilidad estimada ≈ 62 %');
     expect(r.html).toContain(PIE);
     expect((r.html + r.texto + r.asunto).toLowerCase()).not.toContain('comestible');
   });

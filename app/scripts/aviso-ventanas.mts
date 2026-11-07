@@ -1,6 +1,7 @@
 // Aviso diario de ventanas: qué especies de la región Marbella pasan a VERDE en los próximos días (D+1..D+4)
 // sin estar verdes hoy. Reproduce el cálculo real de Hoy (meteo.ts + semaforo.ts + ranking.ts + razones.ts) con la
-// previsión Open-Meteo. Salida en stdout: JSON {asunto, html, texto, hay_aviso}.
+// previsión Open-Meteo. Cada sitio listado lleva su probabilidad estimada (semáforo v3) ese día.
+// Salida en stdout: JSON {asunto, html, texto, hay_aviso}.
 // Uso: node scripts/aviso-ventanas.mts [--sin-estado] [--datos <dir app del pipeline>]
 // Estado anti-repetición: ~/Library/Application Support/mapa-setas/avisos.json (claves «especie|fecha_apertura»).
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
@@ -17,7 +18,7 @@ registerHooks({ resolve(spec, ctx, next) {
 const APP = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(APP, 'src') + '/';
 const { consultar, edadHoras } = await import(SRC + 'meteo.ts');
-const { semaforo, sumarDias, diasEntre, ddmm } = await import(SRC + 'semaforo.ts');
+const { semaforo, sumarDias, diasEntre, ddmm, textoProbabilidad, ETIQUETA_PROBABILIDAD } = await import(SRC + 'semaforo.ts');
 const { topEspecie, parsearSitios, distanciaM } = await import(SRC + 'ranking.ts');
 const { razonSitio } = await import(SRC + 'razones.ts');
 const { nivelFiabilidad } = await import(SRC + 'fiabilidad.ts');
@@ -29,7 +30,7 @@ export const PIE = 'Orientativo. No consumas ninguna seta sin confirmación de u
 export const HORIZONTE = 4;
 const ESTADO_DEF = join(homedir(), 'Library', 'Application Support', 'mapa-setas', 'avisos.json');
 
-export interface SitioAviso { puntuacion: number; t_pie_min: number; subida_m: number; km: number; titularidad: string; mapa: string; razon: string }
+export interface SitioAviso { probabilidad?: number | null; puntuacion: number; t_pie_min: number; subida_m: number; km: number; titularidad: string; mapa: string; razon: string }
 export interface Apertura { especie: string; nombre: string; grupo: string; fecha: string; dias: number | null; motivo: string; sitios: SitioAviso[] }
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -55,7 +56,8 @@ export function componer(aperturas: Apertura[], hoy: string) {
       t.push(cab, `  Motivo: ${a.motivo}`);
       h.push(`<h3>${esc(a.nombre)}</h3><p>Abre el <b>${esc(fechaLarga(a.fecha))}</b>, ${esc(duracion(a.dias))}.<br>Motivo: ${esc(a.motivo)}</p><ol>`);
       for (const s of a.sitios) {
-        const l = `puntuación ${s.puntuacion} · ${s.t_pie_min} min a pie · ${s.subida_m} m de subida · ${s.km.toFixed(1)} km en recta · ${s.titularidad}`;
+        const pr = s.probabilidad != null ? `${ETIQUETA_PROBABILIDAD} ${textoProbabilidad(s.probabilidad)} · ` : '';
+        const l = `${pr}puntuación ${s.puntuacion} · ${s.t_pie_min} min a pie · ${s.subida_m} m de subida · ${s.km.toFixed(1)} km en recta · ${s.titularidad}`;
         t.push(`  - ${l}`, `    ${s.razon}`, `    ${s.mapa}`);
         h.push(`<li>${esc(l)}<br><i>${esc(s.razon)}</i><br><a href="${esc(s.mapa)}">Abrir en Google Maps</a></li>`);
       }
@@ -90,7 +92,8 @@ async function main() {
     let fecha: string | null = null;
     for (let d = 1; d <= HORIZONTE && !fecha; d++) { const f = sumarDias(hoy, d); if (lista.some((s: any) => res(s.meteo_id, f)?.estado === 'verde')) fecha = f; }
     if (!fecha) continue;
-    const top = topEspecie(sitios, e, { estadoEn: (_: unknown, id: number) => res(id, fecha!)?.estado ?? null, fiabilidad: () => fi, maxDificultad: null }, 1000)
+    const top = topEspecie(sitios, e, { estadoEn: (_: unknown, id: number) => res(id, fecha!)?.estado ?? null,
+      probabilidadEn: (_: unknown, id: number) => res(id, fecha!)?.probabilidad ?? null, fiabilidad: () => fi, maxDificultad: null }, 1000)
       .filter((x: any) => x.estado === 'verde').slice(0, 3);
     const r0 = res(top[0].sitio.meteo_id, fecha)!;
     aperturas.push({
@@ -98,7 +101,7 @@ async function main() {
       dias: r0.hasta ? diasEntre(fecha, r0.hasta) : null, motivo: r0.motivo,
       sitios: top.map((x: any) => { const s = x.sitio; const rr = res(s.meteo_id, fecha!);
         const tit = s.titularidad ? [textoTitularidad(s.titularidad), ...detallesTitularidad(s.titularidad)].join(' · ') : 'titularidad sin dato';
-        return { puntuacion: x.puntuacion, t_pie_min: s.t_pie_min, subida_m: s.subida_m, km: distanciaM(s, MARBELLA) / 1000,
+        return { probabilidad: rr?.probabilidad ?? null, puntuacion: x.puntuacion, t_pie_min: s.t_pie_min, subida_m: s.subida_m, km: distanciaM(s, MARBELLA) / 1000,
           titularidad: tit, mapa: `https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lon}`,
           razon: razonSitio(x, { fiabilidad: fi, motivo: rr?.motivo ?? null }) }; }),
     });

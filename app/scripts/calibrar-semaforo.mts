@@ -2,6 +2,7 @@
 // Informe: docs/investigacion/2026-11-07-semaforo-probabilidad.md. Todas las cifras del informe salen de aquí.
 //
 // Uso:
+//   node scripts/calibrar-semaforo.mts [--region alicante]  (Marbella por defecto; ver «Datos»)
 //   node scripts/calibrar-semaforo.mts                 → descarga (con caché) y escribe el resumen en stdout (markdown)
 //   node scripts/calibrar-semaforo.mts --rejilla       → además, prueba combinaciones de parámetros (tabla de rejilla)
 //   node scripts/calibrar-semaforo.mts --campo         → solo los casos de campo (Forecast API, como la app)
@@ -9,14 +10,16 @@
 //   node scripts/calibrar-semaforo.mts --diag          → además, fase del episodio y desvío de temperatura de citas y controles
 //
 // Datos:
-//   - Citas: pipeline/data/marbella/out/citas.geojson (GBIF + iNaturalist + foros, con fecha de día). Muestra fija
+//   - Citas: pipeline/data/<región>/out/citas.geojson (GBIF + iNaturalist + foros, con fecha de día). Muestra fija
 //     (semilla) de ≤ 300 citas de oronja, boletos, níscalos, Suillus y Pleurotus, una por especie, día y celda de 0,1°.
 //   - Controles: los mismos puntos en 3 fechas al azar del mismo año (semilla fija), meses secos incluidos.
 //   - Meteo histórica: Open-Meteo Archive API (sin clave), mismas variables diarias que app/src/meteo.ts; la humedad del
 //     suelo es soil_moisture_7_to_28cm_mean (ERA5; la Forecast API usa 9–27 cm). Una petición por celda de 0,1° y tramo
 //     [fecha − 30, fecha + 16] (los tramos que se solapan, juntos); temperatura llevada de la cota de la celda a la de la cita (−0,65 °C/100 m, como la app).
-//     Caché: pipeline/data/marbella/cache/meteo-historica/ (fuera de git).
-//   - Reglas: las de la región Marbella (manifest.json del pipeline).
+//     Caché: pipeline/data/<región>/cache/meteo-historica/ (fuera de git).
+//   - Reglas: las de la región (out/app/manifest.json del pipeline). `--region <id>` elige la región (marbella por defecto);
+//     los grupos sin citas en esa región (p. ej. oronja y boletos en Alicante) salen con n = 0. `--campo` (casos de campo de
+//     noviembre de 2026) solo existe para Marbella.
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -37,7 +40,10 @@ const { consultar, corregirAltitud } = await import(SRC + 'meteo.ts');
 type Dia = { fecha: string; lluvia: number; tmin: number; tmax: number; et0?: number; hr_min?: number; suelo?: number };
 type Reglas = any;
 
-const DATOS = join(RAIZ, 'pipeline', 'data', 'marbella');
+const _iR = process.argv.indexOf('--region');
+const REGION = _iR >= 0 ? process.argv[_iR + 1] : 'marbella';
+if (!REGION || !existsSync(join(RAIZ, 'pipeline', 'data', REGION, 'out', 'app', 'manifest.json'))) throw new Error(`región «${REGION}» sin pipeline/data/<región>/out/app/manifest.json`);
+const DATOS = join(RAIZ, 'pipeline', 'data', REGION);
 const CACHE = join(DATOS, 'cache', 'meteo-historica');
 const ARCHIVO = 'https://archive-api.open-meteo.com/v1/archive';
 const ELEVACION = 'https://api.open-meteo.com/v1/elevation';
@@ -283,6 +289,7 @@ async function main() {
   const args = process.argv.slice(2);
   const man = JSON.parse(readFileSync(join(DATOS, 'out', 'app', 'manifest.json'), 'utf8'));
   const reglasDe = (e: string) => man.especies.find((x: any) => x.id === e)?.tiempo;
+  if (args.includes('--campo') && REGION !== 'marbella') throw new Error('--campo solo tiene casos de campo de Marbella');
   if (args.includes('--campo')) { process.stdout.write((await campo(man)) + '\n'); return; }
   if (args.includes('--ranking')) { process.stdout.write((await ranking(man)) + '\n'); return; }
   mkdirSync(CACHE, { recursive: true });
@@ -318,7 +325,7 @@ async function main() {
     + `${casos.filter((c) => !c.cita).length} controles; ${meteo.size} celdas de 0,1°, ${[...meteo.values()].reduce((a, x) => a + x.length, 0)} tramos de meteo; casos sin serie: ${sinSerie}.`, '');
   const crudo = readFileSync(join(DATOS, 'out', 'citas.geojson'));
   const gj = JSON.parse(crudo.toString('utf8'));
-  L.push(`Citas: pipeline/data/marbella/out/citas.geojson (generado ${gj.metadata?.generado}, ${gj.features.length} registros, `
+  L.push(`Región: ${REGION}. Citas: pipeline/data/${REGION}/out/citas.geojson (generado ${gj.metadata?.generado}, ${gj.features.length} registros, `
     + `sha256 ${createHash('sha256').update(crudo).digest('hex').slice(0, 12)}); semilla ${SEMILLA}.`, '');
   L.push(`Parámetros v3: ${JSON.stringify(v3.PARAMS)}; umbrales verde ≥ ${v3.UMBRAL_VERDE}, amarillo ≥ ${v3.UMBRAL_AMARILLO}.`, '');
   L.push('| Conjunto | n | v2 verde | v2 ≥ amarillo | v3 verde | v3 ≥ amarillo | v3 mediana % |', '|---|---|---|---|---|---|---|');

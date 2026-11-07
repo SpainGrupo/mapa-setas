@@ -140,6 +140,29 @@ da estos resultados:
   *Lepista*, *Craterellus*…) solo 0–2. El salto viene sobre todo de los estados: muchas especies pasan de rojo o
   amarillo a verde en unos puntos meteo y no en otros, y eso reordena el Top.
 
+## Alicante (2026-11-07)
+
+Medición, no recalibración: **los parámetros del semáforo v3 son los de Marbella y no se tocan.** Se ha ejecutado el mismo script con `node scripts/calibrar-semaforo.mts --region alicante` (citas de `pipeline/data/alicante/out/citas.geojson`, 1241 registros, sha256 `5ff3031bb0d1`; reglas de especie del `manifest.json` de Alicante; caché de meteo histórica en `pipeline/data/alicante/cache/meteo-historica/`; semilla 20261107). Mismo procedimiento que arriba: una cita por especie, día y celda de 0,1°, tres controles al azar del mismo año, Open-Meteo Archive.
+
+Muestra: 205 citas (oronja 12, boletos 13, níscalos 60, Suillus 60, Pleurotus 60) y 615 controles en 112 celdas. Los grupos son los de Marbella; en Alicante oronja y boletos tienen pocas citas fechadas (la zona es «sin hábitat» para ellas), así que esos dos grupos no concluyen nada. Las citas salen del radio de 200 km de la región, no solo de la isócrona de 2 h.
+
+| Conjunto | n | v2 verde | v2 ≥ amarillo | v3 verde | v3 ≥ amarillo | v3 mediana % |
+|---|---|---|---|---|---|---|
+| Citas | 205 | 19 % | 58 % | 34 % | 46 % | 14 |
+| Controles (todo el año) | 615 | 3 % | 26 % | 5 % | 11 % | 0 |
+| Controles en temporada | 156 | 11 % | 50 % | 21 % | 27 % | 0 |
+| Citas fuera de los meses de la especie | 36 | 0 % | 11 % | 0 % | 11 % | 0 |
+| Citas · níscalos | 60 | 13 % | 53 % | 27 % | 33 % | 0 |
+| Controles · níscalos | 180 | 2 % | 28 % | 4 % | 13 % | 0 |
+| Citas · Suillus | 60 | 28 % | 67 % | 50 % | 65 % | 46 |
+| Controles · Suillus | 180 | 3 % | 32 % | 8 % | 15 % | 0 |
+| Citas · Pleurotus | 60 | 17 % | 60 % | 27 % | 43 % | 13,5 |
+| Controles · Pleurotus | 180 | 4 % | 18 % | 5 % | 9 % | 0 |
+
+**AUC, citas frente a controles:** v2 0,679 y v3 0,690 (Marbella: 0,760 y 0,763). **Solo frente a controles en temporada:** v2 0,556 y v3 0,623 (Marbella: 0,632 y 0,675).
+
+Lectura: v3 mejora a v2 también en Alicante (+0,011 en el AUC global, +0,067 en temporada), pero el modelo discrimina menos que en Marbella (0,69 frente a 0,76; con controles en temporada 0,62 frente a 0,68). Los níscalos son el grupo débil: solo el 33 % de las citas llega a amarillo y la mediana de probabilidad es 0 %; de las 110 citas en rojo, 42 por «seco», 33 por fuera de temporada y 25 por lluvia sin ventana. Es coherente con que las reglas de tiempo de los níscalos están ajustadas a Marbella y que en Alicante el rovellón (*L. sanguifluus*) tiene su propia temporada y sus propios umbrales de lluvia (las reglas de `especies.yaml` para él son heurísticas, sin cifra local). Suillus sale bien (65 % de las citas ≥ amarillo). Con 205 citas de un solo otoño-tipo de meteo y sin intervalos de confianza, la diferencia de 0,01 en el AUC global no es concluyente. Nada de esto cambia el semáforo; queda como punto de partida si se quiere una calibración propia de Alicante.
+
 ## Pendiente
 
 - La app pide 30 días pasados a Open-Meteo. Para especies con ventana larga (níscalos y *Tricholoma* 20–40 días,

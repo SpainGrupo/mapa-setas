@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { componer, PIE } from './aviso-ventanas.mts';
+import { componer, PIE, regionDe, rutaEstado } from './aviso-ventanas.mts';
 import { razonSitio } from '../src/razones.ts';
 
 const ap = { especie: 'boletus_edulis', nombre: 'Boletus edulis', grupo: 'Boletus', fecha: '2026-10-21', dias: 5, motivo: 'ventana abierta: 30 mm',
@@ -30,5 +30,27 @@ describe('componer aviso', () => {
     const r = componer([{ ...ap, sitios: [{ ...ap.sitios[0], razon }] }], '2026-10-18');
     expect(r.texto).toContain('Terreno quebrado para la zona · 110 m/km: mucho sube y baja (pendiente media 12 %), lo que baja la puntuación.');
     expect(r.html).toContain('Terreno quebrado para la zona · 110 m/km');
+  });
+});
+
+describe('aviso por región', () => {
+  const lista = [{ id: 'alicante', nombre: 'Alicante', origen: [-0.481, 38.3452] }, { id: 'marbella', nombre: 'Marbella', origen: [-4.8825, 36.5101] }];
+  it('el asunto lleva el nombre de la región (Marbella por defecto)', () => {
+    expect(componer([ap], '2026-10-18').asunto).toContain('Setas Marbella: abre ventana');
+    expect(componer([], '2026-10-18').asunto).toContain('Setas Marbella: sin ventanas');
+    expect(componer([ap], '2026-10-18', 'Alicante').asunto).toMatch(/^Setas Alicante: abre ventana/);
+    expect(componer([], '2026-10-18', 'Alicante').asunto).toMatch(/^Setas Alicante: sin ventanas/);
+    expect(componer([ap], '2026-10-18', 'Alicante').asunto).not.toContain('Marbella');
+  });
+  it('el origen sale de regiones.json: origen = [lon, lat]', () => {
+    expect(regionDe(lista, 'alicante')).toEqual({ id: 'alicante', nombre: 'Alicante', lat: 38.3452, lon: -0.481 });
+    expect(regionDe(lista, 'marbella')).toMatchObject({ lat: 36.5101, lon: -4.8825 });
+  });
+  it('una región desconocida da un error que dice cuáles hay', () => {
+    expect(() => regionDe(lista, 'sevilla')).toThrow(/sevilla.*alicante, marbella/);
+  });
+  it('estado anti-repetición separado: Marbella conserva avisos.json, las demás avisos-<id>.json', () => {
+    expect(rutaEstado('marbella', '/x')).toBe('/x/avisos.json');
+    expect(rutaEstado('alicante', '/x')).toBe('/x/avisos-alicante.json');
   });
 });

@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { calidad, CALIDAD_MAX, distanciaM, fusionar, parsearSitios, puntuacion100, puntuar, topEspecie, topGeneral,
+import { calidad, CALIDAD_MAX, distanciaM, fusionar, mejorPublico, parsearSitios, puntuacion100, puntuar, topEspecie, topGeneral,
   type Opciones, type SitioCandidato, type SitiosJson } from './ranking';
 import type { Estado } from './semaforo';
 
@@ -128,5 +128,35 @@ describe('sitios.json', () => {
     expect(t.length).toBeGreaterThan(5);
     expect(t.length).toBeLessThanOrEqual(20);
     expect(t.every((f) => f.principal.puntuacion > 0 && f.principal.puntuacion <= 100)).toBe(true);
+  });
+});
+
+describe('mejor monte público', () => {
+  const pub = (o: Partial<SitioCandidato> = {}) => sitio({ titularidad: { clase: 'monte_junta', monte: 'X' }, lat: 37, ...o });
+  const priv = (o: Partial<SitioCandidato> = {}) => sitio({ titularidad: { clase: 'privado', refuerzos: ['coto'] }, punt_media: 95, ...o });
+  it('si el top no tiene ninguno público, el mejor público no restringido aunque esté en amarillo', () => {
+    const ambar = pub({ meteo_id: 2, punt_media: 70 }), restr = pub({ punt_media: 90, restringido: true }), rojo = pub({ meteo_id: 3, punt_media: 99 });
+    const muni = sitio({ titularidad: { clase: 'monte_municipal' }, lat: 37.2, meteo_id: 4, punt_media: 50 });
+    const d: SitiosJson = { version: 4, generado: '', especies: { a: [priv(), ambar, restr, rojo], b: [priv({ lat: 36.2 }), muni] } };
+    const o = opc({ 'a:2': 'amarillo', 'a:3': 'rojo', 'b:4': 'amarillo' });
+    const general = topGeneral(d, ['a', 'b'], o, 1);
+    expect(general.every((f) => f.principal.sitio.titularidad?.clase === 'privado')).toBe(true);
+    const m = mejorPublico(d, ['a', 'b'], o, general)!;
+    expect(m.sitio).toBe(ambar);
+    expect(m.estado).toBe('amarillo');
+  });
+  it('nada si el top ya trae uno público, si está vacío o si no hay público que valga', () => {
+    const d: SitiosJson = { version: 4, generado: '', especies: { a: [pub({ punt_media: 99 }), priv()] } };
+    const o = opc();
+    expect(mejorPublico(d, ['a'], o, topGeneral(d, ['a'], o, 2))).toBeNull();
+    expect(mejorPublico(d, ['a'], o, [])).toBeNull();
+    const solo: SitiosJson = { version: 4, generado: '', especies: { a: [priv(), pub({ restringido: true })] } };
+    expect(mejorPublico(solo, ['a'], o, topGeneral(solo, ['a'], o, 1))).toBeNull();
+  });
+  it('respeta el filtro de dificultad', () => {
+    const lejos = pub({ t_pie_min: 200, subida_m: 900 });
+    const d: SitiosJson = { version: 4, generado: '', especies: { a: [priv(), lejos] } };
+    const o = opc({}, { maxDificultad: 'facil' });
+    expect(mejorPublico(d, ['a'], o, topGeneral(d, ['a'], o, 1))).toBeNull();
   });
 });

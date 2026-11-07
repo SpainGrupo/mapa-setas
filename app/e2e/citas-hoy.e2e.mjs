@@ -41,6 +41,22 @@ try {
   await p.waitForSelector('#top-general .top-fila');
   comprobar(await p.evaluate(() => window.__setas.tops().factorCitas) === sitios.factor_citas,
     `la pestaña Hoy lee factor_citas (${sitios.factor_citas})`);
+  // «Mejor monte público» (2026-10-20): solo si ninguna fila del top general cae en monte público.
+  const t0 = await p.evaluate(() => window.__setas.tops());
+  const hayPublico = t0.general.some((f) => f.titularidad !== 'privado');
+  const filaPub = p.locator('#hoy-publico .top-fila');
+  if (hayPublico) comprobar(await p.locator('#hoy-publico').isHidden() && t0.publico === null, 'el top trae monte público: sin bloque «Mejor monte público»');
+  else {
+    const sPub = Object.values(sitios.especies).flat().find((s) => s.id === t0.publico?.id);
+    comprobar(t0.publico && await p.locator('#hoy-publico').isVisible() && await filaPub.count() === 1
+      && Number(await filaPub.getAttribute('data-id')) === t0.publico.id && t0.publico.estado !== 'rojo'
+      && ['monte_junta', 'monte_municipal'].includes(await filaPub.getAttribute('data-titularidad')) && sPub && !sPub.restringido
+      && /^Puntuación \d+\/100 por /.test(await filaPub.locator('.tf-razon').textContent())
+      && (await p.locator('#tit-top-publico').textContent()) === 'Mejor monte público',
+      `top sin montes públicos → «Mejor monte público»: ${t0.publico?.especie} (${t0.publico?.estado}, ${await filaPub.getAttribute('data-titularidad')}) con su motivo`);
+    await p.locator('#hoy-publico').scrollIntoViewIfNeeded();
+    await p.screenshot({ path: join(CAPTURAS, 'hoy-mejor-publico.png') });
+  }
   // Indicador «≈N× la media · top X % hoy» (indicador.ts, 2026-10-20): en cada fila de los tops, con ayuda «?».
   const IND = /^(?:.+ · )?(?:≈\d+(?:,\d)?× la media|sin validar) · top \d{1,3}\s% hoy$/;
   const vc = sitios.validacion?.amanita_caesarea;
@@ -121,8 +137,8 @@ try {
   await fila.locator('.tf-citado').first().click();
   comprobar(await lista.isHidden(), 'volver a pulsar pliega la lista');
   // Orden compartido de los tops y razón de cada sitio (2026-10-18).
-  const nControles = await p.$$eval('#p-hoy ol.tops', (ols) => ols.filter((o) => o.previousElementSibling?.classList.contains('orden-top')).length);
-  const nListas = await p.$$eval('#p-hoy ol.tops', (ols) => ols.length);
+  const nControles = await p.$$eval('#p-hoy ol.tops:not(#top-publico)', (ols) => ols.filter((o) => o.previousElementSibling?.classList.contains('orden-top')).length);
+  const nListas = await p.$$eval('#p-hoy ol.tops:not(#top-publico)', (ols) => ols.length);
   comprobar(nControles === nListas && nListas >= 2, `control «Ordenar por» delante de los ${nListas} listados de Hoy`);
   const razones = await p.$$eval('#p-hoy .top-fila .tf-razon', (rs) => rs.map((r) => r.textContent));
   comprobar(razones.length > 0 && razones.every((r) => /^Puntuación \d+\/100 por /.test(r)) && !razones.some((r) => PROHIBIDO.test(r)),
@@ -130,7 +146,7 @@ try {
   await p.locator('#top-especie').locator('xpath=preceding-sibling::div[1]').getByRole('button', { name: 'Dificultad a pie' }).click();
   const ORD = ['facil', 'moderada', 'dificil', 'muy_dificil'];
   const difs = await p.$$eval('#top-especie .top-fila', (ls) => ls.map((l) => l.dataset.dificultad));
-  const ordenes = await p.$$eval('#p-hoy ol.tops', (ols) => ols.map((o) => o.dataset.orden));
+  const ordenes = await p.$$eval('#p-hoy ol.tops:not(#top-publico)', (ols) => ols.map((o) => o.dataset.orden));
   comprobar(difs.every((d, i) => !i || ORD.indexOf(difs[i - 1]) <= ORD.indexOf(d)) && ordenes.every((o) => o === 'dificultad'),
     `ordenar por dificultad reordena todos los listados (${difs.join(',')})`);
   await p.locator('#top-especie').locator('xpath=preceding-sibling::div[1]').getByRole('button', { name: 'Probabilidad' }).click();
@@ -184,6 +200,33 @@ try {
   comprobar(indGuia.length === nGuia && indGuia.every((t) => IND.test(t)), `indicador en los ${nGuia} sitios del Top de la ficha («${indGuia[0]}»)`);
   await p.screenshot({ path: join(CAPTURAS, 'guia-top-sitios.png'), fullPage: false });
   comprobar(!errores.length, `sin errores de página${errores.length ? `: ${errores.join(' | ')}` : ''}`);
+  // «Mejor monte público» forzado: sitios.json con todo privado salvo un sitio flojo en monte público.
+  const unico = Object.values(sitios.especies).flat().filter((s) => !s.restringido && s.t_pie_min <= 30).sort((a, b) => a.punt_media - b.punt_media)[0];
+  const priv = structuredClone(sitios);
+  for (const l of Object.values(priv.especies)) for (const s of l) s.titularidad = s.id === unico.id ? { clase: 'monte_junta', monte: 'Monte de prueba' } : { clase: 'privado' };
+  const ctx2 = await nav.newContext({ ...devices['Pixel 7'], geolocation: { latitude: 36.589, longitude: -5.244 }, permissions: ['geolocation'],
+    locale: 'es-ES', timezoneId: 'Europe/Madrid', serviceWorkers: 'block' });
+  await ctx2.route('**/api.open-meteo.com/**', (r) => r.fulfill({ status: 503, body: '' }));
+  await ctx2.route('https://www.ign.es/**', (r) => r.fulfill({ status: 404, body: '' }));
+  await ctx2.route('**/data/marbella/sitios.json', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(priv) }));
+  const p2 = await ctx2.newPage();
+  await p2.goto(URL_APP);
+  const b2 = p2.getByRole('button', { name: 'Entendido' });
+  if (await b2.isVisible({ timeout: 15000 }).catch(() => false)) await b2.click();
+  await p2.waitForFunction(() => document.body.dataset.mapa === 'listo', null, { timeout: 60000 });
+  await p2.locator('.pestanas [data-p=p-hoy]').click();
+  await p2.waitForSelector('#hoy-publico:not([hidden]) .top-fila', { timeout: 20000 });
+  const t2 = await p2.evaluate(() => window.__setas.tops());
+  const fp = p2.locator('#hoy-publico .top-fila');
+  comprobar(t2.general.length > 0 && t2.general.every((f) => f.titularidad === 'privado') && t2.publico?.id === unico.id
+    && await fp.count() === 1 && await fp.getAttribute('data-titularidad') === 'monte_junta'
+    && /^Puntuación \d+\/100 por /.test(await fp.locator('.tf-razon').textContent())
+    && /Monte de prueba/.test(await fp.locator('.tf-titularidad').textContent())
+    && /Ningún sitio de arriba cae en monte público/.test(await p2.locator('#hoy-publico-nota').textContent())
+    && !PROHIBIDO.test(await p2.locator('#hoy-publico').innerText()),
+    `top todo privado → «Mejor monte público» con el único sitio público (${t2.publico?.especie}, ${t2.publico?.estado}) y su motivo`);
+  await p2.locator('#hoy-publico').scrollIntoViewIfNeeded();
+  await p2.screenshot({ path: join(CAPTURAS, 'hoy-mejor-publico.png') });
   console.log('e2e de citas en Hoy: OK');
 } finally {
   await nav.close();

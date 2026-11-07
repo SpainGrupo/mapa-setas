@@ -4,7 +4,7 @@ import { cargarJson } from './datos';
 import type { ManifestApp } from './manifest-region';
 import type { ResultadoSemaforo } from './semaforo';
 import { nivelFiabilidad, type Fiabilidad } from './fiabilidad';
-import { distanciaM, parsearSitios, topEspecie, topGeneral, type Entrada, type FilaGeneral, type Opciones, type SitiosJson } from './ranking';
+import { distanciaM, mejorPublico, parsearSitios, topEspecie, topGeneral, type Entrada, type FilaGeneral, type Opciones, type SitiosJson } from './ranking';
 import { acotarDia, confianza, diasChips, estadoCalendario, etiquetaDia, mejorResultado, MESES_CORTOS, ordenarCalendario, sumarDiasMax,
   TEXTO_CONFIANZA, type FilaCalendario } from './calendario';
 import { NOMBRE_DIFICULTAD, type Dificultad } from './ruta';
@@ -64,7 +64,7 @@ const escribir = (k: string, v: string) => { try { localStorage.setItem(k, v); }
 let ctx: ContextoHoy;
 let sitios: Promise<SitiosJson | null> | null = null;
 let fechaSel: string | null = null;
-let ultimo: { fecha: string; confianza: string; general: FilaGeneral[]; especie: string; top: Entrada[]; zonas: Zona[]; calendario: FilaCalendario[]; sinSitios: boolean; temporada: FilaTemporada[]; factorCitas: boolean } | null = null;
+let ultimo: { fecha: string; confianza: string; general: FilaGeneral[]; publico: Entrada | null; especie: string; top: Entrada[]; zonas: Zona[]; calendario: FilaCalendario[]; sinSitios: boolean; temporada: FilaTemporada[]; factorCitas: boolean } | null = null;
 
 export const maxDificultad = (): Dificultad | null => {
   const v = leer(CLAVE_DIF);
@@ -355,6 +355,18 @@ function listaZona(z: Zona): HTMLElement {
     ul.append(li);
   }
   return ul;
+}
+
+/** «Mejor monte público» bajo el top general (solo cuando el top no trae ninguno; ver ranking.mejorPublico). */
+function pintarPublico(e: Entrada | null, ind?: ContextoIndicador) {
+  const caja = $('#hoy-publico');
+  const ol = $('#top-publico');
+  ol.replaceChildren();
+  caja.hidden = !e;
+  if (!e) return;
+  $('#hoy-publico-nota').textContent = 'Ningún sitio de arriba cae en monte público (lo más probable es que sean fincas privadas). '
+    + `Este es el mejor monte público ese día${e.estado === 'amarillo' ? ', aunque el tiempo acompañe menos' : ''}.`;
+  ol.append(fila(e, [e], 1, undefined, ind));
 }
 
 function vacio(ul: HTMLElement, texto: string) {
@@ -675,7 +687,9 @@ export async function pintarHoy() {
   else if (!general.length) vacio(ul, o.soloPublicos ? 'Ese día ningún sitio en monte público cumple los filtros.'
     : 'Ese día todas las setas están en rojo o ningún sitio cumple la dificultad elegida.');
   pintarListaTop(ul, general, indicadorDe(datos, o));
-  ultimo = { fecha, confianza: confianza(hoy, fecha), general, especie: sel.value, top: [], zonas: [], calendario: [], sinSitios: !datos, temporada: [],
+  const publico = datos && m ? mejorPublico(datos, m.especies.map((e) => e.id), o, general) : null;
+  pintarPublico(publico, indicadorDe(datos, o));
+  ultimo = { fecha, confianza: confianza(hoy, fecha), general, publico, especie: sel.value, top: [], zonas: [], calendario: [], sinSitios: !datos, temporada: [],
     factorCitas: datos?.factor_citas === true };
   ultimo.temporada = pintarTemporada();
   await pintarTopEspecie(datos, o);
@@ -825,7 +839,7 @@ export function resumenHoy() {
   const e = (x: Entrada) => ({ especie: x.especie, id: x.sitio.id, puntuacion: x.puntuacion, estado: x.estado, dificultad: x.dificultad, score: x.score,
     titularidad: x.sitio.titularidad?.clase ?? 'privado', citas: x.sitio.citas ? { n: x.sitio.citas.n, nivel: x.sitio.citas.nivel } : null });
   return { fecha: ultimo.fecha, confianza: ultimo.confianza, sinSitios: ultimo.sinSitios, factorCitas: ultimo.factorCitas,
-    general: ultimo.general.map((f) => ({ ...e(f.principal), especies: f.especies })), especie: ultimo.especie, top: ultimo.top.map(e),
+    general: ultimo.general.map((f) => ({ ...e(f.principal), especies: f.especies })), publico: ultimo.publico ? e(ultimo.publico) : null, especie: ultimo.especie, top: ultimo.top.map(e),
     vista: vistaTop(), zonas: ultimo.zonas.map((z) => ({ puntuacion: z.puntuacion, score: z.score, verdes: z.verdes, extension_m: z.extension_m,
       lat: z.principal.sitio.lat, lon: z.principal.sitio.lon, entradas: z.entradas.map(e) })),
     calendario: ultimo.calendario.map((f) => ({ id: f.id, clase: f.estado.clase, texto: f.estado.texto })),

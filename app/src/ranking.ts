@@ -163,6 +163,25 @@ export function topGeneral(datos: SitiosJson, especies: string[], op: Opciones, 
   return fusionar(todas.sort(porScore)).slice(0, max);
 }
 
+/**
+ * «Mejor monte público»: cuando ninguna fila del top general cae en monte público (autonómico o municipal), el mejor
+ * sitio público no restringido de esas especies, con los mismos filtros (dificultad) y aunque esté en amarillo o sin
+ * datos del tiempo; en rojo no. null si el top está vacío, ya tiene alguno público o no hay ninguno que valga.
+ */
+export function mejorPublico(datos: SitiosJson, especies: string[], op: Opciones, general: FilaGeneral[]): Entrada | null {
+  if (!general.length || general.some((f) => f.entradas.some((e) => esPublico(e.sitio.titularidad)))) return null;
+  const o = conFactor(datos, op);
+  let mejor: Entrada | null = null;
+  for (const id of especies) {
+    for (const s of datos.especies[id] ?? []) {
+      if (s.restringido || !esPublico(s.titularidad)) continue;
+      const e = puntuar(id, s, o);
+      if (e && e.estado !== 'rojo' && (!mejor || porScore(e, mejor) < 0)) mejor = e;
+    }
+  }
+  return mejor;
+}
+
 /** Valida lo justo de sitios.json para no romper la pestaña con un archivo raro (versión 1, sin citas, sigue valiendo). */
 export function parsearSitios(j: unknown): SitiosJson | null {
   const o = j as SitiosJson;

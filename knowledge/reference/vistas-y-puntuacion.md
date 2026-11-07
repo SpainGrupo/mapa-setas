@@ -29,6 +29,14 @@ timestamp: 2026-11-07T14:00:00Z
 - La razón dice «Alcornocal claro, 25 % de copas» (< 10 muy abierto, < 40 claro, < 70 densidad media, resto denso) y avisa si el satélite ve ≥ 15 puntos menos que el MFE o que la mancha alrededor del punto.
 - Se eligió WorldCover y no Copernicus HRL TCD 2018 porque esta exige cuenta para descargar. WorldCover es binaria por píxel (no densidad), así que tiende a dar más cubierta que la FCC del MFE en olivares y matorral alto.
 
+## Punto representativo con cubierta (sitios.json v4, 2026-10-20)
+- Motivo: el top de caesarea en Ojén tenía su punto en un claro casi pelado (22 % alrededor, mancha 44 %). Quien lo miró en Google Maps desconfió del sitio.
+- Solo cuenta para especies con m > 0. Se parte de la celda de siempre (máx. idoneidad × bonus_pisado) y de su tiempo a pie, t_ref. Las candidatas son las celdas con acceso y t_pie ≤ t_ref + 15 min. Se exige una cubierta (satélite 3×3, o FCC del MFE si no hay satélite) ≥ max(m, min(cubierta de la mancha, 70 %)), y entre las que llegan gana la de máx. idoneidad × bonus_pisado. Si ninguna llega, gana la de máx. idoneidad × bonus × factor_cubierta de la celda.
+- Una penalización suave sola no bastaba, porque el bonus por poco pisado pesaba más (Ojén solo subía de 22 a 27 %). Con la regla actual Ojén pasa al 56 % con los mismos 15 min a pie. En Marbella y Alicante ya ningún punto de especie con dosel queda por debajo del 15 % salvo uno en cada región, y la mediana del tiempo a pie no cambia.
+
+## «Mejor monte público» en Hoy (2026-10-20)
+- Si ninguna fila de «Mejores sitios» cae en monte público (autonómico o municipal), debajo sale «Mejor monte público»: el mejor sitio público no restringido de las setas de la región, con los mismos filtros de dificultad. Vale aunque esté en amarillo o sin datos del tiempo, pero no en rojo. Lleva su razón y su etiqueta de titularidad (`ranking.mejorPublico`).
+
 # Citations
 
 - commits 56b61c3, 5ba88dd, 42a885c

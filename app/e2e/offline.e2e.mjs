@@ -723,10 +723,10 @@ try {
   comprobar(cal.filas.length === 24 && cal.filas.every((f) => f.meses === 12 && f.oct)
     && cal.filas[0].clase === 'sale' && (cal.filas[0].id.startsWith('boletus_') || cal.filas[0].id === 'amanita_caesarea')      // v3: la oronja también sale y va con las preferidas
     && cal.filas.slice(0, 5).every((f) => f.clase === 'sale' && (f.id.startsWith('boletus_') || f.id === 'amanita_caesarea'))
-    && /^Ya sale · aguanta hasta ~\d\d\/\d\d$/.test(cal.filas[0].t)
+    && /^Ya sale · (aguanta hasta ~\d\d\/\d\d|ventana terminando)$/.test(cal.filas[0].t)
     // v3: L. deliciosus (55 %, rampa previa a su ventana) y A. caesarea (81 %, caída suave tras la suya, que acabó el 13/10) salen en verde.
     && cal.filas.find((f) => f.id === 'lactarius_deliciosus').t === 'Ya sale · aguanta hasta ~06/11'
-    && cal.filas.find((f) => f.id === 'amanita_caesarea').t === 'Ya sale · aguanta hasta ~13/10'
+    && cal.filas.find((f) => f.id === 'amanita_caesarea').t === 'Ya sale · ventana terminando'
     && cal.filas.find((f) => f.id === 'tricholoma_portentosum').t.startsWith('Empieza en ~'),
     `calendario 12×12 con marca en octubre: ${cal.filas.map((f) => `${f.id.split('_')[1]} «${f.t}»`).join(', ')}`);
   await p.locator('#tit-calendario').scrollIntoViewIfNeeded();

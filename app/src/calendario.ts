@@ -79,12 +79,16 @@ export function diasHastaTemporada(fecha: string, meses: number[]): number | nul
  *  - rojo/gris fuera de temporada → «Empieza en ~X días» contando hasta el 1 del primer mes de temporada.
  *  - rojo/gris en temporada → «En temporada, falta lluvia» (o «sin datos del tiempo» si es gris).
  */
+/** «· aguanta hasta ~fecha»; si la ventana ya cerró (v3: la probabilidad cae despacio tras el fin), «· ventana terminando». */
+const colaHasta = (hasta: string | undefined, fecha: string) =>
+  !hasta ? '' : hasta < fecha ? ' · ventana terminando' : ` · aguanta hasta ~${ddmm(hasta)}`;
+
 export function estadoCalendario(fecha: string, meses: number[], r: ResultadoSemaforo | null): EstadoCalendario {
   const fin = finTemporada(fecha, meses);
   const tope = (h?: string) => (h && fin && h > fin ? fin : h ?? fin ?? undefined);
   if (r?.estado === 'verde') {
     const hasta = tope(r.hasta);
-    return { clase: 'sale', texto: hasta ? `Ya sale · aguanta hasta ~${ddmm(hasta)}` : 'Ya sale', hasta };
+    return { clase: 'sale', texto: `Ya sale${colaHasta(hasta, fecha)}`, hasta };
   }
   if ((r?.estado === 'amarillo' || r?.estado === 'rojo') && r.desde && r.desde > fecha) {
     const dias = diasEntre(fecha, r.desde);
@@ -92,7 +96,7 @@ export function estadoCalendario(fecha: string, meses: number[], r: ResultadoSem
   }
   if (r?.estado === 'amarillo') {
     const hasta = tope(r.hasta);
-    return { clase: 'sale', texto: hasta ? `Puede salir · aguanta hasta ~${ddmm(hasta)}` : 'Puede salir', hasta };
+    return { clase: 'sale', texto: `Puede salir${colaHasta(hasta, fecha)}`, hasta };
   }
   const dias = diasHastaTemporada(fecha, meses);
   if (dias != null) return { clase: 'fuera', texto: `Fuera de temporada: empieza en ~${dias} días`, dias };

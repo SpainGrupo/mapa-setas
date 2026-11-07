@@ -42,6 +42,10 @@ describe('estado del calendario', () => {
     expect(estadoCalendario(D, [9, 10, 11], r({ hasta: '2026-10-30' }))).toMatchObject({ clase: 'sale', texto: 'Ya sale · aguanta hasta ~30/10' });
     expect(estadoCalendario(D, [10], r({ hasta: '2026-11-10' })).texto).toBe('Ya sale · aguanta hasta ~31/10');
   });
+  it('v3: ventana ya cerrada pero aún verde/amarillo por la caída suave → «ventana terminando», nunca una fecha pasada', () => {
+    expect(estadoCalendario(D, [9, 10, 11], r({ hasta: '2026-10-13' })).texto).toBe('Ya sale · ventana terminando');
+    expect(estadoCalendario(D, [9, 10, 11], r({ estado: 'amarillo', hasta: '2026-10-10' })).texto).toBe('Puede salir · ventana terminando');
+  });
   it('amarillo esperando → empieza en ~X días', () => {
     expect(estadoCalendario(D, [10], r({ estado: 'amarillo', desde: '2026-10-17' }))).toMatchObject({ clase: 'pronto', texto: 'Empieza en ~3 días', dias: 3 });
     expect(estadoCalendario(D, [10], r({ estado: 'amarillo', desde: '2026-10-15' })).texto).toBe('Empieza en ~1 día');

@@ -121,7 +121,7 @@ try {
         const m = window.__setas.mapa, r = m.getCanvas().getBoundingClientRect(), q = m.project([lon, lat]);
         return { x: r.left + q.x, y: r.top + q.y };
       }, ACCESO);
-      await p.mouse.move(pa.x, pa.y); await p.mouse.down(); await p.waitForTimeout(800); await p.mouse.up();
+      await p.mouse.move(pa.x, pa.y); await p.mouse.down(); await p.waitForTimeout(1500); await p.mouse.up();   // la pulsación larga dispara a los 600 ms; con la máquina cargada el temporizador llega tarde
       await p.locator('#tarjeta-acceso[data-estado=ok]').waitFor({ timeout: 20000 });
       await p.waitForTimeout(900);
       const acc = await finalHoja('#tarjeta-acceso');

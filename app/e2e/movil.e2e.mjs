@@ -123,6 +123,8 @@ try {
       await p.mouse.click(pt.x, pt.y);
       await p.locator('#tarjeta-zona').waitFor({ state: 'visible', timeout: 15000 });
       await p.waitForTimeout(700);
+      // --tz-alto lo pone un ResizeObserver: con la máquina cargada tarda un poco en subir los botones flotantes.
+      await p.waitForFunction(() => document.querySelector('.fabs').getBoundingClientRect().bottom <= document.querySelector('#tarjeta-zona').getBoundingClientRect().top + 1, null, { timeout: 8000 }).catch(() => {});
       const tz = await p.evaluate(() => {
         const r = (s) => document.querySelector(s).getBoundingClientRect();
         const t = r('#tarjeta-zona'), est = r('#tz-estado'), mot = r('#tz-motivo'), acc = r('.tz-acciones'), ver = r('#tz-ver'), nav = r('#tz-navegar'), gu = r('#tz-guardar'), ia = r('#tz-ia');

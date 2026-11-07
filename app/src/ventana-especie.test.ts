@@ -22,7 +22,10 @@ describe('días de la ventana', () => {
     expect(d[0]).toMatchObject({ fecha: HOY, estado: 'verde', activo: true, confianza: 'alta', abre: sumarDias(HOY, -4) });
     expect(d[5].confianza).toBe('media');
     expect(d[12].confianza).toBe('baja');
-    expect(d.findIndex((x) => !x.activo)).toBe(9);    // la ventana acaba a los 20 días del episodio (+8)
+    // v3: la ventana acaba a los 20 días del episodio (+8), pero la probabilidad cae despacio: verde hasta el día 24
+    // del episodio (+12) y amarillo (activo) después, hasta el final de la previsión.
+    expect(d.findIndex((x) => x.estado !== 'verde')).toBe(13);
+    expect(d.findIndex((x) => !x.activo)).toBe(-1);
   });
   it('sin serie → vacío', () => {
     expect(diasEspecie(null, AEREUS, HOY)).toEqual([]);
@@ -42,21 +45,24 @@ describe('días de la ventana', () => {
 describe('estimación de la ventana', () => {
   it('activa hoy: desde que abrió hasta el último día activo, confianza por el final', () => {
     const v = ventanaEspecie(diasEspecie(serie({ [-12]: 30 }), AEREUS, HOY), AEREUS.meses!, HOY);
-    expect(v).toMatchObject({ tipo: 'activa', desde: '2026-10-10', hasta: '2026-10-22', confianza: 'baja' });
-    expect(v.texto).toBe('Activa desde ~10/10 hasta ~22/10');
+    expect(v).toMatchObject({ tipo: 'activa', desde: '2026-10-10', hasta: '2026-10-29', confianza: 'baja' });
+    expect(v.texto).toBe('Activa desde ~10/10 hasta ~29/10');
   });
-  it('activa hoy con la ventana recién abierta → «desde hoy»; sigue al final de la previsión → fin de la ventana', () => {
+  it('activa hoy con la ventana recién abierta → «desde hoy»; sigue al final de la previsión → hasta ese último día', () => {
     const v = ventanaEspecie(diasEspecie(serie({ [-8]: 30 }), AEREUS, HOY), AEREUS.meses!, HOY);
-    expect(v.texto).toBe(`Activa desde hoy hasta ~${'2026-10-26'.slice(8, 10)}/10`);
-    expect(v.hasta).toBe('2026-10-26');
+    expect(v.texto).toBe('Activa desde hoy hasta ~29/10');
+    expect(v.hasta).toBe('2026-10-29');
   });
   it('acaba pronto → confianza alta', () => {
     const v = ventanaEspecie(diasEspecie(serie({ [-19]: 30 }), AEREUS, HOY), AEREUS.meses!, HOY);
-    expect(v).toMatchObject({ tipo: 'activa', hasta: '2026-10-15', confianza: 'alta' });
+    expect(v).toMatchObject({ tipo: 'activa', hasta: '2026-10-22', confianza: 'baja' });   // v3: caída de 10 días
+    const v2 = ventanaEspecie(diasEspecie(serie({ [-26]: 30 }), AEREUS, HOY), AEREUS.meses!, HOY);
+    expect(v2).toMatchObject({ tipo: 'activa', hasta: '2026-10-15', confianza: 'alta' });
   });
   it('por llegar: «Se espera a partir de ~X» con la confianza de X', () => {
     const v = ventanaEspecie(diasEspecie(serie({ [-3]: 30 }), AEREUS, HOY), AEREUS.meses!, HOY);
-    expect(v).toMatchObject({ tipo: 'pronto', desde: '2026-10-19', confianza: 'media', texto: 'Se espera a partir de ~19/10' });
+    // v3: la rampa ya da verde 2 días antes del «desde» de la ventana (19/10)
+    expect(v).toMatchObject({ tipo: 'pronto', desde: '2026-10-17', confianza: 'alta', texto: 'Se espera a partir de ~17/10' });
   });
   it('lluvia prevista que abre después de la previsión → «Se espera…» con confianza baja', () => {
     const v = ventanaEspecie(diasEspecie(serie({ [12]: 30 }), AEREUS, HOY), AEREUS.meses!, HOY);
@@ -116,6 +122,14 @@ describe('selector: activas primero', () => {
     expect(r.activas.map((x) => x.id)).toEqual(['d', 'c', 'a']);
     expect(r.inactivas.map((x) => `${x.item.id}:${x.etiqueta}`)).toEqual(['e:seco', 'f:sin datos', 'b:fuera de temporada', 'g:fuera de temporada']);
     expect(r.sinTiempo).toBe(false);
+  });
+  it('rojo con la ventana por abrir (el «esperar» de v3) → «su ventana aún no abre», la primera de las no activas', () => {
+    const esperar: ResultadoSemaforo = { estado: 'rojo', probabilidad: 5, motivo: 'Lluvia de 30 mm el 12/10: esperar.', desde: '2026-10-20' };
+    const r = ordenarSelector([{ id: 's', fiabilidad: 'buena', meses: [10], resultado: { estado: 'rojo', motivo: 'Seco: sin lluvia' } },
+      { id: 'e', fiabilidad: 'baja', meses: [10], resultado: esperar }], HOY);
+    expect(r.inactivas.map((x) => `${x.item.id}:${x.etiqueta}`)).toEqual(['e:por abrir', 's:seco']);
+    expect(TEXTO_INACTIVA['por abrir']).toBe('su ventana aún no abre');
+    expect(etiquetaInactiva({ id: 't', fiabilidad: 'buena', meses: [10], resultado: { estado: 'rojo', motivo: 'Ventana del 18/09 terminando (…)' } }, HOY)).toBe('pasó su lluvia');
   });
   it('agrupa: verde y amarillo (también «esperar») arriba; «ventana pasada» abajo como «ya pasó su lluvia»', () => {
     const r = ordenarSelector([o('v', 'rojo', 'buena', [10], 'ventana pasada: la última lluvia buena fue el 01/09, hace 43 días'),

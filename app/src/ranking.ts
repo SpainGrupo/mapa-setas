@@ -3,7 +3,9 @@
 // puntuación(sitio, D) = calidad × factor del semáforo × factor de fiabilidad × factor de citas
 //   calidad      = punt_media × ln(1 + area_ha) × bonus_pisado × factor_cubierta   (la misma con la que el pipeline
 //                  los ordena; factor_cubierta = penalización suave por pocas copas, sitios.py v3; sin campo = 1)
-//   semáforo     = estado de la especie en el punto meteo del sitio el día D: verde 1, amarillo 0,5, gris 0,3, rojo 0,1
+//   semáforo     = desde v3 (2026-11-07), la probabilidad estimada p (0–100) de la especie en el punto meteo del sitio
+//                  el día D: 0,1 + 0,9 × min(1, p / P_PLENA), continua (p = 0 → 0,1 como el rojo de antes; p ≥ 90 → 1).
+//                  Sin probabilidad (gris, o quien no la pase): por estado, verde 1, amarillo 0,5, gris 0,3, rojo 0,1
 //   fiabilidad   = la del mapa de la especie: buena 1, media 0,85, sin validar 0,75, baja 0,6
 //   citas        = citas reales de la especie cerca del sitio (pipeline citas_sitios.py, campo `citas` de sitios.json):
 //                  nivel «punto» 1,15, solo «paraje» 1,05, sin citas 1. Solo si sitios.json trae `factor_citas: true`
@@ -61,6 +63,11 @@ export interface SitiosJson {
 }
 
 export const FACTOR_SEMAFORO: Record<Estado, number> = { verde: 1, amarillo: 0.5, gris: 0.3, rojo: 0.1 };
+/** Probabilidad (0–100) a partir de la cual el factor del semáforo es 1 (el techo P_MAX del semáforo v3). */
+export const P_PLENA = 90;
+/** Factor del semáforo en la puntuación: por probabilidad si la hay; si no, por estado. */
+export const factorSemaforo = (estado: Estado, p: number | null | undefined) =>
+  p != null && Number.isFinite(p) ? 0.1 + 0.9 * Math.min(1, Math.max(0, p) / P_PLENA) : FACTOR_SEMAFORO[estado];
 export const FACTOR_FIABILIDAD: Record<Fiabilidad, number> = { buena: 1, media: 0.85, sin_validar: 0.75, baja: 0.6 };
 export const FACTOR_CITAS: Record<NivelCitas, number> = { punto: 1.15, paraje: 1.05 };
 export const CALIDAD_MAX = 100 * Math.log(101);
@@ -77,6 +84,8 @@ export interface Entrada {
   especie: string;
   sitio: SitioCandidato;
   estado: Estado;
+  /** Probabilidad estimada del semáforo v3 (0–100); sin ella si no hay datos o quien llama no la pasa. */
+  probabilidad?: number;
   dificultad: Dificultad;
   score: number;
   puntuacion: number;        // 0–100
@@ -87,6 +96,8 @@ export type EstadoEn = (especie: string, meteoId: number) => Estado | null;
 
 export interface Opciones {
   estadoEn: EstadoEn;
+  /** Probabilidad estimada (0–100) de la especie en un punto meteo el día elegido (semáforo v3). Opcional. */
+  probabilidadEn?: (especie: string, meteoId: number) => number | null;
   fiabilidad: (especie: string) => Fiabilidad;
   maxDificultad: Dificultad | null;
   /** Solo sitios en monte público (autonómico o municipal). */
@@ -100,8 +111,9 @@ export function puntuar(especie: string, s: SitioCandidato, o: Opciones): Entrad
   if (!dentroDeDificultad(dif, o.maxDificultad)) return null;
   if (o.soloPublicos && !esPublico(s.titularidad)) return null;
   const estado = o.estadoEn(especie, s.meteo_id) ?? 'gris';
-  const score = calidad(s) * FACTOR_SEMAFORO[estado] * FACTOR_FIABILIDAD[o.fiabilidad(especie)] * factorCitas(s, o.factorCitas);
-  return { especie, sitio: s, estado, dificultad: dif, score, puntuacion: puntuacion100(score) };
+  const p = estado === 'gris' ? null : o.probabilidadEn?.(especie, s.meteo_id) ?? null;
+  const score = calidad(s) * factorSemaforo(estado, p) * FACTOR_FIABILIDAD[o.fiabilidad(especie)] * factorCitas(s, o.factorCitas);
+  return { especie, sitio: s, estado, ...(p != null ? { probabilidad: p } : {}), dificultad: dif, score, puntuacion: puntuacion100(score) };
 }
 
 export const conFactor = (datos: SitiosJson, o: Opciones): Opciones => ({ ...o, factorCitas: o.factorCitas ?? datos.factor_citas === true });

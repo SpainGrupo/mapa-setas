@@ -1,10 +1,17 @@
 // Lógica pura de la pestaña Zona y de la capa Semáforo.
 import type { PuntoMeteo } from './meteo';
-import type { Estado } from './semaforo';
+import { ETIQUETA_PROBABILIDAD, textoProbabilidad, type Estado, type ResultadoSemaforo } from './semaforo';
 
 // Paleta de estado (fija; siempre acompañada de icono y texto, nunca solo color).
 export const COLOR_ESTADO: Record<Estado, string> = { verde: '#0ca30c', amarillo: '#fab219', rojo: '#d03b3b', gris: '#8a8a86' };
-export const NOMBRE_ESTADO: Record<Estado, string> = { verde: 'Buen momento', amarillo: 'Esperar', rojo: 'Mal momento', gris: 'Sin datos fiables' };
+export const NOMBRE_ESTADO: Record<Estado, string> = { verde: 'Buen momento', amarillo: 'Puede salir', rojo: 'Mal momento', gris: 'Sin datos fiables' };
+
+/** «Buen momento · ≈ 62 %» (sin probabilidad, solo el estado). */
+export const textoEstado = (r: Pick<ResultadoSemaforo, 'estado' | 'probabilidad'>) =>
+  NOMBRE_ESTADO[r.estado] + (r.probabilidad != null ? ` · ${textoProbabilidad(r.probabilidad)}` : '');
+/** Ayuda de la cifra (atributo title y lectores de pantalla). */
+export const AYUDA_PROBABILIDAD = `${ETIQUETA_PROBABILIDAD[0].toUpperCase()}${ETIQUETA_PROBABILIDAD.slice(1)} de que esté saliendo ese día según la lluvia, `
+  + 'la temperatura, la humedad acumulada y la temporada (heurística calibrada con citas; orientativa, no una garantía).';
 
 /** Punto más cercano (equirectangular; de sobra para distancias de decenas de km). */
 export function puntoMasCercano(ps: PuntoMeteo[], lat: number, lon: number): PuntoMeteo | null {

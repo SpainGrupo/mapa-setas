@@ -23,7 +23,7 @@ describe('razonSitio', () => {
   });
   it('usa el motivo real del semáforo y avisa de fiabilidad baja', () => {
     const r = razonSitio(e({ estado: 'amarillo' }), { fiabilidad: 'baja', motivo: 'Lluvia de 30 mm el 10/10.' });
-    expect(r).toContain('Esperar: Lluvia de 30 mm el 10/10.');
+    expect(r).toContain('Puede salir: Lluvia de 30 mm el 10/10.');
     expect(r).toContain('fiabilidad baja');
   });
   it('1–2 frases (más aviso opcional) y nunca habla de comestibilidad', () => {

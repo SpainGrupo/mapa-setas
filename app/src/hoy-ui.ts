@@ -9,7 +9,7 @@ import { acotarDia, confianza, diasChips, estadoCalendario, etiquetaDia, mejorRe
   TEXTO_CONFIANZA, type FilaCalendario } from './calendario';
 import { NOMBRE_DIFICULTAD, type Dificultad } from './ruta';
 import { textoSubida, textoTiempo } from './acceso';
-import { NOMBRE_ESTADO } from './zona';
+import { AYUDA_PROBABILIDAD, NOMBRE_ESTADO, textoEstado } from './zona';
 import { datosEspecie, fotoMini } from './selector-especie';
 import { ordenarTemporada, textoFinVentana, type DiaVentana, type Ventana } from './ventana-especie';
 import type { Estado } from './semaforo';
@@ -255,12 +255,23 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number, zona?: Zona,
     nombres.append(bt);
   });
   tit.append(nombres);
-  const estados = entradas.length > 1 ? [...new Set(entradas.map((e) => e.estado))] : [principal.estado];
-  for (const e of estados) {
-    const est = document.createElement('span'); est.className = 'tf-estado chip-estado'; est.dataset.estado = e;
-    est.textContent = NOMBRE_ESTADO[e];
-    tit.append(est);
+  if (zona) {
+    // Zona: los colores presentes; la probabilidad de cada seta va en su sublista (listaZona).
+    for (const e of [...new Set(entradas.map((x) => x.estado))]) {
+      const est = document.createElement('span'); est.className = 'tf-estado chip-estado'; est.dataset.estado = e;
+      est.textContent = NOMBRE_ESTADO[e];
+      tit.append(est);
+    }
+  } else {
+    // Un chip por seta con su color y su probabilidad estimada (en filas con varias, con el nombre delante).
+    for (const e of entradas) {
+      const est = document.createElement('span'); est.className = 'tf-estado chip-estado'; est.dataset.estado = e.estado;
+      if (e.probabilidad != null) { est.dataset.probabilidad = String(e.probabilidad); est.title = AYUDA_PROBABILIDAD; }
+      est.textContent = (entradas.length > 1 ? `${nombre(e.especie)}: ` : '') + textoEstado(e);
+      tit.append(est);
+    }
   }
+  if (principal.probabilidad != null) li.dataset.probabilidad = String(principal.probabilidad);
   const cif = document.createElement('div'); cif.className = 'tf-cifra';
   // Cifra grande: minutos («36») o, si pasa de la hora, «1 h 17» algo más pequeña; la unidad debajo.
   const t = textoTiempo(s.t_pie_min).match(/^(?:(\d+) h)?\s*(?:(\d+) min)?$/);
@@ -337,7 +348,8 @@ function listaZona(z: Zona): HTMLElement {
   for (const e of z.entradas) {
     const li = document.createElement('li'); li.dataset.especie = e.especie; li.dataset.estado = e.estado;
     const n = document.createElement('b'); n.textContent = nombre(e.especie);
-    const est = document.createElement('span'); est.className = 'chip-estado'; est.dataset.estado = e.estado; est.textContent = NOMBRE_ESTADO[e.estado];
+    const est = document.createElement('span'); est.className = 'chip-estado'; est.dataset.estado = e.estado; est.textContent = textoEstado(e);
+    if (e.probabilidad != null) { li.dataset.probabilidad = String(e.probabilidad); est.title = AYUDA_PROBABILIDAD; }
     const p = document.createElement('span'); p.className = 'tf-zona-pts'; p.textContent = `${e.puntuacion}/100`;
     li.append(miniatura(e.especie), n, est, p);
     ul.append(li);
@@ -398,6 +410,7 @@ function opciones(fecha: string): Opciones {
   motivoEn = (e, id) => res(e, id)?.motivo ?? null;
   return {
     estadoEn: (e, id) => res(e, id)?.estado ?? null,
+    probabilidadEn: (e, id) => res(e, id)?.probabilidad ?? null,
     fiabilidad: fiab,
     maxDificultad: maxDificultad(),
     soloPublicos: ctx.soloPublicos(),
@@ -543,7 +556,7 @@ interface FilaTemporada { id: string; dias: DiaVentana[]; ventana: Ventana | nul
 const SEMANA = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
 /** En la tabla el rojo se pinta en gris: solo importa si está activa (verde/amarillo) o no. */
 const VISTA_ESTADO: Record<Estado, 'verde' | 'amarillo' | 'gris'> = { verde: 'verde', amarillo: 'amarillo', rojo: 'gris', gris: 'gris' };
-const TEXTO_CELDA: Record<'verde' | 'amarillo' | 'gris', string> = { verde: 'buen momento', amarillo: 'esperar', gris: 'no activa' };
+const TEXTO_CELDA: Record<'verde' | 'amarillo' | 'gris', string> = { verde: 'buen momento', amarillo: 'puede salir', gris: 'no activa' };
 
 function pintarTemporada(): FilaTemporada[] {
   const m = ctx.manifest();
@@ -568,7 +581,7 @@ function pintarTemporada(): FilaTemporada[] {
   scroll.setAttribute('role', 'region'); scroll.setAttribute('aria-labelledby', 'tit-temporada'); scroll.tabIndex = 0;
   const tabla = document.createElement('table'); tabla.className = 'temporada-tabla';
   const cap = document.createElement('caption'); cap.className = 'sr';
-  cap.textContent = `Estado de cada seta del ${fechas[0].slice(8)} al ${fechas.at(-1)!.slice(8)}: verde, buen momento; amarillo, esperar; gris, no activa.`;
+  cap.textContent = `Estado de cada seta del ${fechas[0].slice(8)} al ${fechas.at(-1)!.slice(8)}: verde, buen momento; amarillo, puede salir; gris, no activa.`;
   tabla.append(cap);
   const thead = tabla.createTHead(), cab = thead.insertRow();
   const th = (texto: string, clase = '') => { const x = document.createElement('th'); x.scope = 'col'; if (clase) x.className = clase; x.textContent = texto; return x; };
@@ -717,7 +730,7 @@ function textoFiltro(): string {
 function sitioExport(it: ItemTop): SitioExport {
   const p = it.principal, s = p.sitio;
   return {
-    lat: s.lat, lon: s.lon, puntuacion: p.puntuacion, estado: p.estado,
+    lat: s.lat, lon: s.lon, puntuacion: p.puntuacion, estado: p.estado, ...(p.probabilidad != null ? { probabilidad: p.probabilidad } : {}),
     setas: it.entradas.map((e) => ({ cientifico: nombre(e.especie), comun: nombreComunId(e.especie), grupo: grupoDe(e.especie).id === 'otras' ? '' : grupoDe(e.especie).nombre })),
     porque: razonSitio(p, { fiabilidad: fiab(p.especie), motivo: motivoEn(p.especie, s.meteo_id) }),
     minutos: s.t_pie_min, subida_m: s.subida_m, dificultad: p.dificultad,

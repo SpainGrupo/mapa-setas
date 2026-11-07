@@ -31,6 +31,8 @@ export interface SitioExport {
   lon: number;
   puntuacion: number;
   estado: Estado;
+  /** Probabilidad estimada del semáforo v3 (0–100) de la seta principal. */
+  probabilidad?: number;
   setas: SetaExport[];
   /** «Por qué» (razones.ts, con el motivo del semáforo). */
   porque: string;

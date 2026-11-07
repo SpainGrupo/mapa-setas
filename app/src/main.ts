@@ -31,7 +31,7 @@ import type { AccesoSitio, Manifest, Sitio } from './tipos';
 import type { Feature } from 'geojson';
 import { claveMeteo, edadHoras, fechaMadrid, obtener, renombrarCache, CADUCIDAD_H, type DatosMeteo, type PuntoMeteo } from './meteo';
 import { bandaAltitud, ddmm, humedadAcumulada, semaforo, sumarDias, textoBanda, type ResultadoSemaforo } from './semaforo';
-import { expresionColores, haceTexto, NOMBRE_ESTADO, puntoMasCercano } from './zona';
+import { AYUDA_PROBABILIDAD, expresionColores, haceTexto, puntoMasCercano, textoEstado } from './zona';
 import { pintarGrafico, type VentanaGrafico } from './grafico';
 import { abrirFicha, cargarGuia, fichaGuia, fichasGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, indiceGuia, mostrarGuia, pintarCreditos, ponerBloqueBuscar, ponerBloqueTiempo, ponerBloqueTop, type EstadoFotos } from './guia-ui';
 import { binomio, especieMapaDeFicha, fichaDeEspecieMapa, miniaturaEspecie } from './guia';
@@ -1133,7 +1133,9 @@ function pintarTarjeta() {
   const r = estadoEn(puntoSel, especieSel());
   const punto = document.createElement('span'); punto.className = 'punto-estado'; punto.dataset.estado = r?.estado ?? 'gris'; punto.setAttribute('aria-hidden', 'true');
   const fmTz = fotoMini(especieSel(), nombres[especieSel()] ?? especieSel());
-  $('#tz-estado').replaceChildren(punto, ...(fmTz ? [fmTz] : []), r ? `${nombres[especieSel()]}: ${NOMBRE_ESTADO[r.estado]}` : `${nombres[especieSel()]}: sin datos del tiempo`);
+  $('#tz-estado').replaceChildren(punto, ...(fmTz ? [fmTz] : []), r ? `${nombres[especieSel()]}: ${textoEstado(r)}` : `${nombres[especieSel()]}: sin datos del tiempo`);
+  if (r?.probabilidad != null) { $('#tz-estado').title = AYUDA_PROBABILIDAD; $('#tz-estado').dataset.probabilidad = String(r.probabilidad); }
+  else { $('#tz-estado').removeAttribute('title'); delete $('#tz-estado').dataset.probabilidad; }
   $('#tz-motivo').textContent = r ? r.motivo : 'Conéctate y pulsa «Actualizar tiempo» en Zona.';
 }
 $('#tz-cerrar').addEventListener('click', () => ($('#tarjeta-zona').hidden = true));
@@ -1193,7 +1195,8 @@ function pintarZona() {
     const ic = document.createElement('span'); ic.className = 'ic punto-estado'; ic.dataset.estado = r?.estado ?? 'gris'; ic.setAttribute('aria-hidden', 'true');
     const esp = document.createElement('span'); esp.className = 'esp'; esp.textContent = e.nombre;
     const fmZ = fotoMini(e.id, e.nombre); if (fmZ) esp.prepend(fmZ);
-    const est = document.createElement('span'); est.className = 'est'; est.textContent = r ? NOMBRE_ESTADO[r.estado] : 'Sin datos del tiempo';
+    const est = document.createElement('span'); est.className = 'est'; est.textContent = r ? textoEstado(r) : 'Sin datos del tiempo';
+    if (r?.probabilidad != null) { est.title = AYUDA_PROBABILIDAD; b.dataset.probabilidad = String(r.probabilidad); }
     const mot = document.createElement('span'); mot.className = 'mot'; mot.textContent = r?.motivo ?? '';
     b.append(ic, esp, est, mot);
     b.addEventListener('click', () => {

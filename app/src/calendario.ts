@@ -74,7 +74,7 @@ export function diasHastaTemporada(fecha: string, meses: number[]): number | nul
 /**
  * Estado del calendario de una especie el día D, a partir del semáforo de ese día (el mejor de sus sitios) y sus meses:
  *  - verde → «Ya sale», con «aguanta hasta ~fecha» = fin de la ventana del semáforo, sin pasar del fin de temporada.
- *  - amarillo con ventana por abrir (desde > D) → «Empieza en ~X días».
+ *  - amarillo o rojo con ventana por abrir (desde > D; desde v3 el «esperar» es rojo) → «Empieza en ~X días».
  *  - amarillo con la ventana abierta pero con pegas (temperatura, suelo) → «Puede salir, aguanta hasta ~fecha».
  *  - rojo/gris fuera de temporada → «Empieza en ~X días» contando hasta el 1 del primer mes de temporada.
  *  - rojo/gris en temporada → «En temporada, falta lluvia» (o «sin datos del tiempo» si es gris).
@@ -86,7 +86,7 @@ export function estadoCalendario(fecha: string, meses: number[], r: ResultadoSem
     const hasta = tope(r.hasta);
     return { clase: 'sale', texto: hasta ? `Ya sale · aguanta hasta ~${ddmm(hasta)}` : 'Ya sale', hasta };
   }
-  if (r?.estado === 'amarillo' && r.desde && r.desde > fecha) {
+  if ((r?.estado === 'amarillo' || r?.estado === 'rojo') && r.desde && r.desde > fecha) {
     const dias = diasEntre(fecha, r.desde);
     return { clase: 'pronto', texto: `Empieza en ~${dias} ${dias === 1 ? 'día' : 'días'}`, dias };
   }
@@ -100,14 +100,16 @@ export function estadoCalendario(fecha: string, meses: number[], r: ResultadoSem
   return { clase: 'temporada', texto: r?.estado === 'rojo' ? 'En temporada, falta lluvia' : 'En temporada, sin datos del tiempo' };
 }
 
-/** El mejor estado de una lista de resultados (verde > amarillo > gris > rojo). */
+/** El mejor estado de una lista de resultados (verde > amarillo > gris > rojo; a igualdad, más probabilidad y luego la
+ * ventana que abre antes). */
 const RANGO_ESTADO: Record<Estado, number> = { verde: 0, amarillo: 1, gris: 2, rojo: 3 };
 export function mejorResultado(rs: (ResultadoSemaforo | null)[]): ResultadoSemaforo | null {
   let m: ResultadoSemaforo | null = null;
   for (const r of rs) {
     if (!r) continue;
+    const pr = r.probabilidad ?? -1, pm = m?.probabilidad ?? -1;
     if (!m || RANGO_ESTADO[r.estado] < RANGO_ESTADO[m.estado]
-      || (r.estado === m.estado && r.estado === 'amarillo' && (r.desde ?? '') < (m.desde ?? ''))) m = r;
+      || (r.estado === m.estado && (pr > pm || (pr === pm && (r.desde ?? '') < (m.desde ?? ''))))) m = r;
   }
   return m;
 }

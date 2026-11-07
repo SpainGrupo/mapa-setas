@@ -9,7 +9,7 @@ import type { ManifestApp } from './manifest-region';
 import { miniatura, avisarRepintadoTop, topActualMapa } from './hoy-ui';
 import { textoAcceso, urlSitioGoogle } from './exportar-dia';
 import { detallesTitularidad, normaTitularidad, textoTitularidad } from './titularidad';
-import { NOMBRE_ESTADO } from './zona';
+import { AYUDA_PROBABILIDAD, NOMBRE_ESTADO, textoEstado } from './zona';
 import { NOMBRE_DIFICULTAD } from './ruta';
 import * as Mini from './minimapa';
 
@@ -48,7 +48,8 @@ function tarjeta() {
   for (const e of s.especies.slice(0, 2)) minis.append(miniatura(e));
   const tit = document.createElement('div'); tit.className = 'hm-tit';
   const n = document.createElement('b'); n.textContent = `${s.pos}. ${s.nombres.join(' · ')}`;
-  const est = document.createElement('span'); est.className = 'tf-estado chip-estado'; est.dataset.estado = s.estado; est.textContent = NOMBRE_ESTADO[s.estado];
+  const est = document.createElement('span'); est.className = 'tf-estado chip-estado'; est.dataset.estado = s.estado; est.textContent = textoEstado(s);
+  if (s.probabilidad != null) est.title = AYUDA_PROBABILIDAD;
   tit.append(n, est);
   const x = boton('', () => { sel = null; pintar(false); }, 'btn-x');
   x.setAttribute('aria-label', 'Cerrar la tarjeta'); x.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-cerrar"/></svg>';

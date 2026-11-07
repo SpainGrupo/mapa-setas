@@ -70,13 +70,13 @@ const RANGO_ESTADO = (r: ResultadoSemaforo | null, fecha: string) =>
   !r ? 4 : r.estado === 'verde' ? 0 : r.estado === 'amarillo' ? (esActivo(r, fecha) ? 1 : 2) : r.estado === 'rojo' ? 3 : 4;
 
 /** Mejor punto meteo de la vista para una seta (verde > amarillo abierto > amarillo «esperar» > rojo > gris; a
- * igualdad, el más cercano al centro). null si no hay puntos en la vista. */
+ * igualdad, la mayor probabilidad y luego el más cercano al centro). null si no hay puntos en la vista. */
 export function referenciaVista(puntos: PuntoMeteo[], v: Vista, estado: (p: PuntoMeteo) => ResultadoSemaforo | null,
   fecha: string): (PuntoRef & { resultado: ResultadoSemaforo | null }) | null {
-  let mejor: { p: PuntoMeteo; r: ResultadoSemaforo | null; k: number; d: number } | null = null;
+  let mejor: { p: PuntoMeteo; r: ResultadoSemaforo | null; k: number; pr: number; d: number } | null = null;
   for (const p of puntosEnVista(puntos, v)) {
-    const r = estado(p), k = RANGO_ESTADO(r, fecha), d = distanciaM(p, v.centro);
-    if (!mejor || k < mejor.k || (k === mejor.k && d < mejor.d)) mejor = { p, r, k, d };
+    const r = estado(p), k = RANGO_ESTADO(r, fecha), pr = r?.probabilidad ?? -1, d = distanciaM(p, v.centro);
+    if (!mejor || k < mejor.k || (k === mejor.k && (pr > mejor.pr || (pr === mejor.pr && d < mejor.d)))) mejor = { p, r, k, pr, d };
   }
   return mejor ? { id: mejor.p.id, origen: 'vista', resultado: mejor.r } : null;
 }
@@ -93,7 +93,7 @@ export interface DiaVentana {
   abre?: string;
   /** Fin de esa ventana según el semáforo. */
   hasta?: string;
-  /** Amarillo «esperar»: día en que suele abrir. */
+  /** Ventana que aún no ha abierto («esperar» o rampa): día en que suele abrir. */
   desde?: string;
 }
 
@@ -149,7 +149,7 @@ export function ventanaEspecie(dias: DiaVentana[], meses: number[], hoy: string)
     return { tipo: 'pronto', desde, confianza: confianza(hoy, desde), texto: `Se espera a partir de ~${ddmm(desde)}` };
   }
   const ultimo = dias.at(-1)?.fecha ?? hoy;
-  const espera = dias.find((d) => d.estado === 'amarillo' && d.desde && d.desde > ultimo);
+  const espera = dias.find((d) => d.estado !== 'gris' && d.desde && d.desde > ultimo);
   if (espera) return { tipo: 'pronto', desde: espera.desde, confianza: 'baja', texto: `Se espera a partir de ~${ddmm(espera.desde!)}` };
   const faltan = diasHastaTemporada(hoy, meses);
   if (faltan != null) {
@@ -165,24 +165,28 @@ export function ventanaEspecie(dias: DiaVentana[], meses: number[], hoy: string)
 // ---------------------------------------------------------------- selector de especie del mapa
 
 export interface OpcionSelector { id: string; fiabilidad: Fiabilidad; resultado: ResultadoSemaforo | null; meses: number[] }
-export type EtiquetaInactiva = 'seco' | 'pasó su lluvia' | 'sin datos' | 'fuera de temporada';
+export type EtiquetaInactiva = 'por abrir' | 'seco' | 'pasó su lluvia' | 'sin datos' | 'fuera de temporada';
 export interface Inactiva<T> { item: T; etiqueta: EtiquetaInactiva }
 
 const RANGO_FIAB: Record<Fiabilidad, number> = { buena: 0, media: 1, sin_validar: 2, baja: 3 };
-const RANGO_ETIQUETA: Record<EtiquetaInactiva, number> = { seco: 0, 'pasó su lluvia': 1, 'sin datos': 2, 'fuera de temporada': 3 };
+const RANGO_ETIQUETA: Record<EtiquetaInactiva, number> = { 'por abrir': 0, seco: 1, 'pasó su lluvia': 2, 'sin datos': 3, 'fuera de temporada': 4 };
 
 /** El motivo de una especie no activa, en llano y corto (selector del mapa, «Ver más»). */
 export const TEXTO_INACTIVA: Record<EtiquetaInactiva, string> = {
-  seco: 'seco', 'pasó su lluvia': 'ya pasó su lluvia', 'sin datos': 'sin datos del tiempo', 'fuera de temporada': 'fuera de temporada',
+  'por abrir': 'su ventana aún no abre', seco: 'seco', 'pasó su lluvia': 'ya pasó su lluvia', 'sin datos': 'sin datos del tiempo', 'fuera de temporada': 'fuera de temporada',
 };
 
-/** Por qué una especie no está activa hoy (null si lo está: verde o amarillo). Sale del motivo del semáforo. */
+/** Por qué una especie no está activa hoy (null si lo está: verde o amarillo). Sale del motivo del semáforo. Desde v3
+ * el «esperar» es rojo (probabilidad baja hoy) con `desde` futuro: «su ventana aún no abre». */
 export function etiquetaInactiva(o: OpcionSelector, hoy: string): EtiquetaInactiva | null {
   const e = o.resultado?.estado;
   if (e === 'verde' || e === 'amarillo') return null;
   const motivo = o.resultado?.motivo ?? '';
-  if (/^fuera de temporada/.test(motivo) || (o.meses.length && !o.meses.includes(+hoy.slice(5, 7)))) return 'fuera de temporada';
-  if (e === 'rojo') return /^ventana pasada/.test(motivo) ? 'pasó su lluvia' : 'seco';
+  if (/^fuera de temporada/i.test(motivo) || (o.meses.length && !o.meses.includes(+hoy.slice(5, 7)))) return 'fuera de temporada';
+  if (e === 'rojo') {
+    if (o.resultado?.desde && o.resultado.desde > hoy) return 'por abrir';
+    return /^ventana (pasada|del \S+ terminando)/i.test(motivo) ? 'pasó su lluvia' : 'seco';
+  }
   return 'sin datos';
 }
 

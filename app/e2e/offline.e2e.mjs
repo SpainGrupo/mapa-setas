@@ -552,7 +552,7 @@ try {
   await p.mouse.click(caja.x + caja.width / 2, caja.y + caja.height / 2);
   await p.locator('#tarjeta-zona').waitFor();
   const tarjeta = await p.locator('#tarjeta-zona').textContent();
-  comprobar(/Boletus aereus: Buen momento/.test(tarjeta) && /Ventana actual \(lluvia del \d\d\/\d\d, \d+ mm, hace \d+ días\): hasta ~\d\d\/\d\d\./.test(tarjeta) && await p.locator("#tz-estado img.foto-mini").count() === 1, `tarjeta al tocar el mapa: «${tarjeta.trim().replace(/\s+/g, ' ')}»`);
+  comprobar(/Boletus aereus: Buen momento · ≈ \d+ %/.test(tarjeta) && /Ventana actual \(lluvia del \d\d\/\d\d, \d+ mm, hace \d+ días\): hasta ~\d\d\/\d\d\./.test(tarjeta) && await p.locator("#tz-estado img.foto-mini").count() === 1, `tarjeta al tocar el mapa: «${tarjeta.trim().replace(/\s+/g, ' ')}»`);
   await p.locator('[data-capa=semaforo]').evaluate((c) => { c.checked = true; c.dispatchEvent(new Event('change')); });
   await reposo();
   await captura('07-mapa-semaforo.png');
@@ -565,7 +565,7 @@ try {
   const deliciosus = await p.locator('[data-especie=lactarius_deliciosus] .mot').textContent();
   comprobar(/^Fuera de temporada \(sale en mar, abr, may\), pero llovió fuerte/.test(fuera)
     && /^Fuera de temporada \(sale en feb, mar, abr\)/.test(ponderosa)
-    && /esperar\. Ventana desde ~\d\d\/\d\d hasta ~\d\d\/\d\d\./.test(deliciosus),
+    && /la ventana está abriendo \(suele empezar hacia ~\d\d\/\d\d; hasta ~\d\d\/\d\d\)\./.test(deliciosus),   // v3: rampa previa a los 20 días
     `temporada en la Zona: «${fuera}» · «${ponderosa}» · «${deliciosus}»`);
   const desborde = await p.$$eval('#lista-semaforo .semaforo-fila', (bs) => bs.filter((b) => b.scrollWidth > b.clientWidth + 1).map((b) => b.dataset.especie));
   comprobar(!desborde.length, `filas del semáforo sin desbordar en horizontal${desborde.length ? ': ' + desborde.join(', ') : ''}`);
@@ -573,7 +573,8 @@ try {
   await captura('zona-temporada.png');
   await p.locator('#lista-semaforo').evaluate((e) => e.closest('.pantalla, .cuerpo')?.scrollTo?.(0, 0));
   comprobar(/^Lluvia suficiente \(\d+ mm el \d\d\/\d\d\) pero máximas altas .*Si refresca, ventana hasta ~\d\d\/\d\d/.test(await p.locator('[data-especie=boletus_pinophilus] .mot').textContent())
-    && /^Ventana pasada/.test(await p.locator('[data-especie=amanita_caesarea] .mot').textContent()), 'los motivos explican el amarillo y el rojo');
+    && /^Ventana del \d\d\/\d\d terminando/.test(await p.locator('[data-especie=amanita_caesarea] .mot').textContent()),
+    'los motivos explican lo que resta (temperatura) y la caída tras la ventana (v3)');
   comprobar(await p.locator('#grafico svg path[fill="#2a78d6"]').count() === Object.keys(FIXTURE.lluvia).length
     && /hoy/.test(await p.locator('#grafico-dato').textContent()), 'gráfico con la lluvia del fixture y el dato de hoy');
   comprobar(/Orientativo: reglas de aficionado, no ciencia exacta\./.test(await p.locator('#p-zona').textContent()), 'texto fijo «Orientativo…»');
@@ -610,7 +611,7 @@ try {
   comprobar(selHoy.grupo === 'Activas ahora' && selHoy.orden.activas.length === esperadoAct.length
     && selHoy.orden.activas.every((id) => esperadoAct.includes(id))
     && selHoy.orden.activas.every((id, i, a) => !i || rangoEst(a[i - 1]) <= rangoEst(id))
-    && selHoy.act.join(',') === selHoy.orden.activas.join(',') && selHoy.chips.every((c) => /^(Buen momento|Esperar)$/.test(c))
+    && selHoy.act.join(',') === selHoy.orden.activas.join(',') && selHoy.chips.every((c) => /^(Buen momento|Puede salir)$/.test(c))
     && selHoy.hasta.length > 0 && selHoy.hasta.every((t) => /^(hasta|empieza) ~\d{1,2} [a-z]{3}$/.test(t)),
     `selector: «Activas ahora» con ${selHoy.act.length} setas (verde → amarillo), estado y «${selHoy.hasta[0]}»`);
   comprobar(selHoy.btn === 'Ver más · 2 no activas ahora' && selHoy.exp === 'false' && !selHoy.masVisible && selHoy.orden.inactivas.length === 2,
@@ -623,7 +624,7 @@ try {
   if (iCae > 0) selMas.inact.unshift(...selMas.inact.splice(iCae, 1));
   comprobar(selMas.exp === 'true' && selMas.masVisible && selMas.guardado === '1'
     && selMas.inact.length === 2 && selMas.inact[0].id === 'amanita_caesarea' && selMas.inact.some((x) => x.id === 'agaricus_campestris') && selMas.inact[0].alto >= 48
-    && /^(seco|ya pasó su lluvia|fuera de temporada)( \(mirado cerca de \S.*\))?$/.test(selMas.inact[0].et)
+    && /^(su ventana aún no abre|seco|ya pasó su lluvia|fuera de temporada)( \(mirado cerca de \S.*\))?$/.test(selMas.inact[0].et)
     && selMas.inact[0].op < 1 && /grayscale/.test(selMas.inact[0].gris) && !PROHIBIDO.test(selMas.inact[0].et),
     `«Ver más» se abre (y se recuerda): A. caesarea en gris con su motivo «${selMas.inact[0].et}»`);
   await p.locator('#lista-mas [data-especie=amanita_caesarea]').scrollIntoViewIfNeeded();
@@ -678,7 +679,7 @@ try {
   comprobar(/Puntuación del día: \d+ de 100/.test(f0.t) && !/Calidad del monte/.test(f0.t)
     && /hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa/.test(await p.locator('#hoy-explicacion-puntos').textContent())
     && /(Monte público|Probablemente privado)/.test(f0.t), '«Puntuación del día» (antes «Calidad del monte») con su explicación y la titularidad en la fila');
-  comprobar(/de 100/.test(f0.t) && /a pie/.test(f0.t) && /km de (Marbella|ti)/.test(f0.t) && /(Fácil|Moderada|Difícil|Muy difícil)/.test(f0.t) && /Buen momento|Esperar|Sin datos/.test(f0.t)
+  comprobar(/de 100/.test(f0.t) && /a pie/.test(f0.t) && /km de (Marbella|ti)/.test(f0.t) && /(Fácil|Moderada|Difícil|Muy difícil)/.test(f0.t) && /Buen momento|Puede salir|Sin datos/.test(f0.t)
     && f0.botones.join('|') === 'Ruta a pie|Más acciones|Ver en mapa|Cómo llegar en coche|Guardar|Navegar aquí' && f0.menuOculto && f0.img.includes('miniaturas/'),
     'cada fila: miniatura, puntuación, estado, tiempo a pie, subida, dificultad, distancia, «Ruta a pie» y el resto en «Más acciones»');
   // Tocar el nombre de la seta en una fila del Top abre su ficha (la misma que el calendario).
@@ -745,7 +746,7 @@ try {
   const c1 = await cuando('boletus_aereus', 'boletus_aereus');
   comprobar(c1.especie === 'boletus_aereus' && /^Activa desde (hoy|~\d\d\/\d\d) hasta ~\d\d\/\d\d$/.test(c1.linea) && /^Confianza (alta|media|baja)$/.test(c1.conf)
     && c1.meses === 12 && c1.oct && c1.dias.length === 16 && c1.dias[0].e === 'verde'
-    && c1.dias.every((d) => d.ico && /: (Buen momento|Esperar|Mal momento|Sin datos fiables)$/.test(d.sr))
+    && c1.dias.every((d) => d.ico && /: (Buen momento|Puede salir|Mal momento|Sin datos fiables)$/.test(d.sr))
     && /Buen momento/.test(c1.leyenda) && /^Con el tiempo de /.test(c1.nota) && c1.arriba && !PROHIBIDO.test(c1.linea + c1.leyenda + c1.nota),
     `calendario → ficha de B. aereus con «Cuándo está activa»: «${c1.linea}» (${c1.conf}), 12 meses con octubre, 16 días ${c1.dias.map((d) => d.e[0]).join('')}`);
   await p.locator('#guia-ficha .cuando').scrollIntoViewIfNeeded();

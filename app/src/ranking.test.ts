@@ -31,6 +31,19 @@ describe('puntuación', () => {
     expect(puntuar('x', s, opc({}, { fiabilidad: () => 'baja' }))!.score).toBeCloseTo(base * 0.6, 9);
     expect(puntuar('x', s, opc({}, { estadoEn: () => null }))!.estado).toBe('gris');
   });
+  it('con probabilidad (semáforo v3) el factor es continuo: 0,1 + 0,9 × min(1, p/90); en gris no se usa', () => {
+    const s = sitio();
+    const base = calidad(s);
+    const conP = (p: number | null, estado: Estado = 'verde') => puntuar('x', s, opc({ x: estado }, { probabilidadEn: () => p }))!;
+    expect(conP(90).score).toBeCloseTo(base, 9);
+    expect(conP(45, 'amarillo').score).toBeCloseTo(base * 0.55, 9);
+    expect(conP(0, 'rojo').score).toBeCloseTo(base * 0.1, 9);
+    expect(conP(45, 'amarillo').probabilidad).toBe(45);
+    expect(conP(null, 'amarillo').score).toBeCloseTo(base * 0.5, 9);
+    expect(conP(60, 'gris')).toMatchObject({ estado: 'gris' });
+    expect(conP(60, 'gris').probabilidad).toBeUndefined();
+    expect(conP(60, 'gris').score).toBeCloseTo(base * 0.3, 9);
+  });
   it('0–100 contra el máximo teórico', () => {
     expect(puntuacion100(CALIDAD_MAX)).toBe(100);
     expect(puntuacion100(CALIDAD_MAX * 2)).toBe(100);

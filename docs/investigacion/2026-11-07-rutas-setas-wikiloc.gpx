@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Mapa de setas" xmlns="http://www.topografix.com/GPX/1/1" xmlns:setas="https://setas.local/gpx/1">
+  <wpt lat="36.07576" lon="-5.53590">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Primeros boletus (El Cuartón-Algeciras) (11.6 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Primeros. Boletus del año (El Cuartón / Algeciras (Alcornocales)). Especies citadas: boletus. Fecha: noviembre 2025. 23.41 km, +271 m (11.6 m/km, bajo). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/primeros-boletus-del-ano-240728279</desc>
+    <extensions><setas:sitio id="36b1587a-e5e7-5a5d-98cc-f509c4230f47" estrellas="2" especie="boletus_aereus"/></extensions>
+  </wpt>
+  <wpt lat="36.48608" lon="-5.53356">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Setas con papi (Jimena) (40.3 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Setas con papi (Jimena de la Frontera (Alcornocales)). Especies citadas: Cantharellus (chantarelas). Fecha: febrero 2024. 5.04 km, +203 m (40.3 m/km, medio). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/setas-con-papi-161279268</desc>
+    <extensions><setas:sitio id="0ae17d2d-bf8d-5c84-9ddc-854e4d51ed75" estrellas="2" especie="cantharellus_cibarius"/></extensions>
+  </wpt>
+  <wpt lat="36.50639" lon="-5.55035">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Setas en la cancha (Jimena) (49.3 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Setas en la cancha (Jimena de la Frontera (Alcornocales)). Especies citadas: Cantharellus (rebozuelo). Fecha: febrero 2024. 4.73 km, +233 m (49.3 m/km, medio). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/setas-en-la-cancha-161551459</desc>
+    <extensions><setas:sitio id="7e7e8a3b-e84d-5408-8ec7-5957a4b938a4" estrellas="2" especie="cantharellus_cibarius"/></extensions>
+  </wpt>
+  <wpt lat="36.22800" lon="-5.58700">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Valdeinfierno cierre de temporada (19.9 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Valdeinfierno cierre temporad (Los Barrios (Alcornocales)). Especies citadas: boletus, Amanita caesarea ("yemas"). Fecha: noviembre 2023. 6.93 km, +138 m (19.9 m/km, bajo). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/valdeinfierno-cierre-temporad-153883150</desc>
+    <extensions><setas:sitio id="9c50647b-f3af-554e-97b1-65d44e06fae2" estrellas="2" especie="amanita_caesarea"/></extensions>
+  </wpt>
+  <wpt lat="36.61315" lon="-5.46878">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 ¿Amanita cesarea? (Ubrique) (29 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. ¿Amanita cesarea? (Ubrique (Alcornocales)). Especies citadas: Amanita caesarea (con interrogación). Fecha: enero 2023. 1.69 km, +49 m (29.0 m/km, bajo). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/amanita-cesarea-123294784</desc>
+    <extensions><setas:sitio id="5b1d4b97-ec4d-57ea-9286-f6efe9558287" estrellas="1" especie="amanita_caesarea"/></extensions>
+  </wpt>
+  <wpt lat="36.82608" lon="-4.36397">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Lagar de Torrijos jornada micológica (27.2 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Lagar de Torrijos. Jornada micologica (Montes de Málaga (Olías)). Especies citadas: pedo de lobo, champiñón, boletus, Lepista (pie azul), otras. Fecha: noviembre 2020. 3.49 km, +95 m (27.2 m/km, bajo). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/lagar-de-torrijos-jornada-micologica-61335678</desc>
+    <extensions><setas:sitio id="4e66a47d-425b-5db8-a1e3-eb85dcc459ad" estrellas="1" especie=""/></extensions>
+  </wpt>
+  <wpt lat="36.08399" lon="-5.50789">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Monte Comares boletus (49.6 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Monte Comares. Boletus. Nov 2020 (Algeciras / Tarifa (Alcornocales)). Especies citadas: Boletus aereus, Macrolepiota procera, Pleurotus. Fecha: noviembre 2020. 6.73 km, +334 m (49.6 m/km, medio). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/monte-comares-boletus-nov-2020-60613825</desc>
+    <extensions><setas:sitio id="6b128a14-19fe-57c9-97a2-29ade253ad78" estrellas="1" especie="boletus_aereus"/></extensions>
+  </wpt>
+  <wpt lat="36.08658" lon="-5.53368">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Niebla freestyle boletus (El Bujeo) (46.5 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Niebla freestyle boletus (Algeciras / Tarifa (El Bujeo)). Especies citadas: Boletus aereus. Fecha: septiembre 2020. 7.61 km, +354 m (46.5 m/km, medio). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/niebla-freestyle-boletus-56881298</desc>
+    <extensions><setas:sitio id="1c64ba67-96d5-5988-9cfb-b270bdc88acb" estrellas="1" especie="boletus_aereus"/></extensions>
+  </wpt>
+  <wpt lat="36.25113" lon="-5.41204">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Pinar del Rey níscalos y boletus (3.6 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Pinar del rey. Níscalos muy grandes y 2 boletus (San Roque (Pinar del Rey)). Especies citadas: níscalo (Lactarius), boletus. Fecha: diciembre 2019. 3.88 km, +14 m (3.6 m/km, bajo). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/pinar-del-rey-niscalos-muy-grandes-y-2-boletus-44624221</desc>
+    <extensions><setas:sitio id="0431d49c-b682-56ce-96a9-3fa710cd1d13" estrellas="1" especie="lactarius_deliciosus"/></extensions>
+  </wpt>
+  <wpt lat="36.16258" lon="-5.46760">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Boletus Menacha (Algeciras) (12.6 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Boletus Menacha (Algeciras (Rinconcillo)). Especies citadas: boletus. Fecha: diciembre 2019. 11.4 km, +144 m (12.6 m/km, bajo). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/menacha-boletus-44515058</desc>
+    <extensions><setas:sitio id="fffab3e6-f482-5e23-84db-369361e0af37" estrellas="1" especie="boletus_aereus"/></extensions>
+  </wpt>
+  <wpt lat="36.27362" lon="-5.37254">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Ruta setera níscalos (San Roque) (16.7 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Ruta setera niscalos (San Roque). Especies citadas: níscalo (Lactarius). Fecha: diciembre 2018. 3.95 km, +66 m (16.7 m/km, bajo). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/ruta-setera-niscalos-31011302</desc>
+    <extensions><setas:sitio id="6ebfaf3d-bb29-5e72-9fc0-b23c65cd4a34" estrellas="1" especie="lactarius_deliciosus"/></extensions>
+  </wpt>
+  <wpt lat="36.39011" lon="-5.58971">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Ruta boletus (Jimena) (30.6 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Ruta boletus (Jimena de la Frontera (Alcornocales)). Especies citadas: boletus. Fecha: noviembre 2018. 7.48 km, +229 m (30.6 m/km, bajo). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/ruta-boletus-30209631</desc>
+    <extensions><setas:sitio id="cfd3bd0c-1969-50bb-9e5b-4dfa8c35b8b4" estrellas="1" especie="boletus_aereus"/></extensions>
+  </wpt>
+  <wpt lat="36.62767" lon="-5.12198">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Castañazo boletus (Igualeja) (41.4 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Castañazo boletus Igualeja (Igualeja (Valle del Genal)). Especies citadas: boletus. Fecha: noviembre 2018. 5.24 km, +217 m (41.4 m/km, medio). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-a-pie/castanazo-boletus-igualeja-30164656</desc>
+    <extensions><setas:sitio id="70739881-92dd-5c53-ac13-5196154b42f2" estrellas="1" especie="boletus_edulis"/></extensions>
+  </wpt>
+  <wpt lat="36.61326" lon="-5.42830">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Alcornocales ruta de setas 2 (31 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Alcornocales-ruta de setas 2 (Ubrique (Alcornocales)). Especies citadas: setas (sin especie). Fecha: enero 2023. 20.1 km, +623 m (31.0 m/km, bajo). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/alcornocales-ruta-de-setas-2-123128885</desc>
+    <extensions><setas:sitio id="9805966d-9f35-5b87-950e-bb7be10527c1" estrellas="1" especie=""/></extensions>
+  </wpt>
+  <wpt lat="36.57135" lon="-5.40916">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 XXI Jornadas Micológicas Cortes (34.2 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Ruta XXI Jornadas Micológicas Cortes de la Frontera (Cortes de la Frontera). Especies citadas: setas (sin especie). Fecha: enero 2023. 2.69 km, +92 m (34.2 m/km, bajo). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/ruta-xxi-jornadas-micologicas-cortes-de-la-frontera-123887900</desc>
+    <extensions><setas:sitio id="80c1f651-6c14-5a3a-b75c-fd1c9eff26f6" estrellas="1" especie=""/></extensions>
+  </wpt>
+  <wpt lat="36.51933" lon="-5.54250">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Jimena setas (56.5 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Jimena setas (Jimena de la Frontera). Especies citadas: setas (sin especie). Fecha: noviembre 2018. 3.22 km, +182 m (56.5 m/km, medio). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/jimena-setas-30954209</desc>
+    <extensions><setas:sitio id="52e771b9-c672-54f2-a29d-939a67153928" estrellas="1" especie=""/></extensions>
+  </wpt>
+  <wpt lat="36.81906" lon="-4.37880">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Montes de Málaga setas (138 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Montes de málaga setas (Montes de Málaga (Olías)). Especies citadas: setas (sin especie). Fecha: noviembre 2018. 4.37 km, +603 m (138.0 m/km, alto). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/montes-de-malaga-setas-30193180</desc>
+    <extensions><setas:sitio id="337a8ca9-a7fa-547e-981c-a60722c96806" estrellas="1" especie=""/></extensions>
+  </wpt>
+  <wpt lat="36.86796" lon="-4.77867">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Setas Carratraca (82.5 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Setas Carratraca (Carratraca). Especies citadas: setas (sin especie). Fecha: enero 2018. 5.94 km, +490 m (82.5 m/km, alto). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/setas-carratraca-21923950</desc>
+    <extensions><setas:sitio id="53ea7095-e033-58b5-b304-82ec6d0cd38f" estrellas="1" especie=""/></extensions>
+  </wpt>
+  <wpt lat="36.61762" lon="-4.82851">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Jornadas micológicas Monda: El Mojón (31.5 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Jornadas micologicas de Monda: El Mojon (Monda (Sierra de las Nieves)). Especies citadas: sin especie (pocas setas). Fecha: noviembre 2023. 8.07 km, +254 m (31.5 m/km, bajo). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/jornadas-micologicas-de-monda-el-mojon-154219846</desc>
+    <extensions><setas:sitio id="80786977-f893-5178-9b98-6cd742cbd4e7" estrellas="1" especie=""/></extensions>
+  </wpt>
+  <wpt lat="36.65293" lon="-5.44677">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Paseo de setas y espárragos (Ubrique) (34.3 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Paseo de setas y esparragos (Ubrique (Alcornocales)). Especies citadas: setas (sin especie). Fecha: noviembre 2020. 18.76 km, +643 m (34.3 m/km, bajo). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/paseo-de-setas-y-esparragos-61150137</desc>
+    <extensions><setas:sitio id="79f85f44-9d06-5c37-ba68-74f2f78991ed" estrellas="1" especie=""/></extensions>
+  </wpt>
+  <wpt lat="36.95575" lon="-4.12199">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 De setas en sierra (Zafarraya) (49.9 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. De setas en sierra Ventas de Zafarraya (Ventas de Zafarraya (Granada)). Especies citadas: setas (sin especie). Fecha: noviembre 2020. 6.8 km, +339 m (49.9 m/km, medio). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/de-setas-en-sierra-ventas-de-zafarraya-61911458</desc>
+    <extensions><setas:sitio id="9abc3b18-299a-5d33-a456-1e25ee3228cc" estrellas="1" especie=""/></extensions>
+  </wpt>
+  <wpt lat="36.28454" lon="-5.39251">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Setas Castellar (8.9 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Setas castellar (Castellar de la Frontera / San Roque). Especies citadas: setas (sin especie). Fecha: noviembre 2019. 5.29 km, +47 m (8.9 m/km, bajo). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/setas-castellar-43180979</desc>
+    <extensions><setas:sitio id="b53a94c1-fb81-5e0b-b20b-8dc300c47f54" estrellas="1" especie=""/></extensions>
+  </wpt>
+  <wpt lat="36.57815" lon="-4.88413">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Juanar - Bosque Encantado (Ojén) (23.5 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Circular Juanar: Bosque Encantado, Castañas y Miradores (Ojén, Málaga) (07-11-2017) (Ojén (Sierra Blanca)). Especies citadas: setas (sin especie, mención en la descripción). Fecha: noviembre 2017. 6.0 km, +141 m (23.5 m/km, bajo). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/circular-juanar-bosque-encantado-castanas-y-miradores-ojen-malaga-07-11-2017-20835586</desc>
+    <extensions><setas:sitio id="75ea2d54-3470-5896-b990-052448f6a69f" estrellas="1" especie=""/></extensions>
+  </wpt>
+  <wpt lat="36.83271" lon="-3.97654">
+    <time>2026-11-07T00:00:00Z</time>
+    <name>🍄 Cómpeta setas (35.1 m/km)</name>
+    <desc>Ruta de Wikiloc, no garantía de setas. Cómpeta Setas (Cómpeta (Axarquía)). Especies citadas: setas (sin especie). Fecha: noviembre 2016. 45.73 km, +1603 m (35.1 m/km, bajo). Punto = inicio de la ruta. https://es.wikiloc.com/rutas-senderismo/competa-setas-15638455</desc>
+    <extensions><setas:sitio id="c292d4ca-6904-5794-90a2-3203b6ab5928" estrellas="1" especie=""/></extensions>
+  </wpt>
+</gpx>

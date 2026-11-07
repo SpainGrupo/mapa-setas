@@ -15,3 +15,6 @@ app/coverage/
 app/public/ort
 .claude/
 app/e2e/capturas-red/
+
+# Trazados descargados de Wikiloc: uso personal, no se redistribuyen (repo público)
+docs/investigacion/wikiloc-gpx/

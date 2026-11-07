@@ -178,7 +178,12 @@ especies:                                       # orden = el de especies.yaml (e
   # spec §1.3 y §3.5 (sin tricholoma_terreum); INV §2. boletus_aereus: relicto de Corbera/El Surar (6 registros).
   activas: [boletus_aereus, lactarius_deliciosus, lactarius_sanguifluus, pleurotus_eryngii,
             hygrophorus_latitabundus, suillus_collinitus, lepista_nuda, agaricus_campestris, hydnum_repandum,
-            morchella_spp, terfezia_claveryi]
+            morchella_spp, terfezia_claveryi,
+            # 2026-11-07: especies de Marbella con ≥ 10 citas dentro de la zona de 2 h (citas.geojson) y ficha en la guía:
+            # S. bellinii 34 · S. granulatus 39 · P. ostreatus 14. Perfiles de especies.yaml sin cambios (heurísticos).
+            # Quedan fuera por tener < 10 citas en la zona: macrolepiota_procera 6, craterellus_cornucopioides 5,
+            # russula_cyanoxantha 3, suillus_luteus 1, tricholoma_portentosum 0, terfezia_arenaria 0.
+            suillus_bellinii, suillus_granulatus, pleurotus_ostreatus]
   # INV §2: 0–1 registros GBIF en la zona y hábitat de alcornocal/castañar o suelo ácido
   sin_habitat: [boletus_aestivalis, boletus_edulis, boletus_pinophilus, amanita_caesarea, cantharellus_cibarius,
                 amanita_ponderosa]
@@ -201,6 +206,12 @@ citas:
     morchella_spp: ["Morchella esculenta", "Morchella elata", "Morchella conica"]
     terfezia_claveryi: ["Terfezia claveryi"]
     terfezia_arenaria: ["Terfezia arenaria"]    # sin T. claveryi: aquí tiene especie propia
+    # 2026-11-07: consulta de base para decidir si entran las especies de Marbella que Alicante no tenía (cache en raw/citas)
+    suillus_luteus: ["Suillus luteus"]
+    suillus_granulatus: ["Suillus granulatus"]
+    tricholoma_portentosum: ["Tricholoma portentosum"]
+    craterellus_cornucopioides: ["Craterellus cornucopioides", "Craterellus lutescens"]
+    pleurotus_ostreatus: ["Pleurotus ostreatus"]
 
 legal:
   aviso: "Normativa orientativa por comunidad autónoma: compruébala en el boletín oficial y en las ordenanzas municipales. En fincas privadas hace falta el permiso del propietario."

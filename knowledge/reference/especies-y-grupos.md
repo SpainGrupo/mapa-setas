@@ -35,16 +35,28 @@ timestamp: 2026-10-20T22:00:00Z
 | Lepista nuda (`lepista_nuda`) | pie azul | рядовка фиолетовая | Pie azul | sí (150) | sí (150) |
 | Agaricus campestris (`agaricus_campestris`) | champiñón de campo | шампиньон обыкновенный (луговой) | Champiñones | sí (150) | sí (150) |
 | Hydnum repandum (`hydnum_repandum`) | lengua de gato, lengua de vaca | ежовик жёлтый (выемчатый) | Lenguas de gato (Hydnum) | sí (150) | sí (150) |
-| Suillus bellinii (`suillus_bellinii`) | babosillo (PENDIENTE verificar) | маслёнок (especie: PENDIENTE) | Babosillos (Suillus) | sí (150) | no modelada |
+| Suillus bellinii (`suillus_bellinii`) | babosillo (PENDIENTE verificar) | маслёнок (especie: PENDIENTE) | Babosillos (Suillus) | sí (150) | sí (150; 2026-11-07) |
 | Suillus luteus (`suillus_luteus`) | babosillo con anillo (PENDIENTE verificar) | маслёнок обыкновенный (поздний) | Babosillos (Suillus) | sí (150) | no modelada |
-| Suillus granulatus (`suillus_granulatus`) | boleto granulado (PENDIENTE verificar) | маслёнок зернистый | Babosillos (Suillus) | sí (150) | no modelada |
+| Suillus granulatus (`suillus_granulatus`) | boleto granulado (PENDIENTE verificar) | маслёнок зернистый | Babosillos (Suillus) | sí (150) | sí (150; 2026-11-07) |
 | Russula cyanoxantha (`russula_cyanoxantha`) | carbonera | сыроежка сине-жёлтая | Rúsulas (carbonera) | sí (150) | no modelada |
 | Tricholoma portentosum (`tricholoma_portentosum`) | capuchina, ratón | рядовка серая | Capuchinas (Tricholoma) | sí (75) | no modelada |
 | Morchella spp. (`morchella_spp`) | colmenilla, cagarria | сморчок (сморчки) | Colmenillas | sí (4) | sí (5) |
 | Craterellus cornucopioides y C. lutescens (`craterellus_cornucopioides`) | trompeta de los muertos, trompeta negra; angula de monte, trompeta amarilla | вороночник рожковидный (C. cornucopioides; PENDIENTE verificar) | Rebozuelos | sí (150) | no modelada |
-| Pleurotus ostreatus (`pleurotus_ostreatus`) | seta de ostra, seta de chopo, orellana | вёшенка обыкновенная | Setas de ostra (Pleurotus) | sí (150) | no modelada |
+| Pleurotus ostreatus (`pleurotus_ostreatus`) | seta de ostra, seta de chopo, orellana | вёшенка обыкновенная | Setas de ostra (Pleurotus) | sí (150) | sí (150; 2026-11-07) |
 
-Resumen: Marbella 24 especies modeladas (desde 2026-10-20; 22 antes) (todas con sitios; morchella solo 4). Alicante 11 activas (boletus_aereus con 1 sitio, morchella con 5) y 6 «sin hábitat» en gris (aestivalis, edulis, pinophilus, caesarea, cantharellus, ponderosa).
+Resumen: Marbella 24 especies modeladas (desde 2026-10-20; 22 antes) (todas con sitios; morchella solo 4). Alicante 14 activas desde 2026-11-07 (boletus_aereus con 1 sitio, morchella con 5) y 6 «sin hábitat» en gris (aestivalis, edulis, pinophilus, caesarea, cantharellus, ponderosa).
+
+### Alicante, ampliación del 2026-11-07 (Suillus bellinii, S. granulatus y Pleurotus ostreatus)
+
+«Aplica a Alicante lo hecho con Marbella». Criterio: citas de `pipeline/data/alicante/out/citas.geojson` **dentro de la zona de 2 h** ≥ 10 (suficiente para que `calibracion.py` juzgue) y ficha de guía ya existente (las tres entraron en Marbella; sus excepciones SIN_CONF siguen valiendo). Perfiles de `especies.yaml` sin cambios (heurísticos); en `regiones/alicante.yaml` hay un override por especie solo si hace falta (ninguno aquí). Se pidieron a GBIF e iNaturalist los taxones que Alicante no consultaba (`citas.taxa`).
+
+| Especie | citas ≤200 km | citas en zona | n calibración | lift validación | fiabilidad | sitios |
+|---|---|---|---|---|---|---|
+| suillus_bellinii | 65 | 34 | 31 | 1,65 | media | 150 |
+| suillus_granulatus | 61 | 39 | 31 | 1,15 | baja | 150 |
+| pleurotus_ostreatus | 30 | 14 | 14 | 12,49 | buena | 150 |
+
+Fuera por no llegar a 10 citas en la zona: macrolepiota_procera (45 / 6), craterellus_cornucopioides (21 / 5), russula_cyanoxantha (17 / 3), suillus_luteus (10 / 1), tricholoma_portentosum (3 / 0), terfezia_arenaria (0; Alicante usa *T. claveryi*, también con 0 citas). Las seis «sin hábitat» siguen igual (amanita_caesarea 18 / 1, cantharellus_cibarius 7 / 1, boletus_edulis 2 / 1, aestivalis y ponderosa 0). *P. ostreatus* tiene solo un 0,3 % de la zona en «buena» (sus citas son de riberas y huertas): el lift alto sale de pocas celdas. Si se baja el umbral a 5 citas en zona entrarían macrolepiota y craterellus.
 
 ### Marbella, ampliación del 2026-10-20 (Craterellus y Pleurotus ostreatus)
 

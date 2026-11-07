@@ -50,6 +50,10 @@ Versión 4 (2026-10-20): punto representativo con cubierta. Antes el punto podí
      (celdas sin dato: el factor de la submancha). Empate → menor índice.
   Una penalización suave sola no bastaba: el bonus por poco pisado pesaba más que la cubierta (Ojén 22 → 27 %).
   Con m = 0 o sin capas de cubierta, el punto es el de siempre. La calidad se calcula con el bonus del punto nuevo.
+Versión 5 (2026-11-07): campo opcional `terreno` por sitio (terreno.py): desnivel por km, pendiente media,
+  pendiente máxima sostenida y esfuerzo de Tobler en los 300 m alrededor del punto (MDT25), más el desnivel por km
+  del acceso a pie si hay camino. No cambia qué sitios salen ni su orden aquí: la etiqueta («cómodo», «algo de
+  sube y baja», «quebrado») y el factor del ranking los aplica la app (app/src/comodidad.ts).
 """
 from __future__ import annotations
 import json
@@ -61,7 +65,7 @@ from .cubierta_satelite import FUENTE as FUENTE_SAT
 
 _NOMBRE_ARBOL = {v: k for k, v in ARBOL.items()}
 
-VERSION = 4
+VERSION = 5
 UMBRAL = 60          # idoneidad mínima de una celda de mancha
 MIN_HA = 2.0         # área mínima de la mancha
 MAXIMO = 150         # sitios por especie
@@ -340,6 +344,8 @@ def calcular(region, out: Path | None = None, verbose: bool = True) -> dict:
         datos["especies"][e["id"]] = geo
         if verbose:
             print(f"  sitios {e['id']}: {len(lista)}", flush=True)
+    from .terreno import anotar as anotar_terreno
+    anotar_terreno(region, datos, malla, acc["direccion"], verbose=verbose)
     from .citas_sitios import anotar
     anotar(region, datos, malla, verbose=verbose)
     from .exportar import anadir_validacion

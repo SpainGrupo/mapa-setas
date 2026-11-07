@@ -821,6 +821,16 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .dlg[open] { animation: subir 260ms var(--entrada) both; }
 @keyframes subir { from { opacity: 0; transform: translateY(24px); } }
 .dlg-hoja { margin: auto auto 0; width: 100%; max-width: 640px; border-radius: 28px 28px 0 0; padding-bottom: calc(20px + var(--inf)); }
+/* Aviso de cookies (Clarity): grande y centrado en la pantalla, no una hoja inferior. */
+.dlg-cookies { margin: auto; width: min(440px, calc(100vw - 32px)); padding: 28px 22px 22px; text-align: center; }
+.dlg-cookies[open] { display: grid; gap: 14px; }
+.dlg-cookies h2 { margin: 0; font-size: 26px; line-height: 1.15; }
+.dlg-cookies p { margin: 0; font-size: 18px; line-height: 1.4; }
+.dlg-cookies .nota { font-weight: 800; color: var(--tinta-2); }
+.dlg-cookies::backdrop { background: oklch(12% 0.02 160 / 0.7); }
+.cookies-botones { display: grid; gap: 10px; margin-top: 6px; }
+.cookies-botones .btn-primario { min-height: 64px; font-size: 20px; }
+.cookies-botones .btn:not(.btn-primario) { min-height: var(--toque); }
 #dlg-inicio { display: none; }
 #dlg-inicio[open] { display: grid; gap: 12px; }
 #dlg-inicio p { margin: 0; }

@@ -50,6 +50,7 @@ import { abrirEnlaceDeUrl, iniciarEnlace, puntosEnlace } from './enlace-ui';
 import { puntosDeKml } from './enlaces';
 import type { SenderoApp } from './ir-sitio';
 import { mapaListo } from './minimapa';
+import { iniciarClarity } from './clarity-ui';
 import { decidirVersion } from './actualizar';
 import { ultimaPosicion } from './posicion-viva';
 import { abrirChat, estadoChat, iniciarChat } from './chat-ui';
@@ -260,6 +261,10 @@ if (!localStorage.getItem('setas:aviso-visto')) {
   d.addEventListener('close', () => localStorage.setItem('setas:aviso-visto', '1'));
   d.showModal();
 }
+
+// Aviso de cookies de Microsoft Clarity (solo si el build trae VITE_CLARITY_ID). Después de «Antes de empezar» en el
+// código, pero la ventana de cookies se queda por encima.
+iniciarClarity(E2E);
 
 // ---------------------------------------------------------------- mapa
 

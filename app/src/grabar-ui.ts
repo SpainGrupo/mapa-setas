@@ -72,7 +72,7 @@ function html() {
       <h2>Nota en este punto</h2>
       <p id="nr-pos" class="nota"></p>
       <div class="nr-rapidas" role="group" aria-label="Notas rápidas">${NOTAS_RAPIDAS.map((t) => `<button type="button" class="chip" data-t="${t}">${t}</button>`).join('')}</div>
-      <label class="campo"><span class="etq">Nota</span><textarea id="nr-texto" name="texto" rows="2" maxlength="500"></textarea></label>
+      <label class="campo"><span class="etq">Nota</span><textarea id="nr-texto" data-clarity-mask="true" name="texto" rows="2" maxlength="500"></textarea></label>
       <fieldset class="estrellas-nota">
         <legend>Valoración (opcional)</legend>
         <label><input type="radio" name="estrellas" value="0" checked /><span>—</span></label>

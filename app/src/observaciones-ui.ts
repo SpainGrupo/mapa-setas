@@ -139,7 +139,7 @@ async function pintarDetalle(id: string) {
   const esp = el('select'); esp.id = 'ob-h-especie';
   esp.append(...ctx.especies().map((e) => Object.assign(el('option'), { value: e.id, textContent: e.nombre })), Object.assign(el('option'), { value: '', textContent: 'Otra cosa / no lo sé' }));
   esp.value = ctx.especies().some((e) => e.id === o.especieHallada) ? o.especieHallada : '';
-  const nota = el('textarea'); nota.id = 'ob-nota'; nota.rows = 3; nota.maxLength = MAX_NOTA; nota.value = o.nota;
+  const nota = el('textarea'); nota.id = 'ob-nota'; nota.dataset.clarityMask = 'true'; nota.rows = 3; nota.maxLength = MAX_NOTA; nota.value = o.nota;
   const campo = (etq: string, c: HTMLElement) => { const l = el('label', 'campo'); l.append(el('span', 'etq', etq), c); return l; };
   const campoEsp = campo('¿Qué encontraste?', esp);
   const ajustar = () => { campoEsp.hidden = sel.value !== 'encontrada'; };

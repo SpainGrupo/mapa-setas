@@ -155,12 +155,12 @@
           <div class="ta-cab"><h2 id="tit-chat">Pregunta a Claude</h2><span id="chat-cupo" class="ta-coord" aria-live="polite"></span></div>
           <button id="chat-cerrar" class="btn-x" type="button"><svg class="ico" aria-hidden="true"><use href="#i-cerrar"/></svg><span class="sr">Cerrar el chat</span></button>
         </div>
-        <div id="chat-mensajes" class="hoja-cuerpo chat-mensajes" role="log" aria-live="polite" aria-label="Conversación"></div>
+        <div id="chat-mensajes" data-clarity-mask="true" class="hoja-cuerpo chat-mensajes" role="log" aria-live="polite" aria-label="Conversación"></div>
         <form id="chat-form" class="chat-form" autocomplete="off">
           <div id="chat-sugerencias" class="chat-sugerencias" role="group" aria-label="Preguntas rápidas"></div>
           <div class="chat-fila">
             <label class="sr" for="chat-texto">Tu pregunta</label>
-            <textarea id="chat-texto" rows="1" maxlength="600" enterkeyhint="send" placeholder="Escribe tu pregunta…"></textarea>
+            <textarea id="chat-texto" data-clarity-mask="true" rows="1" maxlength="600" enterkeyhint="send" placeholder="Escribe tu pregunta…"></textarea>
             <button id="chat-enviar" class="btn btn-primario" type="submit">Enviar</button>
           </div>
           <div class="chat-pie-form">
@@ -231,11 +231,11 @@
       <header class="cab"><h1>Mis sitios</h1></header>
       <div class="cuerpo">
         <label class="campo"><span class="etq">Ver solo</span><select id="filtro-especie"></select></label>
-        <ul id="lista-sitios" class="lista"></ul>
+        <ul id="lista-sitios" data-clarity-mask="true" class="lista"></ul>
         <h2 id="tit-rutas">Mis rutas</h2>
         <p class="nota">Graba por dónde vas, con notas en el camino («aquí boletus», «suelo seco»). Se guarda en este teléfono y se exporta a GPX.</p>
         <button id="btn-grabar-ruta" class="btn btn-primario btn-ancho" type="button"><svg class="ico" aria-hidden="true"><use href="#i-caminar"/></svg>Grabar ruta</button>
-        <ul id="lista-rutas" class="lista"></ul>
+        <ul id="lista-rutas" data-clarity-mask="true" class="lista"></ul>
         <h2 id="tit-observaciones">Mis observaciones</h2>
         <p class="nota">Los barridos de «Explorar aquí» con sus fotos, lo que decía el modelo y lo que encontraste. Se quedan en este teléfono y se exportan a GeoJSON.</p>
         <button id="btn-observaciones" class="btn btn-ancho" type="button">Mis observaciones</button>
@@ -351,7 +351,7 @@
         <header class="cab"><h1>Guía de especies</h1></header>
         <div class="cuerpo">
           <label class="campo buscar"><span class="etq">Buscar por nombre común o científico</span>
-            <input id="guia-buscar" type="search" placeholder="Ej.: oronja, níscalo, phalloides" autocomplete="off" enterkeyhint="search" /></label>
+            <input id="guia-buscar" data-clarity-mask="true" type="search" placeholder="Ej.: oronja, níscalo, phalloides" autocomplete="off" enterkeyhint="search" /></label>
           <div class="chips" role="group" aria-label="Filtrar por grupo">
             <button class="chip activa" data-grupo="" aria-pressed="true" type="button">Todas</button>
             <button class="chip g-apreciada" data-grupo="apreciada" aria-pressed="false" type="button">Apreciadas</button>
@@ -474,6 +474,11 @@
           <ul id="normativa-tipos" class="normativa-tipos"></ul>
           <p id="normativa-orientativo" class="aviso-normativa"></p>
         </section>
+        <section id="ajustes-cookies" class="grupo-ajustes" hidden>
+          <h2>Cookies</h2>
+          <p id="cookies-estado" class="nota"></p>
+          <button id="btn-cookies" class="btn btn-ancho" type="button">Cookies</button>
+        </section>
         <section class="grupo-ajustes">
           <h2>Datos</h2>
           <p class="nota" id="info-datos"></p>
@@ -512,6 +517,18 @@
     <form method="dialog"><button class="btn btn-primario btn-ancho" value="ok">Entendido</button></form>
   </dialog>
 
+  <dialog id="dlg-cookies" class="dlg dlg-cookies" aria-labelledby="tit-cookies">
+    <h2 id="tit-cookies">¿Nos ayudas a mejorar la app?</h2>
+    <p>Usamos Microsoft Clarity para ver cómo se usa la app y mejorarla: grabaciones de sesión anónimas y mapas de calor.</p>
+    <p>Puedes rechazar y usar la app igual. Lo cambias cuando quieras en Ajustes › Cookies.</p>
+    <p id="cookies-actual" class="nota" role="status" hidden></p>
+    <div class="cookies-botones">
+      <button id="cookies-aceptar" class="btn btn-primario btn-ancho" type="button">Aceptar</button>
+      <button id="cookies-rechazar" class="btn btn-ancho" type="button">Rechazar</button>
+      <button id="cookies-cerrar" class="btn btn-ancho" type="button" hidden>Cerrar</button>
+    </div>
+  </dialog>
+
   <dialog id="dlg-sitio" class="dlg dlg-hoja">
     <form id="frm-sitio" method="dialog">
       <h2 id="tit-sitio">Nuevo sitio</h2>
@@ -525,7 +542,7 @@
         <label><input type="radio" name="estrellas" value="3" /><span>★★★</span></label>
       </fieldset>
       <label class="campo"><span class="etq">Especie</span><select name="especie" id="sitio-especie"></select></label>
-      <label class="campo"><span class="etq">Nota</span><textarea name="nota" rows="3" maxlength="2000"></textarea></label>
+      <label class="campo"><span class="etq">Nota</span><textarea name="nota" data-clarity-mask="true" rows="3" maxlength="2000"></textarea></label>
       <div class="campo"><span class="etq">Foto (opcional)</span>
         <label class="btn"><svg class="ico" aria-hidden="true"><use href="#i-camara"/></svg>Añadir foto<input name="foto" type="file" accept="image/*" capture="environment" hidden /></label></div>
       <img id="foto-sitio" class="foto" alt="" hidden />

@@ -619,19 +619,21 @@ try {
   await captura('selector-activas.png');
   await p.locator('#btn-ver-mas').click();
   const selMas = await leerSel();
-  // Con 22 especies (2026-10-18; en 2026-10-20, 24 con Craterellus y P. ostreatus activas) hay dos inactivas: A. caesarea y A. campestris; se mira la oronja.
-  const iCae = selMas.inact.findIndex((x) => x.id === 'amanita_caesarea');
-  if (iCae > 0) selMas.inact.unshift(...selMas.inact.splice(iCae, 1));
+  // Semáforo v3 (2026-11-07): A. caesarea (81 %) y A. campestris (72 %) pasan a verde por la caída suave tras su ventana;
+  // las dos inactivas del 14/10 son T. portentosum (5 %, su ventana abre a los 20 días) y Morchella (17 %, fuera de temporada
+  // aunque llovió fuerte). Se mira T. portentosum, que es la que dice «su ventana aún no abre».
+  const iTri = selMas.inact.findIndex((x) => x.id === 'tricholoma_portentosum');
+  if (iTri > 0) selMas.inact.unshift(...selMas.inact.splice(iTri, 1));
   comprobar(selMas.exp === 'true' && selMas.masVisible && selMas.guardado === '1'
-    && selMas.inact.length === 2 && selMas.inact[0].id === 'amanita_caesarea' && selMas.inact.some((x) => x.id === 'agaricus_campestris') && selMas.inact[0].alto >= 48
+    && selMas.inact.length === 2 && selMas.inact[0].id === 'tricholoma_portentosum' && selMas.inact.some((x) => x.id === 'morchella_spp') && selMas.inact[0].alto >= 48
     && /^(su ventana aún no abre|seco|ya pasó su lluvia|fuera de temporada)( \(mirado cerca de \S.*\))?$/.test(selMas.inact[0].et)
     && selMas.inact[0].op < 1 && /grayscale/.test(selMas.inact[0].gris) && !PROHIBIDO.test(selMas.inact[0].et),
-    `«Ver más» se abre (y se recuerda): A. caesarea en gris con su motivo «${selMas.inact[0].et}»`);
-  await p.locator('#lista-mas [data-especie=amanita_caesarea]').scrollIntoViewIfNeeded();
+    `«Ver más» se abre (y se recuerda): T. portentosum en gris con su motivo «${selMas.inact[0].et}»`);
+  await p.locator('#lista-mas [data-especie=tricholoma_portentosum]').scrollIntoViewIfNeeded();
   await captura('selector-ver-mas.png');
-  await p.locator('#lista-especies [data-especie=amanita_caesarea]').click();
+  await p.locator('#lista-especies [data-especie=tricholoma_portentosum]').click();
   await p.locator('#dlg-especie').waitFor({ state: 'hidden' });
-  comprobar(await p.locator('#sel-especie').inputValue() === 'amanita_caesarea', 'una especie «no activa» se puede elegir igual');
+  comprobar(await p.locator('#sel-especie').inputValue() === 'tricholoma_portentosum', 'una especie «no activa» se puede elegir igual');
   await p.locator('#btn-especie').click();
   await p.locator('#dlg-especie[open]').waitFor();
   comprobar(await p.locator('#btn-ver-mas').getAttribute('aria-expanded') === 'true', '«Ver más» sigue abierto al volver (localStorage)');
@@ -670,9 +672,9 @@ try {
     && await p.locator('#hoy-fecha').evaluate((i) => i.max) === sumar(HOY_E2E, 15),
     'Hoy: 7 chips de día («dom 18»…), selector de fecha hasta +15 y confianza «alta» hoy');
   comprobar(t0.general.length > 5 && t0.general.length <= 20 && t0.general.every((f) => f.estado !== 'rojo')
-    && !t0.general.some((f) => f.especie === 'amanita_caesarea')
+    && !t0.general.some((f) => ['tricholoma_portentosum', 'morchella_spp'].includes(f.especie))      // las dos en rojo del 14/10 (v3)
     && t0.general.every((f, i, a) => !i || a[i - 1].score >= f.score) && await p.locator('#top-general .top-fila').count() === t0.general.length,
-    `top general: ${t0.general.length} filas ordenadas, sin especies en rojo (A. caesarea fuera); primera ${t0.general[0].especie} ${t0.general[0].puntuacion}/100`);
+    `top general: ${t0.general.length} filas ordenadas, sin especies en rojo (T. portentosum y Morchella fuera); primera ${t0.general[0].especie} ${t0.general[0].puntuacion}/100`);
   const fila0 = p.locator('#top-general .top-fila').first();
   const f0 = await fila0.evaluate((li) => ({ t: li.innerText, botones: [...li.querySelectorAll('button:not(.tf-especie):not(.tf-citado):not(.tf-ind-ayuda)')].map((b) => b.textContent || b.getAttribute('aria-label')),
     menuOculto: li.querySelector('.tf-menu').hidden, img: li.querySelector('.miniatura-especie img')?.getAttribute('src') ?? '' }));
@@ -708,9 +710,9 @@ try {
   ok(`filas con varias setas a ≤300 m: ${t0.general.filter((f) => f.especies.length > 1).map((f) => f.especies.join('+')).join(', ') || 'ninguna hoy'}`);
   await captura('hoy-general.png');
   comprobar(t0.top.length === 10 && t0.top.every((e) => e.especie === t0.especie), `top 10 de ${t0.especie}`);
-  await p.locator('#hoy-especie').selectOption('amanita_caesarea');
-  await p.waitForFunction(() => window.__setas.tops().especie === 'amanita_caesarea' && window.__setas.tops().top.length === 10);
-  comprobar((await tops()).top.every((e) => e.estado === 'rojo'), 'top 10 de A. caesarea: sale aunque esté en rojo (todo en rojo ese día)');
+  await p.locator('#hoy-especie').selectOption('tricholoma_portentosum');
+  await p.waitForFunction(() => window.__setas.tops().especie === 'tricholoma_portentosum' && window.__setas.tops().top.length === 10);
+  comprobar((await tops()).top.every((e) => e.estado === 'rojo'), 'top 10 de T. portentosum: sale aunque esté en rojo (todo en rojo ese día)');
   await p.locator('#hoy-especie').selectOption('boletus_aereus');
   await p.waitForFunction(() => window.__setas.tops().especie === 'boletus_aereus');
   await p.locator('#tit-top-especie').scrollIntoViewIfNeeded();
@@ -719,10 +721,13 @@ try {
   const cal = await p.evaluate(() => ({ filas: [...document.querySelectorAll('#calendario .cal-fila')].map((b) => ({ id: b.dataset.especie, clase: b.dataset.clase,
     t: b.querySelector('.cal-estado').textContent, meses: b.querySelectorAll('.cal-meses i').length, oct: b.querySelectorAll('.cal-meses i')[9].classList.contains('actual') })) }));
   comprobar(cal.filas.length === 24 && cal.filas.every((f) => f.meses === 12 && f.oct)
-    && cal.filas[0].clase === 'sale' && cal.filas[0].id.startsWith('boletus_')
+    && cal.filas[0].clase === 'sale' && (cal.filas[0].id.startsWith('boletus_') || cal.filas[0].id === 'amanita_caesarea')      // v3: la oronja también sale y va con las preferidas
+    && cal.filas.slice(0, 5).every((f) => f.clase === 'sale' && (f.id.startsWith('boletus_') || f.id === 'amanita_caesarea'))
     && /^Ya sale · aguanta hasta ~\d\d\/\d\d$/.test(cal.filas[0].t)
-    && cal.filas.find((f) => f.id === 'lactarius_deliciosus').t.startsWith('Empieza en ~')
-    && cal.filas.find((f) => f.id === 'amanita_caesarea').t === 'En temporada, falta lluvia',
+    // v3: L. deliciosus (55 %, rampa previa a su ventana) y A. caesarea (81 %, caída suave tras la suya, que acabó el 13/10) salen en verde.
+    && cal.filas.find((f) => f.id === 'lactarius_deliciosus').t === 'Ya sale · aguanta hasta ~06/11'
+    && cal.filas.find((f) => f.id === 'amanita_caesarea').t === 'Ya sale · aguanta hasta ~13/10'
+    && cal.filas.find((f) => f.id === 'tricholoma_portentosum').t.startsWith('Empieza en ~'),
     `calendario 12×12 con marca en octubre: ${cal.filas.map((f) => `${f.id.split('_')[1]} «${f.t}»`).join(', ')}`);
   await p.locator('#tit-calendario').scrollIntoViewIfNeeded();
   await captura('calendario-hoy.png');
@@ -751,10 +756,16 @@ try {
     `calendario → ficha de B. aereus con «Cuándo está activa»: «${c1.linea}» (${c1.conf}), 12 meses con octubre, 16 días ${c1.dias.map((d) => d.e[0]).join('')}`);
   await p.locator('#guia-ficha .cuando').scrollIntoViewIfNeeded();
   await captura('ficha-calendario.png');
+  // v3: L. deliciosus (55 %) ya está activa por la rampa previa a su ventana (que abre el 17/10). T. portentosum (5 %) abre
+  // su ventana en 3 días, pero con mínimas 3 °C y máximas 5 °C fuera de rango su probabilidad no pasa de ~7 % en toda la
+  // previsión (nunca llega al 20 % del amarillo): ningún día activo, así que la ficha dice que no se ve lluvia suficiente.
   const c2 = await cuando('lactarius_deliciosus', 'lactarius_deliciosus');
-  comprobar(/^Se espera a partir de ~\d\d\/\d\d$/.test(c2.linea) && c2.conf && c2.dias[0].e === 'amarillo',
-    `L. deliciosus (esperar): «${c2.linea}» (${c2.conf})`);
-  for (const id of ['lactarius_deliciosus', 'boletus_aereus']) {   // «atrás» dos veces: la Guía vuelve a su lista
+  comprobar(/^Activa desde hoy hasta ~06\/11$/.test(c2.linea) && c2.conf && c2.dias[0].e === 'verde',
+    `L. deliciosus (rampa previa, verde): «${c2.linea}» (${c2.conf})`);
+  const c3 = await cuando('tricholoma_portentosum', 'tricholoma_portentosum');
+  comprobar(/^En temporada, pero no se ve lluvia suficiente en los próximos 16 días$/.test(c3.linea) && c3.dias.every((d) => d.e === 'rojo'),
+    `T. portentosum (sin día activo en la previsión): «${c3.linea}»`);
+  for (const id of ['tricholoma_portentosum', 'lactarius_deliciosus', 'boletus_aereus']) {   // «atrás» tres veces: la Guía vuelve a su lista
     await p.locator(`#guia-ficha[data-id=${id}] .btn-volver`).click();
   }
   await p.locator('#guia-vista-lista').waitFor();
@@ -831,8 +842,10 @@ try {
   comprobar(t4.confianza === 'media' && /Confianza media/.test(await p.locator('#hoy-confianza').textContent()) && firma(t4) !== firma(t0),
     `+4 días (${t4.fecha}): confianza «media» y el top general cambia (${t4.general.slice(0, 3).map((f) => f.especie).join(', ')}…)`);
   const est4 = Object.fromEntries(t4.calendario.map((c) => [c.id, c.clase]));
-  comprobar(est4.lactarius_deliciosus === 'sale' && cal.filas.find((f) => f.id === 'lactarius_deliciosus').clase === 'pronto',
-    `el semáforo se proyecta a ese día: L. deliciosus pasa de «empieza pronto» a «${t4.calendario.find((c) => c.id === 'lactarius_deliciosus').texto}»`);
+  // v3: L. deliciosus ya sale el 14/10 (rampa previa a su ventana); la que pasa de «empieza pronto» a «sale» es T. arenaria
+  // (misma ventana de 20–40 días, amarilla por la lluvia fuerte fuera de temporada).
+  comprobar(est4.terfezia_arenaria === 'sale' && cal.filas.find((f) => f.id === 'terfezia_arenaria').clase === 'pronto',
+    `el semáforo se proyecta a ese día: T. arenaria pasa de «empieza pronto» a «${t4.calendario.find((c) => c.id === 'terfezia_arenaria').texto}»`);
   await p.locator('#p-hoy').evaluate((e) => e.scrollTo(0, 0));
   await captura('hoy-mas4.png');
   await p.locator('#hoy-fecha').fill(sumar(HOY_E2E, 12));

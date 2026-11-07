@@ -545,7 +545,7 @@ try {
   await p.waitForSelector('body[data-meteo]', { state: 'attached', timeout: 30000 });
   comprobar(consultasMeteo >= 1 && await p.evaluate(() => Object.keys(window.__setas.meteo().datos?.puntos ?? {}).length) > 40,
     `Open-Meteo (fixture) consultado: ${consultasMeteo} petición(es)`);
-  await p.getByRole('button', { name: /Mapa/ }).click();
+  await p.locator('.pestanas button[data-p=p-mapa]').click();
   await p.evaluate(({ latitude, longitude }) => window.__setas.mapa.jumpTo({ center: [longitude, latitude], zoom: 10 }), PUNTO);
   await reposo();
   const caja = await p.locator('#mapa canvas').boundingBox();
@@ -586,10 +586,14 @@ try {
   await captura('08-zona-fixture.png');
   await p.locator('#zona-grafico').scrollIntoViewIfNeeded();
   await captura('09-zona-grafico.png');
+  // Se entró a Zona desde la tarjeta del mapa: «‹» dice «Mapa» y vuelve al mapa.
+  comprobar((await p.locator('#zona-volver').innerText()).trim() === 'Mapa', 'Zona abierta desde el mapa: el botón de volver dice «Mapa»');
+  await p.locator('#zona-volver').click();
+  comprobar(await p.locator('#p-mapa.activa').count() === 1, '«‹ Mapa» vuelve al mapa');
 
   // Selector de especie del mapa con el tiempo de hoy (fixture): «Activas ahora» arriba con estado y «hasta ~…»;
   // «Ver más · N no activas ahora» plegado, que al abrirse enseña las demás en gris con su motivo (y se recuerda).
-  await p.getByRole('button', { name: /Mapa/ }).click();
+  await p.locator('.pestanas button[data-p=p-mapa]').click();
   await elegirEspecie('boletus_edulis');
   await p.evaluate(() => localStorage.setItem('setas:selector-ver-mas', '0'));
   await p.locator('#btn-especie').click();
@@ -1091,12 +1095,12 @@ try {
   comprobar(igual(await estadosZona(), FIXTURE.esperado) && consultasMeteo === consultasAntes
     && await p.evaluate(() => window.__setas.meteo().origen) === 'cache', 'sin conexión la Zona sale de la caché de IndexedDB');
   await captura('10-zona-offline.png');
-  await p.getByRole('button', { name: /Mapa/ }).click();
+  await p.locator('.pestanas button[data-p=p-mapa]').click();
   await p.locator('[data-capa=semaforo]').evaluate((c) => { c.checked = true; c.dispatchEvent(new Event('change')); });
   await reposo();
   const mz = await p.evaluate(() => window.__setas.origenes()['meteo_zonas.pmtiles']);
   comprobar(mz?.origen === 'opfs' && mz.http === 0, `capa Semáforo (Voronoi) desde OPFS sin red (${mz?.opfs} lecturas)`);
-  await p.getByRole('button', { name: /Mapa/ }).click();
+  await p.locator('.pestanas button[data-p=p-mapa]').click();
   // Sin conexión: las miniaturas del selector salen del precache y el Satélite cae al mapa con aviso.
   await p.locator('#btn-especie').click();
   await p.locator('#dlg-especie[open]').waitFor();
@@ -1138,13 +1142,13 @@ try {
   await verFicha.click();
   await p.locator('#guia-ficha[data-id=amanita_caesarea]').waitFor();
   comprobar(await p.locator('#p-guia').isVisible(), '«Ver ficha» en el panel del mapa abre la ficha de la especie elegida');
-  await p.getByRole('button', { name: /Mapa/ }).click();
+  await p.locator('.pestanas button[data-p=p-mapa]').click();
   for (const id of idsMapa) {
     await elegirEspecie(id);
     await verFicha.waitFor({ timeout: 5000 }).catch(() => { throw new Error(`Falla: sin «Ver ficha» para ${id}`); });
     await verFicha.click();
     await p.locator(`#guia-ficha[data-id=${FICHA_DE[id] ?? id}]`).waitFor({ timeout: 5000 });
-    await p.getByRole('button', { name: /Mapa/ }).click();
+    await p.locator('.pestanas button[data-p=p-mapa]').click();
   }
   ok(`sin conexión, «Ver ficha» funciona para las ${idsMapa.length} especies (B. aestivalis → B. reticulatus, L. sanguifluus → L. deliciosus)`);
   await elegirEspecie('amanita_caesarea');
@@ -1179,7 +1183,7 @@ try {
     'Mis sitios: «Cómo llegar» del sitio GPS lleva a su aparcamiento en Google Maps');
 
   // Fase 8 sin conexión: ficha «Acceso» desde OPFS, enlaces y «Guardar sitio» con el aparcamiento.
-  await p.getByRole('button', { name: /Mapa/ }).click();
+  await p.locator('.pestanas button[data-p=p-mapa]').click();
   const accOff = await fichaAcceso('opfs');
   informe.acceso_opfs = { ms: accOff.ms, lector: accOff.lector, traza: accOff.traza };
   await captura('acceso-offline.png');
@@ -1205,7 +1209,7 @@ try {
   comprobar((await p.evaluate(() => window.__abiertos.at(-1))) === `https://www.google.com/maps/dir/?api=1&destination=${destino}&travelmode=driving`,
     'Mis sitios: «Cómo llegar» lleva al aparcamiento guardado');
   await captura('acceso-mis-sitios.png');
-  await p.getByRole('button', { name: /Mapa/ }).click();
+  await p.locator('.pestanas button[data-p=p-mapa]').click();
 
   // Fase 9 sin conexión: «Ruta a pie» desde la ficha de acceso → perfil, dificultad y seguimiento con GPS simulado.
   // (en ACCESO ya hay un sitio guardado, y la pulsación larga sobre un sitio no abre la ficha: se pulsa 150 m al norte)

@@ -459,7 +459,7 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .tf-tit { display: grid; gap: 4px; min-width: 0; }
 .tf-nombres { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 4px; }
 .tf-especie { all: unset; position: relative; box-sizing: border-box; cursor: pointer; min-height: 24px; text-align: left; text-decoration: underline; text-decoration-color: oklch(62% 0.017 158 / 0.5); text-underline-offset: 3px; }
-.tf-especie::after { content: ''; position: absolute; inset: -12px -4px; }   /* zona táctil ≥ 48 px sin agrandar la línea */
+.tf-especie::after { content: ''; position: absolute; inset: -4px -2px; }   /* algo más de zona táctil sin pisar el nombre de la línea de al lado */
 .tf-especie:focus-visible { outline: 3px solid var(--ruta); outline-offset: 2px; border-radius: 6px; }
 .tf-tit b { font-size: 18px; line-height: 1.2; font-weight: 800; overflow-wrap: anywhere; }
 .tf-cifra { display: grid; justify-items: end; text-align: right; }
@@ -1009,7 +1009,7 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .chip-titularidad b .ico { width: 18px; height: 18px; vertical-align: -3px; margin-right: 6px; }
 .chip-titularidad span { color: var(--tinta-2); }
 .chip-titularidad small { font-size: 13px; line-height: 1.4; color: var(--tinta-2); }
-.ley-titularidad summary { display: inline-flex; align-items: center; min-height: var(--toque); font-size: 14px; font-weight: 700; color: var(--bosque-tx); }
+.ley-titularidad summary { display: inline-flex; align-items: center; gap: 6px; min-height: var(--toque); font-size: 14px; font-weight: 700; color: var(--bosque-tx); }
 .tz-titularidad { margin-top: 6px; }
 .tf-titularidad { font-size: 14px; font-weight: 700; padding: 6px 10px; }
 /* Citas reales cerca del sitio (Top de «Hoy»): etiqueta que despliega la lista de fuentes. */
@@ -1097,13 +1097,13 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .tf-zona-especies li b { line-height: 1.25; }
 .tf-zona-especies .chip-estado { font-size: 12px; padding: 2px 8px; white-space: nowrap; }
 .tf-zona-pts { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--tinta); }
-.tf-google { display: inline-block; margin-top: 4px; font-size: 14px; font-weight: 600; color: var(--tinta); }
+.tf-google { display: inline-flex; align-items: center; min-height: var(--toque); font-size: 14px; font-weight: 600; color: var(--tinta); }
 .tf-razon { margin: 4px 0 0; font-size: 14px; line-height: 1.4; color: var(--tinta-2); }
-.tf-porque { display: grid; gap: 6px; }
+.tf-porque { display: grid; gap: 6px; margin-block: -8px; }   /* el <summary> de 48 px ya trae su aire */
 .tf-porque > summary { display: flex; align-items: center; gap: 6px; min-height: var(--toque); width: fit-content; font-size: 15px; font-weight: 800; color: var(--bosque-tx); }
 /* Flecha de plegable (la misma del <select>) para los <summary> en flex, que pierden el triángulo del navegador. */
-:is(.tf-porque, .creditos) > summary::before { content: ''; flex: none; width: 18px; height: 18px; background: var(--flecha) center / contain no-repeat; transform: rotate(-90deg); transition: transform 120ms var(--curva); }
-:is(.tf-porque, .creditos)[open] > summary::before { transform: none; }
+:is(.tf-porque, .creditos, .ley-titularidad) > summary::before { content: ''; flex: none; width: 18px; height: 18px; background: var(--flecha) center / contain no-repeat; transform: rotate(-90deg); transition: transform 120ms var(--curva); }
+:is(.tf-porque, .creditos, .ley-titularidad)[open] > summary::before { transform: none; }
 .creditos > summary { gap: 6px; }
 .ficha-top-sitios { margin: 16px 0; }
 
@@ -1117,7 +1117,7 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .exportar-acciones { display: flex; flex-wrap: wrap; gap: 8px; }
 .exportar-acciones .btn { min-height: var(--toque); text-decoration: none; display: inline-flex; align-items: center; }
 .exportar-lista { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
-.exportar-lista a { overflow-wrap: anywhere; }
+.exportar-lista a { overflow-wrap: anywhere; display: flex; align-items: center; min-height: var(--toque); }
 .tz-texto b .foto-mini { margin-right: 0; }
 /* Nombre con miniatura: la foto a la izquierda y el nombre (aunque ocupe dos líneas) a su lado, sin quedarse sola arriba. */
 .semaforo-fila .esp:has(> .foto-mini), .sitio .meta:has(> .foto-mini) { display: flex; align-items: center; gap: 7px; }

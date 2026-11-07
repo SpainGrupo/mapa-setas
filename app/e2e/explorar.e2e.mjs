@@ -269,7 +269,7 @@ try {
   await p.waitForSelector('#dlg-observaciones[open] #ob-lista li', { timeout: 10000 });
   comprobar(await p.locator('#ob-lista li').count() === 1 && await p.locator('#ob-lista li img').count() === 1, 'la lista tiene la observación, con la miniatura de su primera foto');
   const itemTxt = await p.locator('#ob-lista li').innerText();
-  comprobar(/Encontraste algo/.test(itemTxt) && /modelo \d+\/100 aquí/.test(itemTxt), `fila: «${itemTxt.replace(/\n+/g, ' · ')}»`);
+  comprobar(/Encontraste algo/.test(itemTxt) && /zona \d+\/100/.test(itemTxt), `fila: «${itemTxt.replace(/\n+/g, ' · ')}»`);
   await p.waitForFunction(() => /^Mejor: \S+ \d+°$/.test(document.querySelector('#ob-lista .ob-mejor')?.textContent ?? ''), null, { timeout: 8000 });
   ok('la fila enseña «Mejor: …» porque está analizada');
   const resTxt = await p.locator('#ob-resumen').innerText();

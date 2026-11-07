@@ -129,6 +129,16 @@ export async function llamarGemini(
   modelo: string,
   timeoutMs = TIEMPO_MAX_MS,
 ): Promise<unknown> {
+  return llamarGeminiConCuerpo(cuerpoGemini(p), apiKey, modelo, timeoutMs);
+}
+
+/** Igual que `llamarGemini` pero con el cuerpo ya construido (lo usa también /explorar). */
+export async function llamarGeminiConCuerpo(
+  cuerpo: unknown,
+  apiKey: string,
+  modelo: string,
+  timeoutMs = TIEMPO_MAX_MS,
+): Promise<unknown> {
   const ctrl = new AbortController();
   const temporizador = setTimeout(() => ctrl.abort(), timeoutMs);
   let res: Response;
@@ -136,7 +146,7 @@ export async function llamarGemini(
     res = await fetch(`${BASE}/${encodeURIComponent(modelo)}:generateContent`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-      body: JSON.stringify(cuerpoGemini(p)),
+      body: JSON.stringify(cuerpo),
       signal: ctrl.signal,
     });
   } catch (e) {

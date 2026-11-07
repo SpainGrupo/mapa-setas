@@ -873,6 +873,25 @@ export function topActualMapa() {
       nombres: it.entradas.map((e) => nombre(e.especie)), lejania: textoLejania(it.principal.sitio) })) };
 }
 
+/** Sitios que el usuario ve ahora en «Hoy» (el top de la seta o grupo elegido y el general), con su puntuación y estado.
+ * Los ids son `especie:id_celda`, los mismos que usan las herramientas del chat (chat-herramientas.ts). Sin pintar Hoy, vacío. */
+export function topVisible(): { id: string; puntuacion: number; estado: Estado }[] {
+  if (!ultimo) return [];
+  const vistos = new Map<string, { id: string; puntuacion: number; estado: Estado }>();
+  for (const e of [...ultimo.top, ...ultimo.general.flatMap((f) => f.entradas)]) {
+    const id = `${e.especie}:${e.sitio.id}`;
+    if (!vistos.has(id)) vistos.set(id, { id, puntuacion: e.puntuacion, estado: e.estado });
+  }
+  return [...vistos.values()];
+}
+
+/** Día elegido en «Hoy» relativo a hoy (0 = hoy) y filtro de seta/grupo (valor del selector); null si Hoy aún no se ha pintado. */
+export function seleccionHoy(): { dia: number | null; filtro: string } {
+  const filtro = document.querySelector<HTMLSelectElement>('#hoy-especie')?.value ?? '';
+  const dia = fechaSel ? Math.round((Date.parse(fechaSel + 'T00:00:00Z') - Date.parse(ctx.hoy() + 'T00:00:00Z')) / 864e5) : null;
+  return { dia, filtro };
+}
+
 /** Resumen para el e2e (window.__setas.tops()). */
 export function resumenHoy() {
   if (!ultimo) return null;

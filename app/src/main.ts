@@ -15,14 +15,14 @@ import { textoChip, type Restriccion } from './restricciones';
 import { altitudes, aparcamiento, centroCelda, consultar, nombreVia, simplificar, textoSubida, textoTiempo, trazar, urlGoogleCoche, type Celda } from './acceso';
 import { dificultad, NOMBRE_DIFICULTAD, perfil, seguir, textoDistancia, type Dificultad, type Perfil, type Seguimiento } from './ruta';
 import { pintarPerfil } from './perfil-grafico';
-import { bloqueTopGuia, estadoHoy, iniciarHoy, pintarHoy, restaurarHoy, resumenHoy, sitiosCandidatos } from './hoy-ui';
+import { bloqueTopGuia, estadoHoy, iniciarHoy, maxDificultad, pintarHoy, restaurarHoy, resumenHoy, seleccionHoy, sitiosCandidatos, topVisible } from './hoy-ui';
 import { diasEspecie, puntoReferencia, referenciaVista, ventanaEspecie, type DiaVentana, type PuntoRef, type Ventana, type Vista } from './ventana-especie';
 import { detallesTitularidad, esPublico, normaTitularidad, notaTitularidad, ponerTextosTitularidad, TEXTO_TITULARIDAD, textoTitularidad, type Titularidad } from './titularidad';
 import { AVISO_CITAS, COLOR_ORIGEN, NOMBRE_ORIGEN, ORIGENES_CITA } from './citas';
 import { bloqueCuando } from './ventana-ui';
 import type { SitiosJson } from './ranking';
 import { datosAcceso } from './acceso-datos';
-import { fotoMini, iniciarSelectorEspecie, ordenSelector, pintarSelectorEspecie } from './selector-especie';
+import { datosEspecie, fotoMini, iniciarSelectorEspecie, ordenSelector, pintarSelectorEspecie } from './selector-especie';
 import { Gps } from './gps';
 import { borrarMapas, descargarMapas, estadoDescarga, moverEnOpfs } from './opfs';
 import { borrarSitio, guardarSitio, guardarVarios, leerSitio, listarSitios } from './sitios';
@@ -36,19 +36,26 @@ import { pintarGrafico, type VentanaGrafico } from './grafico';
 import { abrirFicha, cargarGuia, fichaGuia, fichasGuia, fotosSinConexion, guardarFotosSinConexion, hayFicha, indiceGuia, mostrarGuia, pintarCreditos, ponerBloqueBuscar, ponerBloqueTiempo, ponerBloqueTop, type EstadoFotos } from './guia-ui';
 import { binomio, especieMapaDeFicha, fichaDeEspecieMapa, miniaturaEspecie } from './guia';
 import { iniciarReconocer, mostrarReconocer, pintarAjustesModelo } from './reconocer-ui';
-import { elegirCcaaGemini } from './gemini';
+import { elegirCcaaGemini, urlWorker } from './gemini';
 import { Hoja } from './hoja';
 import { guardarNav, leerNav, type EstadoNav } from './estado-nav';
 import { celdaDe } from './acceso';
 import { abrirIr, estadoIr, iniciarIr, volverAlMapaIr } from './ir-sitio';
 import { abrirCampo, bloqueComoBuscar, campoAbierto, estadoCampo, iniciarCampo, limpiarCampo } from './campo-ui';
+import { abrirExplorar, estadoExplorar, iniciarExplorar } from './explorar-ui';
 import { estadoGrabacion, iniciarGrabar, pintarRutas } from './grabar-ui';
+import { iniciarObservaciones, pintarEntradaObservaciones } from './observaciones-ui';
 import { elegirEnMapaTop, iniciarHoyMapa } from './hoy-mapa';
 import { abrirEnlaceDeUrl, iniciarEnlace, puntosEnlace } from './enlace-ui';
 import { puntosDeKml } from './enlaces';
 import type { SenderoApp } from './ir-sitio';
 import { mapaListo } from './minimapa';
 import { ultimaPosicion } from './posicion-viva';
+import { estadoChat, iniciarChat } from './chat-ui';
+import { horaMadrid } from './chat';
+import type { AccesoCalculado, ContextoHerramientas } from './chat-herramientas';
+import { listarRutas } from './rutas';
+import { nivelFiabilidad } from './fiabilidad';
 
 // Service worker en modo «prompt» (vite.config.ts): una versión nueva queda en espera y se ofrece con un aviso; la página
 // solo se recarga si el usuario pulsa «Nueva versión: actualizar». Antes (autoUpdate + skipWaiting) iOS recargaba la app
@@ -116,7 +123,7 @@ function irA(id: string) {
     if (b.dataset.p === id) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
   });
   if (id === 'p-mapa') mapa?.resize();
-  if (id === 'p-sitios') { pintarLista(); pintarRutas(); }
+  if (id === 'p-sitios') { pintarLista(); pintarRutas(); void pintarEntradaObservaciones(); }
   if (id === 'p-ajustes') pintarAjustes();
   if (id === 'p-zona') pintarZona();
   if (id === 'p-hoy') pintarHoy();
@@ -328,7 +335,7 @@ async function iniciarMapa() {
     olvidarGps: () => { if (gps) gps.ultima = null; }, vista: vistaMapa,
     lugarHoy: (id: string) => lugarRef(id),
     sitioEditando: () => editando && { ...editando, foto: undefined }, accesoSitio: () => accesoSitio,
-    ir: estadoIr, campo: estadoCampo, abrirCampo, grabacion: estadoGrabacion, elegirEnMapaTop, altitudEn, abrirIr, miniMapa: mapaListo, puntosEnlace, abrirEnlaceDeUrl,
+    ir: estadoIr, campo: estadoCampo, explorar: estadoExplorar, chat: estadoChat, chatMapa: () => chatPuntos.map((p) => ({ ...p })), abrirCampo, grabacion: estadoGrabacion, elegirEnMapaTop, altitudEn, abrirIr, miniMapa: mapaListo, puntosEnlace, abrirEnlaceDeUrl,
     resumenSemaforo: () => Object.fromEntries((manifest?.especies ?? []).map((e) => {
       const n: Record<string, number> = { verde: 0, amarillo: 0, rojo: 0, gris: 0 };
       for (const p of puntosMeteo) n[estadoEn(p, e.id)?.estado ?? 'gris']++;
@@ -341,6 +348,10 @@ async function iniciarMapa() {
     mapa!.addLayer({ id: 'sitios', type: 'circle', source: 'sitios', paint: {
       'circle-radius': ['+', 6, ['*', 2, ['get', 'estrellas']]], 'circle-color': '#b23a0b',
       'circle-stroke-color': '#fff', 'circle-stroke-width': 3 } });
+    mapa!.addSource('chat-sitios', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    mapa!.addLayer({ id: 'chat-sitios', type: 'circle', source: 'chat-sitios', paint: {
+      'circle-radius': 11, 'circle-color': '#1b4332', 'circle-stroke-color': '#fff', 'circle-stroke-width': 4 } });
+    if (chatPuntos.length) pintarChatEnMapa();
     mapa!.on('click', 'sitios', (ev) => {
       const id = ev.features?.[0]?.properties?.id;
       if (id) leerSitio(String(id)).then((s) => s && abrirSitio(s));
@@ -416,12 +427,12 @@ $('#capas-cerrar').addEventListener('click', () => abrirCapas(false));
 
 /** body[data-hoja] (oculta los botones flotantes y la pista) y body[data-zona] (los sube sobre la tarjeta de zona). */
 function cromoMapa() {
-  const hoja = ['#tarjeta-acceso', '#tarjeta-ruta', '#capas', '#barra-mira'].some((s) => !$(s).hidden);
+  const hoja = ['#tarjeta-acceso', '#tarjeta-ruta', '#capas', '#barra-mira', '#chat'].some((s) => !$(s).hidden);
   if (hoja) document.body.dataset.hoja = '1'; else delete document.body.dataset.hoja;
   if (!$('#tarjeta-zona').hidden) document.body.dataset.zona = '1'; else delete document.body.dataset.zona;
 }
 const vigia = new MutationObserver(cromoMapa);
-for (const s of ['#tarjeta-acceso', '#tarjeta-ruta', '#capas', '#barra-mira', '#tarjeta-zona']) vigia.observe($(s), { attributes: true, attributeFilter: ['hidden'] });
+for (const s of ['#tarjeta-acceso', '#tarjeta-ruta', '#capas', '#barra-mira', '#chat', '#tarjeta-zona']) vigia.observe($(s), { attributes: true, attributeFilter: ['hidden'] });
 
 // Pista visible hasta que se abre la primera ficha de acceso (luego ya se sabe).
 const CLAVE_PISTA = 'setas:pista-acceso';
@@ -1469,6 +1480,13 @@ iniciarCampo({
   navegar: (p) => { ($('#dlg-campo') as HTMLDialogElement).close(); abrirIr({ lat: p.lat, lon: p.lon, titulo: p.titulo, subtitulo: p.nota, ruta: p.ruta }); },
   guardar: (p) => guardarPunto({ lat: p.lat, lon: p.lon, nota: p.nota, especie: p.especie }),
   alCerrar: () => volverAlMapaIr(),
+  explorar: (id) => { void abrirExplorar(id); },
+});
+iniciarExplorar({
+  especie: especieSel, region: () => manifest?.region?.id ?? '', manifest: () => manifest, avisar,
+  miniatura: (id) => miniaturaEspecie(id, indiceGuia()),
+  especies: () => (manifest?.especies ?? []).map((e) => ({ id: e.id, nombre: nombres[e.id] ?? e.id })),
+  guardar: (p) => guardarPunto(p),
 });
 document.getElementById('dlg-ir')?.addEventListener('close', () => { if (!campoAbierto()) limpiarCampo(); });
 ponerBloqueBuscar((idFicha) => bloqueComoBuscar(especieMapaDeFicha(idFicha, (manifest?.especies ?? []).map((e) => e.id))));
@@ -1478,6 +1496,17 @@ iniciarEnlace({
   guardar: (p) => guardarPunto({ lat: p.lat, lon: p.lon, nota: [p.nombre, p.nota].filter(Boolean).join(' — ') }),
 });
 iniciarGrabar({ avisar, mapa: () => mapa, irA });
+iniciarObservaciones({
+  especies: () => (manifest?.especies ?? []).map((e) => ({ id: e.id, nombre: nombres[e.id] ?? e.id })),
+  avisar,
+  verEnMapa: (p) => {
+    irA('p-mapa');
+    const sel = $<HTMLSelectElement>('#sel-especie');
+    if (p.especie && sel.value !== p.especie && [...sel.options].some((o) => o.value === p.especie)) { sel.value = p.especie; sel.dispatchEvent(new Event('change')); }
+    mapa?.jumpTo({ center: [p.lon, p.lat], zoom: Math.max(15, mapa.getZoom()) });
+    mostrarAcceso(p.lat, p.lon);
+  },
+});
 
 iniciarHoy({
   irAlSitio,
@@ -1514,6 +1543,71 @@ iniciarHoy({
 });
 iniciarHoyMapa({ manifest: () => manifest, abrirEnlace, irAlSitio, rutaAPie: (lat, lon) => abrirRuta(lat, lon),
   guardar: (lat, lon, titulo) => { guardarPunto({ lat, lon, nota: titulo }).then((r) => avisar(r === 'ya' ? 'Ya estaba en Mis sitios' : 'Guardado en Mis sitios')); } });
+// ---------------------------------------------------------------- «Pregunta a Claude» (chat-ui.ts, chat.ts, chat-herramientas.ts)
+
+/** Sitios que el chat ha marcado en el mapa (capa 'chat-sitios'); se conservan hasta «Conversación nueva». */
+let chatPuntos: { lat: number; lon: number }[] = [];
+function pintarChatEnMapa() {
+  (mapa?.getSource('chat-sitios') as GeoJSONSource | undefined)?.setData({ type: 'FeatureCollection',
+    features: chatPuntos.map((p) => ({ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: [p.lon, p.lat] } })) });
+}
+/** Marca los puntos y los encuadra en la parte del mapa que deja libre la hoja del chat (`abajo` px tapados). */
+function mostrarChatEnMapa(puntos: { lat: number; lon: number }[], abajo: number) {
+  if (!mapa || !puntos.length) return;
+  chatPuntos = puntos;
+  pintarChatEnMapa();
+  const lons = puntos.map((p) => p.lon), lats = puntos.map((p) => p.lat);
+  const m = puntos.length === 1 ? 0.0006 : 0;   // un solo punto: una caja mínima, que da zoom 15
+  mapa.fitBounds([[Math.min(...lons) - m, Math.min(...lats) - m], [Math.max(...lons) + m, Math.max(...lats) + m]],
+    { padding: { top: 130, bottom: abajo, left: 40, right: 40 }, maxZoom: 15, duration: E2E ? 0 : 500 });
+}
+/** Acceso a pie como lo calcula la ficha «Acceso», más el perfil resumido del trazado aparcamiento → sitio. */
+async function accesoParaChat(lat: number, lon: number): Promise<AccesoCalculado> {
+  const c = await calcularAcceso(lat, lon);
+  if (c.estado !== 'ok' || !c.acceso || !c.celdas) return { estado: c.estado, texto: c.texto };
+  const d = manifest ? await datosAcceso(manifest).catch(() => null) : null;
+  if (!d) return { estado: 'ok', texto: '', acceso: c.acceso };
+  const celdas = [...c.celdas].reverse();
+  const alts = await altitudes(d.cab, d.lector, celdas).catch(() => celdas.map(() => NaN));
+  const per = perfil(celdas, alts, d.cab.res);
+  return { estado: 'ok', texto: '', acceso: c.acceso, perfil: { distancia_m: per.total_m, subida_m: per.subida_m, bajada_m: per.bajada_m,
+    alt_min: Number.isFinite(per.min) ? per.min : null, alt_max: Number.isFinite(per.max) ? per.max : null } };
+}
+/** Todo lo que las herramientas del chat necesitan de la app, en este momento. */
+async function contextoHerramientas(): Promise<ContextoHerramientas> {
+  const m = manifest;
+  return {
+    region: regionActiva(), origenRegion: m?.region?.origen ?? null, etiquetaOrigen: m?.region?.etiqueta_origen ?? null,
+    hoy: hoyZona(), datos: await sitiosCandidatos(), especies: (m?.especies ?? []).map((e) => e.id),
+    nombreEspecie: (id) => { const e = m?.especies.find((x) => x.id === id); return e ? datosEspecie(e).comun : id; },
+    reglas: (id) => reglasDe(id) ?? null,
+    fiabilidad: (id) => nivelFiabilidad(m?.especies.find((e) => e.id === id)?.fiabilidad),
+    meteo, puntoMeteo: (id) => puntosMeteo.find((p) => p.id === id) ?? null,
+    posicion: gps?.ultima ?? ultimaPosicion() ?? null,
+    filtros: { soloPublicos: soloPublicos(), maxDificultad: maxDificultad() },
+    topVisible: topVisible().map((x) => x.id),
+    misSitios: listarSitios, rutas: listarRutas, acceso: accesoParaChat,
+    guardarSitio: async (s) => { await guardarSitio(s); await refrescarSitios(); },
+    mostrarEnMapa: () => { /* lo hace chat-ui.ts (necesita saber cuánto tapa la hoja) */ },
+    nuevoId, ahora: () => new Date(), textoRestringido: m?.chip_sitio_restringido ?? null,
+  };
+}
+iniciarChat({
+  urlWorker: () => urlWorker(import.meta.env.VITE_WORKER_URL, E2E, (() => { try { return localStorage; } catch { return null; } })()),
+  herramientas: contextoHerramientas,
+  datosContexto: (pestana) => {
+    const h = seleccionHoy();
+    return { fecha: hoyZona(), hora: horaMadrid(new Date()), region: regionActiva(), posicion: gps?.ultima ?? ultimaPosicion() ?? null, pestana,
+      diaElegido: h.dia, filtro: h.filtro || especieSel(), soloPublicos: soloPublicos(), maxDificultad: maxDificultad(),
+      topVisible: topVisible(), enLinea: navigator.onLine };
+  },
+  pestanaActual: () => document.querySelector('.pantalla.activa')?.id.replace(/^p-/, '') ?? 'mapa',
+  irAlMapa: () => irA('p-mapa'),
+  mostrarEnMapa: mostrarChatEnMapa,
+  limpiarMapa: () => { chatPuntos = []; pintarChatEnMapa(); },
+  borrarSitio: async (id) => { await borrarSitio(id); await refrescarSitios(); },
+  abrirEnlace, avisar,
+});
 $<HTMLInputElement>('#hoy-solo-publicos').checked = soloPublicos();
 $<HTMLInputElement>('#hoy-solo-publicos').addEventListener('change', (ev) => {
   ponerSoloPublicos((ev.target as HTMLInputElement).checked);

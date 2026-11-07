@@ -10,7 +10,7 @@ area_ha = área de la submancha; area_mancha_ha = la de la mancha entera.
 bonus_pisado = clip(dist_camino_m / 300, 0,4, 1): 0,4 en un camino o vía, 1 a ≥ 300 m (sin dato → 0,4).
 Punto representativo: la celda con acceso válido (tiempo a pie con dato en acceso.bin) que maximiza
 idoneidad × bonus_pisado dentro de la submancha; en empate, la primera en orden de fila. Las
-submanchas sin ninguna celda con acceso se descartan.
+submanchas sin ninguna celda con acceso se descartan. Desde la versión 4 se ajusta por cubierta (ver abajo).
 Datos del punto (los mismos arrays de 100 m que lee la app, para que app y pipeline coincidan):
 t_pie_min, subida_m y aparcamiento_id de acceso.bin; dist_camino_m de distancia_acceso.tif
 (null sin dato); restringido = el punto cae en un recinto de la capa legal (restricciones_gdf);
@@ -36,6 +36,20 @@ Versión 3 (2026-10-18): cubierta arbórea por sitio y penalización por cubiert
                   t = clip(c / m, 0, 1); factor = 0,3 + 0,7 · t²(3 − 2t)   (smoothstep: 0,3 en 0 %, 1 desde m).
                   m = 0 (p. ej. Terfezia, óptimo 0–30 %) o sin dosel → factor 1. Entra en la calidad
                   (punt_media × ln(1 + area_ha) × bonus_pisado × factor_cubierta) y la app lo aplica igual.
+Versión 4 (2026-10-20): punto representativo con cubierta. Antes el punto podía caer en un claro pelado
+  de una mancha arbolada (caso Ojén, caesarea: mancha 44 %, punto 2 %) y quien lo miraba en el satélite
+  desconfiaba. Para especies con cubierta mínima útil m > 0 (las que penaliza factor_cubierta):
+  1. referencia = la celda del criterio anterior (máx. idoneidad × bonus_pisado) y su t_ref a pie;
+  2. candidatas = celdas de la submancha con acceso y t_pie ≤ t_ref + MARGEN_PIE_MIN (15 min): el punto
+     nunca queda más de un cuarto de hora más lejos andando que antes;
+  3. cubierta de la celda = % medio de árbol WorldCover en su entorno 3×3 (lo que da cubierta_sat_punto);
+     sin dato satelital, FCC del MFE de la celda. Objetivo = max(m, min(cubierta de la submancha, 70 %)):
+     el punto debe verse al menos tan arbolado como la mancha que representa;
+  4. si alguna candidata llega al objetivo, se elige entre ellas la de máx. idoneidad × bonus_pisado;
+     si ninguna llega, la de máx. idoneidad × bonus_pisado × factor_cubierta(cubierta de la celda, m)
+     (celdas sin dato: el factor de la submancha). Empate → menor índice.
+  Una penalización suave sola no bastaba: el bonus por poco pisado pesaba más que la cubierta (Ojén 22 → 27 %).
+  Con m = 0 o sin capas de cubierta, el punto es el de siempre. La calidad se calcula con el bonus del punto nuevo.
 """
 from __future__ import annotations
 import json
@@ -47,7 +61,7 @@ from .cubierta_satelite import FUENTE as FUENTE_SAT
 
 _NOMBRE_ARBOL = {v: k for k, v in ARBOL.items()}
 
-VERSION = 3
+VERSION = 4
 UMBRAL = 60          # idoneidad mínima de una celda de mancha
 MIN_HA = 2.0         # área mínima de la mancha
 MAXIMO = 150         # sitios por especie
@@ -61,6 +75,8 @@ NODATA_DIST = -9999.0
 SIN_U8 = 255
 FACTOR_COB_MIN = 0.3   # factor_cubierta con 0 % de copas
 COB_TOPE = 40.0        # la cubierta mínima útil (m) nunca pasa de este %
+MARGEN_PIE_MIN = 15    # el punto por cubierta no queda más de esto (min a pie) por encima del de referencia
+OBJETIVO_TOPE = 70.0   # la cubierta exigida al punto nunca pasa de este %
 
 
 # ---------------------------------------------------------------- lógica pura
@@ -105,6 +121,32 @@ def factor_cubierta(c, minimo: float) -> float:
         return 1.0
     t = min(max(float(c) / minimo, 0.0), 1.0)
     return FACTOR_COB_MIN + (1 - FACTOR_COB_MIN) * t * t * (3 - 2 * t)
+
+
+def _factor_vec(c: np.ndarray, minimo: float) -> np.ndarray:
+    """factor_cubierta vectorizado (NaN se queda NaN)."""
+    t = np.clip(c / minimo, 0.0, 1.0)
+    return FACTOR_COB_MIN + (1 - FACTOR_COB_MIN) * t * t * (3 - 2 * t)
+
+
+def cubierta_celdas(sat=None, fcc=None) -> np.ndarray | None:
+    """Cubierta (%) por celda: media de arbol_sat en el entorno 3×3 (celdas con dato; bordes recortados),
+    y donde no hay ninguna, la FCC del MFE de la celda. NaN sin dato. None si no hay ninguna capa."""
+    if sat is None and fcc is None:
+        return None
+    from scipy import ndimage
+    ref = sat if sat is not None else fcc
+    res = np.full(ref.shape, np.nan)
+    if sat is not None:
+        ok = (sat != SIN_U8).astype(np.float64)
+        k = np.ones((3, 3))
+        n = ndimage.convolve(ok, k, mode="constant", cval=0.0)
+        s_ = ndimage.convolve(np.where(sat != SIN_U8, sat, 0).astype(np.float64), k, mode="constant", cval=0.0)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            res = np.where(n > 0, s_ / n, np.nan)
+    if fcc is not None:
+        res = np.where(np.isnan(res) & (fcc != SIN_U8), fcc.astype(np.float64), res)
+    return res
 
 
 def _media_sub(arr, celdas, sub, ns, min_frac: float = 0.0):
@@ -164,9 +206,29 @@ def candidatos(idon, tiempo, subida, origen, dist, celda: float = 100.0, umbral:
     bonus = bonus_pisado(dist).ravel()
     acc = tiempo.ravel()[celdas] != SIN_U16
     idx, sb = celdas[acc], sub[acc]
-    orden = np.lexsort((idx, -(v[idx] * bonus[idx]), sb))
-    idx, sb = idx[orden], sb[orden]
+    base = v[idx] * bonus[idx]
+    orden = np.lexsort((idx, -base, sb))
+    idx, sb, base = idx[orden], sb[orden], base[orden]
     primero = np.r_[True, sb[1:] != sb[:-1]] if sb.size else np.zeros(0, bool)
+    cob_cel = cubierta_celdas(sat, fcc) if min_cubierta > 0 else None
+    if cob_cel is not None and sb.size:
+        # v4: entre las celdas a ≤ MARGEN_PIE_MIN más que la de referencia, la de más cubierta útil.
+        tpie = tiempo.ravel()[idx].astype(np.float64)
+        t_ref = np.zeros(ns)
+        t_ref[sb[primero]] = tpie[primero]
+        cob_sub = np.where(np.isfinite(sat_m), sat_m, fcc_m)
+        f_sub = np.array([factor_cubierta(c_, min_cubierta) for c_ in cob_sub])
+        f_cel = _factor_vec(cob_cel.ravel()[idx], min_cubierta)
+        f_cel = np.where(np.isnan(f_cel), f_sub[sb], f_cel)
+        cerca = tpie <= t_ref[sb] + MARGEN_PIE_MIN
+        c_cel = cob_cel.ravel()[idx]
+        objetivo = np.maximum(min_cubierta, np.minimum(np.where(np.isfinite(cob_sub), cob_sub, 0.0), OBJETIVO_TOPE))
+        buena = cerca & np.isfinite(c_cel) & (c_cel >= objetivo[sb] - 1e-9)
+        hay = np.bincount(sb, weights=buena.astype(float), minlength=ns) > 0
+        punt = np.where(hay[sb], np.where(buena, base, -1.0), np.where(cerca, base * f_cel, -1.0))
+        orden = np.lexsort((idx, -punt, sb))
+        idx, sb = idx[orden], sb[orden]
+        primero = np.r_[True, sb[1:] != sb[:-1]]
     res = []
     for k, i in zip(sb[primero], idx[primero]):
         k, i = int(k), int(i)

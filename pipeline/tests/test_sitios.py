@@ -160,3 +160,50 @@ def test_teselas_worldcover():
     from setas_pipeline.cubierta_satelite import teselas_bbox
     assert teselas_bbox(-5.9, 36.1, -4.0, 37.0) == ["N36W006"]
     assert set(teselas_bbox(-0.5, 38.0, 0.5, 39.5)) == {"N36W003", "N36E000", "N39W003", "N39E000"}
+
+
+# ---- v4: punto representativo con cubierta (2026-10-20)
+def _sub_cubierta():
+    """Una submancha 5×10: el criterio antiguo elige (2,1) (idoneidad 95) pero allí no hay árboles."""
+    idon = np.full((5, 10), 80, "uint8"); idon[2, 1] = 95
+    t = np.full((5, 10), 10, "uint16"); sub = np.zeros((5, 10), "uint16")
+    o = np.zeros((5, 10), "uint32"); d = np.full((5, 10), 500.0)
+    sat = np.zeros((5, 10), "uint8"); sat[:, 6:] = 60            # bosque a la derecha
+    return idon, t, sub, o, d, sat
+
+
+def test_representativo_prefiere_celda_arbolada():
+    idon, t, sub, o, d, sat = _sub_cubierta()
+    r = _cand(idon, t, sub, o, d, sat=sat, min_cubierta=40)[0]
+    assert r["col"] >= 6 and r["cubierta_sat_punto"] >= 40       # entorno 3×3 con la cubierta útil
+    viejo = _cand(idon, t, sub, o, d, sat=sat)[0]                 # sin especie con dosel: el de siempre
+    assert (viejo["fila"], viejo["col"]) == (2, 1)
+
+
+def test_representativo_cubierta_no_se_aleja_del_acceso():
+    idon, t, sub, o, d, sat = _sub_cubierta()
+    t[:, 6:] = 40                                                 # el bosque está a 30 min más
+    r = _cand(idon, t, sub, o, d, sat=sat, min_cubierta=40)[0]
+    assert r["t_pie_min"] <= 10 + S.MARGEN_PIE_MIN
+    t[:, 6:] = 20                                                 # a 10 min más: sí
+    r = _cand(idon, t, sub, o, d, sat=sat, min_cubierta=40)[0]
+    assert r["col"] >= 6
+
+
+def test_cubierta_celdas_entorno_y_respaldo_fcc():
+    sat = np.array([[0, 90, 255], [0, 90, 255], [255, 255, 255]], "uint8")
+    fcc = np.full((3, 3), 33, "uint8")
+    c = S.cubierta_celdas(sat, fcc)
+    assert c[0, 0] == pytest.approx(45) and c[2, 2] == pytest.approx(90)
+    assert S.cubierta_celdas(None, None) is None
+    sat[:] = 255
+    assert S.cubierta_celdas(sat, fcc)[1, 1] == 33
+
+
+def test_representativo_al_menos_tan_arbolado_como_la_mancha():
+    """El bonus por poco pisado no gana a la cubierta: el punto pelado lejos del camino pierde."""
+    idon, t, sub, o, d, sat = _sub_cubierta()
+    d[:, 6:] = 0.0                                                # el bosque está junto al camino (bonus 0,4)
+    sat[:, :6], sat[:, 6:] = 20, 90                               # submancha 48 %: objetivo 48 %
+    r = _cand(idon, t, sub, o, d, sat=sat, min_cubierta=30)[0]
+    assert r["cubierta_sat_punto"] >= r["cubierta_sat"]

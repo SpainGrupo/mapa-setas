@@ -5,10 +5,10 @@
   "app/mdt_campo.json": "4d9278022823ff0d4f12e22831be4684c864aaea3f0a34b7aed5107a888d7437",
   "app/meteo_puntos.json": "dbfff484667036dece7ad8b24516c2f36f436aabd7e193bc93d787fb6a76d48c",
   "app/micro.json": "e0be5bcb2b6338b29f99479ee34f996f002a8b40bece638e96cbb5d1cba894fa",
-  "app/sitios.json": "c72e91b362350fabfa3136eeda47d14c7a2a65458cb45be1f7648bac6fe9e549",
+  "app/sitios.json": "e6ce8dd24a8b03780253a4dcc0e9151341f0af10cb50271dbed785efb1555346",
   "calibracion.json": "d2f052c99f66a08febb33df9e6f7467e19423981a52f01f97d26424ee2d5392c",
-  "citas.geojson": "e3a864c25de8949a95eadc994104df975b999c6751862a967c3f3292bde1d775",
-  "citas_capa.json": "dcff62464b3a0690ec2edc9141376637474cb0504748a77287a48d51d46d02fc",
+  "citas.geojson": "e6c6968c5734b4ebc63f13ec2b43793ef82839e0ce624ed7bb875d6d07e7ea79",
+  "citas_capa.json": "2804f1499b1a1342645b1c544fb22c615f495a3ef86e49196ea4b849b16f2d5b",
   "fuego_resumen.json": "1c60c68a83bbd73e65444d31046b197a7b3723c6d40e73da6c86f6c64254359d",
   "malla.json": "17f755f4c0e3b62271eec9afd16b8c209db908a34292de11314b3cce0ec90089",
   "respaldo/setas_agaricus_campestris_zonas_buenas.geojson": "2730f825ab862eb484644ba4c6fb4b55d83c38eda363386978f793059df25fa6",
@@ -38,7 +38,7 @@
   "rutas.geojson": "109c10a0ba5b2058dd6477c2341d239ae6ca9150da4d60df1131c087d9a918c0",
   "titularidad.geojson": "0f1aa237e0b0ea6de6f8ec38b165293dd381b471745ab3001db10a6e86335af6",
   "titularidad_resumen.json": "22a63723c18c62bb6d91f071ad8cf6e298717582893cb4ad705d3d7c3e7ddd97",
-  "validacion_citas.json": "5aaec80f4b9bc9e937873543d75a083d974f03d66d7708e5a521cae8c53e3db4",
+  "validacion_citas.json": "a87de3ea841ba7021d43967aec4d4b88f8a81d2fd1a0ddbd354f8a4e5868ab83",
   "zona.geojson": "9c141af8a7617fc8e4524c710498c8266f659619e2b360e9fa62a083ef6d3966"
  },
  "manifest": {
@@ -677,7 +677,7 @@
     "nombre": "aparcamientos.json"
    },
    {
-    "bytes": 1229781,
+    "bytes": 1230819,
     "nombre": "sitios.json"
    },
    {
@@ -706,13 +706,13 @@
   ],
   "citas": {
    "capa": "citas.pmtiles",
-   "n": 921,
+   "n": 928,
    "por_origen": {
     "foro": 4,
     "gbif": 156,
-    "inat": 411,
+    "inat": 417,
     "literatura": 14,
-    "observation": 336
+    "observation": 337
    }
   },
   "especies": [
@@ -1490,7 +1490,7 @@
     "terfezia_arenaria": 150,
     "tricholoma_portentosum": 75
    },
-   "version": 3
+   "version": 4
   },
   "titularidad": {
    "aviso": "No hay datos abiertos fiables de vallas ni de quién es dueño de cada finca. Fuera de los montes públicos marcados, asume que es privado y pide permiso. Ley 43/2003 de Montes, art. 36.1: el titular del monte es el propietario de sus frutos espontáneos. Resolución de 23-09-2026 (BOJA 196), punto 8: en terrenos particulares hace falta la autorización del propietario para recoger setas.",
@@ -1542,7 +1542,7 @@
    ]
   }
  },
- "manifest_total_bytes": 236508352,
+ "manifest_total_bytes": 236515772,
  "pmtiles": {
   "app/citas.pmtiles": {
    "atribucion": "GBIF.org · iNaturalist · Observation.org · foros y literatura (cada cita con su licencia)",
@@ -1552,9 +1552,9 @@
     -34391000,
     375856370
    ],
-   "bytes": 736277,
+   "bytes": 742659,
    "nombre": "<out>/app/citas.pmtiles",
-   "teselas": 1211,
+   "teselas": 1224,
    "zoom": [
     6,
     14
@@ -4008,7 +4008,7 @@
   "respaldo/setas_suillus_luteus_zonas_buenas.kml": "0a54cdf017915e57da15ee984a62e3a6b6206536e569903e3e52f84252aca88e",
   "respaldo/setas_terfezia_arenaria_zonas_buenas.kml": "ad522ef8451c18aef58dae93113f6eb2ae7644a11b761a7d909faae50218d45f",
   "respaldo/setas_tricholoma_portentosum_zonas_buenas.kml": "44368b0ca321863ef44c817873647027582e13e4da2c48416ced194cb6de284d",
-  "validacion_citas.md": "3df300d03787c42fa8cb2ae43262431630e3d2189640655847fa0e3b5c43c3b9",
+  "validacion_citas.md": "2ee62c36ed609ae5490dff6d673c5a6068adbf029d965c66c9021e6c7ed2b50a",
   "vista_agaricus_campestris.png": "469a345d721aa108af60be5a5054f6db1f30b7a74328a0cdb381dad50e860c06",
   "vista_amanita_caesarea.png": "7cf67b0dc9a840ecd0e7a8de581f752a17aa4c56154fdcf3f23b54d8931395bf",
   "vista_amanita_ponderosa.png": "77d1f2f1277da0465433259e0161b22de91c53dfee484642b235850dec9a05a3",

@@ -48,12 +48,12 @@ export function resumenObservaciones(obs: Observacion[]): ResumenObservaciones {
 
 /** Líneas del resumen separadas por «\n». */
 export function textoResumen(r: ResumenObservaciones): string {
-  const l = [`Modelo ≥ ${UMBRAL_MODELO} y encontraste: ${r.altoEncontro} · Modelo ≥ ${UMBRAL_MODELO} y nada: ${r.altoNada} · Modelo < ${UMBRAL_MODELO} y encontraste: ${r.bajoEncontro}`];
+  const l = [`Zona buena (≥ ${UMBRAL_MODELO}) y encontraste: ${r.altoEncontro} · Zona buena y nada: ${r.altoNada} · Zona floja (< ${UMBRAL_MODELO}) y encontraste: ${r.bajoEncontro}`];
   if (r.pctAlto !== null || r.pctBajo !== null) {
     const pc = (x: number | null) => (x === null ? 'sin casos' : `${Math.round(x)} %`);
-    l.push(`Con el modelo ≥ ${UMBRAL_MODELO} encontraste en ${pc(r.pctAlto)} de las veces que respondiste; con el modelo < ${UMBRAL_MODELO}, en ${pc(r.pctBajo)}.`);
+    l.push(`En zona buena encontraste en ${pc(r.pctAlto)} de las veces que respondiste; en zona floja, en ${pc(r.pctBajo)}.`);
   }
-  l.push(`Árbol visto distinto del modelo: ${r.distinto.length} ${r.distinto.length === 1 ? 'caso' : 'casos'}`);
+  l.push(`El árbol de la foto no coincide con el mapa: ${r.distinto.length} ${r.distinto.length === 1 ? 'vez' : 'veces'}`);
   return l.join('\n');
 }
 

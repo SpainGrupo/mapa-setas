@@ -75,7 +75,7 @@ async function pintarLista() {
     if (foto) { const im = el('img'); im.alt = ''; im.src = url(foto); mini.append(im); }
     const t = el('div', 'meta', `${fecha(o.t)} · ${nombreEspecie(o.especie)}`);
     const d = el('div', 'txt ob-datos', [TEXTO_HALLAZGO[o.hallazgo] + (o.hallazgo === 'encontrada' && o.especieHallada ? `: ${nombreEspecie(o.especieHallada)}` : ''),
-      o.modelo ? `modelo ${o.modelo.idon}/100 aquí` : 'sin modelo aquí',
+      o.modelo ? `zona ${o.modelo.idon}/100` : 'sin dato del mapa',
       o.estado === 'pendiente' ? 'análisis pendiente' : ''].filter(Boolean).join(' · '));
     const cab = el('div', 'ob-item-cab'); cab.append(t, d);
     const mejor = el('div', 'txt ob-mejor');
@@ -109,7 +109,7 @@ async function pintarDetalle(id: string) {
   const nodos: HTMLElement[] = [];
   const volver = boton('← Volver a la lista', () => { vista = { tipo: 'lista' }; void pintar(); }); volver.id = 'ob-volver';
   nodos.push(volver, el('h3', 'ob-fecha', `${fecha(o.t)} · ${nombreEspecie(o.especie)}`),
-    el('p', 'nota', `${o.modelo ? `El modelo daba ${o.modelo.idon}/100 en esta celda` : 'Sin datos del modelo en este punto'} · GPS ±${Math.round(o.precGps)} m`));
+    el('p', 'nota', `${o.modelo ? `Esta zona: ${o.modelo.idon} de 100 en el mapa` : 'Sin datos del mapa en este punto'} · GPS ±${Math.round(o.precGps)} m`));
   // Fotos con su rumbo
   const gal = el('div', 'ob-fotos'); gal.setAttribute('role', 'group'); gal.setAttribute('aria-label', 'Fotos por dirección');
   for (const d of o.direcciones) {

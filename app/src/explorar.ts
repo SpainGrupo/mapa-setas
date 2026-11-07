@@ -64,7 +64,7 @@ export function contradiccion(d: DireccionGemini, arbolModelo: string | null): s
   if (!arbolModelo || d.arbol_dominante === 'no_se_ve' || d.arbol_dominante === 'otro' || d.confianza_arbol === 'baja') return null;
   const clave = CLAVE_MODELO[arbolModelo];
   if (!clave || clave === d.arbol_dominante) return null;
-  return `el modelo da ${arbolModelo}; en la foto se ve ${NOMBRE_ARBOL[d.arbol_dominante] ?? d.arbol_dominante}`;
+  return `el mapa da ${arbolModelo}; en la foto se ve ${NOMBRE_ARBOL[d.arbol_dominante] ?? d.arbol_dominante}`;
 }
 
 /** Una puntuación por dirección de la observación, en su orden. `arbolModeloSector[i]` es el nombre de ARBOL (micro.ts). */
@@ -76,7 +76,7 @@ export function puntuarDirecciones(o: Observacion, p: PerfilMicro | null, arbolM
     const razones = [...obsv.razones];
     const contra = a ? contradiccion(a, arbolModeloSector[i] ?? null) : null;
     if (contra) razones.push(contra);
-    if (modelo !== null) razones.push(`modelo ${Math.round(modelo)} en ese sector`);
+    if (modelo !== null) razones.push(`mapa: ${Math.round(modelo)} en ese sector`);
     const total = obsv.valor !== null && modelo !== null ? 50 * obsv.valor + 0.5 * modelo
       : obsv.valor !== null ? 100 * obsv.valor : modelo;
     return { rumbo: dir.rumbo, total, observado: obsv.valor, modelo, razones: razones.map(sinComestible) };

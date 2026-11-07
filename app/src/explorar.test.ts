@@ -74,7 +74,7 @@ describe('puntuarDirecciones', () => {
     expect(b.total).toBe(40);
     expect(c.modelo).toBeNull();
     expect(c.total).toBe(100);
-    expect(a.razones).toContain('modelo 60 en ese sector');
+    expect(a.razones).toContain('mapa: 60 en ese sector');
   });
   it('todo no_se_ve y sin modelo → total null', () => {
     const [p] = puntuarDirecciones(obs([dir({ ...NADA })], [null]), PERFIL, [null]);
@@ -87,11 +87,11 @@ describe('puntuarDirecciones', () => {
     const [p] = puntuarDirecciones(o, PERFIL, [null]);
     expect(p.observado).toBeNull();
     expect(p.total).toBe(72);
-    expect(p.razones).toEqual(['modelo 72 en ese sector']);
+    expect(p.razones).toEqual(['mapa: 72 en ese sector']);
   });
   it('contradicción: el modelo da pino y en la foto se ve alcornoque (confianza media)', () => {
     const [p] = puntuarDirecciones(obs([dir()], [50]), PERFIL, ['pino']);
-    expect(p.razones).toContain('el modelo da pino; en la foto se ve alcornoque');
+    expect(p.razones).toContain('el mapa da pino; en la foto se ve alcornoque');
   });
   it('no hay contradicción con confianza baja, sin árbol del modelo, con «sin arbolado» o con el mismo árbol', () => {
     const casos: [Partial<DireccionGemini>, string | null][] = [
@@ -99,14 +99,14 @@ describe('puntuarDirecciones', () => {
     ];
     for (const [d, a] of casos) {
       const [p] = puntuarDirecciones(obs([dir(d)], [50]), PERFIL, [a]);
-      expect(p.razones.join('|')).not.toMatch(/el modelo da/);
+      expect(p.razones.join('|')).not.toMatch(/el mapa da/);
     }
   });
   it('castaño del modelo frente a castano observado no es contradicción; frente a encina sí, con el nombre bien escrito', () => {
     const [a] = puntuarDirecciones(obs([dir({ arbol_dominante: 'castano' })], [50]), PERFIL, ['castaño']);
-    expect(a.razones.join('|')).not.toMatch(/el modelo da/);
+    expect(a.razones.join('|')).not.toMatch(/el mapa da/);
     const [b] = puntuarDirecciones(obs([dir({ arbol_dominante: 'encina', confianza_arbol: 'alta' })], [50]), PERFIL, ['castaño']);
-    expect(b.razones).toContain('el modelo da castaño; en la foto se ve encina');
+    expect(b.razones).toContain('el mapa da castaño; en la foto se ve encina');
   });
   it('ninguna razón habla de comer', () => {
     const o = obs([dir({ notas: 'es comestible', suelo_visible: ['hojarasca', 'musgo', 'pasto', 'roca', 'tierra_desnuda'] }), dir({ rumbo: 45, ...NADA })], [80, 10]);

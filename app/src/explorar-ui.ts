@@ -166,7 +166,7 @@ function html() {
       </div>
       <p id="ex-h-estado" class="nota" role="status"></p>
       <div class="ex-analisis">
-        <button id="ex-analizar" class="btn btn-primario btn-ancho" type="button" hidden>Analizar</button>
+        <button id="ex-analizar" class="btn btn-ancho" type="button" hidden>Analizar</button>
         <p id="ex-an-estado" class="nota" role="status"></p>
         <div id="ex-an-res" class="ex-an-res"></div>
         <button id="ex-ver-camara" class="btn btn-ancho" type="button" hidden>Ver la mejor dirección en la cámara</button>
@@ -177,7 +177,7 @@ function html() {
       </div>
     </section>
     <pre id="ex-diag" class="ex-diag" hidden></pre>
-    <p class="nota ex-nota">Las fotos se quedan en tu móvil hasta que pulses «Analizar». En el monte la brújula se desvía de 10 a 20°, así que sirve para orientarte, no para apuntar con precisión.</p>`;
+    <p class="nota ex-nota">En el monte la brújula se desvía de 10 a 20°: sirve para orientarte, no para apuntar.</p>`;
   document.body.append(d);
   return d;
 }
@@ -666,7 +666,7 @@ async function terminarBarrido() {
 function pintarFin() {
   if (!obs) return;
   const n = obs.direcciones.length;
-  $('#ex-fin-res').textContent = `${n} ${n === 1 ? 'foto guardada' : 'fotos guardadas'} en tu móvil${obs.modelo ? ` · el modelo da ${obs.modelo.idon}/100 en esta celda` : ' · sin datos del modelo en este punto'}.`;
+  $('#ex-fin-res').textContent = `${n} ${n === 1 ? 'foto guardada' : 'fotos guardadas'} en tu móvil${obs.modelo ? ` · esta zona: ${obs.modelo.idon} de 100 en el mapa` : ' · sin datos del mapa en este punto'}.`;
   $('#ex-h-cual').hidden = true;
   const dicho = obs.hallazgo === 'nada' ? 'Anotado: no encontraste nada aquí.' : obs.hallazgo === 'encontrada' ? 'Anotado: encontraste algo aquí.' : '';
   $('#ex-h-estado').textContent = dicho;

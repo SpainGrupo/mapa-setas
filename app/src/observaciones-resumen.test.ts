@@ -35,13 +35,13 @@ describe('resumenObservaciones', () => {
   it('árbol visto distinto del modelo: solo con confianza media/alta y árbol comparable', () => {
     const r = resumenObservaciones([conArbol('alcornoque', 'pino'), conArbol('alcornoque', 'alcornoque'), conArbol('alcornoque', 'pino', 'baja'), conArbol('otro', 'pino'), conArbol('alcornoque', 'sin arbolado'), o(50, 'nada')]);
     expect(r.distinto).toHaveLength(1);
-    expect(r.distinto[0].textos).toEqual(['el modelo da pino; en la foto se ve alcornoque']);
-    expect(textoResumen(r)).toMatch(/Árbol visto distinto del modelo: 1 caso/);
+    expect(r.distinto[0].textos).toEqual(['el mapa da pino; en la foto se ve alcornoque']);
+    expect(textoResumen(r)).toMatch(/El árbol de la foto no coincide con el mapa: 1 vez/);
   });
   it('lista vacía: todo a cero', () => {
     const r = resumenObservaciones([]);
     expect(r.total).toBe(0);
-    expect(textoResumen(r)).toMatch(/Modelo ≥ 50 y encontraste: 0/);
+    expect(textoResumen(r)).toMatch(/Zona buena \(≥ 50\) y encontraste: 0/);
   });
   it('el texto nunca habla de comer', () => {
     expect(textoResumen(resumenObservaciones([o(72, 'encontrada')]))).not.toMatch(/comest/i);

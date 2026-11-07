@@ -273,7 +273,7 @@ try {
   await p.waitForFunction(() => /^Mejor: \S+ \d+°$/.test(document.querySelector('#ob-lista .ob-mejor')?.textContent ?? ''), null, { timeout: 8000 });
   ok('la fila enseña «Mejor: …» porque está analizada');
   const resTxt = await p.locator('#ob-resumen').innerText();
-  comprobar(/Modelo ≥ 50 y encontraste: 1 · Modelo ≥ 50 y nada: 0 · Modelo < 50 y encontraste: 0/.test(resTxt) && !/%/.test(resTxt) && /Árbol visto distinto del modelo: 1 caso/.test(resTxt),
+  comprobar(/Zona buena \(≥ 50\) y encontraste: 1 · Zona buena y nada: 0 · Zona floja \(< 50\) y encontraste: 0/.test(resTxt) && !/%/.test(resTxt) && /El árbol de la foto no coincide con el mapa: 1 vez/.test(resTxt),
     `resumen con 1 observación, sin porcentajes (${resTxt.split('\n').join(' | ')})`);
   const [bajada] = await Promise.all([p.waitForEvent('download'), p.locator('#ob-exportar').click()]);
   comprobar(/^observaciones-\d{4}-\d{2}-\d{2}\.geojson$/.test(bajada.suggestedFilename()), `la exportación se llama ${bajada.suggestedFilename()}`);
@@ -293,7 +293,7 @@ try {
   obs = await observaciones(p);
   comprobar(obs[0].hallazgo === 'nada' && obs[0].especieHallada === '' && obs[0].nota === 'Zona seca, sin hojarasca.' && obs[0].estado === 'analizada', 'editar el hallazgo y la nota se guarda (y sigue analizada)');
   await p.locator('#ob-volver').click();
-  await p.waitForFunction(() => /Modelo ≥ 50 y nada: 1/.test(document.querySelector('#ob-resumen')?.textContent ?? ''));
+  await p.waitForFunction(() => /Zona buena y nada: 1/.test(document.querySelector('#ob-resumen')?.textContent ?? ''));
   ok('el resumen se actualiza con el nuevo hallazgo');
   await p.locator('#ob-lista .ob-ver').click();
   await p.waitForSelector('#ob-volver');

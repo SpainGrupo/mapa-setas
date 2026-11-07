@@ -3,12 +3,12 @@ type: Reference
 title: Vistas de la app y Puntuación del día
 description: Cómo decide la app qué especies muestra, qué pinta, qué significa la puntuación y cómo sale la probabilidad del semáforo.
 tags: [app, ux]
-timestamp: 2026-11-07T14:00:00Z
+timestamp: 2026-11-07T16:00:00Z
 ---
 
 # Notes
 
-- «Puntuación del día» (antes «Calidad del monte») = hábitat × tamaño × lejanía del camino × tiempo × fiabilidad del mapa × factor de citas.
+- «Puntuación del día» (antes «Calidad del monte») = hábitat × tamaño × lejanía del camino × tiempo × fiabilidad del mapa × factor de citas × comodidad del terreno (desde 2026-11-07).
 - Tiempo (desde 2026-11-07): factor continuo 0,1 + 0,9 × min(1, p/90), con p la probabilidad estimada del semáforo v3 (0–100). Sin probabilidad (gris) se usa el de antes por estado: verde 1, amarillo 0,5, gris 0,3, rojo 0,1. Así, dentro de un mismo color, sube el sitio cuyo punto meteo da más probabilidad.
 - Factor de citas (2026-10-17): ×1,15 si el sitio tiene citas de nivel «punto», ×1,05 si solo «paraje», ×1 sin citas. Solo se aplica en las regiones con `factor_citas: true` en sitios.json (lo decide la validación por bloques del pipeline; ver «Calibración con citas»). En todas, el Top enseña «Citado: foro / iNat / … (N citas, última AAAA)» y, al pulsarlo, la lista de fuentes (origen, fecha, precisión, distancia, enlace, atribución · licencia) con el aviso de las citas.
 - Las capas de idoneidad no pintan valores < 30.
@@ -37,9 +37,19 @@ timestamp: 2026-11-07T14:00:00Z
 ## «Mejor monte público» en Hoy (2026-10-20)
 - Si ninguna fila de «Mejores sitios» cae en monte público (autonómico o municipal), debajo sale «Mejor monte público»: el mejor sitio público no restringido de las setas de la región, con los mismos filtros de dificultad. Vale aunque esté en amarillo o sin datos del tiempo, pero no en rojo. Lleva su razón y su etiqueta de titularidad (`ranking.mejorPublico`).
 
+## Comodidad del terreno (sitios.json v5, 2026-11-07)
+- Por qué: Alexander no quiere zonas de «monte para arriba, monte para abajo sin parar». Quiere zonas cómodas de atravesar, que eso pese y que se diga.
+- Cálculo (pipeline `terreno.py`, MDT25 del IGN): en los 300 m alrededor del punto del sitio se recorre el círculo en línea recta (filas y columnas de 25 m y las dos diagonales). Salen cuatro números (§4 de docs/investigacion/2026-11-07-navegador-wikiloc-vs-campo.md): desnivel por km (subida + bajada, con histéresis de 4 m, la misma del track del GPS), pendiente media, pendiente sostenida de 50 m que solo supera el 10 % de los tramos y esfuerzo de Tobler frente al llano. Si el sitio tiene camino a pie en acceso.bin y mide ≥ 300 m, también el desnivel por km de ese camino (`acceso_desnivel_km`, solo informativo: el acceso ya lo juzga la dificultad).
+- Campo opcional `terreno` de cada sitio; sin él (datos viejos) no hay etiqueta y el factor es 1.
+- Etiqueta (app `comodidad.ts`), solo por el desnivel por km del entorno: < 40 «Terreno cómodo», 40–80 «Algo de sube y baja», > 80 «Terreno quebrado». Umbrales PROVISIONALES, a calibrar con salidas reales.
+- Factor de la puntuación: ×1, ×0,85, ×0,65. No entra en la calidad con la que el pipeline elige los sitios ni en el indicador «≈N× la media».
+- Dónde se dice: chip corto en la tarjeta de cada sitio de Hoy (por seta, por sitio y Top de la ficha) con la ayuda en el title; la razón del sitio añade «Terreno cómodo · 25 m de desnivel por km.» o «Terreno quebrado · 110 m/km: mucho sube y baja (pendiente media 11 %), lo que baja la puntuación.» y, si hay, «El camino desde el coche: N m/km.». El aviso diario usa la misma razón.
+- Cifras de la primera pasada (2026-11-07): Marbella, 3112 sitios: 35 cómodos, 98 con algo de sube y baja, 2979 quebrados (mediana 230 m/km, pendiente media 24 %). Alicante, 1290: 45, 67 y 1178 (mediana 221 m/km). Con estos umbrales casi todo el monte de setas sale «quebrado» y la puntuación de casi todos baja un 35 %; el orden entre quebrados no cambia. Los cómodos son llanos de campiña, dunas y vegas (Terfezia, Agaricus, Pleurotus). TODO: recalibrar los umbrales con 3–4 salidas reales de Alexander (o por percentiles de la región) antes de darlos por buenos.
+
 # Citations
 
 - commits 56b61c3, 5ba88dd, 42a885c
 - app/src/ranking.ts, app/src/hoy-ui.ts, app/src/citas.ts, pipeline/setas_pipeline/citas_sitios.py
 - app/src/semaforo.ts (v3), app/scripts/calibrar-semaforo.mts, docs/investigacion/2026-11-07-semaforo-probabilidad.md
 - pipeline/setas_pipeline/sitios.py, pipeline/setas_pipeline/cubierta_satelite.py, app/src/razones.ts
+- pipeline/setas_pipeline/terreno.py, app/src/comodidad.ts, docs/investigacion/2026-11-07-navegador-wikiloc-vs-campo.md §4

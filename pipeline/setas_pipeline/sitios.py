@@ -54,6 +54,8 @@ Versión 5 (2026-11-07): campo opcional `terreno` por sitio (terreno.py): desniv
   pendiente máxima sostenida y esfuerzo de Tobler en los 300 m alrededor del punto (MDT25), más el desnivel por km
   del acceso a pie si hay camino. No cambia qué sitios salen ni su orden aquí: la etiqueta («cómodo», «algo de
   sube y baja», «quebrado») y el factor del ranking los aplica la app (app/src/comodidad.ts).
+  Metadato de la región `terreno_umbrales` {comodo, quebrado, metodo: "terciles"}: p33 y p67 del desnivel por km de
+  los sitios de la región (cada uno una vez), redondeados a 5 m/km; la app etiqueta con ellos (relativo a la zona).
 """
 from __future__ import annotations
 import json
@@ -65,7 +67,7 @@ from .cubierta_satelite import FUENTE as FUENTE_SAT
 
 _NOMBRE_ARBOL = {v: k for k, v in ARBOL.items()}
 
-VERSION = 5
+VERSION = 5          # el metadato `terreno_umbrales` (2026-11-07) es opcional y no sube la versión
 UMBRAL = 60          # idoneidad mínima de una celda de mancha
 MIN_HA = 2.0         # área mínima de la mancha
 MAXIMO = 150         # sitios por especie

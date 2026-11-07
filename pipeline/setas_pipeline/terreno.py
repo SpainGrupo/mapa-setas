@@ -23,6 +23,10 @@ app en «Ruta a pie»), se muestrea el MDT25 cada 25 m a lo largo de los centros
 acceso_desnivel_km con la misma histéresis. Solo si el camino mide ≥ ACCESO_MIN_M (con menos, m/km no dice nada).
 Es informativo: el acceso ya lo juzga la dificultad (tiempo y subida, app/src/ruta.ts) y no se suma al factor.
 Sin cotas en el entorno (mar, fuera del MDT) o con menos de MIN_FRAC de celdas con dato: sin campo `terreno`.
+Umbrales por región (2026-11-07, decisión de Alexander): con 40/80 m/km fijos el 95 % de los sitios salía «quebrado».
+La comodidad es relativa a la zona: `terreno_umbrales` de sitios.json guarda los terciles (p33 y p67, redondeados a
+5 m/km) del desnivel_km de los sitios de la región, contando cada sitio una vez aunque salga en varias especies. La app
+(app/src/comodidad.ts) llama «cómodo» al tercio más llano, «quebrado» al más movido y «algo de sube y baja» al medio.
 """
 from __future__ import annotations
 import math
@@ -35,6 +39,7 @@ UMBRAL_M = 4.0          # histéresis del desnivel (grabacion.ts UMBRAL_DESNIVEL
 BASE_PASOS = 2          # pendiente sostenida sobre 2 pasos (50 m)
 PERCENTIL_MAX = 90
 ACCESO_MIN_M = 300.0
+PASO_UMBRAL = 5         # los umbrales de la región se redondean a 5 m/km
 MIN_FRAC = 0.5          # fracción mínima de celdas del círculo con cota
 
 
@@ -192,6 +197,17 @@ def leer_mdt_float(region, malla) -> np.ndarray:
     return z
 
 
+def umbrales_terciles(valores) -> dict | None:
+    """{comodo: p33, quebrado: p67, metodo: "terciles"} del desnivel_km de `valores`, redondeados a PASO_UMBRAL m/km.
+    None si no hay valores."""
+    v = np.asarray([x for x in valores if x is not None and math.isfinite(x)], dtype=np.float64)
+    if v.size == 0:
+        return None
+    p33, p67 = np.percentile(v, [100 / 3, 200 / 3])
+    r = lambda x: int(round(float(x) / PASO_UMBRAL)) * PASO_UMBRAL
+    return {"comodo": r(p33), "quebrado": r(p67), "metodo": "terciles"}
+
+
 def anotar(region, datos: dict, malla, direccion: np.ndarray, verbose: bool = True) -> dict:
     """Añade `terreno` a cada sitio de `datos` (sitios.json en memoria). Devuelve {n, sin_dato}."""
     factor = malla.celda / RES_M
@@ -217,6 +233,10 @@ def anotar(region, datos: dict, malla, direccion: np.ndarray, verbose: bool = Tr
             else:
                 s["terreno"] = cache[i]
                 n += 1
+    datos.pop("terreno_umbrales", None)
+    um = umbrales_terciles([t["desnivel_km"] for t in cache.values() if t is not None])      # cada sitio una vez
+    if um is not None:
+        datos["terreno_umbrales"] = um
     if verbose:
-        print(f"  terreno: {n} sitios con desnivel del entorno ({sin} sin MDT)", flush=True)
-    return {"n": n, "sin_dato": sin}
+        print(f"  terreno: {n} sitios con desnivel del entorno ({sin} sin MDT); umbrales de la región: {um}", flush=True)
+    return {"n": n, "sin_dato": sin, "umbrales": um}

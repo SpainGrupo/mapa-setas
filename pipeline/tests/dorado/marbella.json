@@ -5,7 +5,7 @@
   "app/mdt_campo.json": "4d9278022823ff0d4f12e22831be4684c864aaea3f0a34b7aed5107a888d7437",
   "app/meteo_puntos.json": "dbfff484667036dece7ad8b24516c2f36f436aabd7e193bc93d787fb6a76d48c",
   "app/micro.json": "e0be5bcb2b6338b29f99479ee34f996f002a8b40bece638e96cbb5d1cba894fa",
-  "app/sitios.json": "c7e26ff41b410c391a8bb2dffd87fd6cb84b19de005981f1fe561064eb89be0e",
+  "app/sitios.json": "be16619629f292d3e77abf061bc006c787f3802657d9856c1cf72994c208912c",
   "calibracion.json": "d2f052c99f66a08febb33df9e6f7467e19423981a52f01f97d26424ee2d5392c",
   "citas.geojson": "e6c6968c5734b4ebc63f13ec2b43793ef82839e0ce624ed7bb875d6d07e7ea79",
   "citas_capa.json": "2804f1499b1a1342645b1c544fb22c615f495a3ef86e49196ea4b849b16f2d5b",
@@ -677,7 +677,7 @@
     "nombre": "aparcamientos.json"
    },
    {
-    "bytes": 1571005,
+    "bytes": 1571074,
     "nombre": "sitios.json"
    },
    {
@@ -1542,7 +1542,7 @@
    ]
   }
  },
- "manifest_total_bytes": 236855958,
+ "manifest_total_bytes": 236856027,
  "pmtiles": {
   "app/citas.pmtiles": {
    "atribucion": "GBIF.org · iNaturalist · Observation.org · foros y literatura (cada cita con su licencia)",

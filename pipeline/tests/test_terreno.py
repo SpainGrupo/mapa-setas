@@ -91,3 +91,32 @@ def test_terreno_sitio_sin_mdt():
     z = np.full((80, 80), np.nan)
     direccion = np.zeros((20, 20), "uint8")
     assert T.terreno_sitio(z, direccion, 5, 5, factor=4) is None
+
+
+def test_umbrales_terciles_redondeados_a_5():
+    r = T.umbrales_terciles(list(range(0, 300)))              # p33 = 99,67 → 100 · p67 = 199,33 → 200
+    assert r == {"comodo": 100, "quebrado": 200, "metodo": "terciles"}
+    r = T.umbrales_terciles([112, 118, 122, 148, 151, 160, 203, 207, 240])       # p33 ≈ 139,3 → 140 · p67 ≈ 174,3 → 175
+    assert r == {"comodo": 140, "quebrado": 175, "metodo": "terciles"}
+    assert T.umbrales_terciles([]) is None
+    assert T.umbrales_terciles([None, float("nan")]) is None
+
+
+def test_anotar_guarda_umbrales_contando_cada_sitio_una_vez(monkeypatch):
+    class Malla:
+        celda, ancho = 100.0, 20
+    # Terreno en dientes de sierra: más desnivel cuanto mayor es la columna del sitio.
+    z = np.zeros((80, 80))
+    for c in range(80):
+        z[:, c] = 300 + (c // 4 % 2) * (c // 4) * 6
+    monkeypatch.setattr(T, "leer_mdt_float", lambda region, malla: z)
+    direccion = np.full((20, 20), 255, "uint8")
+    # el sitio 10 + 20·... : ids = fila·ancho + col; el 125 (fila 6, col 5) sale en dos especies, no debe pesar doble.
+    datos = {"especies": {"a": [{"id": 125}, {"id": 127}], "b": [{"id": 125}, {"id": 129}]}}
+    T.anotar(None, datos, Malla, direccion, verbose=False)
+    ids = {s["id"]: s["terreno"]["desnivel_km"] for lista in datos["especies"].values() for s in lista if "terreno" in s}
+    esperado = T.umbrales_terciles(list(ids.values()))        # 3 sitios distintos, no 4
+    assert datos["terreno_umbrales"] == esperado and esperado["metodo"] == "terciles"
+    # una segunda pasada reemplaza el metadato
+    T.anotar(None, datos, Malla, direccion, verbose=False)
+    assert datos["terreno_umbrales"] == esperado

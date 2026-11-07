@@ -327,7 +327,7 @@ export async function abrirIr(d: DestinoIr) {
   pedirBloqueo();
   grabacionPropia = await empezarGrabacion(true);
   clearInterval(tGrab);
-  tGrab = window.setInterval(pintarGrab, 1000);
+  tGrab = window.setInterval(() => { if (!document.hidden) pintarGrab(); }, 1000);
   pintarGrab();
   pintar();
   dejarGps?.();
@@ -363,7 +363,7 @@ export function iniciarIr(c: ContextoIr) {
   });
   // Arrastrar el mapa deja de seguirte (como en Wikiloc); «Seguirme» lo vuelve a activar.
   Mini.alCrear((m) => m.on('dragstart', () => { if (dlg.open) $<HTMLInputElement>('#ir-seguir').checked = false; }));
-  document.addEventListener('visibilitychange', () => { if (dlg.open && document.visibilityState === 'visible') pedirBloqueo(); });
+  document.addEventListener('visibilitychange', () => { if (dlg.open && document.visibilityState === 'visible') { pedirBloqueo(); pintarGrab(); } });
 }
 
 /** Devuelve el mini-mapa a esta vista (al cerrar el modo campo abierto encima). */

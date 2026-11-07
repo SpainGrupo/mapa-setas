@@ -20,6 +20,8 @@ export interface ContextoGrabar {
   irA: (pantalla: string) => void;
 }
 
+/** Por debajo de esto (y sin notas) una grabación no se guarda: es estar parado con el GPS bailando. */
+const RUTA_MINIMA_M = 30;
 export const AVISO_PANTALLA = 'Safari puede pausar el GPS con la pantalla bloqueada o con otra app delante: deja la app abierta. '
   + 'La pantalla se mantiene encendida si el teléfono lo permite.';
 const NOTAS_RAPIDAS = ['Aquí boletus', 'Aquí amanitas', 'Suelo seco', 'Suelo húmedo', 'Nada'];
@@ -137,7 +139,7 @@ function conectar() {
   dejarGps = escucharGps(alPunto, (m) => { errorGps = m; pintarPanel(); });
   pedirBloqueo();
   clearInterval(tic);
-  tic = window.setInterval(pintarPanel, 1000);
+  tic = window.setInterval(() => { if (!document.hidden) pintarPanel(); }, 1000);   // con la pantalla apagada no repinta
   avisarCambio();
   pintarPanel();
 }
@@ -156,7 +158,7 @@ export async function empezarGrabacion(silencio = false): Promise<boolean> {
   ultima = null; errorGps = '';
   persistir(true);
   conectar();
-  if (!silencio) ctx.avisar('Grabando la ruta. ' + AVISO_PANTALLA, 6000);
+  if (!silencio) ctx.avisar('Grabando la ruta.', 3000);   // el aviso de la pantalla bloqueada ya está en el panel
   return true;
 }
 
@@ -173,6 +175,12 @@ export async function terminar() {
   if (!tr.puntos.length && !tr.notas.length) {
     await borrarGrabacion().catch(() => {});
     ctx.avisar('Ruta sin puntos de GPS ni notas: no se guarda.', 5000);
+    return;
+  }
+  // Abrir y cerrar «Navegar aquí» sin moverse dejaba rutas de 0 m en Mis rutas.
+  if (!tr.notas.length && resumen(tr).distancia_m < RUTA_MINIMA_M) {
+    await borrarGrabacion().catch(() => {});
+    ctx.avisar(`Ruta de menos de ${RUTA_MINIMA_M} m y sin notas: no se guarda.`, 5000);
     return;
   }
   await guardarRuta(tr);

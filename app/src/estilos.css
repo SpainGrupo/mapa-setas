@@ -723,7 +723,7 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .busca span { display: inline-flex; gap: 6px; align-items: center; }
 .par-dibujos { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
 /* El dibujo va siempre sobre papel claro: sus textos usan los tonos del tema claro también de noche. */
-.dibujo { --tinta: oklch(20.3% 0.023 159.9); --tinta-2: oklch(37.2% 0.023 160); --peligro-tx: oklch(41% 0.165 26.6); --anat-ink: oklch(20.3% 0.023 159.9); color: oklch(20.3% 0.023 159.9); position: relative; margin: 0; padding: 30px 8px 8px; border-radius: 14px; background: var(--anat-paper); border: 1px solid oklch(62% 0.017 158 / 0.45); display: grid; gap: 4px; }
+.dibujo { --tinta: oklch(20.3% 0.023 159.9); --tinta-2: oklch(37.2% 0.023 160); --hoja: oklch(100% 0 0); --peligro-tx: oklch(41% 0.165 26.6); --anat-ink: oklch(20.3% 0.023 159.9); color: oklch(20.3% 0.023 159.9); position: relative; margin: 0; padding: 30px 8px 8px; border-radius: 14px; background: var(--anat-paper); border: 1px solid oklch(62% 0.017 158 / 0.45); display: grid; gap: 4px; }
 .dibujo .marca { position: absolute; left: -1px; top: -1px; border-radius: 13px 0 8px 0; }
 .dibujo-par { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; align-items: end; }
 .dibujo-par > div { display: grid; gap: 2px; }

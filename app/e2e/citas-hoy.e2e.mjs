@@ -57,6 +57,13 @@ try {
     await p.locator('#hoy-publico').scrollIntoViewIfNeeded();
     await p.screenshot({ path: join(CAPTURAS, 'hoy-mejor-publico.png') });
   }
+  // Comodidad del terreno (sitios v5, 2026-11-07): chip corto en cada fila del top general y frase en su razón.
+  const NOMBRE_TER = { comodo: 'Terreno cómodo', medio: 'Algo de sube y baja', quebrado: 'Terreno quebrado' };
+  const terr = await p.$$eval('#top-general .top-fila', (ls) => ls.map((l) => ({ c: l.dataset.terreno, chip: l.querySelector('.tf-terreno')?.textContent ?? '',
+    title: l.querySelector('.tf-terreno')?.getAttribute('title') ?? '', rz: l.querySelector('.tf-razon')?.textContent ?? '' })));
+  comprobar(terr.length > 0 && terr.every((f) => f.c in NOMBRE_TER && f.chip === NOMBRE_TER[f.c] && f.rz.includes(`${NOMBRE_TER[f.c]} · `)
+    && /Umbrales provisionales/.test(f.title) && !PROHIBIDO.test(f.rz)) && t0.general.every((g, i) => g.terreno === terr[i].c),
+    `comodidad del terreno en las ${terr.length} filas del top general (${[...new Set(terr.map((f) => f.c))].join(', ')})`);
   // Indicador «≈N× la media · top X % hoy» (indicador.ts, 2026-10-20): en cada fila de los tops, con ayuda «?».
   const IND = /^(?:.+ · )?(?:≈\d+(?:,\d)?× la media|sin validar) · top \d{1,3}\s% hoy$/;
   const vc = sitios.validacion?.amanita_caesarea;

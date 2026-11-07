@@ -1,10 +1,12 @@
 // «Por qué este sitio»: 1–2 frases deterministas con los factores reales del ranking (ranking.ts). Puro, sin DOM
 // (razones.test.ts). Solo usa lo que el modelo sabe del sitio: puntuación del día, hábitat (punt_media), tamaño de la
-// mancha, estado y motivo del semáforo (lluvia/temperatura/temporada), fiabilidad del mapa y citas cercanas.
+// mancha, estado y motivo del semáforo (lluvia/temperatura/temporada), fiabilidad del mapa, citas cercanas y comodidad
+// del terreno (comodidad.ts).
 // Nunca habla de comestibilidad ni de recoger. Lo que no está en los datos no se menciona.
 import { FACTOR_FIABILIDAD, type Entrada } from './ranking';
 import type { Fiabilidad } from './fiabilidad';
 import { NOMBRE_ESTADO } from './zona';
+import { textoTerreno } from './comodidad';
 
 export interface ContextoRazon {
   fiabilidad: Fiabilidad;
@@ -75,7 +77,8 @@ export function razonSitio(e: Entrada, c: ContextoRazon): string {
   const fiab = FACTOR_FIABILIDAD[c.fiabilidad] < 1 ? ` Mapa de fiabilidad ${c.fiabilidad === 'sin_validar' ? 'sin validar' : c.fiabilidad}.` : '';
   const primera = `Puntuación ${e.puntuacion}/100 por ${top.join(' y ')}.`;
   const cob = textoCubierta(s);
-  return `${primera}${cob ? ` ${cob}` : ''} ${tiempo}.${fiab}`;
+  const ter = textoTerreno(s.terreno);
+  return `${primera}${cob ? ` ${cob}` : ''}${ter ? ` ${ter}` : ''} ${tiempo}.${fiab}`;
 }
 
 /** Lo que razonZona necesita de una zona (zonas.ts), sin importar el módulo. */

@@ -31,6 +31,23 @@ describe('puntuación', () => {
     expect(puntuar('x', s, opc({}, { fiabilidad: () => 'baja' }))!.score).toBeCloseTo(base * 0.6, 9);
     expect(puntuar('x', s, opc({}, { estadoEn: () => null }))!.estado).toBe('gris');
   });
+  it('comodidad del terreno (sitios v5): ×1 cómodo, ×0,85 algo de sube y baja, ×0,65 quebrado; sin campo ×1', () => {
+    const base = calidad(sitio());
+    const con = (desnivel_km: number) => puntuar('x', sitio({ terreno: { desnivel_km } }), opc())!.score;
+    expect(con(20)).toBeCloseTo(base, 9);
+    expect(con(60)).toBeCloseTo(base * 0.85, 9);
+    expect(con(150)).toBeCloseTo(base * 0.65, 9);
+    expect(puntuar('x', sitio(), opc())!.score).toBeCloseTo(base, 9);
+    // No hunde un verde muy bueno: quebrado con hábitat 95 y 80 ha sigue por delante de uno cómodo de hábitat 60 y 10 ha.
+    const bueno = sitio({ punt_media: 95, area_ha: 80, terreno: { desnivel_km: 200 } }), flojo = sitio({ punt_media: 60, area_ha: 10, terreno: { desnivel_km: 10 } });
+    expect(puntuar('x', bueno, opc())!.score).toBeGreaterThan(puntuar('x', flojo, opc())!.score);
+  });
+  it('parsearSitios conserva un terreno válido y quita uno raro', () => {
+    const d = parsearSitios({ version: 5, generado: '', especies: { a: [sitio({ terreno: { desnivel_km: 30, pendiente_media: 4 } }),
+      sitio({ terreno: 'x' as never })] } })!;
+    expect(d.especies.a[0].terreno).toEqual({ desnivel_km: 30, pendiente_media: 4 });
+    expect('terreno' in d.especies.a[1]).toBe(false);
+  });
   it('con probabilidad (semáforo v3) el factor es continuo: 0,1 + 0,9 × min(1, p/90); en gris no se usa', () => {
     const s = sitio();
     const base = calidad(s);

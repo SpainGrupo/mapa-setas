@@ -1,6 +1,6 @@
 // Tops por día (fase 9): orden de los sitios candidatos de sitios.json para una fecha. Puro, sin DOM (ranking.test.ts).
 //
-// puntuación(sitio, D) = calidad × factor del semáforo × factor de fiabilidad × factor de citas
+// puntuación(sitio, D) = calidad × factor del semáforo × factor de fiabilidad × factor de citas × comodidad del terreno
 //   calidad      = punt_media × ln(1 + area_ha) × bonus_pisado × factor_cubierta   (la misma con la que el pipeline
 //                  los ordena; factor_cubierta = penalización suave por pocas copas, sitios.py v3; sin campo = 1)
 //   semáforo     = desde v3 (2026-11-07), la probabilidad estimada p (0–100) de la especie en el punto meteo del sitio
@@ -11,6 +11,9 @@
 //                  nivel «punto» 1,15, solo «paraje» 1,05, sin citas 1. Solo si sitios.json trae `factor_citas: true`
 //                  (lo decide por región la validación por bloques espaciales del pipeline: si el factor empeora el
 //                  lift, o no hay citas para probarlo, la región solo enseña la etiqueta «Citado: …»).
+//   terreno      = comodidad del entorno de búsqueda (comodidad.ts, campo `terreno` de sitios.json v5): cómodo 1,
+//                  algo de sube y baja 0,85, quebrado 0,65; sin campo 1. No entra en `calidad` (el pipeline no ordena
+//                  por él) ni en el indicador «≈N× la media», que va por tramos de hábitat.
 // y el filtro de dificultad máxima del usuario quita los sitios que lo superan (no los rebaja). Con «solo montes
 // públicos» se quitan también los que no caen en un monte público (titularidad de sitios.json).
 // Para enseñarla se pasa a 0–100 contra el máximo teórico (100 × ln 101 × 1 × 1 × 1): así un mismo sitio vale
@@ -21,6 +24,7 @@ import { dentroDeDificultad, dificultad, type Dificultad } from './ruta';
 import { esPublico, type Titularidad } from './titularidad';
 import { parsearCitasSitio, type CitasSitio, type NivelCitas } from './citas';
 import { parsearValidacion, type Validacion } from './indicador';
+import { factorTerreno, parsearTerreno, type Terreno } from './comodidad';
 
 export interface SitioCandidato {
   id: number;                 // índice plano de la celda (fila·ancho + col) en acceso.bin
@@ -51,6 +55,8 @@ export interface SitioCandidato {
   cubierta_sat_punto?: number | null;
   /** Penalización por cubierta de copas baja (0,3–1). Sin campo = 1. Sitios v3. */
   factor_cubierta?: number;
+  /** Comodidad del terreno en los 300 m alrededor del punto y del acceso a pie (comodidad.ts). Sitios v5. */
+  terreno?: Terreno;
 }
 export interface SitiosJson {
   version: number;
@@ -112,7 +118,8 @@ export function puntuar(especie: string, s: SitioCandidato, o: Opciones): Entrad
   if (o.soloPublicos && !esPublico(s.titularidad)) return null;
   const estado = o.estadoEn(especie, s.meteo_id) ?? 'gris';
   const p = estado === 'gris' ? null : o.probabilidadEn?.(especie, s.meteo_id) ?? null;
-  const score = calidad(s) * factorSemaforo(estado, p) * FACTOR_FIABILIDAD[o.fiabilidad(especie)] * factorCitas(s, o.factorCitas);
+  const score = calidad(s) * factorSemaforo(estado, p) * FACTOR_FIABILIDAD[o.fiabilidad(especie)] * factorCitas(s, o.factorCitas)
+    * factorTerreno(s.terreno);
   return { especie, sitio: s, estado, ...(p != null ? { probabilidad: p } : {}), dificultad: dif, score, puntuacion: puntuacion100(score) };
 }
 
@@ -192,10 +199,10 @@ export function parsearSitios(j: unknown): SitiosJson | null {
     especies[k] = l.filter((s) => s && Number.isFinite(s.lat) && Number.isFinite(s.lon) && Number.isFinite(s.punt_media)
       && Number.isFinite(s.area_ha) && Number.isFinite(s.t_pie_min) && Number.isFinite(s.subida_m))
       .map((s) => {
-        if (s.citas === undefined) return s;
-        const { citas, ...resto } = s;
-        const c = parsearCitasSitio(citas);
-        return c ? { ...resto, citas: c } : resto;
+        const { citas, terreno, ...resto } = s;
+        const c = citas === undefined ? null : parsearCitasSitio(citas);
+        const t = terreno === undefined ? null : parsearTerreno(terreno);
+        return { ...resto, ...(c ? { citas: c } : {}), ...(t ? { terreno: t } : {}) };
       });
   }
   const validacion = parsearValidacion(o.validacion);

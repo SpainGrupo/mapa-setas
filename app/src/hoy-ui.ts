@@ -17,6 +17,7 @@ import { detallesTitularidad, esPublico, normaTitularidad, textoTitularidad } fr
 import { AVISO_CITAS, filaRefCita, textoCitado, type CitasSitio } from './citas';
 import { clavesEntrada, esOrdenTop, NOMBRE_ORDEN, ORDENES_TOP, ordenarTops, PENDIENTE, type OrdenTop } from './orden-tops';
 import { razonSitio, razonZona } from './razones';
+import { AYUDA_TERRENO, claseTerreno, textoCortoTerreno } from './comodidad';
 import { AVISO_LIGNICOLA, esLignicola } from './como-buscar';
 import { RADIO_ZONA_M, zonasDelDia, type Zona } from './zonas';
 import { ayudaIndicador, crearPercentil, textoIndicador, veces, type Validacion } from './indicador';
@@ -25,7 +26,7 @@ import { AYUDA_MY_MAPS, generarKml, nombreArchivoKml, nombrePlacemark, seleccion
   urlSitioGoogle, type SitioExport } from './exportar-dia';
 
 /** Explicación de la cifra del Top (2026-10-15: antes «Calidad del monte», que no decía que entra el tiempo). */
-export const EXPLICACION_PUNTUACION = 'Hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa (× citas cercanas, si la región lo aplica).';
+export const EXPLICACION_PUNTUACION = 'Hábitat × tamaño de la mancha × lejanía del camino × tiempo de ese día × fiabilidad del mapa (× citas cercanas, si la región lo aplica) × comodidad del terreno (cómodo ×1; algo de sube y baja ×0,85; quebrado ×0,65).';
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
 
@@ -292,6 +293,14 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number, zona?: Zona,
   pts.title = zona ? EXPLICACION_ZONA : EXPLICACION_PUNTUACION;
   const lej = textoLejania(s);
   meta.append(dif, pts, lej || `Distancia: ${PENDIENTE}`);
+  // Comodidad del terreno donde se busca (comodidad.ts): etiqueta corta; las cifras van en la razón.
+  const ter = textoCortoTerreno(s.terreno);
+  if (ter) {
+    const tc = document.createElement('span'); tc.className = 'tf-terreno'; tc.dataset.clase = claseTerreno(s.terreno!.desnivel_km);
+    tc.textContent = ter; tc.title = AYUDA_TERRENO;
+    meta.append(tc);
+    li.dataset.terreno = tc.dataset.clase;
+  }
   li.append(cab, meta);
   // Cuánto mejor que el azar es su tramo de puntuación y su puesto del día en la región (no es una probabilidad).
   if (ind) for (const e of entradas) li.append(bloqueIndicador(e, ind, entradas.length > 1 ? `${nombre(e.especie)} · ` : ''));
@@ -837,7 +846,7 @@ export function topActualMapa() {
 export function resumenHoy() {
   if (!ultimo) return null;
   const e = (x: Entrada) => ({ especie: x.especie, id: x.sitio.id, puntuacion: x.puntuacion, estado: x.estado, dificultad: x.dificultad, score: x.score,
-    titularidad: x.sitio.titularidad?.clase ?? 'privado', citas: x.sitio.citas ? { n: x.sitio.citas.n, nivel: x.sitio.citas.nivel } : null });
+    terreno: x.sitio.terreno ? claseTerreno(x.sitio.terreno.desnivel_km) : null, titularidad: x.sitio.titularidad?.clase ?? 'privado', citas: x.sitio.citas ? { n: x.sitio.citas.n, nivel: x.sitio.citas.nivel } : null });
   return { fecha: ultimo.fecha, confianza: ultimo.confianza, sinSitios: ultimo.sinSitios, factorCitas: ultimo.factorCitas,
     general: ultimo.general.map((f) => ({ ...e(f.principal), especies: f.especies })), publico: ultimo.publico ? e(ultimo.publico) : null, especie: ultimo.especie, top: ultimo.top.map(e),
     vista: vistaTop(), zonas: ultimo.zonas.map((z) => ({ puntuacion: z.puntuacion, score: z.score, verdes: z.verdes, extension_m: z.extension_m,

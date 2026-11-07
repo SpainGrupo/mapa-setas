@@ -1133,7 +1133,7 @@ function pintarTarjeta() {
   const r = estadoEn(puntoSel, especieSel());
   const punto = document.createElement('span'); punto.className = 'punto-estado'; punto.dataset.estado = r?.estado ?? 'gris'; punto.setAttribute('aria-hidden', 'true');
   const fmTz = fotoMini(especieSel(), nombres[especieSel()] ?? especieSel());
-  $('#tz-estado').replaceChildren(punto, ...(fmTz ? [fmTz] : []), r ? `${nombres[especieSel()]}: ${textoEstado(r)}` : `${nombres[especieSel()]}: sin datos del tiempo`);
+  $('#tz-estado').replaceChildren(punto, ...(fmTz ? [fmTz] : []), r ? `${nombres[especieSel()]}: ${textoEstado(r)}${r.probabilidad != null ? ' de probabilidad estimada' : ''}` : `${nombres[especieSel()]}: sin datos del tiempo`);
   if (r?.probabilidad != null) { $('#tz-estado').title = AYUDA_PROBABILIDAD; $('#tz-estado').dataset.probabilidad = String(r.probabilidad); }
   else { $('#tz-estado').removeAttribute('title'); delete $('#tz-estado').dataset.probabilidad; }
   $('#tz-motivo').textContent = r ? r.motivo : 'Conéctate y pulsa «Actualizar tiempo» en Zona.';

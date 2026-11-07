@@ -24,7 +24,7 @@ import { dentroDeDificultad, dificultad, type Dificultad } from './ruta';
 import { esPublico, type Titularidad } from './titularidad';
 import { parsearCitasSitio, type CitasSitio, type NivelCitas } from './citas';
 import { parsearValidacion, type Validacion } from './indicador';
-import { factorTerreno, parsearTerreno, type Terreno } from './comodidad';
+import { factorTerreno, parsearTerreno, parsearUmbrales, type Terreno, type UmbralesTerreno } from './comodidad';
 
 export interface SitioCandidato {
   id: number;                 // índice plano de la celda (fila·ancho + col) en acceso.bin
@@ -66,6 +66,8 @@ export interface SitiosJson {
   factor_citas?: boolean;
   /** Lift por tramo de puntuación validado por bloques (pipeline exportar.validacion_sitios; indicador.ts). */
   validacion?: Validacion;
+  /** Terciles del desnivel por km de los sitios de la región (p33 cómodo, p67 quebrado). Sin campo = 40/80 (comodidad.ts). */
+  terreno_umbrales?: UmbralesTerreno & { metodo?: string };
 }
 
 export const FACTOR_SEMAFORO: Record<Estado, number> = { verde: 1, amarillo: 0.5, gris: 0.3, rojo: 0.1 };
@@ -194,6 +196,7 @@ export function parsearSitios(j: unknown): SitiosJson | null {
   const o = j as SitiosJson;
   if (!o || typeof o !== 'object' || typeof o.especies !== 'object' || !o.especies) return null;
   const especies: SitiosJson['especies'] = {};
+  const umbrales = parsearUmbrales(o.terreno_umbrales);        // los comparte cada terreno: la etiqueta es relativa a la región
   for (const [k, l] of Object.entries(o.especies)) {
     if (!Array.isArray(l)) continue;
     especies[k] = l.filter((s) => s && Number.isFinite(s.lat) && Number.isFinite(s.lon) && Number.isFinite(s.punt_media)
@@ -202,9 +205,11 @@ export function parsearSitios(j: unknown): SitiosJson | null {
         const { citas, terreno, ...resto } = s;
         const c = citas === undefined ? null : parsearCitasSitio(citas);
         const t = terreno === undefined ? null : parsearTerreno(terreno);
+        if (t && umbrales) t.umbrales = umbrales;
         return { ...resto, ...(c ? { citas: c } : {}), ...(t ? { terreno: t } : {}) };
       });
   }
   const validacion = parsearValidacion(o.validacion);
-  return { version: o.version, generado: o.generado, especies, factor_citas: o.factor_citas === true, ...(validacion ? { validacion } : {}) };
+  return { version: o.version, generado: o.generado, especies, factor_citas: o.factor_citas === true, ...(validacion ? { validacion } : {}),
+    ...(umbrales ? { terreno_umbrales: { ...umbrales, metodo: typeof o.terreno_umbrales?.metodo === 'string' ? o.terreno_umbrales.metodo : 'terciles' } } : {}) };
 }

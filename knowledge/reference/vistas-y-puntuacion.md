@@ -3,7 +3,7 @@ type: Reference
 title: Vistas de la app y Puntuación del día
 description: Cómo decide la app qué especies muestra, qué pinta, qué significa la puntuación y cómo sale la probabilidad del semáforo.
 tags: [app, ux]
-timestamp: 2026-11-07T16:00:00Z
+timestamp: 2026-11-07T17:00:00Z
 ---
 
 # Notes
@@ -41,10 +41,10 @@ timestamp: 2026-11-07T16:00:00Z
 - Por qué: Alexander no quiere zonas de «monte para arriba, monte para abajo sin parar». Quiere zonas cómodas de atravesar, que eso pese y que se diga.
 - Cálculo (pipeline `terreno.py`, MDT25 del IGN): en los 300 m alrededor del punto del sitio se recorre el círculo en línea recta (filas y columnas de 25 m y las dos diagonales). Salen cuatro números (§4 de docs/investigacion/2026-11-07-navegador-wikiloc-vs-campo.md): desnivel por km (subida + bajada, con histéresis de 4 m, la misma del track del GPS), pendiente media, pendiente sostenida de 50 m que solo supera el 10 % de los tramos y esfuerzo de Tobler frente al llano. Si el sitio tiene camino a pie en acceso.bin y mide ≥ 300 m, también el desnivel por km de ese camino (`acceso_desnivel_km`, solo informativo: el acceso ya lo juzga la dificultad).
 - Campo opcional `terreno` de cada sitio; sin él (datos viejos) no hay etiqueta y el factor es 1.
-- Etiqueta (app `comodidad.ts`), solo por el desnivel por km del entorno: < 40 «Terreno cómodo», 40–80 «Algo de sube y baja», > 80 «Terreno quebrado». Umbrales PROVISIONALES, a calibrar con salidas reales.
+- Etiqueta (app `comodidad.ts`), solo por el desnivel por km del entorno y RELATIVA A LA REGIÓN (decisión de Alexander, 2026-11-07; con 40/80 m/km fijos el 95 % salía «quebrado»): el pipeline guarda en sitios.json el metadato `terreno_umbrales: {comodo: p33, quebrado: p67, metodo: "terciles"}` (terciles del desnivel por km de los sitios de la región, cada sitio una vez aunque salga en varias especies, redondeados a 5 m/km). < p33 «Terreno cómodo» (el tercio más llano), p33–p67 «Algo de sube y baja», > p67 «Terreno quebrado» (el tercio más movido); en los propios p33 y p67 es «algo de sube y baja». Sin el metadato (datos viejos) la app usa 40/80. Los m/km del pipeline son aproximados (MDT25) y no se pueden comparar tal cual con los del GPS.
 - Factor de la puntuación: ×1, ×0,85, ×0,65. No entra en la calidad con la que el pipeline elige los sitios ni en el indicador «≈N× la media».
-- Dónde se dice: chip corto en la tarjeta de cada sitio de Hoy (por seta, por sitio y Top de la ficha) con la ayuda en el title; la razón del sitio añade «Terreno cómodo · 25 m de desnivel por km.» o «Terreno quebrado · 110 m/km: mucho sube y baja (pendiente media 11 %), lo que baja la puntuación.» y, si hay, «El camino desde el coche: N m/km.». El aviso diario usa la misma razón.
-- Cifras de la primera pasada (2026-11-07): Marbella, 3112 sitios: 35 cómodos, 98 con algo de sube y baja, 2979 quebrados (mediana 230 m/km, pendiente media 24 %). Alicante, 1290: 45, 67 y 1178 (mediana 221 m/km). Con estos umbrales casi todo el monte de setas sale «quebrado» y la puntuación de casi todos baja un 35 %; el orden entre quebrados no cambia. Los cómodos son llanos de campiña, dunas y vegas (Terfezia, Agaricus, Pleurotus). TODO: recalibrar los umbrales con 3–4 salidas reales de Alexander (o por percentiles de la región) antes de darlos por buenos.
+- Dónde se dice: chip corto relativo a la zona en la tarjeta de cada sitio de Hoy (por seta, por sitio y Top de la ficha), «Terreno cómodo para la zona · 150 m/km», con la ayuda en el title («Es relativo a la región. Cómodo: entre el tercio más llano de sus sitios (menos de 180 m/km)…»); la razón del sitio añade «Terreno cómodo para la zona · 25 m de desnivel por km.» o «Terreno quebrado para la zona · 110 m/km: mucho sube y baja (pendiente media 11 %), lo que baja la puntuación.» y, si hay, «El camino desde el coche: N m/km.». El aviso diario usa la misma razón.
+- Umbrales y reparto (2026-11-07, sitios únicos): Marbella 180 / 265 m/km, 2290 sitios: 758 cómodos, 784 con algo de sube y baja, 748 quebrados (mediana 220 m/km). Alicante 175 / 255 m/km, 917 sitios: 304, 315 y 298 (mediana 218). La primera pasada, con 40/80 fijos, daba 2979 de 3112 quebrados en Marbella y 1178 de 1290 en Alicante. Al ser terciles, la puntuación de un tercio de los sitios de cada región baja siempre (×0,85 el del medio, ×0,65 el más movido); el orden dentro de cada tercio no cambia. TODO: contrastar con 3–4 salidas reales de Alexander si hace falta decidir qué es cómodo en términos absolutos.
 
 # Citations
 

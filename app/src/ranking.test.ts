@@ -47,6 +47,22 @@ describe('puntuación', () => {
       sitio({ terreno: 'x' as never })] } })!;
     expect(d.especies.a[0].terreno).toEqual({ desnivel_km: 30, pendiente_media: 4 });
     expect('terreno' in d.especies.a[1]).toBe(false);
+    expect(d.terreno_umbrales).toBeUndefined();
+  });
+  it('parsearSitios pasa los umbrales de la región (terciles) a cada terreno y el factor los usa', () => {
+    const d = parsearSitios({ version: 5, generado: '', terreno_umbrales: { comodo: 180, quebrado: 265, metodo: 'terciles' },
+      especies: { a: [sitio({ terreno: { desnivel_km: 150 } }), sitio({ terreno: { desnivel_km: 200 } }), sitio({ terreno: { desnivel_km: 300 } })] } })!;
+    expect(d.terreno_umbrales).toEqual({ comodo: 180, quebrado: 265, metodo: 'terciles' });
+    expect(d.especies.a[0].terreno!.umbrales).toEqual({ comodo: 180, quebrado: 265 });
+    const base = calidad(sitio());
+    const f = (i: number) => puntuar('x', d.especies.a[i], opc())!.score;
+    expect(f(0)).toBeCloseTo(base, 9);            // 150 < 180: cómodo, aunque con 40/80 sería quebrado
+    expect(f(1)).toBeCloseTo(base * 0.85, 9);
+    expect(f(2)).toBeCloseTo(base * 0.65, 9);
+    // Metadato raro: se ignora y valen los de respaldo.
+    const raro = parsearSitios({ version: 5, generado: '', terreno_umbrales: { comodo: 300, quebrado: 100 }, especies: { a: [sitio({ terreno: { desnivel_km: 150 } })] } })!;
+    expect(raro.terreno_umbrales).toBeUndefined();
+    expect(puntuar('x', raro.especies.a[0], opc())!.score).toBeCloseTo(base * 0.65, 9);
   });
   it('con probabilidad (semáforo v3) el factor es continuo: 0,1 + 0,9 × min(1, p/90); en gris no se usa', () => {
     const s = sitio();

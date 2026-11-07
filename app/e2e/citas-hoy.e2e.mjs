@@ -57,13 +57,22 @@ try {
     await p.locator('#hoy-publico').scrollIntoViewIfNeeded();
     await p.screenshot({ path: join(CAPTURAS, 'hoy-mejor-publico.png') });
   }
-  // Comodidad del terreno (sitios v5, 2026-11-07): chip corto en cada fila del top general y frase en su razón.
+  // Comodidad del terreno (sitios v5, umbrales por terciles de la región, 2026-11-07): chip corto relativo a la zona en cada
+  // fila del top general y frase en su razón; la clase sale de los terciles que trae sitios.json, no de 40/80.
   const NOMBRE_TER = { comodo: 'Terreno cómodo', medio: 'Algo de sube y baja', quebrado: 'Terreno quebrado' };
-  const terr = await p.$$eval('#top-general .top-fila', (ls) => ls.map((l) => ({ c: l.dataset.terreno, chip: l.querySelector('.tf-terreno')?.textContent ?? '',
+  const um = sitios.terreno_umbrales;
+  comprobar(um && um.metodo === 'terciles' && um.comodo > 0 && um.quebrado >= um.comodo && um.comodo % 5 === 0 && um.quebrado % 5 === 0,
+    `sitios.json trae los terciles de la región (cómodo < ${um?.comodo}, quebrado > ${um?.quebrado} m/km)`);
+  const claseDe = (km) => (km < um.comodo ? 'comodo' : km <= um.quebrado ? 'medio' : 'quebrado');
+  const porIdT = new Map(Object.values(sitios.especies).flat().map((s) => [s.id, s]));
+  const terr = await p.$$eval('#top-general .top-fila', (ls) => ls.map((l) => ({ id: Number(l.dataset.id), c: l.dataset.terreno, chip: l.querySelector('.tf-terreno')?.textContent ?? '',
     title: l.querySelector('.tf-terreno')?.getAttribute('title') ?? '', rz: l.querySelector('.tf-razon')?.textContent ?? '' })));
-  comprobar(terr.length > 0 && terr.every((f) => f.c in NOMBRE_TER && f.chip === NOMBRE_TER[f.c] && f.rz.includes(`${NOMBRE_TER[f.c]} · `)
-    && /Umbrales provisionales/.test(f.title) && !PROHIBIDO.test(f.rz)) && t0.general.every((g, i) => g.terreno === terr[i].c),
-    `comodidad del terreno en las ${terr.length} filas del top general (${[...new Set(terr.map((f) => f.c))].join(', ')})`);
+  comprobar(terr.length > 0 && terr.every((f) => {
+    const km = porIdT.get(f.id)?.terreno?.desnivel_km;
+    return km !== undefined && f.c === claseDe(km) && f.chip === `${NOMBRE_TER[f.c]} para la zona · ${km.toLocaleString('es-ES')} m/km`
+      && f.rz.includes(`${NOMBRE_TER[f.c]} para la zona · `) && /relativo a la región/.test(f.title) && f.title.includes(`menos de ${um.comodo} m/km`) && !PROHIBIDO.test(f.rz);
+  }) && t0.general.every((g, i) => g.terreno === terr[i].c),
+    `comodidad del terreno en las ${terr.length} filas del top general (${[...new Set(terr.map((f) => f.c))].join(', ')}): «${terr[0]?.chip}»`);
   // Indicador «≈N× la media · top X % hoy» (indicador.ts, 2026-10-20): en cada fila de los tops, con ayuda «?».
   const IND = /^(?:.+ · )?(?:≈\d+(?:,\d)?× la media|sin validar) · top \d{1,3}\s% hoy$/;
   const vc = sitios.validacion?.amanita_caesarea;

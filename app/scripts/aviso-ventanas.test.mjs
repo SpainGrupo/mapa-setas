@@ -28,7 +28,7 @@ describe('componer aviso', () => {
       aparcamiento_id: 1, restringido: false, meteo_id: 0, terreno: { desnivel_km: 110, pendiente_media: 12 } };
     const razon = razonSitio({ especie: 'x', sitio, estado: 'verde', dificultad: 'facil', score: 1, puntuacion: 52 }, { fiabilidad: 'buena' });
     const r = componer([{ ...ap, sitios: [{ ...ap.sitios[0], razon }] }], '2026-10-18');
-    expect(r.texto).toContain('Terreno quebrado · 110 m/km: mucho sube y baja (pendiente media 12 %), lo que baja la puntuación.');
-    expect(r.html).toContain('Terreno quebrado · 110 m/km');
+    expect(r.texto).toContain('Terreno quebrado para la zona · 110 m/km: mucho sube y baja (pendiente media 12 %), lo que baja la puntuación.');
+    expect(r.html).toContain('Terreno quebrado para la zona · 110 m/km');
   });
 });

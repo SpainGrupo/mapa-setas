@@ -60,8 +60,11 @@ describe('razonSitio', () => {
 describe('razonSitio con comodidad del terreno (sitios v5)', () => {
   it('añade la frase del terreno detrás de la cubierta y antes del tiempo', () => {
     const r = razonSitio(e({}, { arbol: 'pino', fcc_mfe: 60, terreno: { desnivel_km: 110, pendiente_media: 12, acceso_desnivel_km: 90 } }), { fiabilidad: 'buena' });
-    expect(r).toMatch(/Pinar de densidad media, 60 % de copas\. Terreno quebrado · 110 m\/km: mucho sube y baja \(pendiente media 12 %\), lo que baja la puntuación\. El camino desde el coche: 90 m\/km\. Buen momento/);
-    expect(razonSitio(e({}, { terreno: { desnivel_km: 25 } }), { fiabilidad: 'buena' })).toContain('Terreno cómodo · 25 m de desnivel por km.');
+    expect(r).toMatch(/Pinar de densidad media, 60 % de copas\. Terreno quebrado para la zona · 110 m\/km: mucho sube y baja \(pendiente media 12 %\), lo que baja la puntuación\. El camino desde el coche: 90 m\/km\. Buen momento/);
+    expect(razonSitio(e({}, { terreno: { desnivel_km: 25 } }), { fiabilidad: 'buena' })).toContain('Terreno cómodo para la zona · 25 m de desnivel por km.');
+    // Con los umbrales de la región, 150 m/km es cómodo.
+    expect(razonSitio(e({}, { terreno: { desnivel_km: 150, umbrales: { comodo: 180, quebrado: 265 } } }), { fiabilidad: 'buena' }))
+      .toContain('Terreno cómodo para la zona · 150 m de desnivel por km.');
   });
   it('sin campo terreno no dice nada del terreno', () => {
     expect(razonSitio(e(), { fiabilidad: 'buena' })).not.toMatch(/[Tt]erreno|sube y baja/);

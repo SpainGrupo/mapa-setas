@@ -115,7 +115,7 @@ p { text-wrap: pretty; }
 .cab h1 { margin: 0; font-size: 28px; line-height: 1.1; font-weight: 800; letter-spacing: -0.015em; }
 .cab .estado { margin: 4px 0 0; font-size: 15px; color: var(--tinta-2); }
 .cab-volver { display: grid; gap: 2px; }
-.cuerpo { padding: 16px 16px calc(var(--pie) + 48px); display: grid; gap: 14px; max-width: 640px; margin: 0 auto; }
+.cuerpo { padding: 16px 16px calc(var(--pie) + 16px); display: grid; gap: 14px; max-width: 640px; margin: 0 auto; }
 .cuerpo > h2, .cuerpo h2 { margin: 18px 0 0; font-size: 20px; line-height: 1.2; font-weight: 800; letter-spacing: -0.01em; }
 .cuerpo > h2:first-child { margin-top: 4px; }
 .nota { margin: 0; font-size: 15px; line-height: 1.4; color: var(--tinta-2); }
@@ -257,7 +257,7 @@ details > summary { cursor: pointer; }
 @keyframes aparecer-abajo { from { opacity: 0; transform: translateY(6px) scale(0.97); } }
 
 .fabs { position: absolute; z-index: 10; right: 12px; bottom: calc(var(--pie) + 34px); display: grid; gap: 10px; justify-items: center; }
-body[data-zona] .fabs { bottom: calc(var(--pie) + 172px); }
+body[data-zona] .fabs { bottom: calc(var(--pie) + var(--tz-alto, 172px) + 16px); }
 body[data-hoja] .fabs, body[data-hoja] .pista-mapa { display: none; }
 .fab {
   width: 60px; height: 60px; border-radius: 22px; display: grid; place-items: center; align-content: center; gap: 1px; color: var(--tinta); padding: 0;
@@ -283,14 +283,24 @@ body[data-hoja] .fabs, body[data-hoja] .pista-mapa { display: none; }
 .sin-datos[hidden] { display: none; }
 .sin-datos p { margin: 0; }
 
+/* Tarjeta del punto tocado (2026-11-07): una sola columna. Título, motivo (3 líneas y «Más»), monte público y, abajo, una
+   fila de tres botones a todo el ancho y «Preguntar a la IA». La cruz de cerrar va flotando arriba a la derecha. */
 .tarjeta-zona {
   position: absolute; z-index: 15; left: 8px; right: 8px; bottom: calc(var(--pie) + 8px);
-  border-radius: 24px; padding: 14px 52px 14px 16px; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center;
+  border-radius: 24px; padding: 14px 16px 14px; display: grid; gap: 10px;
+  max-height: calc(100dvh - var(--sup) - var(--pie) - 120px); overflow-y: auto; overscroll-behavior: contain;
   background: var(--vidrio-tinte-denso); animation: materializar 160ms var(--entrada) both;
 }
 .tarjeta-zona .btn-x { position: absolute; top: 4px; right: 4px; }
-.tz-texto { display: grid; gap: 2px; font-size: 15px; color: var(--tinta-2); }
-.tz-texto b { font-size: 17px; color: var(--tinta); display: flex; align-items: center; gap: 8px; }
+.tz-texto { display: grid; gap: 4px; font-size: 15px; line-height: 1.4; color: var(--tinta-2); min-width: 0; }
+.tz-texto b { font-size: 17px; line-height: 1.25; color: var(--tinta); display: flex; align-items: center; gap: 8px; padding-right: 40px; min-height: 40px; }
+.tz-motivo { overflow-wrap: anywhere; }
+.tz-motivo[data-plegado] { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+.tz-mas { justify-self: start; min-height: var(--toque); margin: -6px 0 -8px; padding: 0 4px; border: 0; background: none; font: inherit; font-weight: 800; color: var(--bosque-tx); }
+.tz-mas:focus-visible { outline: 3px solid var(--ruta); outline-offset: 2px; border-radius: 8px; }
+.tz-acciones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tz-acciones .btn { padding: 8px 4px; font-size: 15px; min-width: 0; }
+.tz-ia .ico { width: 22px; height: 22px; color: var(--bosque-tx); }
 .punto-estado { width: 14px; height: 14px; border-radius: 50%; flex: none; border: 2px solid var(--tinta); }
 .punto-estado[data-estado=verde] { background: oklch(62% 0.18 145); }
 .punto-estado[data-estado=amarillo] { background: oklch(82% 0.16 80); }
@@ -431,7 +441,7 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .chip-estado[data-estado=gris] { background: var(--lavado); color: var(--tinta-2); }
 
 /* ---------------------------------------------------------------- Hoy */
-.chips-dias { position: relative; display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; margin: 0 -16px; padding: 2px 16px 4px; scrollbar-width: none; }
+.chips-dias { position: relative; display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-inline: 16px; margin: 0 -16px; padding: 2px 16px 4px; scrollbar-width: none; }
 .chips-dias::-webkit-scrollbar { display: none; }
 .chips-dias .chip {
   flex: none; scroll-snap-align: start; display: grid; gap: 4px; justify-items: start; min-width: 92px; min-height: 68px;

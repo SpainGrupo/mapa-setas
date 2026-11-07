@@ -26,9 +26,7 @@
 .hm-acciones .btn { flex: 1 1 120px; }
 
 /* ---------------------------------------------------------------- «Navegar aquí» en las tarjetas del mapa */
-.tarjeta-zona { grid-template-columns: 1fr auto auto; }
 .tarjeta-zona #tz-navegar { min-height: var(--toque); }
-@media (max-width: 420px) { .tarjeta-zona { grid-template-columns: 1fr 1fr; } .tarjeta-zona .tz-texto { grid-column: 1 / -1; } }
 .ta-botones:has(#ta-navegar) { grid-template-columns: 1fr 1.25fr; }
 .ta-botones #ta-navegar { grid-column: 1 / -1; }
 .sitio .acciones:has(.sitio-navegar) .sitio-navegar { grid-column: 1 / -1; }

@@ -135,10 +135,18 @@
       </div>
 
       <div id="tarjeta-zona" class="tarjeta-zona vidrio" role="region" aria-label="Cómo va la zona tocada" hidden>
-        <div class="tz-texto"><b id="tz-estado"></b><span id="tz-motivo"></span><p id="tz-titularidad" class="chip-titularidad tz-titularidad" role="note" hidden></p></div>
-        <button id="tz-ver" class="btn btn-primario" type="button">Ver zona</button>
-        <button id="tz-navegar" class="btn" type="button">Navegar aquí</button>
-        <button id="tz-guardar" class="btn" type="button">Guardar</button>
+        <div class="tz-texto">
+          <b id="tz-estado"></b>
+          <span id="tz-motivo" class="tz-motivo"></span>
+          <button id="tz-mas" class="tz-mas" type="button" aria-expanded="false" aria-controls="tz-motivo" hidden>Más</button>
+          <p id="tz-titularidad" class="chip-titularidad tz-titularidad" role="note" hidden></p>
+        </div>
+        <div class="tz-acciones">
+          <button id="tz-ver" class="btn btn-primario" type="button">Ver zona</button>
+          <button id="tz-navegar" class="btn" type="button">Navegar aquí</button>
+          <button id="tz-guardar" class="btn" type="button">Guardar</button>
+        </div>
+        <button id="tz-ia" class="btn btn-ancho tz-ia" type="button"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg><span>Preguntar a la IA</span></button>
         <button id="tz-cerrar" class="btn-x" type="button"><svg class="ico" aria-hidden="true"><use href="#i-cerrar"/></svg><span class="sr">Cerrar</span></button>
       </div>
 
@@ -152,7 +160,7 @@
           <div id="chat-sugerencias" class="chat-sugerencias" role="group" aria-label="Preguntas rápidas"></div>
           <div class="chat-fila">
             <label class="sr" for="chat-texto">Tu pregunta</label>
-            <textarea id="chat-texto" rows="1" maxlength="600" enterkeyhint="send" placeholder="Pregunta sobre tus sitios, el tiempo, tus rutas…"></textarea>
+            <textarea id="chat-texto" rows="1" maxlength="600" enterkeyhint="send" placeholder="Escribe tu pregunta…"></textarea>
             <button id="chat-enviar" class="btn btn-primario" type="submit">Enviar</button>
           </div>
           <div class="chat-pie-form">

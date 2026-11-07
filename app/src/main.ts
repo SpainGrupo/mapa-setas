@@ -51,7 +51,7 @@ import { puntosDeKml } from './enlaces';
 import type { SenderoApp } from './ir-sitio';
 import { mapaListo } from './minimapa';
 import { ultimaPosicion } from './posicion-viva';
-import { estadoChat, iniciarChat } from './chat-ui';
+import { abrirChat, estadoChat, iniciarChat } from './chat-ui';
 import { horaMadrid } from './chat';
 import type { AccesoCalculado, ContextoHerramientas } from './chat-herramientas';
 import { listarRutas } from './rutas';
@@ -1160,8 +1160,34 @@ function pintarTarjeta() {
   $('#tz-estado').replaceChildren(punto, ...(fmTz ? [fmTz] : []), r ? `${nombres[especieSel()]}: ${textoEstado(r)}${r.probabilidad != null ? ' de probabilidad estimada' : ''}` : `${nombres[especieSel()]}: sin datos del tiempo`);
   if (r?.probabilidad != null) { $('#tz-estado').title = AYUDA_PROBABILIDAD; $('#tz-estado').dataset.probabilidad = String(r.probabilidad); }
   else { $('#tz-estado').removeAttribute('title'); delete $('#tz-estado').dataset.probabilidad; }
-  $('#tz-motivo').textContent = r ? r.motivo : 'Conéctate y pulsa «Actualizar tiempo» en Zona.';
+  const motivo = $('#tz-motivo'), mas = $('#tz-mas');
+  motivo.textContent = r ? r.motivo : 'Conéctate y pulsa «Actualizar tiempo» en Zona.';
+  // El motivo largo se pliega a 3 líneas con «Más»; el botón solo sale si de verdad se recorta.
+  motivo.dataset.plegado = '1'; mas.textContent = 'Más'; mas.setAttribute('aria-expanded', 'false');
+  mas.hidden = motivo.scrollHeight <= motivo.clientHeight + 1;
 }
+$('#tz-mas').addEventListener('click', () => {
+  const motivo = $('#tz-motivo'), mas = $('#tz-mas');
+  const abrir = motivo.dataset.plegado !== undefined;
+  if (abrir) delete motivo.dataset.plegado; else motivo.dataset.plegado = '1';
+  mas.textContent = abrir ? 'Menos' : 'Más'; mas.setAttribute('aria-expanded', String(abrir));
+});
+// Los botones flotantes del mapa suben lo que mide la tarjeta (cambia con el motivo y el monte público).
+new ResizeObserver(() => document.documentElement.style.setProperty('--tz-alto', `${Math.round($('#tarjeta-zona').getBoundingClientRect().height)}px`))
+  .observe($('#tarjeta-zona'));
+/** Pregunta precargada (y editable) para el chat con los datos del punto de la tarjeta. Lo que se ve es lo que se envía. */
+function preguntaDelPunto(): string {
+  const r = puntoSel ? estadoEn(puntoSel, especieSel()) : null;
+  const nombre = nombres[especieSel()] ?? especieSel();
+  const l = [`¿Merece la pena ir hoy a este sitio a por ${nombre}?`];
+  if (ultimoToque) l.push(`Punto: ${ultimoToque.lat.toFixed(4)}, ${ultimoToque.lon.toFixed(4)}.`);
+  l.push(r ? `Ahora: ${textoEstado(r)}.` : 'Ahora: sin datos del tiempo.');
+  const monte = $('#tz-titularidad');
+  const m = (monte.querySelector('b') ?? monte).textContent?.replace(/\s+/g, ' ').trim();
+  if (!monte.hidden && m) l.push(`Monte: ${m.split(':')[0].slice(0, 80)}.`);
+  return l.join(' ');
+}
+$('#tz-ia').addEventListener('click', () => { void abrirChat('mapa', preguntaDelPunto()); });
 $('#tz-cerrar').addEventListener('click', () => ($('#tarjeta-zona').hidden = true));
 $('#tz-ver').addEventListener('click', () => irA('p-zona'));
 $('#tz-navegar').addEventListener('click', () => { if (ultimoToque) abrirIr({ lat: ultimoToque.lat, lon: ultimoToque.lon, titulo: 'Punto del mapa' }); });

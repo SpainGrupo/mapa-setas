@@ -54,13 +54,14 @@ function motivoNoDisponible(): string {
 }
 function pintarBotones() {
   const motivo = motivoNoDisponible();
-  for (const b of [$('#btn-chat'), $('#hoy-pregunta')]) {
+  for (const b of [$('#btn-chat'), $('#hoy-pregunta'), $('#tz-ia')]) {
     b.setAttribute('aria-disabled', String(!!motivo));
     b.classList.toggle('atenuado', !!motivo);
     b.title = motivo ? `Pregunta a Claude: ${motivo}` : 'Pregunta a Claude';
     b.dataset.motivo = motivo;
   }
   $('#btn-chat').setAttribute('aria-label', motivo ? `Pregunta a Claude: ${motivo}` : 'Pregunta a Claude');
+  $('#tz-ia span').textContent = motivo ? `Preguntar a la IA · ${motivo}` : 'Preguntar a la IA';
   $('#hoy-pregunta span').textContent = motivo ? `Pregunta a Claude · ${motivo}` : 'Pregunta a Claude';
   if (!$('#chat').hidden) pintarEstado();
 }
@@ -270,7 +271,8 @@ async function enviarTexto(texto: string) {
 function ajustarAlto() {
   const t = $<HTMLTextAreaElement>('#chat-texto');
   t.style.height = 'auto';
-  t.style.height = `${Math.min(t.scrollHeight, 120)}px`;
+  // scrollHeight no cuenta el borde: sin sumarlo, la última línea queda recortada.
+  t.style.height = `${Math.min(t.scrollHeight + (t.offsetHeight - t.clientHeight), 240)}px`;
 }
 
 async function nueva() {
@@ -283,13 +285,19 @@ async function nueva() {
 
 // ---------------------------------------------------------------- abrir / cerrar
 
-export async function abrirChat(desde?: string) {
+/** `precarga`: pregunta que se deja escrita (y editable) en la caja, p. ej. desde la tarjeta de un punto del mapa. */
+export async function abrirChat(desde?: string, precarga?: string) {
   if (motivoNoDisponible()) { ctx.avisar(motivoNoDisponible()); return; }
   pestanaOrigen = desde ?? ctx.pestanaActual();
   ctx.irAlMapa();
   if (!cargada) { cargada = true; conv = await leerConversacion(); }
   pintar();
   $('#chat').hidden = false;
+  if (precarga) {
+    const t = $<HTMLTextAreaElement>('#chat-texto');
+    t.value = precarga; ajustarAlto();
+    hoja?.expandir();   // a media altura la caja de texto queda tapada
+  }
 }
 export function cerrarChat() { $('#chat').hidden = true; }
 
@@ -313,6 +321,7 @@ export function iniciarChat(c: ContextoChatUi) {
   const abrir = (desde?: string) => { void abrirChat(desde); };
   $('#btn-chat').addEventListener('click', () => abrir('mapa'));
   $('#hoy-pregunta').addEventListener('click', () => abrir('hoy'));
+  // «Preguntar a la IA» de la tarjeta del punto lo abre main.ts (lleva la pregunta con los datos del punto).
   window.addEventListener('online', pintarBotones);
   window.addEventListener('offline', pintarBotones);
   pintarBotones();

@@ -94,7 +94,10 @@ p { text-wrap: pretty; }
 
 /* ---------------------------------------------------------------- pantallas */
 #pantallas { position: fixed; inset: 0; }
-.pantalla { position: absolute; inset: 0; display: none; overflow-y: auto; overscroll-behavior: contain; background: var(--papel); -webkit-overflow-scrolling: touch;
+.pantalla { position: absolute; inset: 0; display: none; overflow-y: auto; overscroll-behavior: contain;
+  /* Red de seguridad (2026-11-07): la pestaña nunca se desplaza en horizontal, pase lo que pase dentro. La causa real
+     de «Hoy» está en .temporada-scroll (ver abajo). Es overflow-x en la pestaña, no en html/body, para no romper sticky. */
+  overflow-x: clip; background: var(--papel); -webkit-overflow-scrolling: touch;
   /* Lo que se trae a la vista (enlaces «saltar a», scrollIntoView, foco) queda bajo la cabecera fija y sobre la barra de
      pestañas. --cab-alto lo mide main.ts (alto real de la cabecera de esa pantalla, que cambia con el notch y el texto). */
   scroll-padding-top: calc(var(--cab-alto, 96px) + 8px); scroll-padding-bottom: calc(var(--pie) + 16px); }
@@ -428,7 +431,7 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .chip-estado[data-estado=gris] { background: var(--lavado); color: var(--tinta-2); }
 
 /* ---------------------------------------------------------------- Hoy */
-.chips-dias { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; margin: 0 -16px; padding: 2px 16px 4px; scrollbar-width: none; }
+.chips-dias { position: relative; display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; margin: 0 -16px; padding: 2px 16px 4px; scrollbar-width: none; }
 .chips-dias::-webkit-scrollbar { display: none; }
 .chips-dias .chip {
   flex: none; scroll-snap-align: start; display: grid; gap: 4px; justify-items: start; min-width: 92px; min-height: 68px;
@@ -619,7 +622,7 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .ficha-cab .cientifico { margin: 0; font-style: italic; font-size: 17px; color: var(--tinta-2); }
 .ficha-cab .otros-nombres { margin: 4px 0 0; font-size: 15px; color: var(--tinta-2); }
 .carrusel-guia { position: relative; margin: 0 -16px; }
-.carrusel-guia .pista { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; gap: 0; }
+.carrusel-guia .pista { position: relative; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; gap: 0; }
 .carrusel-guia .pista::-webkit-scrollbar { display: none; }
 .carrusel-guia figure { flex: 0 0 100%; margin: 0; scroll-snap-align: center; }
 .carrusel-guia img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; background: var(--lavado); }
@@ -697,7 +700,7 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 
 /* comparación por pares (marcas de campo) */
 .rec-comparar { display: grid; gap: 12px; }
-.rec-pares { display: flex; gap: 8px; overflow-x: auto; margin: 0 -16px; padding: 2px 16px 4px; scrollbar-width: none; }
+.rec-pares { position: relative; display: flex; gap: 8px; overflow-x: auto; margin: 0 -16px; padding: 2px 16px 4px; scrollbar-width: none; }
 .rec-pares::-webkit-scrollbar { display: none; }
 .par-tab { flex: none; display: grid; gap: 0; text-align: left; min-height: 56px; padding: 8px 14px; border-radius: 14px; border: 2px solid var(--regla); background: var(--hoja); }
 .par-tab b { font-size: 16px; }
@@ -1045,7 +1048,10 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
    Una fila por seta y una línea de 16 días (hoy … +15) con los colores del semáforo; la columna del nombre queda fija y
    el resto se desliza en horizontal dentro de su caja (la página no se desborda a 375 px). */
 .temporada { display: grid; gap: 8px; min-width: 0; }
-.temporada-scroll { overflow-x: auto; overscroll-behavior-x: contain; background: var(--hoja); border-radius: 18px; border: 1px solid oklch(62% 0.017 158 / 0.4);
+/* position: relative es lo que evita el scroll lateral de «Hoy»: los <span class="sr"> de las celdas son position:absolute
+   y, sin un ancestro posicionado dentro de la caja, su bloque contenedor es la pestaña: quedaban a la derecha de la tabla
+   (~650 px) y ensanchaban el área desplazable de toda la pestaña. Igual en los demás deslizadores con texto .sr. */
+.temporada-scroll { position: relative; overflow-x: auto; overscroll-behavior-x: contain; background: var(--hoja); border-radius: 18px; border: 1px solid oklch(62% 0.017 158 / 0.4);
   -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
 .temporada-scroll:focus-visible { outline: 3px solid var(--ruta); outline-offset: 2px; }
 .temporada-tabla { border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }

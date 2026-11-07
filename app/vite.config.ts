@@ -8,8 +8,12 @@ export default defineConfig({
   worker: { format: 'es' },
   plugins: [
     VitePWA({
-      // «prompt»: una versión nueva espera y la app enseña «Nueva versión: actualizar»; solo recarga si el usuario pulsa.
-      // Con «autoUpdate» + skipWaiting, iOS recargaba la página al volver a la app (y se perdía lo que se estaba viendo).
+      // «prompt»: una versión nueva queda en espera y es src/main.ts quien la activa (skipWaiting) en cuanto puede: al
+      // arrancar, al volver a primer plano y cada 30 min busca versión y, si hay, guarda el estado de navegación y recarga.
+      // Si hay una grabación de ruta, el Modo campo o «Navegar aquí» en marcha, espera (con aviso) a que terminen. No se
+      // usa «autoUpdate» porque activaría la versión nueva a ciegas, también en mitad de una grabación.
+      // Registro: el plugin no deja pasar `updateViaCache: 'none'`; el valor por defecto ('imports') ya revalida sw.js en
+      // cada comprobación (no sale de la caché HTTP) y index.html lo sirve el precache del SW, no la red.
       registerType: 'prompt',
       injectRegister: false,
       includeAssets: ['iconos/*.png', 'fonts/**/*.pbf', 'sprites/*'],
@@ -54,7 +58,7 @@ export default defineConfig({
         navigateFallbackDenylist: [/\/data\//, /\/guia\/fotos\//],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
-        skipWaiting: false,
+        skipWaiting: false,   // la activa main.ts cuando no hay nada en marcha (mensaje SKIP_WAITING del modo «prompt»)
       },
     }),
   ],

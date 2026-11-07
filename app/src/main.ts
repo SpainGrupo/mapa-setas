@@ -50,6 +50,7 @@ import { abrirEnlaceDeUrl, iniciarEnlace, puntosEnlace } from './enlace-ui';
 import { puntosDeKml } from './enlaces';
 import type { SenderoApp } from './ir-sitio';
 import { mapaListo } from './minimapa';
+import { decidirVersion } from './actualizar';
 import { ultimaPosicion } from './posicion-viva';
 import { abrirChat, estadoChat, iniciarChat } from './chat-ui';
 import { horaMadrid } from './chat';
@@ -57,22 +58,60 @@ import type { AccesoCalculado, ContextoHerramientas } from './chat-herramientas'
 import { listarRutas } from './rutas';
 import { nivelFiabilidad } from './fiabilidad';
 
-// Service worker en modo «prompt» (vite.config.ts): una versión nueva queda en espera y se ofrece con un aviso; la página
-// solo se recarga si el usuario pulsa «Nueva versión: actualizar». Antes (autoUpdate + skipWaiting) iOS recargaba la app
-// al volver a ella y se perdía lo que se estaba viendo.
+// Siempre la última versión (2026-11-07). El service worker sigue en modo «prompt» (vite.config.ts): una versión nueva
+// queda en espera y SOLO la activamos nosotros (skipWaiting), para poder esperar si hay una grabación de ruta, el Modo
+// campo o «Navegar aquí» en marcha. Se busca versión al arrancar, al volver a primer plano y cada 30 min; cuando hay una,
+// se guarda dónde estás (guardarEstadoNav) y se recarga sola. Antes (autoUpdate + skipWaiting a ciegas) iOS recargaba al
+// volver a la app y se perdía lo que se veía: ahora se guarda el estado antes y se restaura al arrancar, y no se
+// recarga con algo en marcha. Si hay algo en marcha se muestra el aviso y se aplica en cuanto termina.
+const CADA_BUSQUEDA_MS = 30 * 60 * 1000;
+const CLAVE_AUTO_ACTUALIZAR = 'setas:auto-actualizar';   // última recarga automática (evita bucles si skipWaiting no llegara a aplicarse)
+let registroSW: ServiceWorkerRegistration | undefined;
+let versionPendiente = false;
+let aplicandoVersion = false;
+/** Algo que no debe perderse con una recarga: grabando ruta, Modo campo, «Navegar aquí», un formulario abierto o el chat pensando. */
+const hayAlgoEnMarcha = () => !!(estadoGrabacion() || campoAbierto() || document.body.dataset.ir || document.body.dataset.campo
+  || document.body.dataset.grabando || document.querySelector('dialog[open]') || estadoChat().ocupado);
+function buscarVersionNueva() {
+  if (!navigator.onLine || !registroSW) return;
+  registroSW.update().catch(() => { /* sin red o sin servidor: se reintenta luego */ });
+}
+function aplicarVersionPendiente() {
+  const ultimaAuto = Number(sessionStorage.getItem(CLAVE_AUTO_ACTUALIZAR) ?? 0);
+  const d = decidirVersion({ pendiente: versionPendiente, aplicando: aplicandoVersion, algoEnMarcha: hayAlgoEnMarcha(), ultimaAuto, ahora: Date.now() });
+  if (d === 'nada') return;
+  const aviso = document.getElementById('aviso-version')!;
+  if (d !== 'aplicar') {
+    document.getElementById('aviso-version-texto')!.textContent = d === 'esperar' ? 'Nueva versión: se aplicará al terminar' : 'Nueva versión disponible';
+    aviso.hidden = false;
+    return;
+  }
+  aplicandoVersion = true;
+  aviso.hidden = true;
+  try { sessionStorage.setItem(CLAVE_AUTO_ACTUALIZAR, String(Date.now())); } catch { /* sin almacenamiento */ }
+  guardarEstadoNav();
+  // En cuanto la versión nueva toma el control se recarga (onNeedReload); si el navegador no avisa, a los 4 s de todas formas.
+  window.setTimeout(() => { guardarEstadoNav(); location.reload(); }, 4000);
+  void actualizarSW(true);
+}
 const actualizarSW = registerSW({
   immediate: true,
-  onNeedRefresh() { document.getElementById('aviso-version')!.hidden = false; },
+  onRegisteredSW(_url, reg) {
+    registroSW = reg;
+    buscarVersionNueva();
+    window.setInterval(buscarVersionNueva, CADA_BUSQUEDA_MS);
+  },
+  onNeedRefresh() { versionPendiente = true; aplicarVersionPendiente(); },
+  onNeedReload() { guardarEstadoNav(); location.reload(); },
 });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { buscarVersionNueva(); aplicarVersionPendiente(); } });
+window.setInterval(aplicarVersionPendiente, 5000);   // tras terminar la grabación / el modo campo se aplica sola
 document.getElementById('btn-actualizar')!.addEventListener('click', () => {
-  guardarEstadoNav();
+  // A mano (con algo en marcha): el usuario lo ha pedido, se aplica ya.
+  aplicandoVersion = true;
   document.getElementById('aviso-version')!.hidden = true;
-  // Solo aquí, porque lo ha pedido el usuario: en cuanto la versión nueva toma el control se recarga (y, si el
-  // navegador no avisa del cambio, a los 4 s de todas formas).
-  let recargada = false;
-  const recargar = () => { if (!recargada) { recargada = true; location.reload(); } };
-  navigator.serviceWorker?.addEventListener('controllerchange', recargar, { once: true });
-  window.setTimeout(recargar, 4000);
+  guardarEstadoNav();
+  window.setTimeout(() => { guardarEstadoNav(); location.reload(); }, 4000);
   void actualizarSW(true);
 });
 document.getElementById('btn-actualizar-luego')!.addEventListener('click', () => { document.getElementById('aviso-version')!.hidden = true; });

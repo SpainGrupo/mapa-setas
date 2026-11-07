@@ -2,14 +2,14 @@
 // La lógica está en ranking.ts y calendario.ts; aquí solo el DOM. main.ts le pasa lo que necesita en iniciarHoy().
 import { cargarJson } from './datos';
 import type { ManifestApp } from './manifest-region';
-import type { ResultadoSemaforo } from './semaforo';
+import { textoProbabilidad, type ResultadoSemaforo } from './semaforo';
 import { nivelFiabilidad, type Fiabilidad } from './fiabilidad';
 import { distanciaM, mejorPublico, parsearSitios, topEspecie, topGeneral, type Entrada, type FilaGeneral, type Opciones, type SitiosJson } from './ranking';
 import { acotarDia, confianza, diasChips, estadoCalendario, etiquetaDia, mejorResultado, MESES_CORTOS, ordenarCalendario, sumarDiasMax,
   TEXTO_CONFIANZA, type FilaCalendario } from './calendario';
 import { NOMBRE_DIFICULTAD, type Dificultad } from './ruta';
 import { textoSubida, textoTiempo } from './acceso';
-import { AYUDA_PROBABILIDAD, NOMBRE_ESTADO, textoEstado } from './zona';
+import { AYUDA_PROBABILIDAD, NOMBRE_ESTADO, nombreCorto, repartoMiniaturas, textoEstado } from './zona';
 import { datosEspecie, fotoMini } from './selector-especie';
 import { ordenarTemporada, textoFinVentana, type DiaVentana, type Ventana } from './ventana-especie';
 import type { Estado } from './semaforo';
@@ -240,36 +240,54 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number, zona?: Zona,
   li.dataset.puntuacion = String(zona ? zona.puntuacion : principal.puntuacion);
   if (zona) li.dataset.verdes = String(zona.verdes);
   li.dataset.id = String(s.id);
-  const cab = document.createElement('div'); cab.className = 'tf-cab';
+  // Con varias setas: fila de miniaturas solapadas (hasta 4 y «+N») arriba con los minutos al lado, y debajo los nombres
+  // y los chips a todo el ancho, para que la cifra no estreche el texto en el móvil.
+  const varias = entradas.length > 1;
+  const cab = document.createElement('div'); cab.className = varias ? 'tf-cab varias' : 'tf-cab';
   const num = document.createElement('span'); num.className = 'tf-pos'; num.textContent = String(pos);
   const minis = document.createElement('span'); minis.className = 'tf-minis';
-  for (const e of entradas.slice(0, 2)) minis.append(miniatura(e.especie));
+  const { ver, resto } = repartoMiniaturas(entradas);
+  for (const e of ver) minis.append(miniatura(e.especie));
+  if (resto) {
+    const mas = document.createElement('span'); mas.className = 'tf-minis-mas'; mas.textContent = `+${resto}`;
+    mas.setAttribute('aria-hidden', 'true');
+    minis.append(mas);
+  }
   const tit = document.createElement('div'); tit.className = 'tf-tit';
   // Tocar el nombre de la seta abre su ficha (misma función que el calendario); sin ficha, no hace nada más.
   const nombres = document.createElement('div'); nombres.className = 'tf-nombres';
   entradas.forEach((e, i) => {
-    if (i) nombres.append(' · ');
     const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'tf-especie'; bt.dataset.especie = e.especie;
     bt.setAttribute('aria-label', `Ver la ficha de ${nombre(e.especie)}`);
     const b = document.createElement('b'); b.textContent = nombre(e.especie); bt.append(b);
     bt.onclick = async () => { if (await ctx.hayFicha(e.especie)) ctx.verFicha(e.especie); };
-    nombres.append(bt);
+    if (i === entradas.length - 1) { nombres.append(bt); return; }
+    // Con varias: «Nombre ·» en un bloque que no se parte, para que la línea corte después del «·» y no antes.
+    const par = document.createElement('span'); par.className = 'tf-par';
+    par.append(bt, Object.assign(document.createElement('span'), { className: 'tf-sep', textContent: '\u00a0·' }));
+    nombres.append(par, ' ');
   });
-  tit.append(nombres);
+  const chips = document.createElement('div'); chips.className = 'tf-chips';
+  tit.append(nombres, chips);
   if (zona) {
     // Zona: los colores presentes; la probabilidad de cada seta va en su sublista (listaZona).
     for (const e of [...new Set(entradas.map((x) => x.estado))]) {
       const est = document.createElement('span'); est.className = 'tf-estado chip-estado'; est.dataset.estado = e;
       est.textContent = NOMBRE_ESTADO[e];
-      tit.append(est);
+      chips.append(est);
     }
   } else {
-    // Un chip por seta con su color y su probabilidad estimada (en filas con varias, con el nombre delante).
+    // Un chip por seta con su color y su probabilidad estimada. Con varias, compacto: «M. procera ≈ 63 %» (el estado,
+    // para lectores de pantalla y en el title); la cifra con su % nunca se parte.
     for (const e of entradas) {
       const est = document.createElement('span'); est.className = 'tf-estado chip-estado'; est.dataset.estado = e.estado;
-      if (e.probabilidad != null) { est.dataset.probabilidad = String(e.probabilidad); est.title = AYUDA_PROBABILIDAD; }
-      est.textContent = (entradas.length > 1 ? `${nombre(e.especie)}: ` : '') + textoEstado(e);
-      tit.append(est);
+      if (e.probabilidad != null) est.dataset.probabilidad = String(e.probabilidad);
+      if (varias) pintarChipCorto(est, e);
+      else {
+        est.textContent = textoEstado(e);
+        if (e.probabilidad != null) est.title = AYUDA_PROBABILIDAD;
+      }
+      chips.append(est);
     }
   }
   if (principal.probabilidad != null) li.dataset.probabilidad = String(principal.probabilidad);
@@ -303,7 +321,7 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number, zona?: Zona,
   }
   li.append(cab, meta);
   // Cuánto mejor que el azar es su tramo de puntuación y su puesto del día en la región (no es una probabilidad).
-  if (ind) for (const e of entradas) li.append(bloqueIndicador(e, ind, entradas.length > 1 ? `${nombre(e.especie)} · ` : ''));
+  if (ind) for (const e of entradas) li.append(bloqueIndicador(e, ind, varias ? `${nombreCorto(nombre(e.especie))} · ` : ''));
   // Por qué este sitio: factores reales del ranking (razones.ts).
   const rz = document.createElement('p'); rz.className = 'tf-razon';
   const cr = { fiabilidad: fiab(principal.especie), motivo: motivoEn(principal.especie, s.meteo_id) };
@@ -323,7 +341,7 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number, zona?: Zona,
   li.append(ti);
   // Citas reales cerca del sitio (de cada seta de la fila; en filas con varias, con su nombre delante).
   const conCitas = entradas.filter((e) => e.sitio.citas);
-  for (const e of conCitas) li.append(bloqueCitas(e.sitio.citas!, entradas.length > 1 ? `${nombre(e.especie)} · ` : ''));
+  for (const e of conCitas) li.append(bloqueCitas(e.sitio.citas!, varias ? `${nombreCorto(nombre(e.especie))} · ` : ''));
   if (conCitas.length) li.dataset.citas = conCitas.map((e) => e.sitio.citas!.nivel).join(' ');
   if (s.restringido) {
     const r = document.createElement('p'); r.className = 'chip-restriccion tf-restr';
@@ -345,6 +363,19 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number, zona?: Zona,
   acc.append(ruta, mas, menu);
   li.append(acc);
   return li;
+}
+
+/** Chip compacto de una seta en una tarjeta con varias: «M. procera ≈ 63 %» (sin probabilidad: «M. procera · Sin datos
+ * fiables»). El estado completo va oculto para lectores de pantalla y en el title. */
+function pintarChipCorto(est: HTMLElement, e: Entrada) {
+  const n = document.createElement('span'); n.className = 'tf-chip-nombre'; n.textContent = nombreCorto(nombre(e.especie));
+  est.append(n);
+  if (e.probabilidad != null) {
+    const sr = document.createElement('span'); sr.className = 'sr'; sr.textContent = `: ${NOMBRE_ESTADO[e.estado]}`;
+    const pr = document.createElement('span'); pr.className = 'tf-prob'; pr.textContent = textoProbabilidad(e.probabilidad);
+    est.append(sr, ' ', pr);
+  } else est.append(` · ${NOMBRE_ESTADO[e.estado]}`);
+  est.title = `${nombre(e.especie)}: ${textoEstado(e)}${e.probabilidad != null ? `. ${AYUDA_PROBABILIDAD}` : ''}`;
 }
 
 /** Explicación de la cifra de una zona (zonas.ts). */
@@ -824,7 +855,7 @@ function abrirExportar() {
   const ol = document.createElement('ul'); ol.className = 'exportar-lista';
   sitiosX.forEach((x, i) => {
     const li = document.createElement('li');
-    for (const e of items[i].entradas.slice(0, 2)) { const fm = fotoMini(e.especie, nombreComunId(e.especie)); if (fm) li.append(fm); }
+    for (const e of repartoMiniaturas(items[i].entradas).ver) { const fm = fotoMini(e.especie, nombreComunId(e.especie)); if (fm) li.append(fm); }
     li.append(enlace(nombrePlacemark(x, i + 1), urlSitioGoogle(x))); ol.append(li);
   });
   const ayuda = document.createElement('p'); ayuda.className = 'nota exportar-ayuda'; ayuda.textContent = AYUDA_MY_MAPS;

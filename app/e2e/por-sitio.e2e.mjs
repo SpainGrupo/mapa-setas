@@ -81,6 +81,23 @@ try {
   comprobar(await p.locator('#top-especie > li.top-zona').count() === ptsZona.length, 'ordenar por dificultad repinta las mismas zonas');
   await p.locator('#top-especie').locator('xpath=preceding-sibling::div[contains(@class,"orden-top")][1]').locator('[data-orden=probabilidad]').click();
 
+  // Tarjetas con varias setas (2026-11-07, móvil de 412 px): miniaturas solapadas hasta 4 y «+N»; nombres y chips a todo
+  // el ancho (la cifra de minutos no los estrecha); chips compactos «M. procera ≈ 63 %» con la cifra y su % sin partir.
+  const varias = await p.$$eval('#p-hoy .top-fila', (ls) => ls.filter((l) => (l.dataset.especies ?? '').split(' ').length > 1).map((l) => {
+    const n = l.dataset.especies.split(' ').length, cab = l.querySelector('.tf-cab'), tit = l.querySelector('.tf-tit');
+    return { n, zona: l.classList.contains('top-zona'), minis: l.querySelectorAll('.tf-minis .miniatura-especie').length,
+      mas: l.querySelector('.tf-minis-mas')?.textContent ?? null, ancho: tit.getBoundingClientRect().width / cab.getBoundingClientRect().width,
+      desborda: l.scrollWidth > l.clientWidth + 1,
+      chips: l.classList.contains('top-zona') ? [] : [...l.querySelectorAll('.tf-chips .chip-estado')].map((c) => c.textContent),
+      pctPartido: [...l.querySelectorAll('.tf-prob')].some((x) => getComputedStyle(x).whiteSpace !== 'nowrap') };
+  }));
+  comprobar(varias.length > 0 && varias.every((v) => v.minis === Math.min(v.n, 4) && v.mas === (v.n > 4 ? `+${v.n - 4}` : null)),
+    `${varias.length} tarjetas con varias setas: miniaturas ${varias.map((v) => `${v.minis}${v.mas ?? ''}/${v.n}`).join(', ')}`);
+  comprobar(varias.every((v) => v.ancho > 0.95 && !v.desborda), 'nombres y chips a todo el ancho, sin desbordar');
+  const chipsCortos = varias.flatMap((v) => v.chips);
+  comprobar(chipsCortos.every((c) => /^\p{Lu}\. \S.*(?: ≈ \d+ %| · .+)$/u.test(c.replace(/: [^≈]+(?= ≈)/, ''))) && !varias.some((v) => v.pctPartido),
+    `chips compactos (${chipsCortos.length}): «${chipsCortos.slice(0, 2).join('», «')}»`);
+
   const texto = await p.locator('#p-hoy').textContent();
   comprobar(!PROHIBIDO.test(texto), 'nada en Hoy dice «comestible»');
   await p.screenshot({ path: join(CAPTURAS, 'por-sitio.png'), fullPage: false });

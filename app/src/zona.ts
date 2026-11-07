@@ -9,6 +9,13 @@ export const NOMBRE_ESTADO: Record<Estado, string> = { verde: 'Buen momento', am
 /** «Buen momento · ≈ 62 %» (sin probabilidad, solo el estado). */
 export const textoEstado = (r: Pick<ResultadoSemaforo, 'estado' | 'probabilidad'>) =>
   NOMBRE_ESTADO[r.estado] + (r.probabilidad != null ? ` · ${textoProbabilidad(r.probabilidad)}` : '');
+/** «Macrolepiota procera» → «M. procera»: género abreviado para los chips de tarjetas con varias setas (los nombres de una
+ * sola palabra o que no empiezan por género, tal cual). */
+export const nombreCorto = (n: string) => n.replace(/^(\p{Lu})\p{Ll}+\s+(?=\p{Ll})/u, '$1. ');
+/** Miniaturas de una tarjeta: todas hasta `max`; con más, las `max` primeras y una burbuja «+N» con las que faltan. */
+export function repartoMiniaturas<T>(xs: readonly T[], max = 4): { ver: T[]; resto: number } {
+  return { ver: xs.slice(0, max), resto: Math.max(0, xs.length - max) };
+}
 /** Ayuda de la cifra (atributo title y lectores de pantalla). */
 export const AYUDA_PROBABILIDAD = `${ETIQUETA_PROBABILIDAD[0].toUpperCase()}${ETIQUETA_PROBABILIDAD.slice(1)} de que esté saliendo ese día según la lluvia, `
   + 'la temperatura, la humedad acumulada y la temporada (heurística calibrada con citas; orientativa, no una garantía).';

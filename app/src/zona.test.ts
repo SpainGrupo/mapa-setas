@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COLOR_ESTADO, expresionColores, haceTexto, puntoMasCercano } from './zona';
+import { COLOR_ESTADO, expresionColores, haceTexto, nombreCorto, puntoMasCercano, repartoMiniaturas } from './zona';
 
 describe('zona', () => {
   const ps = [{ id: 0, lat: 36.0, lon: -5.0, alt_media: 0 }, { id: 1, lat: 36.1, lon: -5.0, alt_media: 0 },
@@ -22,5 +22,19 @@ describe('zona', () => {
     expect(expresionColores({ 3: 'verde', 7: 'rojo' })).toEqual(
       ['match', ['get', 'id'], 3, COLOR_ESTADO.verde, 7, COLOR_ESTADO.rojo, COLOR_ESTADO.gris]);
     expect(expresionColores({})).toBe(COLOR_ESTADO.gris);
+  });
+
+  it('nombreCorto abrevia el género y deja lo demás', () => {
+    expect(nombreCorto('Macrolepiota procera')).toBe('M. procera');
+    expect(nombreCorto('Boletus aestivalis / reticulatus')).toBe('B. aestivalis / reticulatus');
+    expect(nombreCorto('Craterellus cornucopioides / lutescens')).toBe('C. cornucopioides / lutescens');
+    expect(nombreCorto('Terfezia')).toBe('Terfezia');
+    expect(nombreCorto('boletus_edulis')).toBe('boletus_edulis');
+  });
+
+  it('repartoMiniaturas: todas hasta 4; con más, 4 y «+N»', () => {
+    expect(repartoMiniaturas(['a', 'b'])).toEqual({ ver: ['a', 'b'], resto: 0 });
+    expect(repartoMiniaturas(['a', 'b', 'c', 'd'])).toEqual({ ver: ['a', 'b', 'c', 'd'], resto: 0 });
+    expect(repartoMiniaturas(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])).toEqual({ ver: ['a', 'b', 'c', 'd'], resto: 4 });
   });
 });

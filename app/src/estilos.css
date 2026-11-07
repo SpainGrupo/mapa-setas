@@ -465,6 +465,27 @@ html.arrastrando-hoja, html.arrastrando-hoja * { -webkit-user-select: none !impo
 .tf-cifra b.largo { font-size: 28px; letter-spacing: -0.03em; }
 .tf-cifra small { font-size: 14px; font-weight: 700; color: var(--tinta-2); }
 .tf-cifra .tf-sube { font-family: var(--cifras); font-size: 15px; font-weight: 700; color: var(--tinta); }
+.tf-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+/* Tarjeta con varias setas: miniaturas solapadas arriba (hasta 4 y «+N») con los minutos al lado; nombres y chips debajo,
+   a todo el ancho, para que la cifra no estreche el texto en el móvil. */
+.tf-cab.varias { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "minis cifra" "tit tit"; row-gap: 10px; align-items: start; }
+.tf-cab.varias .tf-minis { grid-area: minis; align-self: center; }
+.tf-cab.varias .tf-cifra { grid-area: cifra; }
+.tf-cab.varias .tf-tit { grid-area: tit; gap: 8px; }
+.tf-cab.varias .tf-minis .miniatura-especie, .tf-minis-mas { width: 56px; height: 56px; border-radius: 16px; }
+.tf-cab.varias .tf-minis .miniatura-especie + .miniatura-especie, .tf-minis-mas { margin-left: -18px; }
+.tf-minis-mas { flex: none; display: grid; place-items: center; border: 2px solid var(--hoja); background: var(--lavado); color: var(--tinta); font-family: var(--cifras); font-size: 17px; font-weight: 800; letter-spacing: -0.02em; }
+.tf-cab.varias .tf-nombres { display: block; line-height: 1.35; }
+.tf-cab.varias .tf-tit b { font-size: 17px; line-height: 1.35; overflow-wrap: normal; }
+.tf-par { white-space: nowrap; }
+.tf-par .tf-especie { white-space: normal; }
+.tf-sep { color: var(--tinta-2); font-weight: 800; }
+.tf-cab.varias .chip-estado { display: inline-block; line-height: 1.35; }
+.tf-chip-nombre, .tf-prob { white-space: nowrap; }
+@media (max-width: 359px) {
+  .tf-cab.varias .tf-minis .miniatura-especie, .tf-minis-mas { width: 46px; height: 46px; border-radius: 14px; }
+  .tf-cab.varias .tf-minis .miniatura-especie + .miniatura-especie, .tf-minis-mas { margin-left: -16px; }
+}
 .tf-meta { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 15px; color: var(--tinta-2); }
 .tf-puntos { font-weight: 700; color: var(--tinta); }
 .tf-terreno { font-weight: 600; }

@@ -75,6 +75,9 @@ try {
     await p.locator('#cookies-rechazar').click();
     comprobar(!(await p.locator('#dlg-cookies').evaluate((d) => d.open)) && await guardado(p) === 'no', '«Rechazar» cierra el aviso y guarda la elección');
     await p.getByRole('button', { name: 'Entendido' }).click();
+    // El evento «close» del diálogo (que guarda setas:aviso-visto) llega en otra tarea: sin esperarlo, la recarga de
+    // abajo a veces se adelanta y «Antes de empezar» vuelve a salir y tapa las pestañas (fallo intermitente).
+    await p.waitForFunction(() => localStorage.getItem('setas:aviso-visto') === '1');
     await p.waitForFunction(() => document.body.dataset.mapa === 'listo', null, { timeout: 60000 });
     comprobar(await p.locator('#mapa canvas').count() > 0, 'rechazando se usa la app igual (el mapa carga)');
     comprobar(clarity.length === 0 && !(await p.locator('script[src*="clarity"]').count()), 'rechazado: no se carga Clarity');

@@ -15,8 +15,7 @@ const filtros = {
   radio_km: { type: ["number", "null"], description: "Distancia máxima en línea recta desde la posición del usuario, en km. null = sin límite." },
   solo_publicos: { type: ["boolean", "null"], description: "true = solo monte público. null = usar el filtro actual de la app." },
   max_dificultad: {
-    type: ["string", "null"],
-    enum: ["facil", "moderada", "dificil", "muy_dificil", null],
+    anyOf: [{ type: "string", enum: ["facil", "moderada", "dificil", "muy_dificil"] }, { type: "null" }],
     description: "Dificultad a pie máxima. null = usar el filtro actual de la app.",
   },
 } as const;
@@ -35,7 +34,7 @@ export const HERRAMIENTAS = [
         ...especieOGrupo,
         dia,
         ...filtros,
-        orden: { type: ["string", "null"], enum: ["probabilidad", "distancia", "dificultad", null], description: "Orden de la lista. null = probabilidad." },
+        orden: { anyOf: [{ type: "string", enum: ["probabilidad", "distancia", "dificultad"] }, { type: "null" }], description: "Orden de la lista. null = probabilidad." },
         n: { type: "integer", description: "Cuántos sitios (1–10)." },
       },
     },

@@ -73,3 +73,15 @@ describe('factor de citas en el ranking', () => {
     expect('citas' in v2.especies.x[1]).toBe(false);
   });
 });
+
+describe('auditoría 2026-11-08: enlaces de citas solo http(s)', () => {
+  const base = { origen: 'gbif', fecha: '2018', precision_m: 10, dist_m: 100, fuente: 'GBIF' };
+  it('descarta javascript:, data: y similares', () => {
+    for (const url of ['javascript:alert(1)', 'JaVaScRiPt:alert(1)', 'data:text/html,<script>1</script>', 'vbscript:x', '//evil.example'])
+      expect(filaRefCita({ ...base, url } as never).enlace).toBeUndefined();
+  });
+  it('conserva https y http', () => {
+    expect(filaRefCita({ ...base, url: 'https://www.gbif.org/occurrence/1' } as never).enlace).toBe('https://www.gbif.org/occurrence/1');
+    expect(filaRefCita({ ...base, url: 'http://example.org/a' } as never).enlace).toBe('http://example.org/a');
+  });
+});

@@ -112,7 +112,7 @@ export function filaRefCita(r: RefCita): FilaRefCita {
     fecha: /^\d{4}(-\d{2})?$/.test(r.fecha ?? '') ? r.fecha!.split('-').reverse().join('/') : textoFecha(r.fecha),   // «2018», «10/2018»
     precision: `precisión ${textoPrecision(r.precision_m)}`,
     distancia: `${textoDistancia(r.dist_m)} del sitio`,
-    enlace: r.url ?? undefined,
+    enlace: typeof r.url === 'string' && /^https?:\/\//i.test(r.url) ? r.url : undefined,   // nunca javascript:, data:…
     fuente: r.fuente ?? (r.url ? 'ver la cita' : '—'),
     atribucion: [r.atribucion, r.licencia].filter(Boolean).join(' · ') || '—',
   };

@@ -90,6 +90,8 @@ function imagen(f: Foto | undefined, alt: string, perezosa = true): HTMLImageEle
 
 function enlace(url: string, texto: string, clase = ''): HTMLAnchorElement {
   const a = el('a', clase, texto);
+  // Las URL vienen de datos de terceros (Wikimedia, iNaturalist): solo http(s), nunca javascript: ni data:.
+  if (!/^https?:\/\//i.test(url ?? '')) return a;
   a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
   return a;
 }

@@ -38,6 +38,11 @@ CHAT_DAILY_LIMIT = "30"
 # La red de seguridad real es el límite de gasto del workspace en console.anthropic.com.
 CHAT_DAILY_USD = "1.5"
 CHAT_MONTHLY_USD = "25"
+# Auditoría de seguridad 2026-11-08: el historial lo manda el cliente y se puede falsificar para que una consulta
+# parezca una ronda de herramientas (que no gasta cupo). Por eso también se cuentan TODAS las peticiones por IP
+# (IPv6 agrupadas por /64) y hay tope de gasto por IP, para que una sola IP no agote el tope global del día.
+CHAT_PETICIONES_DIA = "150"
+CHAT_IP_DAILY_USD = "0.5"
 
 # Contador del límite diario. Crear con `npx wrangler kv namespace create RATE_LIMIT`
 # y pegar aquí el id que devuelve. Con REQUIRE_KV="true", sin este binding el Worker responde 503.

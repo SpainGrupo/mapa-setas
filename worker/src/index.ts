@@ -17,6 +17,7 @@ import {
   limiteExplorarDiario,
   limiteExplorarGlobal,
   limiteGlobal,
+  claveCliente,
 } from "./limite";
 import { MAX_BYTES_CUERPO_EXPLORAR, cuerpoGeminiExplorar, postProcesarExplorar, validarPeticionExplorar } from "./explorar";
 import { manejarChat } from "./chat";
@@ -37,6 +38,10 @@ export interface Env {
   CHAT_DAILY_LIMIT?: string;
   CHAT_DAILY_USD?: string;
   CHAT_MONTHLY_USD?: string;
+  /** Peticiones /chat por IP y día, contando también las rondas de herramientas (anti-falsificación del historial). */
+  CHAT_PETICIONES_DIA?: string;
+  /** Gasto máximo del chat por IP y día en USD (que una sola IP no agote el tope global). */
+  CHAT_IP_DAILY_USD?: string;
   RATE_LIMIT?: KVNamespace;
 }
 
@@ -82,7 +87,7 @@ export default {
       } catch {
         throw new ErrorHttp(400, "solicitud_invalida", "El cuerpo no es JSON válido.");
       }
-      const ip = request.headers.get("CF-Connecting-IP") ?? "desconocida";
+      const ip = claveCliente(request.headers.get("CF-Connecting-IP"));
       const modelo = env.GEMINI_MODEL || MODELO_POR_DEFECTO;
 
       if (esExplorar) {

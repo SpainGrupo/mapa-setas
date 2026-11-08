@@ -34,6 +34,28 @@ export function limiteExplorarGlobal(valor: string | undefined): number {
   return entero(valor, LIMITE_EXPLORAR_GLOBAL_POR_DEFECTO);
 }
 
+/**
+ * Identificador de cliente para los límites: la IP de Cloudflare (CF-Connecting-IP; el cliente no puede falsificarla
+ * en workers.dev porque Cloudflare la reescribe). Las IPv6 se agrupan por su /64: un solo usuario suele tener un /64
+ * entero y, sin agrupar, podría saltarse el límite por IP cambiando la mitad baja de la dirección.
+ */
+export function claveCliente(ip: string | null | undefined): string {
+  const t = (ip ?? "").trim().toLowerCase();
+  if (!t) return "desconocida";
+  if (!t.includes(":")) return t;
+  const [cabeza = "", cola] = t.split("::", 2);
+  const a = cabeza ? cabeza.split(":") : [];
+  const b = cola !== undefined && cola !== "" ? cola.split(":") : [];
+  // IPv4 incrustada al final (::ffff:1.2.3.4): cuenta como dos grupos.
+  const grupos = cola === undefined ? a : [...a, ...Array(Math.max(0, 8 - a.length - b.length - (b.at(-1)?.includes(".") ? 1 : 0))).fill("0"), ...b];
+  if (grupos.length >= 2 && grupos.at(-1)?.includes(".") && grupos.slice(0, 5).every((g) => /^0*$/.test(g)) && /^0*ffff$/.test(grupos[5] ?? "")) {
+    return grupos.at(-1)!; // IPv4 mapeada
+  }
+  const prefijo = grupos.slice(0, 4).map((g) => (g.replace(/^0+/, "") || "0"));
+  while (prefijo.length < 4) prefijo.push("0");
+  return `${prefijo.join(":")}::/64`;
+}
+
 export function claveDia(ip: string, ahora: Date, prefijo = PREFIJO_IDENTIFICAR): string {
   return `${prefijo}${ahora.toISOString().slice(0, 10)}:${ip}`;
 }

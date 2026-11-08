@@ -30,6 +30,7 @@ export interface UsoRespuesta extends UsoTokens {
 
 export const LIMITE_DIARIO_USD_POR_DEFECTO = 1.5;
 export const LIMITE_MENSUAL_USD_POR_DEFECTO = 25;
+export const LIMITE_IP_USD_POR_DEFECTO = 0.5;
 export const TTL_DIA = 60 * 60 * 48;
 export const TTL_MES = 60 * 60 * 24 * 40;
 
@@ -61,6 +62,7 @@ export function costeMicro(uso: UsoRespuesta | null | undefined, modelo: string)
 
 export const claveGastoDia = (ahora: Date) => `chatusd:d:${ahora.toISOString().slice(0, 10)}`;
 export const claveGastoMes = (ahora: Date) => `chatusd:m:${ahora.toISOString().slice(0, 7)}`;
+export const claveGastoIp = (ip: string, ahora: Date) => `chatusd:ip:${ahora.toISOString().slice(0, 10)}:${ip}`;
 
 function noDisponible(): ErrorHttp {
   return new ErrorHttp(503, "servicio_no_disponible", "Servicio no disponible temporalmente. Inténtalo más tarde.");
@@ -70,6 +72,9 @@ export interface TopesGasto {
   diarioUsd: number;
   mensualUsd: number;
   requerirKv: boolean;
+  /** Tope por IP y día (USD) y la clave de cliente; sin `ip` no se mira. */
+  ipUsd?: number;
+  ip?: string;
 }
 
 /** Lanza 429 `tope_gasto` si el gasto del día o del mes alcanza el tope. Sin KV: 503 con requerirKv. */
@@ -84,9 +89,11 @@ export async function comprobarTope(kv: KVNamespace | undefined, topes: TopesGas
   }
   let dia = 0;
   let mes = 0;
+  let deIp = 0;
   try {
     dia = Number((await kv.get(claveGastoDia(ahora))) ?? "0") || 0;
     mes = Number((await kv.get(claveGastoMes(ahora))) ?? "0") || 0;
+    if (topes.ip) deIp = Number((await kv.get(claveGastoIp(topes.ip, ahora))) ?? "0") || 0;
   } catch (e) {
     if (topes.requerirKv) {
       console.error("Fallo leyendo KV con REQUIRE_KV=true: se rechaza el chat.", e);
@@ -98,10 +105,13 @@ export async function comprobarTope(kv: KVNamespace | undefined, topes: TopesGas
   if (dia >= topes.diarioUsd * 1e6 || mes >= topes.mensualUsd * 1e6) {
     throw new ErrorHttp(429, "tope_gasto", "El asistente ha llegado a su tope de gasto. Vuelve a intentarlo mañana.");
   }
+  if (topes.ip && deIp >= (topes.ipUsd ?? LIMITE_IP_USD_POR_DEFECTO) * 1e6) {
+    throw new ErrorHttp(429, "limite_diario_superado", "Has llegado al máximo de uso del asistente por hoy. Vuelve a intentarlo mañana.");
+  }
 }
 
 /** Suma el coste de la llamada al gasto del día y del mes. Un fallo de KV no tumba la respuesta. */
-export async function registrarGasto(kv: KVNamespace | undefined, micro: number, ahora = new Date()): Promise<void> {
+export async function registrarGasto(kv: KVNamespace | undefined, micro: number, ahora = new Date(), ip?: string): Promise<void> {
   if (!kv || micro <= 0) return;
   try {
     const kd = claveGastoDia(ahora);
@@ -110,6 +120,11 @@ export async function registrarGasto(kv: KVNamespace | undefined, micro: number,
     const mes = Number((await kv.get(km)) ?? "0") || 0;
     await kv.put(kd, String(dia + micro), { expirationTtl: TTL_DIA });
     await kv.put(km, String(mes + micro), { expirationTtl: TTL_MES });
+    if (ip) {
+      const ki = claveGastoIp(ip, ahora);
+      const deIp = Number((await kv.get(ki)) ?? "0") || 0;
+      await kv.put(ki, String(deIp + micro), { expirationTtl: TTL_DIA });
+    }
   } catch (e) {
     console.error("Fallo registrando el gasto en KV.", e);
   }

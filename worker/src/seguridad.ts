@@ -10,6 +10,11 @@ export const PROHIBIDO_GUIA = /se puede comer|apta para el consumo|comestible se
 export const PROHIBIDO_EXTRA =
   /\b(?:es|son|muy|buen[ao]?s?|excelente|exquisit[ao]s?|apreciad[ao]s?)\s+comestibles?\b|\bcomestibilidad\b|\bse\s+pueden?\s+comer\w*|\bse\s+comen?\b|\bpuedes\s+comer(?:la|lo|las|los)?\b|\bsegur[ao]s?\s+(?:para|de)\s+comer\b|\b(?:es|son)\s+segur[ao]s?\b|\bapt[ao]s?\s+para\s+(?:comer|(?:el\s+)?consumo)\b|\bcomible\w*|\bse\s+pueden?\s+consumir\w*|\bpueden?\s+comerse\b|\bse\s+consumen?\b|\bapt[ao]s?\s+para\s+consumir\b|\b(?:es|son)\s+\w+\s+segur[ao]s?\b|(?<!\bno\s(?:es\s|son\s)?)\binofensiv[ao]s?\b/i;
 
+// Red final del chat para afirmaciones en otros idiomas (el usuario puede pedir la respuesta en inglés, portugués…).
+// Conservadora: también tapa «not edible»; mejor de más que de menos (spec §2).
+export const PROHIBIDO_OTRAS_LENGUAS =
+  /\b(?:edible|edibility|safe\s+to\s+(?:eat|consume)|good\s+to\s+eat|can\s+be\s+eaten|comest[ií]ve(?:l|is)|essbar|genie(?:ß|ss)bar|comestibile|mangiabile)\b/i;
+
 export const SUSTITUTO = "[Afirmación sobre consumo eliminada. " + AVISO + "]";
 
 export type Confianza = "baja" | "media" | "alta";

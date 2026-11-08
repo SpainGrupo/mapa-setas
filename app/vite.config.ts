@@ -1,5 +1,50 @@
-import { defineConfig } from 'vite';
+import { createHash } from 'node:crypto';
+import { defineConfig, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+
+/**
+ * Content-Security-Policy por <meta> (GitHub Pages no deja poner cabeceras). Solo en el build: en `vite` (dev) el
+ * HMR necesita ws: y scripts que no queremos permitir en producción. Los <script> en línea (el del tema) entran por
+ * su hash, calculado aquí, así que editar ese script no rompe nada. Lo que protege de verdad es script-src: sin
+ * 'unsafe-inline' ni 'unsafe-eval', una inyección de HTML no puede ejecutar código. Clarity (tras aceptar cookies)
+ * necesita clarity.ms; onnxruntime, 'wasm-unsafe-eval'; MapLibre, workers blob:. connect-src e img-src quedan en
+ * https: porque el mapa pide teselas (IGN, Open-Meteo, Worker…) a varios dominios.
+ * Auditoría de seguridad 2026-11-08 (docs/investigacion/2026-11-08-auditoria-seguridad.md).
+ */
+export function politicaCsp(hashes: string[]): string {
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'wasm-unsafe-eval' ${hashes.join(' ')} https://www.clarity.ms https://*.clarity.ms`.replace(/\s+/g, ' '),
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https:",
+    "font-src 'self' data:",
+    "connect-src 'self' https: data: blob:",
+    "worker-src 'self' blob:",
+    "child-src 'self' blob:",
+    "media-src 'self' data: blob:",
+    "manifest-src 'self'",
+    "frame-src 'none'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join('; ');
+}
+
+function cspMeta(): Plugin {
+  return {
+    name: 'setas-csp-meta',
+    apply: 'build',
+    transformIndexHtml: {
+      order: 'post',
+      handler(html) {
+        const hashes = [...html.matchAll(/<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)]
+          .map((m) => `'sha256-${createHash('sha256').update(m[1]).digest('base64')}'`);
+        const meta = `<meta http-equiv="Content-Security-Policy" content="${politicaCsp(hashes)}" />`;
+        return html.replace(/(<meta charset="utf-8" \/>)/i, `$1\n  ${meta}`);
+      },
+    },
+  };
+}
 
 export default defineConfig({
   base: './',
@@ -7,6 +52,7 @@ export default defineConfig({
   // El reconocedor (onnxruntime-web) hace import() dinámico de su arranque .mjs: workers como módulos ES.
   worker: { format: 'es' },
   plugins: [
+    cspMeta(),
     VitePWA({
       // «prompt»: una versión nueva queda en espera y es src/main.ts quien la activa (skipWaiting) en cuanto puede: al
       // arrancar, al volver a primer plano y cada 30 min busca versión y, si hay, guarda el estado de navegación y recarga.

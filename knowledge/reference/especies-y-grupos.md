@@ -26,7 +26,7 @@ timestamp: 2026-10-20T22:00:00Z
 | Lactarius deliciosus (`lactarius_deliciosus`) | níscalo, mízcalo | рыжик настоящий (сосновый) | Níscalos | sí (145) | sí (85) |
 | Lactarius sanguifluus (`lactarius_sanguifluus`) | níscalo de sangre, rovellón vinoso (PENDIENTE verificar) | рыжик красный (PENDIENTE verificar) | Níscalos | sí (150) | sí (150) |
 | Cantharellus cibarius (`cantharellus_cibarius`) | rebozuelo, cabrilla | лисичка обыкновенная (лисички) | Rebozuelos | sí (150) | sin hábitat |
-| Macrolepiota procera (`macrolepiota_procera`) | parasol, galipierno | гриб-зонтик пёстрый | Parasoles | sí (150) | no modelada |
+| Macrolepiota procera (`macrolepiota_procera`) | parasol, galipierno | гриб-зонтик пёстрый | Parasoles | sí (150) | sí (150; 2026-11-08) |
 | Pleurotus eryngii (`pleurotus_eryngii`) | seta de cardo | вёшенка степная (королевская) | Setas de cardo | sí (150) | sí (150) |
 | Terfezia arenaria (`terfezia_arenaria`) | criadilla de tierra, turma | терфеция, «степной трюфель» | Criadillas y trufas | sí (150) | no modelada |
 | Terfezia claveryi (`terfezia_claveryi`) | criadilla, turma | терфеция, «степной трюфель» | Criadillas y trufas | no modelada | sí (150) |
@@ -41,22 +41,29 @@ timestamp: 2026-10-20T22:00:00Z
 | Russula cyanoxantha (`russula_cyanoxantha`) | carbonera | сыроежка сине-жёлтая | Rúsulas (carbonera) | sí (150) | no modelada |
 | Tricholoma portentosum (`tricholoma_portentosum`) | capuchina, ratón | рядовка серая | Capuchinas (Tricholoma) | sí (75) | no modelada |
 | Morchella spp. (`morchella_spp`) | colmenilla, cagarria | сморчок (сморчки) | Colmenillas | sí (4) | sí (5) |
-| Craterellus cornucopioides y C. lutescens (`craterellus_cornucopioides`) | trompeta de los muertos, trompeta negra; angula de monte, trompeta amarilla | вороночник рожковидный (C. cornucopioides; PENDIENTE verificar) | Rebozuelos | sí (150) | no modelada |
+| Craterellus cornucopioides y C. lutescens (`craterellus_cornucopioides`) | trompeta de los muertos, trompeta negra; angula de monte, trompeta amarilla | вороночник рожковидный (C. cornucopioides; PENDIENTE verificar) | Rebozuelos | sí (150) | sí (1; 2026-11-08) |
 | Pleurotus ostreatus (`pleurotus_ostreatus`) | seta de ostra, seta de chopo, orellana | вёшенка обыкновенная | Setas de ostra (Pleurotus) | sí (150) | sí (150; 2026-11-07) |
 
-Resumen: Marbella 24 especies modeladas (desde 2026-10-20; 22 antes) (todas con sitios; morchella solo 4). Alicante 14 activas desde 2026-11-07 (boletus_aereus con 1 sitio, morchella con 5) y 6 «sin hábitat» en gris (aestivalis, edulis, pinophilus, caesarea, cantharellus, ponderosa).
+Resumen: Marbella 24 especies modeladas (desde 2026-10-20; 22 antes) (todas con sitios; morchella solo 4). Alicante 16 activas desde 2026-11-08 (boletus_aereus con 1 sitio, craterellus con 1, morchella con 5) y 6 «sin hábitat» en gris (aestivalis, edulis, pinophilus, caesarea, cantharellus, ponderosa).
 
-### Alicante, ampliación del 2026-11-07 (Suillus bellinii, S. granulatus y Pleurotus ostreatus)
+### Alicante, ampliaciones del 2026-11-07 y 2026-11-08 (Suillus, Pleurotus ostreatus, Macrolepiota y Craterellus)
 
-«Aplica a Alicante lo hecho con Marbella». Criterio: citas de `pipeline/data/alicante/out/citas.geojson` **dentro de la zona de 2 h** ≥ 10 (suficiente para que `calibracion.py` juzgue) y ficha de guía ya existente (las tres entraron en Marbella; sus excepciones SIN_CONF siguen valiendo). Perfiles de `especies.yaml` sin cambios (heurísticos); en `regiones/alicante.yaml` hay un override por especie solo si hace falta (ninguno aquí). Se pidieron a GBIF e iNaturalist los taxones que Alicante no consultaba (`citas.taxa`).
+«Aplica a Alicante lo hecho con Marbella». **Criterio** (de `citas.geojson` de Alicante, solo citas **dentro de la zona de 2 h**, y ficha de guía ya existente; las fichas entraron en Marbella y sus excepciones SIN_CONF siguen valiendo):
+- 2026-11-07: ≥ 10 citas en la zona (suficiente para que `calibracion.py` juzgue). Entran *S. bellinii*, *S. granulatus* y *P. ostreatus*.
+- 2026-11-08 (Alexander baja el umbral): **≥ 5 citas en la zona**. Entran además *Macrolepiota procera* y *Craterellus cornucopioides* (con *C. lutescens*).
+
+Perfiles de `especies.yaml` sin cambios (heurísticos) y sin override por especie. Se pidieron a GBIF e iNaturalist los taxones que Alicante no consultaba (`citas.taxa` de `regiones/alicante.yaml`).
 
 | Especie | citas ≤200 km | citas en zona | n calibración | lift validación | fiabilidad | sitios |
 |---|---|---|---|---|---|---|
 | suillus_bellinii | 65 | 34 | 31 | 1,65 | media | 150 |
 | suillus_granulatus | 61 | 39 | 31 | 1,15 | baja | 150 |
 | pleurotus_ostreatus | 30 | 14 | 14 | 12,49 | buena | 150 |
+| macrolepiota_procera | 45 | 6 | 6 | n < 10, no se juzga | sin validar | 150 |
+| craterellus_cornucopioides | 21 | 5 | 4 | n < 10, no se juzga | sin validar | 1 |
 
-Fuera por no llegar a 10 citas en la zona: macrolepiota_procera (45 / 6), craterellus_cornucopioides (21 / 5), russula_cyanoxantha (17 / 3), suillus_luteus (10 / 1), tricholoma_portentosum (3 / 0), terfezia_arenaria (0; Alicante usa *T. claveryi*, también con 0 citas). Las seis «sin hábitat» siguen igual (amanita_caesarea 18 / 1, cantharellus_cibarius 7 / 1, boletus_edulis 2 / 1, aestivalis y ponderosa 0). *P. ostreatus* tiene solo un 0,3 % de la zona en «buena» (sus citas son de riberas y huertas): el lift alto sale de pocas celdas. Si se baja el umbral a 5 citas en zona entrarían macrolepiota y craterellus.
+Fuera por no llegar a 5 citas en la zona: russula_cyanoxantha (17 / 3), suillus_luteus (10 / 1), tricholoma_portentosum (3 / 0), terfezia_arenaria (0; Alicante usa *T. claveryi*, también con 0 citas). Las seis «sin hábitat» siguen igual (amanita_caesarea 18 / 1, cantharellus_cibarius 7 / 1, boletus_edulis 2 / 1, aestivalis y ponderosa 0).
+Cautelas: *P. ostreatus* tiene solo un 0,3 % de la zona en «buena» (sus citas son de riberas y huertas): el lift alto sale de pocas celdas. *Macrolepiota* sale con un 34 % de la zona en «buena» y 6 citas: la app la marca «sin validar». *Craterellus* casi no tiene hábitat en la zona (25 celdas ≥ 50, un sitio): es de bosque húmedo de frondosas.
 
 ### Marbella, ampliación del 2026-10-20 (Craterellus y Pleurotus ostreatus)
 
@@ -97,7 +104,7 @@ Descartadas el 2026-10-18 (no añadidas):
 - Tuber aestivum (1 cita, Cambil, Jaén), T. melanosporum (0), T. borchii (0): sin evidencia en la zona.
 - Calocybe gambosa: 0 citas GBIF a ≤200 km.
 - Craterellus cornucopioides (20 citas, Los Alcornocales) y C. lutescens (6) y Pleurotus ostreatus (88): sin doble tóxico documentado; **aprobadas por Alexander el 2026-10-20** con excepción SIN_CONF y añadidas (sección de arriba).
-- Con citas pero fuera de este encargo (nueva ficha con dobles tóxicos por documentar): Coprinus comatus (158), Infundibulicybe geotropa (41), Leccinellum lepidum (47), Cantharellus pallens (32), Hygrophorus russula (3). No propuestas: Amanita rubescens (88; doble A. pantherina) y Tricholoma equestre (ficha mortal). Alicante 11 activas (boletus_aereus con 1 sitio, morchella con 5) y 6 «sin hábitat» en gris (aestivalis, edulis, pinophilus, caesarea, cantharellus, ponderosa).
+- Con citas pero fuera de este encargo (nueva ficha con dobles tóxicos por documentar): Coprinus comatus (158), Infundibulicybe geotropa (41), Leccinellum lepidum (47), Cantharellus pallens (32), Hygrophorus russula (3). No propuestas: Amanita rubescens (88; doble A. pantherina) y Tricholoma equestre (ficha mortal). Alicante 11 activas (boletus_aereus con 1 sitio, craterellus con 1, morchella con 5) y 6 «sin hábitat» en gris (aestivalis, edulis, pinophilus, caesarea, cantharellus, ponderosa).
 
 ## Candidatas no modeladas aún
 

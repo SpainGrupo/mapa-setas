@@ -45,7 +45,8 @@ export interface Env {
   RATE_LIMIT?: KVNamespace;
 }
 
-export const MODELO_POR_DEFECTO = "gemini-3.8-flash";
+// Sin `export`: workerd rechaza exportaciones del módulo principal que no sean manejadores.
+const MODELO_POR_DEFECTO = "gemini-3.8-flash";
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {

@@ -5,8 +5,8 @@
 //    vacío no hay aviso ni se carga nada.
 //  - En e2e (?e2e=1) el id del build se ignora (para que el aviso no estorbe a los demás tests); solo vale el que se
 //    deja en localStorage «setas:e2e-clarity-id».
-//  - No hay CSP en esta app (ni en index.html ni en servidor.php ni en GitHub Pages): no hace falta abrir clarity.ms.
-//    Si algún día se añade una, necesita https://www.clarity.ms y https://*.clarity.ms en script-src y connect-src.
+//  - CSP: la pone el build por <meta> (vite.config.ts, desde el 2026-11-08) con https://www.clarity.ms y
+//    https://*.clarity.ms en script-src; connect-src e img-src ya admiten https:.
 
 export type EleccionClarity = 'si' | 'no';
 export const CLAVE_CLARITY = 'setas:clarity';

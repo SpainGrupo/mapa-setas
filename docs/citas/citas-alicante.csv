@@ -19,12 +19,16 @@ Omphalotus olearius,seta de olivo,2026-10-25,39.028546,-0.485188,,iNaturalist (n
 Chlorophyllum rhacodes,apagador menor,2026-10-24,38.920169,-1.725918,6,iNaturalist (needs_id),https://www.inaturalist.org/observations/410460794,baja,CC-BY-NC
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2026-10-24,38.005797,-2.476953,25,iNaturalist (needs_id),https://www.inaturalist.org/observations/410709812,baja,CC-BY-NC
 Suillus collinitus,,2026-10-22,39.423846,-0.640563,2369,iNaturalist (needs_id),https://www.inaturalist.org/observations/410143451,baja,CC-BY-NC
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2026-10-21,38.734226,-0.440367,7,iNaturalist (needs_id),https://www.inaturalist.org/observations/409847204,baja,CC-BY-NC
 Omphalotus olearius,seta de olivo,2026-10-20T13:52,38.937091,-0.654628,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6871188433,alta,CC-BY-NC-4.0
 Omphalotus olearius,seta de olivo,2026-10-16,39.684605,-0.354823,,iNaturalist (research),https://www.inaturalist.org/observations/408717461,alta,CC-BY-NC
 Lactarius sanguifluus,,2026-10-15,39.910353,-0.871461,28030,iNaturalist (needs_id),https://www.inaturalist.org/observations/408465593,baja,CC-BY-NC
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2026-10-14T09:11:13,39.91863,-0.338806,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6871324510,alta,CC-BY-NC-4.0
+Suillus granulatus,,2026-10-14,39.802077,-1.355236,2,iNaturalist (needs_id),https://www.inaturalist.org/observations/408455696,baja,CC-BY-NC
+Suillus granulatus,,2026-10-11,38.468647,-2.433725,4,iNaturalist (needs_id),https://www.inaturalist.org/observations/407626982,baja,sin licencia (todos los derechos reservados)
 Caloboletus radicans,hongo blanco; boleto blanco,2026-10-07,39.743041,-0.487143,71,iNaturalist (needs_id),https://www.inaturalist.org/observations/406614251,baja,CC-BY-NC
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2026-10-06,38.190033,-2.169194,,iNaturalist (needs_id),https://www.inaturalist.org/observations/406388987,baja,CC-BY-NC
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2026-10-03,39.476856,-0.37,289,iNaturalist (needs_id),https://www.inaturalist.org/observations/405476718,baja,CC-BY-NC
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2026-05-17,39.930442,-0.355505,4,iNaturalist (needs_id),https://www.inaturalist.org/observations/362409409,baja,CC-BY-NC
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2026-05-02,37.889616,-2.674931,263,iNaturalist (needs_id),https://www.inaturalist.org/observations/357650771,baja,CC-BY
 Suillus collinitus,,2026-03-29,37.781013,-2.049109,,iNaturalist (needs_id),https://www.inaturalist.org/observations/346191921,baja,CC-BY-NC
@@ -34,6 +38,7 @@ Lepista nuda,pie azul,2026-03-19,38.98262,-0.338953,567,iNaturalist (research),h
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2026-03-08T17:13,38.972916,-0.488378,189.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6178439176,alta,CC-BY-NC-4.0
 Suillus collinitus,,2026-02-17,39.009282,-1.834419,8,iNaturalist (needs_id),https://www.inaturalist.org/observations/339086531,baja,CC-BY
 Lepista nuda,pie azul,2026-02-14,39.298266,-1.509605,28121,iNaturalist (research),https://www.inaturalist.org/observations/338554026,alta,CC-BY-NC
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2026-02-04T09:58,38.973305,-1.859453,1.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6147410997,alta,CC-BY-NC-4.0
 Suillus bellinii,,2026-02-01T16:18:16,38.806727,-0.672042,263.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6452271785,alta,CC-BY-NC-4.0
 Suillus collinitus,,2026-01-29,37.586333,-1.089797,14,iNaturalist (needs_id),https://www.inaturalist.org/observations/336579937,baja,CC-BY-NC
 Suillus collinitus,,2026-01-26,39.349277,-0.323068,55,iNaturalist (needs_id),https://www.inaturalist.org/observations/336238199,baja,sin licencia (todos los derechos reservados)
@@ -41,9 +46,11 @@ Suillus collinitus,,2026-01-19,39.203215,-0.303543,,iNaturalist (needs_id),https
 Lepista nuda,pie azul,2026-01-18,37.544623,-1.553631,884,iNaturalist (needs_id),https://www.inaturalist.org/observations/335238470,baja,CC-BY-NC
 Suillus bellinii,,2026-01-13T16:46,38.556707,-0.076903,882.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6253296182,alta,CC-BY-NC-4.0
 Suillus collinitus,,2026-01-13T16:39,38.556707,-0.076903,882.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6253176968,alta,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2026-01-11,39.879558,-0.058587,6,iNaturalist (research),https://www.inaturalist.org/observations/334383518,alta,sin licencia (todos los derechos reservados)
 Lepista nuda,pie azul,2026-01-11,38.009368,-1.542384,28300,iNaturalist (research),https://www.inaturalist.org/observations/341512351,alta,sin licencia (todos los derechos reservados)
 Suillus collinitus,,2026-01-10T15:18:18,39.339772,-0.313945,174.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6130732165,alta,CC-BY-NC-4.0
 Lactarius sanguifluus,,2026-01-10T15:13:07,39.340887,-0.313653,5.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6567486967,alta,CC-BY-NC-4.0
+Suillus granulatus,,2026-01-08,38.056082,-0.895155,7,iNaturalist (needs_id),https://www.inaturalist.org/observations/333959107,baja,CC-BY
 Lepista nuda,pie azul,2026-01-03,39.260152,-1.148584,3,iNaturalist (research),https://www.inaturalist.org/observations/333295790,alta,CC-BY-NC
 Lepista nuda,pie azul,2026-01-03,39.537132,-1.503853,,iNaturalist (research),https://www.inaturalist.org/observations/333279416,alta,CC-BY-NC
 Hygrophorus latitabundus,llenega negra; llenega gris; mocosa,2025-12-30,38.648745,-0.563355,39,iNaturalist (needs_id),https://www.inaturalist.org/observations/341255984,baja,CC-BY-NC
@@ -61,7 +68,10 @@ Hygrophorus latitabundus,llenega negra; llenega gris; mocosa,2025-12-08,39.05709
 Lactarius sanguifluus,,2025-12-07,38.524205,-2.375188,28240,iNaturalist (research),https://www.inaturalist.org/observations/330189110,alta,sin licencia (todos los derechos reservados)
 Hygrophorus latitabundus,llenega negra; llenega gris; mocosa,2025-12-07,38.545181,-2.232536,28240,iNaturalist (research),https://www.inaturalist.org/observations/330316295,alta,sin licencia (todos los derechos reservados)
 Hydnum repandum,lengua de gato; lengua de oveja; lengua de vaca,2025-12-06,39.910326,-0.363171,,iNaturalist (needs_id),https://www.inaturalist.org/observations/330008681,baja,CC-BY-NC
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2025-12-06,39.471885,-2.150535,2.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/5918462101,media,CC-BY-NC-4.0
 Agaricus campestris,champiñón de campo; hongo,2025-12-02,38.360602,-0.419588,1536,iNaturalist (needs_id),https://www.inaturalist.org/observations/329234549,baja,sin licencia (todos los derechos reservados)
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2025-11-29T13:13,39.693122,-1.289717,28060.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6451606089,alta,CC-BY-NC-4.0
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2025-11-23,38.095378,-1.797475,24,iNaturalist (research),https://www.inaturalist.org/observations/327903994,alta,sin licencia (todos los derechos reservados)
 Lepista nuda,pie azul,2025-11-23,38.523288,-0.710157,159,iNaturalist (needs_id),https://www.inaturalist.org/observations/342092606,baja,CC-BY-NC
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2025-11-22T20:34,38.581625,-2.211929,342.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6567531379,alta,CC-BY-NC-4.0
 Suillus collinitus,,2025-11-21,39.486512,-0.958041,3437,iNaturalist (needs_id),https://www.inaturalist.org/observations/327562877,baja,CC-BY-NC
@@ -73,6 +83,7 @@ Lactarius sanguifluus,,2025-11-16T13:22:21,38.828509,-0.627375,,GBIF dataset 50c
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2025-11-16,39.861843,-0.283921,9,iNaturalist (research),https://www.inaturalist.org/observations/326780713,alta,sin licencia (todos los derechos reservados)
 Scleroderma citrinum,escleroderma; escleroderma verrugoso,2025-11-16,39.95,-0.416667,189,iNaturalist (needs_id),https://www.inaturalist.org/observations/328603198,baja,CC-BY-NC
 Hygrophorus latitabundus,llenega negra; llenega gris; mocosa,2025-11-16,40.13857,-0.385374,28000,iNaturalist (research),https://www.inaturalist.org/observations/326946198,alta,sin licencia (todos los derechos reservados)
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2025-11-16,40.101016,-0.206494,28000,iNaturalist (research),https://www.inaturalist.org/observations/326947512,alta,sin licencia (todos los derechos reservados)
 Hydnum repandum,lengua de gato; lengua de oveja; lengua de vaca,2025-11-15T15:20:27,38.752388,-0.548681,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/5897100801,alta,CC-BY-NC-4.0
 Lactarius chrysorrheus,falso níscalo,2025-11-15T14:33,38.752307,-0.55407,61.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/5903747836,alta,CC-BY-NC-4.0
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2025-11-15T14:10:27,38.752387,-0.548976,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/5897346677,alta,CC-BY-NC-4.0
@@ -91,6 +102,7 @@ Lactarius chrysorrheus,falso níscalo,2025-11-13T12:14:09,39.905823,-0.359117,,G
 Russula cyanoxantha,carbonera; seta de cerdos,2025-11-13T11:04:59,39.880005,-0.291023,1129.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/5897433869,alta,CC-BY-NC-4.0
 Russula cyanoxantha,carbonera; seta de cerdos,2025-11-13,39.881459,-0.307547,406,iNaturalist (needs_id),https://www.inaturalist.org/observations/326977397,baja,CC-BY-NC
 Suillus collinitus,,2025-11-10,39.527221,-0.485038,6,iNaturalist (needs_id),https://www.inaturalist.org/observations/325867685,baja,CC-BY-NC
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2025-11-10,39.333962,-0.317935,44,iNaturalist (needs_id),https://www.inaturalist.org/observations/325834435,baja,CC-BY-NC
 Russula cyanoxantha,carbonera; seta de cerdos,2025-11-09,39.520893,-1.461657,,iNaturalist (needs_id),https://www.inaturalist.org/observations/325687755,baja,CC-BY-NC
 Suillus collinitus,,2025-11-07,38.04968,-0.897487,5,iNaturalist (needs_id),https://www.inaturalist.org/observations/325356671,baja,CC-BY
 Rubroboletus satanas,,2025-11-04T13:12:13,38.75206,-0.548976,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/5936411117,alta,CC-BY-NC-4.0
@@ -99,6 +111,7 @@ Lactarius sanguifluus,,2025-11-03T17:22:17,39.524342,-1.462958,,GBIF dataset 50c
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2025-11-03,40.1197,-0.32618,6,iNaturalist (needs_id),https://www.inaturalist.org/observations/324765911,baja,sin licencia (todos los derechos reservados)
 Lactarius sanguifluus,,2025-11-02T13:01:09,39.70789,-0.34498,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6566714614,alta,CC-BY-NC-4.0
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2025-11-02T12:37:30,37.51871,-2.094615,17.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6498664483,alta,CC-BY-NC-4.0
+Suillus granulatus,,2025-11-02,38.822037,-0.455961,5049,iNaturalist (needs_id),https://www.inaturalist.org/observations/324693578,baja,CC-BY-NC
 Omphalotus olearius,seta de olivo,2025-11-02,39.470265,-0.383076,5.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/5918300056,media,CC-BY-NC-4.0
 Suillus collinitus,,2025-11-01,37.544352,-1.630643,97,iNaturalist (needs_id),https://www.inaturalist.org/observations/325908821,baja,CC-BY
 Lactarius chrysorrheus,falso níscalo,2025-10-31T11:33,38.989957,-0.523547,1784.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/5889627919,alta,CC-BY-NC-4.0
@@ -111,6 +124,7 @@ Omphalotus olearius,seta de olivo,2025-10-28T14:16:46,39.055836,1.448953,9.0,GBI
 Omphalotus olearius,seta de olivo,2025-10-28,39.87742,-0.175869,28030,iNaturalist (needs_id),https://www.inaturalist.org/observations/331114474,baja,sin licencia (todos los derechos reservados)
 Agaricus campestris,champiñón de campo; hongo,2025-10-26,38.81158,-2.322665,9,iNaturalist (needs_id),https://www.inaturalist.org/observations/323203262,baja,sin licencia (todos los derechos reservados)
 Russula cyanoxantha,carbonera; seta de cerdos,2025-10-26,38.706587,0.138482,,iNaturalist (needs_id),https://www.inaturalist.org/observations/323158939,baja,CC-BY
+Suillus granulatus,,2025-10-26,39.490178,-0.756636,,iNaturalist (needs_id),https://www.inaturalist.org/observations/323325009,baja,sin licencia (todos los derechos reservados)
 Suillus bellinii,,2025-10-25T11:07,38.664407,-0.539911,181.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/5890258211,alta,CC-BY-NC-4.0
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2025-10-25,38.383989,-2.558788,5.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/5903106158,media,CC-BY-NC-4.0
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2025-10-25,38.375391,-2.529532,19.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/5901737015,media,CC-BY-NC-4.0
@@ -130,11 +144,13 @@ Suillus collinitus,,2025-10-17T12:36:12,39.850505,-0.514707,332.0,GBIF dataset 5
 Suillus collinitus,,2025-10-17T10:56:12,38.248111,-0.529444,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/5889851311,alta,CC-BY-NC-4.0
 Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2025-10-16T13:40,38.989957,-0.523547,1784.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/5868129121,alta,CC-BY-NC-4.0
 Boletus aereus,tentullo; tontullo; hongo negro,2025-10-16T13:00,38.989957,-0.523547,1784.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/5868356547,alta,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2025-10-09,38.888104,-0.494484,463,iNaturalist (needs_id),https://www.inaturalist.org/observations/320446277,baja,CC-BY-NC
 Suillus collinitus,,2025-10-08,37.689023,-2.181442,4,iNaturalist (needs_id),https://www.inaturalist.org/observations/319537934,baja,CC-BY-NC
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2025-05-02T15:50,38.469596,-2.45933,1804.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6184763530,alta,CC-BY-NC-4.0
 Russula cyanoxantha,carbonera; seta de cerdos,2025-04-26,39.810387,-0.483856,28030,iNaturalist (needs_id),https://www.inaturalist.org/observations/273734709,baja,CC-BY-NC
 Cantharellus cibarius,rebozuelo; cabrilla; chantarela,2025-04-20,38.563175,-0.266392,13,iNaturalist (needs_id),https://www.inaturalist.org/observations/271717344,baja,CC-BY-NC
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2025-04-19,38.637948,-0.239707,1173,iNaturalist (needs_id),https://www.inaturalist.org/observations/271466925,baja,CC0
+Suillus granulatus,,2025-04-18,38.551338,-0.128572,2962,iNaturalist (needs_id),https://www.inaturalist.org/observations/279536089,baja,CC-BY-NC
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2025-04-18,38.549117,-2.53091,28240,iNaturalist (research),https://www.inaturalist.org/observations/271909803,alta,sin licencia (todos los derechos reservados)
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2025-04-15,39.209258,-1.543218,25,iNaturalist (needs_id),https://www.inaturalist.org/observations/270646331,baja,sin licencia (todos los derechos reservados)
 Agaricus campestris,champiñón de campo; hongo,2025-04-13,38.442964,-0.851875,,iNaturalist (needs_id),https://www.inaturalist.org/observations/270180327,baja,sin licencia (todos los derechos reservados)
@@ -150,13 +166,19 @@ Lactarius sanguifluus,,2024-12-14T14:13:05,38.79895,-0.653147,,GBIF dataset 50c9
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2024-12-06T13:53,39.955938,-0.457636,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6566769011,alta,CC-BY-4.0
 Lepista nuda,pie azul,2024-12-06,39.96393,-0.451111,,iNaturalist (needs_id),https://www.inaturalist.org/observations/254410386,baja,CC-BY
 Lepista nuda,pie azul,2024-12-06,39.94599,-0.460396,,iNaturalist (research),https://www.inaturalist.org/observations/254410393,alta,CC-BY
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2024-12-05,38.673228,-0.592297,274,iNaturalist (research),https://www.inaturalist.org/observations/254219728,alta,sin licencia (todos los derechos reservados)
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2024-12-05,40.112475,-0.297736,28000,iNaturalist (research),https://www.inaturalist.org/observations/254312651,alta,sin licencia (todos los derechos reservados)
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2024-12-05,38.673667,-0.593994,,iNaturalist (research),https://www.inaturalist.org/observations/254219768,alta,sin licencia (todos los derechos reservados)
 Lepista nuda,pie azul,2024-11-30,40.007565,-1.298066,,iNaturalist (research),https://www.inaturalist.org/observations/253664417,alta,sin licencia (todos los derechos reservados)
 Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2024-11-29T11:39:35,39.834476,-0.322346,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4994587335,alta,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2024-11-28T08:09:40,39.364807,-0.408836,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4994539296,alta,CC-BY-NC-4.0
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2024-11-28,38.054925,-2.501517,16,iNaturalist (research),https://www.inaturalist.org/observations/253441682,alta,sin licencia (todos los derechos reservados)
 Suillus collinitus,,2024-11-27,39.046729,1.604773,1730,iNaturalist (needs_id),https://www.inaturalist.org/observations/254639167,baja,sin licencia (todos los derechos reservados)
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2024-11-26T17:16:29,39.847596,-0.514392,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4987572532,alta,CC-BY-NC-4.0
 Suillus collinitus,,2024-11-22,38.77132,0.193037,1435,iNaturalist (needs_id),https://www.inaturalist.org/observations/252654603,baja,CC-BY-NC
 Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2024-11-19T13:19:36,38.809043,-0.663474,80.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4981895560,alta,CC-BY-NC-4.0
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2024-11-19,38.385797,-0.520223,366,iNaturalist (needs_id),https://www.inaturalist.org/observations/252267478,baja,CC-BY-NC
+Suillus granulatus,,2024-11-19,38.386018,-0.518125,400,iNaturalist (needs_id),https://www.inaturalist.org/observations/252266857,baja,CC-BY-NC
 Lactarius sanguifluus,,2024-11-17T13:34:16,38.745191,-0.548385,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4982124267,alta,CC-BY-NC-4.0
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2024-11-17T10:45:14,38.740992,-0.611083,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4982180671,alta,CC-BY-NC-4.0
 Lepiota brunneoincarnata,,2024-11-17,38.742037,-0.611952,,iNaturalist (needs_id),https://www.inaturalist.org/observations/252071489,baja,CC-BY-NC
@@ -166,8 +188,11 @@ Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2024-11-16T13:03:58
 Suillus collinitus,,2024-11-16,38.263875,-0.881995,2,iNaturalist (needs_id),https://www.inaturalist.org/observations/252743197,baja,CC-BY-NC
 Suillus collinitus,,2024-11-16,38.266152,-0.880291,62,iNaturalist (needs_id),https://www.inaturalist.org/observations/252510688,baja,CC-BY-NC
 Suillus collinitus,,2024-11-16,38.269736,-0.870191,256,iNaturalist (needs_id),https://www.inaturalist.org/observations/252510730,baja,CC-BY-NC
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2024-11-16,39.997737,-0.224458,28030,iNaturalist (research),https://www.inaturalist.org/observations/251884976,alta,sin licencia (todos los derechos reservados)
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2024-11-16,39.87464,-0.399941,28030,iNaturalist (research),https://www.inaturalist.org/observations/251883809,alta,sin licencia (todos los derechos reservados)
 Suillus bellinii,,2024-11-15T16:39:51,38.922295,-0.674488,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/5897870339,alta,CC-BY-NC-4.0
 Suillus collinitus,,2024-11-15T14:36:48,38.816135,-0.618788,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4982134359,alta,CC-BY-NC-4.0
+Suillus granulatus,,2024-11-15,38.890033,1.298612,4,iNaturalist (needs_id),https://www.inaturalist.org/observations/251758097,baja,sin licencia (todos los derechos reservados)
 Lepista nuda,pie azul,2024-11-15,38.623279,-0.156103,744,iNaturalist (needs_id),https://www.inaturalist.org/observations/251779471,baja,sin licencia (todos los derechos reservados)
 Lepiota brunneoincarnata,,2024-11-15,38.818674,-0.618087,,iNaturalist (needs_id),https://www.inaturalist.org/observations/251913513,baja,CC-BY-NC
 Suillus collinitus,,2024-11-14,38.194524,-0.548563,8,iNaturalist (needs_id),https://www.inaturalist.org/observations/251644190,baja,sin licencia (todos los derechos reservados)
@@ -184,13 +209,17 @@ Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2024-11-09,39.9369
 Suillus collinitus,,2024-11-09,39.945013,-0.339358,3,iNaturalist (needs_id),https://www.inaturalist.org/observations/251056378,baja,CC-BY-NC
 Suillus collinitus,,2024-11-09,39.685858,-0.427837,1018,iNaturalist (needs_id),https://www.inaturalist.org/observations/251022342,baja,CC-BY-NC
 Suillus collinitus,,2024-11-09,38.368386,-0.4408,,iNaturalist (needs_id),https://www.inaturalist.org/observations/250998679,baja,CC-BY-NC
+Suillus granulatus,,2024-11-08,37.742788,-0.74183,3,iNaturalist (needs_id),https://www.inaturalist.org/observations/258158772,baja,CC-BY-NC
 Amanita pantherina,pantera; amanita pantera; falso galipierno,2024-11-07T15:38,39.90577,-0.35848,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/5007412607,alta,CC-BY-NC-4.0
 Lepiota brunneoincarnata,,2024-11-05,39.479021,-0.373998,,iNaturalist (needs_id),https://www.inaturalist.org/observations/250682199,baja,CC-BY-NC
 Lepiota brunneoincarnata,,2024-11-05,39.473398,-0.404212,,iNaturalist (needs_id),https://www.inaturalist.org/observations/250827486,baja,CC-BY-NC
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2024-11-03,38.754823,-2.309377,261,iNaturalist (needs_id),https://www.inaturalist.org/observations/250404866,baja,CC-BY-NC
+Suillus granulatus,,2024-11-02,37.691604,-1.758283,9,iNaturalist (needs_id),https://www.inaturalist.org/observations/250111956,baja,CC-BY-NC
 Lepiota brunneoincarnata,,2024-11-01T13:07:17,39.980752,0.017052,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4978385200,alta,CC-BY-NC-4.0
 Suillus bellinii,,2024-11-01T09:25:59,39.166748,-1.822327,175.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6519072326,alta,CC-BY-NC-4.0
+Suillus granulatus,,2024-11-01T08:51:08,39.166748,-1.822327,175.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6518911934,alta,CC-BY-NC-4.0
 Suillus collinitus,,2024-11-01T08:44:01,39.166748,-1.822327,175.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6520110396,alta,CC-BY-NC-4.0
+Suillus granulatus,,2024-11-01,38.388213,-0.413572,10,iNaturalist (needs_id),https://www.inaturalist.org/observations/249993300,baja,CC-BY-NC
 Lepiota brunneoincarnata,,2024-10-31,39.950833,-0.303836,,iNaturalist (needs_id),https://www.inaturalist.org/observations/249874839,baja,CC-BY-NC
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2024-10-29T12:46:26,39.012685,-1.891546,11.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6518654606,alta,CC-BY-NC-4.0
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2024-10-29,39.913233,-0.370957,20,iNaturalist (needs_id),https://www.inaturalist.org/observations/249602074,baja,CC-BY-NC
@@ -204,7 +233,9 @@ Amanita caesarea,oronja; tana; yema; amanita de los césares,2024-10-18T10:57,39
 Russula cyanoxantha,carbonera; seta de cerdos,2024-10-18,39.90568,-0.3686,10,iNaturalist (needs_id),https://www.inaturalist.org/observations/255908681,baja,CC-BY-NC
 Suillus collinitus,,2024-10-17,38.752881,-2.360175,171,iNaturalist (needs_id),https://www.inaturalist.org/observations/247800844,baja,CC-BY-NC
 Amanita muscaria,matamoscas; falsa oronja; oronja pintada,2024-10-17,38.769697,-0.493069,196,iNaturalist (research),https://www.inaturalist.org/observations/252164451,alta,sin licencia (todos los derechos reservados)
+Suillus granulatus,,2024-10-13,39.236572,-1.055334,61,iNaturalist (needs_id),https://www.inaturalist.org/observations/248140486,baja,CC-BY-NC
 Hygrophorus latitabundus,llenega negra; llenega gris; mocosa,2024-10-13,38.671659,-2.41042,544,iNaturalist (needs_id),https://www.inaturalist.org/observations/272163383,baja,sin licencia (todos los derechos reservados)
+Suillus granulatus,,2024-10-12,38.487399,-1.607419,47503,iNaturalist (needs_id),https://www.inaturalist.org/observations/246918856,baja,sin licencia (todos los derechos reservados)
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2024-10-09T15:03:04,40.015444,-0.508367,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4974022748,alta,CC-BY-NC-4.0
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2024-10-09,39.950707,-0.790706,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/5901472967,media,CC-BY-NC-4.0
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2024-10-07,37.948981,-1.712524,466,iNaturalist (research),https://www.inaturalist.org/observations/252874385,alta,sin licencia (todos los derechos reservados)
@@ -215,6 +246,8 @@ Suillus collinitus,,2024-10-01,39.891509,-0.544543,,iNaturalist (needs_id),https
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2024-09-29,39.943044,-0.403023,27,iNaturalist (needs_id),https://www.inaturalist.org/observations/244666689,baja,CC-BY-NC
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2024-09-29,39.852887,-0.484008,,iNaturalist (needs_id),https://www.inaturalist.org/observations/244693798,baja,CC-BY-NC
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2024-09-29,40.014423,-0.0433,,iNaturalist (needs_id),https://www.inaturalist.org/observations/244694560,baja,CC-BY-NC
+Suillus granulatus,,2024-09-29,38.007856,-1.106375,,iNaturalist (needs_id),https://www.inaturalist.org/observations/244699755,baja,sin licencia (todos los derechos reservados)
+Suillus granulatus,,2024-09-23,39.948401,-0.567749,626,iNaturalist (needs_id),https://www.inaturalist.org/observations/243636985,baja,CC-BY-NC
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2024-09-22,38.63889,-2.381888,544,iNaturalist (research),https://www.inaturalist.org/observations/272169473,alta,sin licencia (todos los derechos reservados)
 Rubroboletus satanas,,2024-09-20T13:22:17,38.748127,-0.550454,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4950599586,alta,CC-BY-NC-4.0
 Caloboletus radicans,hongo blanco; boleto blanco,2024-09-17,38.63,-0.72,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4988498801,media,CC-BY-NC-4.0
@@ -223,18 +256,27 @@ Suillus bellinii,,2024-04-28,38.493732,-2.392888,24,iNaturalist (needs_id),https
 Lepista nuda,pie azul,2024-03-30,38.335123,-2.382478,19.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4882248851,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2024-03-29,38.589752,-2.670517,7.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4886938155,media,CC-BY-NC-4.0
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2024-03-01,38.098611,-0.998611,190,iNaturalist (needs_id),https://www.inaturalist.org/observations/204172846,baja,CC-BY-NC
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2024-02-29T14:02:55,38.824557,-0.588385,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6235598286,alta,CC-BY-NC-4.0
 Suillus collinitus,,2024-02-16,38.384906,-0.514414,,iNaturalist (research),https://www.inaturalist.org/observations/199457307,alta,sin licencia (todos los derechos reservados)
 Suillus collinitus,,2024-01-21,38.511103,-0.710751,2,iNaturalist (needs_id),https://www.inaturalist.org/observations/197486545,baja,CC-BY
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2024-01-01T13:02:24,39.58632,-1.88415,4.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6566639514,alta,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2023-12-08,38.037514,-1.118364,25.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4884907524,media,CC-BY-NC-4.0
 Omphalotus olearius,seta de olivo,2023-11-28T16:27:08,38.240414,-2.632746,62047.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/5293056167,alta,CC-BY-NC-4.0
 Omphalotus olearius,seta de olivo,2023-11-24,38.38465,-0.510983,,iNaturalist (needs_id),https://www.inaturalist.org/observations/192801843,baja,sin licencia (todos los derechos reservados)
+Suillus granulatus,,2023-11-24,38.490116,-0.660152,149.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461375757,media,CC-BY-NC-4.0
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2023-11-24,38.501374,-0.712967,299.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462336215,media,CC-BY-NC-4.0
+Suillus granulatus,,2023-11-24,38.484983,-0.661125,299.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462506038,media,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2023-11-20,39.472234,-0.341133,,iNaturalist (needs_id),https://www.inaturalist.org/observations/192319818,baja,CC-BY-NC
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2023-11-19,38.480451,-2.448082,89,iNaturalist (research),https://www.inaturalist.org/observations/272178164,alta,sin licencia (todos los derechos reservados)
+Suillus luteus,,2023-11-11T14:16,38.258821,-2.46657,28270.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4854991135,alta,CC-BY-NC-4.0
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2023-11-11T14:11,38.243207,-2.597877,28270.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6499979683,alta,CC-BY-NC-4.0
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2023-11-11,38.223294,-2.622549,4755.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4442428358,alta,CC-BY-NC-4.0
 Suillus bellinii,,2023-11-11,38.288253,-2.490175,28270,iNaturalist (needs_id),https://www.inaturalist.org/observations/209279420,baja,CC-BY-NC
+Suillus luteus,,2023-11-11,38.323352,-2.575663,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4886926642,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2023-11-10,38.430839,-2.515506,28240,iNaturalist (needs_id),https://www.inaturalist.org/observations/202308411,baja,CC-BY-NC
 Lepista nuda,pie azul,2023-11-10,38.458319,-2.437935,597.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4891160832,media,CC-BY-NC-4.0
+Suillus luteus,,2023-11-06T16:47:25,38.494531,-2.413922,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4535606007,alta,CC-BY-NC-4.0
+Suillus luteus,,2023-11-05,38.48669,-2.449112,4.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460401661,media,CC-BY-NC-4.0
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2023-10-26,37.810112,-2.5291,7.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4989700872,media,CC-BY-NC-4.0
 Scleroderma citrinum,escleroderma; escleroderma verrugoso,2023-10-23T17:51:34,39.885506,-0.228599,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4436416465,alta,CC-BY-NC-4.0
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2023-10-11T12:24:23,39.988176,-0.253824,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4430966859,alta,CC-BY-NC-4.0
@@ -253,9 +295,12 @@ Omphalotus olearius,seta de olivo,2023-09-20T08:39:39,39.927903,-0.338287,25.0,G
 Rubroboletus satanas,,2023-09-19T18:52,38.742212,-0.56397,61.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4431089245,alta,CC-BY-NC-4.0
 Caloboletus radicans,hongo blanco; boleto blanco,2023-09-19,38.878993,-0.67493,75.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462538736,media,CC-BY-NC-4.0
 Amanita caesarea,oronja; tana; yema; amanita de los césares,2023-09-18,39.813426,-0.356104,28030,iNaturalist (research),https://www.inaturalist.org/observations/187032622,alta,sin licencia (todos los derechos reservados)
+Suillus granulatus,,2023-09-16,40.076343,0.030769,7,iNaturalist (needs_id),https://www.inaturalist.org/observations/223381486,baja,sin licencia (todos los derechos reservados)
+Suillus granulatus,,2023-06-12,38.7032,-0.488712,4,iNaturalist (needs_id),https://www.inaturalist.org/observations/167041511,baja,CC-BY-NC
 Suillus bellinii,,2023-01-21,40.07143,0.151958,28000,iNaturalist (research),https://www.inaturalist.org/observations/147027123,alta,sin licencia (todos los derechos reservados)
 Hydnum repandum,lengua de gato; lengua de oveja; lengua de vaca,2023-01-13T13:22:33,40.014358,-0.051737,28000.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4018286014,alta,CC-BY-NC-4.0
 Hydnum repandum,lengua de gato; lengua de oveja; lengua de vaca,2023-01-12T11:10:51,39.702866,-0.52698,7.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4018094905,alta,CC-BY-NC-4.0
+Suillus granulatus,,2023-01-05,38.672178,-0.2335,199,iNaturalist (needs_id),https://www.inaturalist.org/observations/145889762,baja,CC-BY
 Suillus collinitus,,2022-12-28,37.562188,-1.123782,4,iNaturalist (needs_id),https://www.inaturalist.org/observations/145267107,baja,CC-BY-NC
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2022-12-27T12:33:05,39.86772,-0.286368,3.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4606769739,alta,CC-BY-NC-4.0
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2022-12-27T11:49:57,39.866224,-0.27089,4.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4607262855,alta,CC-BY-NC-4.0
@@ -263,9 +308,12 @@ Lepista nuda,pie azul,2022-12-27,39.866702,-0.287509,3,iNaturalist (research),ht
 Lactarius sanguifluus,,2022-12-23,39.821565,-0.333297,4,iNaturalist (research),https://www.inaturalist.org/observations/144916408,alta,sin licencia (todos los derechos reservados)
 Suillus collinitus,,2022-12-22T16:02:05,39.346947,-0.317331,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4009812857,alta,CC-BY-NC-4.0
 Agaricus campestris,champiñón de campo; hongo,2022-12-22,39.662737,-0.408701,3,iNaturalist (needs_id),https://www.inaturalist.org/observations/144846637,baja,CC-BY-NC
+Suillus granulatus,,2022-12-21,38.694747,-0.146483,28210,iNaturalist (needs_id),https://www.inaturalist.org/observations/144781680,baja,sin licencia (todos los derechos reservados)
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2022-12-17T13:22:02,38.767786,-0.858372,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4006540972,alta,CC-BY-NC-4.0
 Suillus bellinii,,2022-12-17T11:51:38,39.938787,-0.269109,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4006535019,alta,CC-BY-NC-4.0
 Suillus bellinii,,2022-12-15T14:50:57,38.807856,-0.673397,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4507756740,alta,CC-BY-NC-4.0
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2022-12-10T13:49:10,40.090141,-0.131929,28000.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3994114020,alta,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2022-12-08T12:52:06,39.952629,-0.369246,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4006563648,alta,CC-BY-NC-4.0
 Scleroderma citrinum,escleroderma; escleroderma verrugoso,2022-12-08T11:52:44,39.881655,-0.271763,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3994314792,alta,CC-BY-NC-4.0
 Omphalotus olearius,seta de olivo,2022-12-04,38.99371,1.408597,,iNaturalist (research),https://www.inaturalist.org/observations/143633505,alta,sin licencia (todos los derechos reservados)
 Suillus bellinii,,2022-12-03T16:53:54,39.002842,1.399104,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4507600742,alta,CC-BY-NC-4.0
@@ -277,6 +325,8 @@ Lactarius sanguifluus,,2022-11-21T13:28:23,39.913208,-0.370624,17.0,GBIF dataset
 Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2022-11-04T12:47:20,38.808361,-0.678853,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3963497874,alta,CC-BY-NC-4.0
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2022-11-04T11:31:59,38.809383,-0.663731,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4507616740,alta,CC-BY-NC-4.0
 Suillus collinitus,,2022-11-03T13:05:15,39.359114,-0.321022,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3963350845,alta,CC-BY-NC-4.0
+Suillus granulatus,,2022-11-01,38.960293,-0.821589,23,iNaturalist (needs_id),https://www.inaturalist.org/observations/141100459,baja,sin licencia (todos los derechos reservados)
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2022-10-31T12:44:26,40.105432,-0.002566,28000.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3961080423,alta,CC-BY-NC-4.0
 Suillus collinitus,,2022-10-31,39.330421,-0.36542,5325,iNaturalist (needs_id),https://www.inaturalist.org/observations/140670855,baja,CC-BY-NC
 Lactarius sanguifluus,,2022-10-28T10:25:52,39.996259,-0.346875,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3961366974,alta,CC-BY-NC-4.0
 Suillus collinitus,,2022-10-28T00:00,39.34145,-0.32,100.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6353327069,alta,CC-BY-NC-4.0
@@ -290,14 +340,18 @@ Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2022-10-22,39.8812
 Boletus aereus,tentullo; tontullo; hongo negro,2022-10-22,39.816951,-0.456322,28030,iNaturalist (research),https://www.inaturalist.org/observations/139910248,alta,sin licencia (todos los derechos reservados)
 Amanita caesarea,oronja; tana; yema; amanita de los césares,2022-10-22,39.851228,-0.468101,28030,iNaturalist (research),https://www.inaturalist.org/observations/139910720,alta,sin licencia (todos los derechos reservados)
 Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2022-10-22,39.936443,-0.300943,28030,iNaturalist (research),https://www.inaturalist.org/observations/139910624,alta,sin licencia (todos los derechos reservados)
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2022-10-22,39.91267,-0.335139,28030,iNaturalist (needs_id),https://www.inaturalist.org/observations/139910389,baja,sin licencia (todos los derechos reservados)
 Suillus bellinii,,2022-10-21,40.051285,0.045051,1799,iNaturalist (needs_id),https://www.inaturalist.org/observations/139512739,baja,CC-BY-NC
 Lactarius chrysorrheus,falso níscalo,2022-10-18T11:52:39,39.815443,-0.215757,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3947775978,alta,CC-BY-NC-4.0
 Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2022-10-18T11:46:16,39.836234,-0.39295,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3947143959,alta,CC-BY-NC-4.0
 Lepiota brunneoincarnata,,2022-10-18T09:32:28,39.444833,-0.376278,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3947347836,alta,CC-BY-NC-4.0
 Suillus collinitus,,2022-10-13,39.337131,-0.317685,,iNaturalist (needs_id),https://www.inaturalist.org/observations/138591886,baja,CC-BY-NC
 Amanita pantherina,pantera; amanita pantera; falso galipierno,2022-10-12T12:53:52,39.969331,-0.350645,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4138208623,alta,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2022-10-11,39.903452,-0.456871,1700,iNaturalist (needs_id),https://www.inaturalist.org/observations/138392249,baja,CC-BY-NC
 Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2022-10-08T12:24,39.998911,-1.381328,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6520451747,alta,CC-BY-NC-4.0
+Suillus granulatus,,2022-10-05,38.726283,-0.630703,4541,iNaturalist (research),https://www.inaturalist.org/observations/137650351,alta,sin licencia (todos los derechos reservados)
 Amanita caesarea,oronja; tana; yema; amanita de los césares,2022-09-21,38.653518,-2.060589,75.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4891122514,media,CC-BY-NC-4.0
+Suillus granulatus,,2022-05-08,39.075468,1.415808,,iNaturalist (needs_id),https://www.inaturalist.org/observations/118973483,baja,CC-BY-NC
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2022-04-29T18:54:40,38.995207,-1.726529,28181.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4006535438,alta,CC-BY-NC-4.0
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2022-04-27,38.329862,-2.316261,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462159268,media,CC-BY-NC-4.0
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2022-04-22T19:23:09,38.826388,-0.733996,28181.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3764157600,alta,CC-BY-NC-4.0
@@ -309,6 +363,8 @@ Suillus collinitus,,2022-04-14,39.546119,-0.504022,5,iNaturalist (needs_id),http
 Lepista nuda,pie azul,2022-04-14,38.216981,-2.719205,264,iNaturalist (needs_id),https://www.inaturalist.org/observations/111494923,baja,sin licencia (todos los derechos reservados)
 Suillus collinitus,,2022-04-13,37.675036,-1.723497,,iNaturalist (needs_id),https://www.inaturalist.org/observations/257468944,baja,CC-BY-NC
 Suillus bellinii,,2022-04-12T20:13:47,38.808689,-0.674453,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3760220720,alta,CC-BY-NC-4.0
+Suillus granulatus,,2022-04-09,38.634671,0.006344,,iNaturalist (needs_id),https://www.inaturalist.org/observations/112319127,baja,CC-BY
+Suillus granulatus,,2022-04-08,38.38625,-0.513912,,iNaturalist (needs_id),https://www.inaturalist.org/observations/110780653,baja,sin licencia (todos los derechos reservados)
 Lepiota brunneoincarnata,,2022-04-06T09:58,39.628938,-0.557823,28060.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3858390644,alta,CC-BY-NC-4.0
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2022-04-02T16:20,40.062044,-0.147806,28000.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3994074456,alta,CC-BY-NC-4.0
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2022-04-02T16:09:42,39.86095,-0.203989,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3759952879,alta,CC-BY-NC-4.0
@@ -317,18 +373,24 @@ Pleurotus eryngii,seta de cardo; seta de cardo corredor,2022-04-01T18:40:10,38.8
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2022-03-29,40.008425,-0.337102,28000,iNaturalist (research),https://www.inaturalist.org/observations/109841584,alta,sin licencia (todos los derechos reservados)
 Suillus collinitus,,2022-03-28T15:15:01,39.937831,-0.376911,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3759206167,alta,CC-BY-NC-4.0
 Lepista nuda,pie azul,2022-03-27,37.927533,-1.151783,5,iNaturalist (research),https://www.inaturalist.org/observations/109782575,alta,sin licencia (todos los derechos reservados)
+Suillus granulatus,,2022-03-25,39.701142,-0.273661,110,iNaturalist (needs_id),https://www.inaturalist.org/observations/110426853,baja,CC-BY-NC
 Lepista nuda,pie azul,2022-03-19,39.592883,-1.89008,4,iNaturalist (research),https://www.inaturalist.org/observations/108941076,alta,CC-BY-NC
 Suillus collinitus,,2021-12-25T11:20,37.676493,-1.734375,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/5063313473,alta,CC-BY-NC-4.0
 Lepista nuda,pie azul,2021-12-08,39.933917,-0.392159,28030,iNaturalist (research),https://www.inaturalist.org/observations/102717241,alta,CC-BY-NC
 Cantharellus cibarius,rebozuelo; cabrilla; chantarela,2021-12-04,39.82873,-0.333452,28030,iNaturalist (research),https://www.inaturalist.org/observations/102481001,alta,sin licencia (todos los derechos reservados)
 Lepiota brunneoincarnata,,2021-12-03T17:28,39.199099,-0.542429,28151.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6550792529,alta,CC-BY-NC-4.0
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2021-12-01T12:00,39.086556,-0.340191,28151.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3912426599,alta,CC-BY-NC-4.0
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2021-12-01,38.861471,-1.666635,61,iNaturalist (needs_id),https://www.inaturalist.org/observations/143633384,baja,CC-BY-NC-ND
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2021-11-30,39.814417,-1.376468,543,iNaturalist (research),https://www.inaturalist.org/observations/103685724,alta,sin licencia (todos los derechos reservados)
 Lepista nuda,pie azul,2021-11-27,38.635749,-0.169122,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462379669,media,CC-BY-NC-4.0
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2021-11-24T13:58:26,38.696577,-0.253196,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6566356355,alta,CC-BY-NC-4.0
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2021-11-24,38.984701,-0.303211,45,iNaturalist (research),https://www.inaturalist.org/observations/103755807,alta,sin licencia (todos los derechos reservados)
 Lepista nuda,pie azul,2021-11-24,38.696557,-0.253035,,iNaturalist (research),https://www.inaturalist.org/observations/101823915,alta,CC-BY-NC
+Suillus granulatus,,2021-11-24,38.696671,-0.252975,,iNaturalist (needs_id),https://www.inaturalist.org/observations/101823963,baja,CC-BY-NC
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2021-11-21,39.015974,-0.840366,,iNaturalist (research),https://www.inaturalist.org/observations/101636162,alta,sin licencia (todos los derechos reservados)
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2021-11-19T12:03:43,39.203737,-0.333463,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/5206646156,alta,CC-BY-NC-4.0
 Lactarius sanguifluus,,2021-11-17T17:02:38,38.802158,-0.56982,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4506239553,alta,CC-BY-NC-4.0
+Suillus granulatus,,2021-11-15,38.844316,-0.31074,479,iNaturalist (needs_id),https://www.inaturalist.org/observations/101210817,baja,CC-BY-NC
 Lactarius sanguifluus,,2021-11-11,38.7,-0.61,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040535131,media,CC-BY-NC-4.0
 Hygrophorus latitabundus,llenega negra; llenega gris; mocosa,2021-11-11,38.7,-0.61,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040545349,media,CC-BY-NC-4.0
 Suillus collinitus,,2021-11-11,38.7,-0.61,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040525011,media,CC-BY-NC-4.0
@@ -343,16 +405,22 @@ Lactarius sanguifluus,,2021-10-29,38.779945,-0.541946,19.0,GBIF dataset 8a863029
 Suillus collinitus,,2021-10-29,38.572562,-0.674372,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462329625,media,CC-BY-NC-4.0
 Omphalotus olearius,seta de olivo,2021-10-28,39.877798,-0.294974,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462134670,media,CC-BY-NC-4.0
 Lactarius chrysorrheus,falso níscalo,2021-10-28,39.877798,-0.294974,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462562263,media,CC-BY-NC-4.0
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2021-10-28,39.877798,-0.294974,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460054567,media,CC-BY-NC-4.0
 Omphalotus olearius,seta de olivo,2021-10-25,39.878523,-0.257986,3,iNaturalist (needs_id),https://www.inaturalist.org/observations/99320768,baja,CC-BY-NC
+Suillus granulatus,,2021-10-25,39.348123,-0.318416,172,iNaturalist (needs_id),https://www.inaturalist.org/observations/99356967,baja,sin licencia (todos los derechos reservados)
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2021-10-24T11:25:04,38.738705,-0.524337,5.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3947574499,alta,CC-BY-NC-4.0
+Suillus granulatus,,2021-10-20,39.082238,1.596427,9,iNaturalist (research),https://www.inaturalist.org/observations/98777402,alta,sin licencia (todos los derechos reservados)
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2021-10-17T12:50:28,38.738742,-0.521317,4.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6566596017,alta,CC-BY-NC-4.0
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2021-10-17T12:28:46,38.738525,-0.523275,5.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3947634481,alta,CC-BY-NC-4.0
 Omphalotus olearius,seta de olivo,2021-10-17,40.007876,-0.220778,28000,iNaturalist (research),https://www.inaturalist.org/observations/147458758,alta,sin licencia (todos los derechos reservados)
 Omphalotus olearius,seta de olivo,2021-10-17,40.093836,-0.209263,,iNaturalist (research),https://www.inaturalist.org/observations/98595509,alta,sin licencia (todos los derechos reservados)
 Lactarius chrysorrheus,falso níscalo,2021-10-15T15:16:18,39.89672,-0.373892,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3456331884,alta,CC-BY-NC-4.0
 Russula cyanoxantha,carbonera; seta de cerdos,2021-10-15,39.811838,-0.282279,28030,iNaturalist (needs_id),https://www.inaturalist.org/observations/98280827,baja,CC-BY-NC
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2021-10-13,39.940753,-0.409213,234,iNaturalist (research),https://www.inaturalist.org/observations/103757306,alta,sin licencia (todos los derechos reservados)
+Suillus granulatus,,2021-10-12,38.737563,-0.500478,6,iNaturalist (needs_id),https://www.inaturalist.org/observations/98021023,baja,CC-BY-NC
 Suillus bellinii,,2021-10-10,38.339258,-2.391368,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460887918,media,CC-BY-NC-4.0
 Lepiota brunneoincarnata,,2021-10-03T15:06:57,38.774609,-0.24422,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4453672502,alta,CC-BY-NC-4.0
+Suillus granulatus,,2021-10-03,39.487659,-0.757826,240,iNaturalist (needs_id),https://www.inaturalist.org/observations/97154164,baja,sin licencia (todos los derechos reservados)
 Russula cyanoxantha,carbonera; seta de cerdos,2021-10-03,40.137231,-0.325275,,iNaturalist (needs_id),https://www.inaturalist.org/observations/97621319,baja,sin licencia (todos los derechos reservados)
 Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2021-09-28,39.951699,-0.397238,187,iNaturalist (research),https://www.inaturalist.org/observations/103808518,alta,sin licencia (todos los derechos reservados)
 Amanita caesarea,oronja; tana; yema; amanita de los césares,2021-09-28,39.959244,-0.405433,212,iNaturalist (research),https://www.inaturalist.org/observations/103808421,alta,sin licencia (todos los derechos reservados)
@@ -379,10 +447,15 @@ Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2020-12-21T12:24,39
 Lactarius chrysorrheus,falso níscalo,2020-12-21,39.891657,-0.324456,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462030231,media,CC-BY-NC-4.0
 Suillus collinitus,,2020-12-20,39.867085,-0.206922,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460798409,media,CC-BY-NC-4.0
 Suillus collinitus,,2020-12-20,39.866945,-0.205318,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462324628,media,CC-BY-NC-4.0
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2020-12-19,39.892622,-0.259282,28030,iNaturalist (research),https://www.inaturalist.org/observations/101429205,alta,sin licencia (todos los derechos reservados)
 Amanita pantherina,pantera; amanita pantera; falso galipierno,2020-12-16T13:17,39.802662,-0.248449,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4854831179,alta,CC-BY-NC-4.0
 Hygrophorus latitabundus,llenega negra; llenega gris; mocosa,2020-12-16,39.657421,-0.471584,137,iNaturalist (research),https://www.inaturalist.org/observations/104172634,alta,sin licencia (todos los derechos reservados)
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2020-12-15,38.982919,-0.338503,8,iNaturalist (research),https://www.inaturalist.org/observations/66667110,alta,sin licencia (todos los derechos reservados)
+Suillus granulatus,,2020-12-13T14:46:49,39.498472,-1.084598,305.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3031953085,alta,CC-BY-NC-4.0
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2020-12-12T13:56:36,39.805586,-0.271502,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3915496783,alta,CC-BY-NC-4.0
 Suillus bellinii,,2020-12-08T13:19:06,39.79613,-0.590333,28060.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4453713507,alta,CC-BY-NC-4.0
+Suillus granulatus,,2020-12-06,39.740992,-0.301405,599,iNaturalist (needs_id),https://www.inaturalist.org/observations/66261244,baja,sin licencia (todos los derechos reservados)
+Suillus granulatus,,2020-12-05,37.887543,-1.175973,3021,iNaturalist (needs_id),https://www.inaturalist.org/observations/66135216,baja,sin licencia (todos los derechos reservados)
 Lepiota brunneoincarnata,,2020-12-02T17:38:30,39.95552,-0.585608,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4453825488,alta,CC-BY-NC-4.0
 Omphalotus olearius,seta de olivo,2020-12-02,39.56916,-0.62453,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460150982,media,CC-BY-NC-4.0
 Omphalotus olearius,seta de olivo,2020-11-30T10:38Z,39.376728,-0.32793,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3455680172,alta,CC-BY-NC-4.0
@@ -394,6 +467,8 @@ Suillus collinitus,,2020-11-25,39.56916,-0.62453,,GBIF dataset 8a863029-f435-446
 Suillus collinitus,,2020-11-23,38.63,-0.75,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040715387,media,CC-BY-NC-4.0
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2020-11-21,39.841446,-0.267298,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462252247,media,CC-BY-NC-4.0
 Suillus bellinii,,2020-11-17,38.609149,-0.804282,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461137103,media,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2020-11-16,39.751259,-0.226439,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462159123,media,CC-BY-NC-4.0
+Suillus granulatus,,2020-11-15T12:17:19,39.546353,-0.522052,9.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3005182562,alta,CC-BY-NC-4.0
 Lepiota brunneoincarnata,,2020-11-09,39.984027,0.018634,16,iNaturalist (needs_id),https://www.inaturalist.org/observations/101449872,baja,sin licencia (todos los derechos reservados)
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2020-10-04,39.835471,-0.228352,28030,iNaturalist (research),https://www.inaturalist.org/observations/101432820,alta,sin licencia (todos los derechos reservados)
 Caloboletus radicans,hongo blanco; boleto blanco,2020-10-01T16:29,39.989851,-0.267873,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4516922844,alta,CC-BY-NC-4.0
@@ -402,6 +477,7 @@ Omphalotus olearius,seta de olivo,2020-09-27,39.933561,-0.280678,28030,iNaturali
 Omphalotus olearius,seta de olivo,2020-09-23,39.927017,-0.345136,104,iNaturalist (research),https://www.inaturalist.org/observations/103975296,alta,sin licencia (todos los derechos reservados)
 Amanita caesarea,oronja; tana; yema; amanita de los césares,2020-09-23,39.927151,-0.347439,179,iNaturalist (research),https://www.inaturalist.org/observations/103975196,alta,sin licencia (todos los derechos reservados)
 Amanita caesarea,oronja; tana; yema; amanita de los césares,2020-09-18T18:47,39.804722,-0.267125,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4527956250,alta,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2020-06-18,39.883876,-0.061872,4,iNaturalist (research),https://www.inaturalist.org/observations/101436970,alta,sin licencia (todos los derechos reservados)
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2020-04-01,39.674585,-0.250875,28060,iNaturalist (research),https://www.inaturalist.org/observations/101438693,alta,sin licencia (todos los derechos reservados)
 Hygrophorus latitabundus,llenega negra; llenega gris; mocosa,2020-01-25,40.087795,0.101537,28000,iNaturalist (research),https://www.inaturalist.org/observations/101437787,alta,sin licencia (todos los derechos reservados)
 Hygrophorus latitabundus,llenega negra; llenega gris; mocosa,2019-12-28,38.633975,-0.170883,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460152408,media,CC-BY-NC-4.0
@@ -420,6 +496,7 @@ Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2019-10-12,38.44916
 Amanita caesarea,oronja; tana; yema; amanita de los césares,2019-09-16T19:49,39.972272,-0.377992,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4527955252,alta,CC-BY-NC-4.0
 Caloboletus radicans,hongo blanco; boleto blanco,2019-09-05T11:08,39.821414,-0.327063,28030.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4516878636,alta,CC-BY-NC-4.0
 Suillus collinitus,,2019-05-23,38.355321,-2.473948,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462081284,media,CC-BY-NC-4.0
+Suillus granulatus,,2019-01-22T13:50:40,38.83994,1.398196,22.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/2238781287,alta,CC-BY-NC-4.0
 Scleroderma citrinum,escleroderma; escleroderma verrugoso,2018-12-09,39.842179,-0.268065,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460152399,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2018-12-08,39.002725,1.398728,10.0,GBIF dataset 058a6684-fbe4-416b-b247-accee284027d (SIM),https://www.gbif.org/occurrence/2294356086,media,CC-BY-4.0
 Hygrophorus latitabundus,llenega negra; llenega gris; mocosa,2018-12-08,39.002512,1.398563,100.0,GBIF dataset 058a6684-fbe4-416b-b247-accee284027d (SIM),https://www.gbif.org/occurrence/2294356567,media,CC-BY-4.0
@@ -427,11 +504,13 @@ Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2018-12-01,39.89419
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2018-12-01,38.310898,-2.478479,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459990799,media,CC-BY-NC-4.0
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2018-11-27,38.363106,-2.379206,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461693158,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2018-11-25,38.95517,-0.822128,6,iNaturalist (research),https://www.inaturalist.org/observations/18628185,alta,sin licencia (todos los derechos reservados)
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2018-11-24,40.096794,0.033923,33,iNaturalist (research),https://www.inaturalist.org/observations/18600825,alta,sin licencia (todos los derechos reservados)
 Suillus bellinii,,2018-11-22,38.350478,-2.327878,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461693152,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2018-11-18,38.347725,-2.434294,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459835060,media,CC-BY-NC-4.0
 Hydnum repandum,lengua de gato; lengua de oveja; lengua de vaca,2018-11-14,38.356171,-2.378726,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459988099,media,CC-BY-NC-4.0
 Omphalotus olearius,seta de olivo,2018-11-13T11:32:23,40.049476,-0.054908,28000.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4535606643,alta,CC-BY-NC-4.0
 Lactarius sanguifluus,,2018-11-13,38.99952,1.56786,61,iNaturalist (research),https://www.inaturalist.org/observations/18515943,alta,sin licencia (todos los derechos reservados)
+Suillus granulatus,,2018-11-13,39.004208,1.390978,3466,iNaturalist (research),https://www.inaturalist.org/observations/18454058,alta,sin licencia (todos los derechos reservados)
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2018-11-11,38.636982,-0.168582,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461087527,media,CC-BY-NC-4.0
 Suillus bellinii,,2018-11-11,38.636982,-0.168582,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460221737,media,CC-BY-NC-4.0
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2018-11-10,38.369917,-2.375682,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460431724,media,CC-BY-NC-4.0
@@ -439,9 +518,13 @@ Amanita muscaria,matamoscas; falsa oronja; oronja pintada,2018-11-10,38.369917,-
 Omphalotus olearius,seta de olivo,2018-11-09,39.375843,-0.325127,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461296507,media,CC-BY-NC-4.0
 Amanita pantherina,pantera; amanita pantera; falso galipierno,2018-11-06,39.35,-0.32,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/6360360810,media,CC-BY-NC-4.0
 Lepiota brunneoincarnata,,2018-10-28,39.983911,0.018493,12,iNaturalist (research),https://www.inaturalist.org/observations/101437837,alta,sin licencia (todos los derechos reservados)
+Suillus granulatus,,2018-10-27,37.971074,-1.376647,28329,iNaturalist (needs_id),https://www.inaturalist.org/observations/144864473,baja,sin licencia (todos los derechos reservados)
+Suillus granulatus,,2018-10-27,37.885586,-1.354877,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460739294,media,CC-BY-NC-4.0
 Lepiota brunneoincarnata,,2018-10-26,39.982645,0.01946,14,iNaturalist (research),https://www.inaturalist.org/observations/101451143,alta,sin licencia (todos los derechos reservados)
+Suillus granulatus,,2018-10-22,38.609132,-0.804296,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459967197,media,CC-BY-NC-4.0
 Agaricus campestris,champiñón de campo; hongo,2018-10-21,38.745214,-0.600901,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461087655,media,CC-BY-NC-4.0
 Agaricus campestris,champiñón de campo; hongo,2018-10-20,39.543341,-0.513954,263,iNaturalist (needs_id),https://www.inaturalist.org/observations/47822979,baja,CC-BY-NC
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2018-10-15,38.606389,-2.578889,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460068302,media,CC-BY-NC-4.0
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2018-10-14,38.951323,-0.832724,22,iNaturalist (research),https://www.inaturalist.org/observations/17506330,alta,sin licencia (todos los derechos reservados)
 Lactarius sanguifluus,,2018-10-13,38.73,-0.82,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040554674,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2018-10-13,38.73,-0.8,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040859624,media,CC-BY-NC-4.0
@@ -471,6 +554,7 @@ Suillus collinitus,,2016-12-21,38.650947,-0.876074,,GBIF dataset 8a863029-f435-4
 Suillus collinitus,,2016-12-20,38.60916,-0.804335,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462556673,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2016-12-15,38.654138,-0.227171,199,iNaturalist (needs_id),https://www.inaturalist.org/observations/146066929,baja,CC-BY
 Lepista nuda,pie azul,2016-12-15,38.653005,-0.223873,483,iNaturalist (needs_id),https://www.inaturalist.org/observations/146066818,baja,CC-BY
+Suillus granulatus,,2016-12-12,37.974168,-1.082656,191,iNaturalist (research),https://www.inaturalist.org/observations/147702495,alta,sin licencia (todos los derechos reservados)
 Lepista nuda,pie azul,2016-12-12,38.601243,-0.802431,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462029757,media,CC-BY-NC-4.0
 Hygrophorus latitabundus,llenega negra; llenega gris; mocosa,2016-12-11,38.871356,-0.696087,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460763327,media,CC-BY-NC-4.0
 Agaricus campestris,champiñón de campo; hongo,2016-11-26,38.891536,-0.714405,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459881914,media,CC-BY-NC-4.0
@@ -490,6 +574,7 @@ Suillus collinitus,,2016,38.64,-0.54,707.0,GBIF dataset 95e635d4-f762-11e1-a439-
 Suillus collinitus,,2016,38.64,-0.54,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040451026,media,CC-BY-NC-4.0
 Suillus collinitus,,2016,38.64,-0.54,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040749021,media,CC-BY-NC-4.0
 Suillus collinitus,,2016,38.64,-0.54,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040772093,media,CC-BY-NC-4.0
+Suillus granulatus,,2016,38.64,-0.54,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040749019,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2015-12-20,38.864698,0.007542,63,iNaturalist (research),http://www.inaturalist.org/observations/2509911,alta,CC0
 Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2015-11-29,38.902556,-0.660338,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460530059,media,CC-BY-NC-4.0
 Hydnum repandum,lengua de gato; lengua de oveja; lengua de vaca,2015-11-25,38.871089,-0.69643,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459731907,media,CC-BY-NC-4.0
@@ -503,6 +588,7 @@ Suillus collinitus,,2015-11-14,38.36271,-2.421988,,GBIF dataset 8a863029-f435-44
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2015-11-14,39.7,-0.38,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/6360353684,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2015-11-14,39.65,-0.48,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/6360316230,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2015-11-12,38.56666,-2.389571,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459949331,media,CC-BY-NC-4.0
+Suillus granulatus,,2015-11-12,40.116612,-0.63976,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459731885,media,CC-BY-NC-4.0
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2015-11-10,38.357343,-2.378283,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462219103,media,CC-BY-NC-4.0
 Hydnum repandum,lengua de gato; lengua de oveja; lengua de vaca,2015-11-08,38.779631,-0.541248,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462116714,media,CC-BY-NC-4.0
 Scleroderma citrinum,escleroderma; escleroderma verrugoso,2015-11-08,38.77851,-0.539618,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461236029,media,CC-BY-NC-4.0
@@ -514,6 +600,7 @@ Lactarius sanguifluus,,2015-11-05,38.56666,-2.389571,,GBIF dataset 8a863029-f435
 Hygrophorus latitabundus,llenega negra; llenega gris; mocosa,2015-11-04,40.03,-1.14,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040442901,media,CC-BY-NC-4.0
 Hygrophorus latitabundus,llenega negra; llenega gris; mocosa,2015-11-03,38.588422,-2.43094,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460352001,media,CC-BY-NC-4.0
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2015-10-31,38.352796,-2.458663,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459966742,media,CC-BY-NC-4.0
+Suillus granulatus,,2015-10-31,40.07,-1.09,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040442897,media,CC-BY-NC-4.0
 Omphalotus olearius,seta de olivo,2015-10-18,37.596044,-0.79846,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461666545,media,CC-BY-NC-4.0
 Suillus bellinii,,2015-10-16,40.131756,-0.617573,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461172543,media,CC-BY-NC-4.0
 Scleroderma citrinum,escleroderma; escleroderma verrugoso,2015-10-11,39.74,-0.52,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/6360294135,media,CC-BY-NC-4.0
@@ -526,7 +613,10 @@ Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2015,40.03,-1.13,7
 Scleroderma citrinum,escleroderma; escleroderma verrugoso,2014-12-27,39.75,-0.48,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/6360288198,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2014-12-13,38.505578,-0.620679,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461161361,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2014-12-13,38.505578,-0.620679,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462474867,media,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2014-12-07,38.65231,-0.256825,,iNaturalist (needs_id),https://www.inaturalist.org/observations/251912865,baja,CC-BY-NC
+Suillus luteus,,2014-12-07,38.603441,-0.803702,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460501112,media,CC-BY-NC-4.0
 Scleroderma citrinum,escleroderma; escleroderma verrugoso,2014-12-04,39.87,-0.38,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040731949,media,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2014-11-29,38.765963,-0.838716,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461713820,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2014-11-23,38.535746,-0.960145,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461666405,media,CC-BY-NC-4.0
 Suillus bellinii,,2014-11-22,38.576806,-0.694596,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460351799,media,CC-BY-NC-4.0
 Suillus bellinii,,2014-11-22,38.576554,-0.696001,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462139468,media,CC-BY-NC-4.0
@@ -538,6 +628,8 @@ Pleurotus eryngii,seta de cardo; seta de cardo corredor,2014-03-22,37.829962,-2.
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2014-03-22,37.945883,-2.434413,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462080602,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2014-02-22,39.455431,-2.297752,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460529889,media,CC-BY-NC-4.0
 Suillus collinitus,,2014-01-15,37.603022,-1.027093,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461252675,media,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2013-12-02,37.596044,-0.79846,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459918949,media,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2013-11-22,38.115465,-2.686894,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461546795,media,CC-BY-NC-4.0
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2013-10-19T12:27,38.287363,-2.54723,,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3337437755,alta,CC-BY-NC-4.0
 Lactarius sanguifluus,,2013-10-13T07:47,38.650717,-0.107564,28210.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/6567410533,alta,CC-BY-NC-4.0
 Lactarius sanguifluus,,2013-10-08,38.279396,-2.70248,28270,iNaturalist (research),https://www.inaturalist.org/observations/144725279,alta,sin licencia (todos los derechos reservados)
@@ -548,18 +640,22 @@ Suillus collinitus,,2013-01-01,38.94,-0.4,707.0,GBIF dataset 95e635d4-f762-11e1-
 Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2012-12-02,39.74,-0.52,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/6360284224,media,CC-BY-NC-4.0
 Scleroderma citrinum,escleroderma; escleroderma verrugoso,2012-12-02,39.73,-0.51,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/6360309908,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2012-11-30,39.946052,-0.307961,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461318142,media,CC-BY-NC-4.0
+Suillus granulatus,,2012-11-28,39.44138,-0.607671,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460697014,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2012-11-27,37.972035,-1.283673,28329,iNaturalist (research),https://www.inaturalist.org/observations/144780731,alta,sin licencia (todos los derechos reservados)
 Suillus collinitus,,2012-11-27,37.80523,-1.380027,28329,iNaturalist (research),https://www.inaturalist.org/observations/144862794,alta,sin licencia (todos los derechos reservados)
 Lepista nuda,pie azul,2012-11-27,37.838709,-1.308353,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459881351,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2012-11-27,37.839239,-1.307141,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460697004,media,CC-BY-NC-4.0
 Suillus collinitus,,2012-11-27,37.929694,-1.333104,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460728565,media,CC-BY-NC-4.0
+Suillus granulatus,,2012-11-27,38.105521,-1.081896,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461016951,media,CC-BY-NC-4.0
 Suillus collinitus,,2012-11-26,37.803077,-1.55487,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462109468,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2012-11-25,38.904622,-0.666443,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462291500,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2012-11-24,39.940012,-0.292739,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461745833,media,CC-BY-NC-4.0
+Suillus granulatus,,2012-11-24,38.643959,-0.836334,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459925182,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2012-11-23,39.426083,-0.551162,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461966252,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2012-11-22,38.66,-0.51,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501403520,media,CC-BY-NC-4.0
 Hydnum repandum,lengua de gato; lengua de oveja; lengua de vaca,2012-11-21,39.945904,-0.308486,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459916637,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2012-11-21,39.945904,-0.308486,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462097666,media,CC-BY-NC-4.0
+Suillus granulatus,,2012-11-20,37.878966,-1.468983,28329,iNaturalist (research),https://www.inaturalist.org/observations/144862798,alta,sin licencia (todos los derechos reservados)
 Lepista nuda,pie azul,2012-11-20,39.422105,-0.55099,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462236150,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2012-11-20,39.422105,-0.55099,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461288158,media,CC-BY-NC-4.0
 Scleroderma citrinum,escleroderma; escleroderma verrugoso,2012-11-20,38.94,-0.4,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4853768060,media,CC-BY-NC-4.0
@@ -581,6 +677,7 @@ Suillus collinitus,,2012-11-09,37.929013,-1.335253,,GBIF dataset 8a863029-f435-4
 Lepista nuda,pie azul,2012-11-07,39.410621,-0.586927,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462314235,media,CC-BY-NC-4.0
 Amanita caesarea,oronja; tana; yema; amanita de los césares,2012-11-06,39.944408,-0.299419,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461016789,media,CC-BY-NC-4.0
 Suillus bellinii,,2012-11-06,39.944638,-0.299204,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461019739,media,CC-BY-NC-4.0
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2012-11-06,39.944383,-0.299456,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462523284,media,CC-BY-NC-4.0
 Omphalotus olearius,seta de olivo,2012-11-04,37.927579,-1.04368,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461975344,media,CC-BY-NC-4.0
 Amanita muscaria,matamoscas; falsa oronja; oronja pintada,2012-11-03,40.03,-0.63,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501401593,media,CC-BY-NC-4.0
 Suillus bellinii,,2012-10-30,39.410837,-0.587185,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461971533,media,CC-BY-NC-4.0
@@ -594,6 +691,8 @@ Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2012-05-01,38.608278
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2012-05-01,38.61,-0.8,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501442402,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2011-12-17,38.904622,-0.666443,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460004301,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2011-12-16,37.857679,-1.557934,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461063245,media,CC-BY-NC-4.0
+Suillus granulatus,,2011-12-13,37.590482,-1.186065,10.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/2833836514,media,CC-BY-NC-4.0
+Tricholoma portentosum,capuchina; ratón,2011-12-12,39.410802,-0.587019,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461717277,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2011-12-11,39.91433,-0.443457,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460799366,media,CC-BY-NC-4.0
 Lactarius chrysorrheus,falso níscalo,2011-12-11,39.908339,-0.407923,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462106481,media,CC-BY-NC-4.0
 Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2011-12-10,39.89,-0.25,3000.0,GBIF dataset bf4ab07a-4d9b-4ee9-af03-d22651385dbc (SIM),https://www.gbif.org/occurrence/2459206953,alta,CC-BY-4.0
@@ -624,13 +723,19 @@ Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2011-11-24,39.88116
 Lepiota brunneoincarnata,,2011-11-24,38.609233,-0.804633,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459675242,media,CC-BY-NC-4.0
 Lepiota brunneoincarnata,,2011-11-24,38.61,-0.8,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501442501,media,CC-BY-NC-4.0
 Lepiota brunneoincarnata,,2011-11-19,37.927596,-1.043732,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460670167,media,CC-BY-NC-4.0
+Suillus granulatus,,2011-11-19,38.904622,-0.666443,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459847745,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2011-11-19,39.65,-0.48,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/6360333858,media,CC-BY-NC-4.0
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2011-11-18,38.917723,-2.534666,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462552957,media,CC-BY-NC-4.0
+Suillus granulatus,,2011-11-16,38.904965,-0.666593,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461235719,media,CC-BY-NC-4.0
 Suillus collinitus,,2011-11-13,39.74,-0.49,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/6360370453,media,CC-BY-NC-4.0
 Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2011-10-09,37.983445,-1.12989,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459847171,media,CC-BY-NC-4.0
+Suillus granulatus,,2011-07-04,39.569924,-1.210126,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461105583,media,CC-BY-NC-4.0
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2011-03-13,39.031181,1.476744,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459675075,media,CC-BY-NC-4.0
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2011-03-13,39.053333,1.435725,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459845122,media,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2011-01-03,39.470239,-0.376805,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460696537,media,CC-BY-NC-4.0
 Suillus collinitus,,2011,38.49,-0.32,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1502050521,media,CC-BY-NC-4.0
+Suillus granulatus,,2010-12-24,37.887954,-1.353289,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459920653,media,CC-BY-NC-4.0
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2010-11-19,38.985742,-0.306147,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462348294,media,CC-BY-NC-4.0
 Scleroderma citrinum,escleroderma; escleroderma verrugoso,2010-11-14,39.69,-0.48,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/6360326156,media,CC-BY-NC-4.0
 Lactarius chrysorrheus,falso níscalo,2010-11-10,39.75,-0.48,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/6360350069,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2010-11-07,39.88116,-0.306846,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459775047,media,CC-BY-NC-4.0
@@ -642,6 +747,7 @@ Suillus collinitus,,2010-10-30,37.591162,-1.043851,,GBIF dataset 8a863029-f435-4
 Suillus collinitus,,2010-10-24,38.995757,1.361446,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459923293,media,CC-BY-NC-4.0
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2010-10-23,38.380422,-2.535267,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460613282,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2010-10-23,38.375039,-2.547455,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462313737,media,CC-BY-NC-4.0
+Suillus luteus,,2010-10-23,38.375846,-2.552261,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462550486,media,CC-BY-NC-4.0
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2010-10-16,39.747504,-0.997679,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460558965,media,CC-BY-NC-4.0
 Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2010-09-09,39.910263,-0.367699,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462049264,media,CC-BY-NC-4.0
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2010-07-03,39.496491,-0.370877,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459920462,media,CC-BY-NC-4.0
@@ -667,6 +773,7 @@ Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2009-04-25,38.778577
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2009-04-10,38.145349,-2.631644,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461105355,media,CC-BY-NC-4.0
 Hydnum repandum,lengua de gato; lengua de oveja; lengua de vaca,2008-12-21T12:10,39.276149,-0.278477,542.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/4009839409,alta,CC-BY-NC-4.0
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2008-12-07,37.52535,-1.843386,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462024107,media,CC-BY-NC-4.0
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2008-12-06,38.985742,-0.306147,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462529638,media,CC-BY-NC-4.0
 Hygrophorus latitabundus,llenega negra; llenega gris; mocosa,2008-11-21,38.649037,-0.561976,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459991796,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2008-11-20,39.913334,-0.57232,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462200776,media,CC-BY-NC-4.0
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2008-11-20,39.852998,-0.513552,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461857816,media,CC-BY-NC-4.0
@@ -676,13 +783,18 @@ Lactarius sanguifluus,,2008-11-13,39.77,-0.58,707.0,GBIF dataset 95e635d4-f762-1
 Lepista nuda,pie azul,2008-10-28,38.772663,-0.555213,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460669930,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2008-10-26,37.879382,-1.521205,9.0,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/5008812597,media,CC-BY-NC-4.0
 Amanita verna,amanita de primavera; cicuta blanca,2008-10-26,38.24418,-2.049809,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460351510,media,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2008-10-26,38.779876,-0.515677,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461090652,media,CC-BY-NC-4.0
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2008-10-23,40.0,-0.76,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4041004794,media,CC-BY-NC-4.0
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2008-10-23,40.0,-0.76,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040681181,media,CC-BY-NC-4.0
 Amanita pantherina,pantera; amanita pantera; falso galipierno,2008-10-23,40.0,-0.76,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4041004795,media,CC-BY-NC-4.0
+Suillus luteus,,2008-10-23,39.95,-0.78,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040996813,media,CC-BY-NC-4.0
+Tricholoma portentosum,capuchina; ratón,2008-10-23,40.0,-0.76,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040676775,media,CC-BY-NC-4.0
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2008-10-21,38.982721,-0.338415,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462546328,media,CC-BY-NC-4.0
 Amanita caesarea,oronja; tana; yema; amanita de los césares,2008-10-18T10:07,38.059229,-0.658946,403.0,GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist),https://www.gbif.org/occurrence/3384795855,alta,CC-BY-NC-4.0
 Lepista nuda,pie azul,2008-10-18,37.867536,-1.50444,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461122488,media,CC-BY-NC-4.0
 Suillus collinitus,,2008-10-18,37.8674,-1.500664,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461196837,media,CC-BY-NC-4.0
+Suillus luteus,,2008-10-16,39.95,-0.78,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4041004793,media,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2008-10-12,38.191919,-2.057533,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461485856,media,CC-BY-NC-4.0
 Suillus bellinii,,2008-10-11,38.983065,-0.303583,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460152400,media,CC-BY-NC-4.0
 Pleurotus eryngii,seta de cardo; seta de cardo corredor,2008-05-29,37.526065,-1.842742,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4462589242,media,CC-BY-NC-4.0
 Amanita muscaria,matamoscas; falsa oronja; oronja pintada,2007-12-20,40.04,-0.63,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501026842,media,CC-BY-NC-4.0
@@ -706,10 +818,12 @@ Amanita muscaria,matamoscas; falsa oronja; oronja pintada,2007-10-30,38.98,-0.3,
 Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2007-10-22,38.76,-0.57,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4853752758,media,CC-BY-NC-4.0
 Lepiota brunneoincarnata,,2007-10-19,38.66,-0.48,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040701812,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2007-10-13,38.629698,-0.765497,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461760706,media,CC-BY-NC-4.0
+Suillus granulatus,,2007-10-13,38.636346,-0.866139,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461090647,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2007-10-07,38.779876,-0.515677,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461138592,media,CC-BY-NC-4.0
 Agaricus campestris,champiñón de campo; hongo,2007-05-03,39.38,-0.32,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501017205,media,CC-BY-NC-4.0
 Agaricus campestris,champiñón de campo; hongo,2007-04-28,39.38,-0.34,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501032558,media,CC-BY-NC-4.0
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2007-04-27,38.336748,-2.308468,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461236407,media,CC-BY-NC-4.0
+Pleurotus ostreatus,seta de ostra; seta de chopo; orellana,2006-12-15,39.470239,-0.376805,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4460426405,media,CC-BY-NC-4.0
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2006-12-15,38.66,-0.48,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4041004808,media,CC-BY-NC-4.0
 Lactarius chrysorrheus,falso níscalo,2006-12-05,38.753514,-0.556355,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4459995205,media,CC-BY-NC-4.0
 Agaricus campestris,champiñón de campo; hongo,2006-11-21,38.6,-0.64,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501023206,media,CC-BY-NC-4.0
@@ -729,6 +843,7 @@ Amanita phalloides,oronja verde; cicuta verde; oronja mortal,2006-03-14,38.99,-0
 Amanita pantherina,pantera; amanita pantera; falso galipierno,2006-03-13,38.99,-0.29,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501025660,media,CC-BY-NC-4.0
 Boletus aereus,tentullo; tontullo; hongo negro,2006-03-11,38.99,-0.29,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501024629,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2006-02-25,38.8,-0.81,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501015300,media,CC-BY-NC-4.0
+Suillus granulatus,,2006-02-19,38.8,-0.81,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501015294,media,CC-BY-NC-4.0
 Suillus collinitus,,2006-02-18,38.8,-0.81,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501015311,media,CC-BY-NC-4.0
 Suillus bellinii,,2006-02-17,38.8,-0.81,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501015290,media,CC-BY-NC-4.0
 Omphalotus olearius,seta de olivo,2006-02-13,39.02,-0.35,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501024871,media,CC-BY-NC-4.0
@@ -752,6 +867,7 @@ Russula cyanoxantha,carbonera; seta de cerdos,2005-03-06,39.37,-0.41,707.0,GBIF 
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2005-02-27,39.13,-0.36,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501015179,media,CC-BY-NC-4.0
 Agaricus campestris,champiñón de campo; hongo,2005-02-25,39.23,-0.53,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501015238,media,CC-BY-NC-4.0
 Agaricus campestris,champiñón de campo; hongo,2005-02-24,39.44,-0.47,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501015216,media,CC-BY-NC-4.0
+Suillus granulatus,,2005-01-08,38.81,-0.88,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501852935,media,CC-BY-NC-4.0
 Lepista nuda,pie azul,2004-12-16,38.742042,-0.555657,,GBIF dataset 8a863029-f435-446a-821e-275f4f641165,https://www.gbif.org/occurrence/4461816784,media,CC-BY-NC-4.0
 Suillus collinitus,,2004-12-10,38.11,-1.0,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501030191,media,CC-BY-NC-4.0
 Macrolepiota procera,parasol; paraguas; gallipierno; apagador,2004-11-20,39.0,-1.461,707.0,GBIF dataset 85b2fcd8-f762-11e1-a439-00145eb45e9a (MA),https://www.gbif.org/occurrence/78504995,alta,CC-BY-NC-4.0
@@ -819,6 +935,7 @@ Lactarius sanguifluus,,2003-11-10,39.32,-0.58,707.0,GBIF dataset 95e635d4-f762-1
 Amanita muscaria,matamoscas; falsa oronja; oronja pintada,2003-11-09,38.27148,-2.63417,,GBIF dataset a4144680-8b18-4178-aa8a-678842403c59 (JA-CAGPDS-CAM),https://www.gbif.org/occurrence/3110699500,alta,CC-BY-NC-4.0
 Omphalotus olearius,seta de olivo,2003-11-09,38.27148,-2.63417,,GBIF dataset a4144680-8b18-4178-aa8a-678842403c59 (JA-CAGPDS-CAM),https://www.gbif.org/occurrence/3110703519,alta,CC-BY-NC-4.0
 Lactarius chrysorrheus,falso níscalo,2003-11-09,38.27148,-2.63417,,GBIF dataset a4144680-8b18-4178-aa8a-678842403c59 (JA-CAGPDS-CAM),https://www.gbif.org/occurrence/3110699518,alta,CC-BY-NC-4.0
+Suillus granulatus,,2003-11-09,38.31635,-2.57675,,GBIF dataset a4144680-8b18-4178-aa8a-678842403c59 (JA-CAGPDS-CAM),https://www.gbif.org/occurrence/3110703621,alta,CC-BY-NC-4.0
 Boletus aereus,tentullo; tontullo; hongo negro,2003-11-08,38.38817,-2.50763,,GBIF dataset a4144680-8b18-4178-aa8a-678842403c59 (JA-CAGPDS-CAM),https://www.gbif.org/occurrence/3110704980,alta,CC-BY-NC-4.0
 Scleroderma citrinum,escleroderma; escleroderma verrugoso,2003-11-08,38.38817,-2.50763,,GBIF dataset a4144680-8b18-4178-aa8a-678842403c59 (JA-CAGPDS-CAM),https://www.gbif.org/occurrence/3110704903,alta,CC-BY-NC-4.0
 Lactarius sanguifluus,,2003-11-08,38.37926,-2.53059,,GBIF dataset a4144680-8b18-4178-aa8a-678842403c59 (JA-CAGPDS-CAM),https://www.gbif.org/occurrence/3110696582,alta,CC-BY-NC-4.0
@@ -850,6 +967,7 @@ Amanita pantherina,pantera; amanita pantera; falso galipierno,2003-07-23,40.04,-
 Amanita pantherina,pantera; amanita pantera; falso galipierno,2003-07-18,40.04,-0.63,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501020088,media,CC-BY-NC-4.0
 Amanita muscaria,matamoscas; falsa oronja; oronja pintada,2003-07-16,40.04,-0.63,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501020068,media,CC-BY-NC-4.0
 Agaricus campestris,champiñón de campo; hongo,2003-07-11,40.04,-0.66,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501023374,media,CC-BY-NC-4.0
+Tricholoma portentosum,capuchina; ratón,2003-06-12,40.04,-0.63,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501019309,media,CC-BY-NC-4.0
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2003-05-09,38.66,-0.52,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/4040704648,media,CC-BY-NC-4.0
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2003-05-02,38.11819,-2.61212,,GBIF dataset a4144680-8b18-4178-aa8a-678842403c59 (JA-CAGPDS-CAM),https://www.gbif.org/occurrence/3110700431,alta,CC-BY-NC-4.0
 Morchella esculenta,colmenilla; cagarria; morilla; múrgula,2003-05-01,38.28038,-2.59983,,GBIF dataset a4144680-8b18-4178-aa8a-678842403c59 (JA-CAGPDS-CAM),https://www.gbif.org/occurrence/3110703582,alta,CC-BY-NC-4.0
@@ -877,6 +995,7 @@ Lactarius sanguifluus,,2001-11-19,40.02,-0.66,707.0,GBIF dataset 95e635d4-f762-1
 Lactarius sanguifluus,,2001-11-19,40.03,-0.69,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1500674295,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2001-11-16,39.82,-0.34,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1500674303,media,CC-BY-NC-4.0
 Suillus collinitus,,2001-11-16,37.70148,-2.19458,,GBIF dataset a4144680-8b18-4178-aa8a-678842403c59 (JA-CAGPDS-CAM),https://www.gbif.org/occurrence/3110698688,alta,CC-BY-NC-4.0
+Suillus granulatus,,2001-11-16,37.68376,-2.24014,,GBIF dataset a4144680-8b18-4178-aa8a-678842403c59 (JA-CAGPDS-CAM),https://www.gbif.org/occurrence/3110704893,alta,CC-BY-NC-4.0
 Lepista nuda,pie azul,2001-11-14,37.68346,-2.19477,,GBIF dataset a4144680-8b18-4178-aa8a-678842403c59 (JA-CAGPDS-CAM),https://www.gbif.org/occurrence/3110704876,alta,CC-BY-NC-4.0
 Suillus collinitus,,2001-11-14,37.68346,-2.19477,,GBIF dataset a4144680-8b18-4178-aa8a-678842403c59 (JA-CAGPDS-CAM),https://www.gbif.org/occurrence/3110704874,alta,CC-BY-NC-4.0
 Lactarius chrysorrheus,falso níscalo,2001-11-13,39.75,-0.5,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1500674239,media,CC-BY-NC-4.0
@@ -898,8 +1017,11 @@ Caloboletus calopus,boleto amargo,2001-10-18,40.0,0.19,707.0,GBIF dataset 85b2fc
 Omphalotus olearius,seta de olivo,2001-10-18,40.0,0.237,707.0,GBIF dataset 85b2fcd8-f762-11e1-a439-00145eb45e9a (MA),https://www.gbif.org/occurrence/4066136269,alta,CC-BY-NC-4.0
 Lactarius sanguifluus,,2001-10-17,40.0,0.176,707.0,GBIF dataset 85b2fcd8-f762-11e1-a439-00145eb45e9a (MA),https://www.gbif.org/occurrence/78499481,alta,CC-BY-NC-4.0
 Suillus collinitus,,2001-10-17,40.0,0.176,707.0,GBIF dataset 85b2fcd8-f762-11e1-a439-00145eb45e9a (MA),https://www.gbif.org/occurrence/4066133670,alta,CC-BY-NC-4.0
+Suillus luteus,,2001-10-17,40.0,0.211,707.0,GBIF dataset 85b2fcd8-f762-11e1-a439-00145eb45e9a (MA),https://www.gbif.org/occurrence/4066133721,alta,CC-BY-NC-4.0
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,2001-10-17,40.0,0.199,707.0,GBIF dataset 85b2fcd8-f762-11e1-a439-00145eb45e9a (MA),https://www.gbif.org/occurrence/78479218,alta,CC-BY-NC-4.0
 Suillus collinitus,,2001-10-16,40.0,0.258,707.0,GBIF dataset 85b2fcd8-f762-11e1-a439-00145eb45e9a (MA),https://www.gbif.org/occurrence/4066135553,alta,CC-BY-NC-4.0
 Suillus collinitus,,2001-10-16,40.0,0.27,707.0,GBIF dataset 85b2fcd8-f762-11e1-a439-00145eb45e9a (MA),https://www.gbif.org/occurrence/4066138189,alta,CC-BY-NC-4.0
+Suillus luteus,,2001-10-16,40.0,0.258,707.0,GBIF dataset 85b2fcd8-f762-11e1-a439-00145eb45e9a (MA),https://www.gbif.org/occurrence/4066137591,alta,CC-BY-NC-4.0
 Lactarius deliciosus,níscalo; mízcalo; guíscano; nízcalo,2001-10-11,39.79,-1.23,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1500674182,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2001-10-11,38.83,-0.28,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1500674181,media,CC-BY-NC-4.0
 Lactarius sanguifluus,,2001-10-11,38.84,-0.29,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1500674214,media,CC-BY-NC-4.0
@@ -1050,7 +1172,10 @@ Omphalotus olearius,seta de olivo,1995-03-27,39.89,-0.33,707.0,GBIF dataset 95e6
 Omphalotus olearius,seta de olivo,1995-03-26,39.88,-0.27,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501032071,media,CC-BY-NC-4.0
 Scleroderma citrinum,escleroderma; escleroderma verrugoso,1995-03-17,39.88,-0.27,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501028419,media,CC-BY-NC-4.0
 Hydnum repandum,lengua de gato; lengua de oveja; lengua de vaca,1995-01-29,39.89,-0.33,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501027789,media,CC-BY-NC-4.0
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,1995-01-28,39.95,-0.41,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501027801,media,CC-BY-NC-4.0
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,1995-01-27,39.88,-0.27,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501027804,media,CC-BY-NC-4.0
 Cantharellus cibarius,rebozuelo; cabrilla; chantarela,1995-01-26,39.95,-0.41,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501027749,media,CC-BY-NC-4.0
+Craterellus cornucopioides,trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla,1995-01-25,39.95,-0.41,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501027783,media,CC-BY-NC-4.0
 Cantharellus cibarius,rebozuelo; cabrilla; chantarela,1995-01-24,39.88,-0.39,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501030471,media,CC-BY-NC-4.0
 Cantharellus cibarius,rebozuelo; cabrilla; chantarela,1995-01-23,39.9,-0.34,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501030531,media,CC-BY-NC-4.0
 Cantharellus cibarius,rebozuelo; cabrilla; chantarela,1995-01-20,39.89,-0.33,707.0,GBIF dataset 95e635d4-f762-11e1-a439-00145eb45e9a (BDBCV),https://www.gbif.org/occurrence/1501030468,media,CC-BY-NC-4.0

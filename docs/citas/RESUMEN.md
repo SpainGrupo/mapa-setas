@@ -1,12 +1,10 @@
 # Citas de setas: Marbella y Alicante
 
-Generado 2026-11-07 desde `pipeline/data/<región>/out/citas.geojson` (GBIF, iNaturalist, Observation.org vía GBIF, foros y literatura). Uso personal y no comercial; cada registro conserva su licencia en el geojson.
-
-Nuevas frente a antes del refresco (cita no presente en el citas.geojson anterior; incluye también citas antiguas que las APIs devuelven ahora): Marbella 13 (1 caesarea, 1 boletus, 0 lactarius), Alicante 24 (0 caesarea, 0 boletus, 3 lactarius). Observadas desde el 15/10/2026: Marbella 9 (1 caesarea, 1 boletus, 0 lactarius), Alicante 23 (4 lactarius).
+Generado 2026-11-08 desde `pipeline/data/<región>/out/citas.geojson` (GBIF, iNaturalist, Observation.org vía GBIF, foros y literatura) con `uv run python -m setas_pipeline.citas_docs`. Uso personal y no comercial; cada registro conserva su licencia en el CSV.
 
 Ficheros: `citas-<región>.csv` (todas), `citas-<región>.gpx` (importable en Mis sitios; estrellas = confianza: alta 3, media 2, baja 1).
 
-## Marbella: 1881 citas (antes del refresco 1868; nuevas 13)
+## Marbella: 1881 citas
 
 **Por fuente:** foro 4, gbif 522, inat 671, literatura 16, observation 668
  
@@ -77,12 +75,11 @@ Ficheros: `citas-<región>.csv` (todas), `citas-<región>.gpx` (importable en Mi
 | 2026-02-23 | Agaricus campestris | inat | https://www.inaturalist.org/observations/408820057 |
 | 2026-02-22T10:27:27 | Morchella esculenta | inat | https://www.gbif.org/occurrence/6188592025 |
 
+## Alicante: 1241 citas
 
-## Alicante: 1116 citas (antes del refresco 1096; nuevas 24)
-
-**Por fuente:** gbif 485, inat 399, observation 232
+**Por fuente:** gbif 501, inat 474, observation 266
  
-**Por año:** sin  4, 2026 47, 2025 98, 2024 82, 2023 30, 2022 62, 2021 55, 2020 31, 2019 16, 2018 38, 2017 6, 2016 26, 2015 33, 2014 15, 2013 7, 2012 47, 2011 39, 2010 22, 2009 12, 2008 20, 2007 25, 2006 22, 2005 20, 2004 34, 2003 68, 2002 14, 2001 43, 2000 12, 1999 15, 1998 29, 1997 21, 1996 21, 1995 56, 1994 15, 1993 1, 1992 3, 1990 1, 1987 1, 1984 6, 1981 1, 1979 1, 1971 17
+**Por año:** sin  4, 2026 54, 2025 107, 2024 100, 2023 41, 2022 74, 2021 66, 2020 39, 2019 17, 2018 44, 2017 6, 2016 28, 2015 35, 2014 18, 2013 9, 2012 52, 2011 45, 2010 25, 2009 12, 2008 26, 2007 26, 2006 24, 2005 21, 2004 34, 2003 70, 2002 14, 2001 47, 2000 12, 1999 15, 1998 29, 1997 21, 1996 21, 1995 59, 1994 15, 1993 1, 1992 3, 1990 1, 1987 1, 1984 6, 1981 1, 1979 1, 1971 17
  
 
 | especie | nombre común | citas |
@@ -93,6 +90,7 @@ Ficheros: `citas-<región>.csv` (todas), `citas-<región>.gpx` (importable en Mi
 | Lactarius deliciosus | níscalo; mízcalo; guíscano; nízcalo | 69 |
 | Morchella esculenta | colmenilla; cagarria; morilla; múrgula | 65 |
 | Suillus bellinii |  | 65 |
+| Suillus granulatus |  | 61 |
 | Omphalotus olearius | seta de olivo | 59 |
 | Agaricus campestris | champiñón de campo; hongo | 56 |
 | Lactarius chrysorrheus | falso níscalo | 47 |
@@ -101,17 +99,21 @@ Ficheros: `citas-<región>.csv` (todas), `citas-<región>.gpx` (importable en Mi
 | Amanita phalloides | oronja verde; cicuta verde; oronja mortal | 39 |
 | Scleroderma citrinum | escleroderma; escleroderma verrugoso | 37 |
 | Lepiota brunneoincarnata |  | 31 |
+| Pleurotus ostreatus | seta de ostra; seta de chopo; orellana | 30 |
 | Hygrophorus latitabundus | llenega negra; llenega gris; mocosa | 27 |
 | Amanita pantherina | pantera; amanita pantera; falso galipierno | 24 |
 | Caloboletus radicans | hongo blanco; boleto blanco | 21 |
+| Craterellus cornucopioides | trompeta de los muertos; trompeta negra; angula de monte; trompeta amarilla | 21 |
 | Hydnum repandum | lengua de gato; lengua de oveja; lengua de vaca | 20 |
 | Rubroboletus satanas |  | 19 |
 | Amanita caesarea | oronja; tana; yema; amanita de los césares | 18 |
 | Russula cyanoxantha | carbonera; seta de cerdos | 17 |
 | Boletus aereus | tentullo; tontullo; hongo negro | 16 |
 | Amanita muscaria | matamoscas; falsa oronja; oronja pintada | 13 |
+| Suillus luteus |  | 10 |
 | Cantharellus cibarius | rebozuelo; cabrilla; chantarela | 7 |
 | Amanita verna | amanita de primavera; cicuta blanca | 4 |
+| Tricholoma portentosum | capuchina; ratón | 3 |
 | Chlorophyllum rhacodes | apagador menor | 2 |
 | Boletus edulis | calabaza; seta de calabaza; hongo blanco | 2 |
 | Caloboletus calopus | boleto amargo | 1 |
@@ -141,5 +143,3 @@ Ficheros: `citas-<región>.csv` (todas), `citas-<región>.gpx` (importable en Mi
 | 2026-10-24 | Chlorophyllum rhacodes | inat | https://www.inaturalist.org/observations/410460794 |
 | 2026-10-24 | Lactarius deliciosus | inat | https://www.inaturalist.org/observations/410709812 |
 | 2026-10-22 | Suillus collinitus | inat | https://www.inaturalist.org/observations/410143451 |
-
-

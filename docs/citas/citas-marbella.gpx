@@ -79,7 +79,7 @@
     <extensions><setas:sitio id="bc0fc729-edf4-5704-94bf-9d699c5fedb6" estrellas="1" especie="russula_cyanoxantha"/></extensions>
   </wpt>
   <wpt lat="37.12263" lon="-3.50751">
-    <time>2026-04-13T15:49:29T00:00:00Z</time>
+    <time>2026-04-13T00:00:00Z</time>
     <name>P. eryngii 13/04/26</name>
     <desc>Cita de Pleurotus eryngii. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6235587321. Precisión: 14 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="859c9592-fd66-5c15-a9ac-2338f6eae117" estrellas="3" especie="pleurotus_eryngii"/></extensions>
@@ -91,7 +91,7 @@
     <extensions><setas:sitio id="9a28fe5e-6dd9-53cb-8bed-e1d36f37aa46" estrellas="3" especie="morchella_spp"/></extensions>
   </wpt>
   <wpt lat="37.99357" lon="-5.66944">
-    <time>2026-03-29T10:57T00:00:00Z</time>
+    <time>2026-03-29T00:00:00Z</time>
     <name>M. esculenta 29/03/26</name>
     <desc>Cita de Morchella esculenta. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6579006681. Precisión: 47 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="f323b337-0c1d-5945-b8b8-4b3626f138b4" estrellas="3" especie="morchella_spp"/></extensions>
@@ -115,7 +115,7 @@
     <extensions><setas:sitio id="fccb532a-4e07-5d9b-abff-a2a586502bac" estrellas="1" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="37.14956" lon="-4.69010">
-    <time>2026-02-22T10:27:27T00:00:00Z</time>
+    <time>2026-02-22T00:00:00Z</time>
     <name>M. esculenta 22/02/26</name>
     <desc>Cita de Morchella esculenta. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6188592025. Precisión: 248 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="41719b2c-23ba-55db-a91b-affad2e946db" estrellas="3" especie="morchella_spp"/></extensions>
@@ -127,7 +127,7 @@
     <extensions><setas:sitio id="010f9660-1930-5c7f-b1cc-a0a621cb7e66" estrellas="1" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="36.68985" lon="-6.14775">
-    <time>2026-02-13T10:04:35T00:00:00Z</time>
+    <time>2026-02-13T00:00:00Z</time>
     <name>P. ostreatus 13/02/26</name>
     <desc>Cita de Pleurotus ostreatus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6159375104. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="1d4b70dd-8646-5772-a82e-bb41629b0bee" estrellas="3" especie="pleurotus_ostreatus"/></extensions>
@@ -181,13 +181,13 @@
     <extensions><setas:sitio id="9d1e5ca4-279e-5f9f-bdc6-3d997cd516df" estrellas="3" especie="pleurotus_eryngii"/></extensions>
   </wpt>
   <wpt lat="37.09168" lon="-6.72749">
-    <time>2026-01-17T17:16T00:00:00Z</time>
+    <time>2026-01-17T00:00:00Z</time>
     <name>A. muscaria 17/01/26</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6131082203. Precisión: 610 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="8df980bf-9114-5adc-bc2c-22604f64f2f7" estrellas="3" especie="amanita_muscaria"/></extensions>
   </wpt>
   <wpt lat="37.92648" lon="-5.71472">
-    <time>2026-01-17T17:11:43T00:00:00Z</time>
+    <time>2026-01-17T00:00:00Z</time>
     <name>S. citrinum 17/01/26</name>
     <desc>Cita de Scleroderma citrinum. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6130374427. Precisión: 4 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="7deab62d-cd01-52c3-86ca-77225eaed893" estrellas="3" especie="scleroderma_citrinum"/></extensions>
@@ -199,7 +199,7 @@
     <extensions><setas:sitio id="43976100-2eec-51e5-bcde-8ed17b7f7e4c" estrellas="1" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="36.64283" lon="-4.68767">
-    <time>2026-01-11T12:13T00:00:00Z</time>
+    <time>2026-01-11T00:00:00Z</time>
     <name>L. deliciosus 11/01/26</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6131222811. Precisión: 4000 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="016d83e6-4f90-5c36-a4be-edbfaab4e4ac" estrellas="3" especie="lactarius_deliciosus"/></extensions>
@@ -235,7 +235,7 @@
     <extensions><setas:sitio id="6cd9a726-ee66-5fd2-8092-988e4c3659a3" estrellas="1" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="36.52302" lon="-6.28004">
-    <time>2026-01-05T12:17:55T00:00:00Z</time>
+    <time>2026-01-05T00:00:00Z</time>
     <name>L. sanguifluus 05/01/26</name>
     <desc>Cita de Lactarius sanguifluus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6566864666. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="f183ae64-aa4e-561d-88ce-a832670aaf30" estrellas="3" especie="lactarius_sanguifluus"/></extensions>
@@ -301,7 +301,7 @@
     <extensions><setas:sitio id="efb747a8-b62a-5752-9ac0-e87b5f5e9f0d" estrellas="2" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.90533" lon="-4.82060">
-    <time>2025-12-28T14:06:26T00:00:00Z</time>
+    <time>2025-12-28T00:00:00Z</time>
     <name>O. olearius 28/12/25</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6130173583. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="98c840b9-190c-54ef-a15b-819983437785" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -343,13 +343,13 @@
     <extensions><setas:sitio id="eefdf9ba-cc98-58b6-be47-d6b6ce208e63" estrellas="3" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="37.60065" lon="-6.33751">
-    <time>2025-12-26T16:09:20T00:00:00Z</time>
+    <time>2025-12-26T00:00:00Z</time>
     <name>L. deliciosus 26/12/25</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6566808990. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="4986d9c4-11d8-5aa0-a2e5-08f4129f9dc9" estrellas="3" especie="lactarius_deliciosus"/></extensions>
   </wpt>
   <wpt lat="37.91286" lon="-4.88041">
-    <time>2025-12-26T11:30:20T00:00:00Z</time>
+    <time>2025-12-26T00:00:00Z</time>
     <name>O. olearius 26/12/25</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6131365649. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="e431afba-9a8d-5453-9f7c-ec3d26046f13" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -373,7 +373,7 @@
     <extensions><setas:sitio id="d3960018-9bf3-5861-8da0-780d0aefa79c" estrellas="2" especie="lactarius_chrysorrheus"/></extensions>
   </wpt>
   <wpt lat="36.28125" lon="-5.39127">
-    <time>2025-12-25T11:42:52T00:00:00Z</time>
+    <time>2025-12-25T00:00:00Z</time>
     <name>A. phalloides 25/12/25</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6130702081. Precisión: 4 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="f2b3fb87-1e4e-520b-b66d-eb6cfc4eef15" estrellas="3" especie="amanita_phalloides"/></extensions>
@@ -397,7 +397,7 @@
     <extensions><setas:sitio id="31388858-b672-5850-a52e-3744e96609a6" estrellas="1" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="36.28475" lon="-5.39245">
-    <time>2025-12-24T17:49:09T00:00:00Z</time>
+    <time>2025-12-24T00:00:00Z</time>
     <name>A. phalloides 24/12/25</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6147265593. Precisión: 18 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="3991970b-1f00-5315-a0db-0caa403352ec" estrellas="3" especie="amanita_phalloides"/></extensions>
@@ -415,7 +415,7 @@
     <extensions><setas:sitio id="237884a8-5c68-5eaf-9349-ee72daada8f1" estrellas="3" especie="pleurotus_ostreatus"/></extensions>
   </wpt>
   <wpt lat="37.97588" lon="-4.86613">
-    <time>2025-12-22T11:50:56T00:00:00Z</time>
+    <time>2025-12-22T00:00:00Z</time>
     <name>O. olearius 22/12/25</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5936123181. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="73a3ebbd-70b3-5f0e-9b3f-01423910df8b" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -433,7 +433,7 @@
     <extensions><setas:sitio id="246f4dff-460d-578a-b4d0-08cd58fd9805" estrellas="1" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="37.92187" lon="-4.89772">
-    <time>2025-12-21T11:04T00:00:00Z</time>
+    <time>2025-12-21T00:00:00Z</time>
     <name>L. chrysorrheus 21/12/25</name>
     <desc>Cita de Lactarius chrysorrheus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6159142367. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="08d30a34-9d72-53e2-8883-3f64bbca2936" estrellas="3" especie="lactarius_chrysorrheus"/></extensions>
@@ -457,19 +457,19 @@
     <extensions><setas:sitio id="6da5a2cd-9b5e-5e1f-a357-6d72c2063a8e" estrellas="1" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="36.19685" lon="-5.98198">
-    <time>2025-12-20T15:45T00:00:00Z</time>
+    <time>2025-12-20T00:00:00Z</time>
     <name>O. olearius 20/12/25</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6130395400. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="5b178781-36b6-58de-8543-c9a36b363d6d" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.49132" lon="-6.00113">
-    <time>2025-12-20T15:17:08T00:00:00Z</time>
+    <time>2025-12-20T00:00:00Z</time>
     <name>O. olearius 20/12/25</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5936002997. Precisión: 6 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="6bb555d7-a286-5e00-a3e3-b2ab28afa440" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="36.72013" lon="-5.44583">
-    <time>2025-12-20T10:32T00:00:00Z</time>
+    <time>2025-12-20T00:00:00Z</time>
     <name>O. olearius 20/12/25</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5936372381. Precisión: 88 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="dc3fbdb3-7e34-517b-aa93-c9b3a762f247" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -493,7 +493,7 @@
     <extensions><setas:sitio id="9352161e-4377-5b14-9ac3-a891650a1580" estrellas="1" especie="pleurotus_ostreatus"/></extensions>
   </wpt>
   <wpt lat="36.72308" lon="-4.38629">
-    <time>2025-12-19T10:56:19T00:00:00Z</time>
+    <time>2025-12-19T00:00:00Z</time>
     <name>P. ostreatus 19/12/25</name>
     <desc>Cita de Pleurotus ostreatus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5936150332. Precisión: 3 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="689e3716-bcaa-5068-8206-b29cb5579067" estrellas="3" especie="pleurotus_ostreatus"/></extensions>
@@ -517,7 +517,7 @@
     <extensions><setas:sitio id="ae4cb784-81b6-58ed-9ae4-ba26ea49fb8c" estrellas="1" especie="pleurotus_ostreatus"/></extensions>
   </wpt>
   <wpt lat="37.25668" lon="-6.21619">
-    <time>2025-12-17T12:58:10T00:00:00Z</time>
+    <time>2025-12-17T00:00:00Z</time>
     <name>L. deliciosus 17/12/25</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6567133530. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="c49cd8b1-98d8-5379-a73a-0835435b11aa" estrellas="3" especie="lactarius_deliciosus"/></extensions>
@@ -571,13 +571,13 @@
     <extensions><setas:sitio id="12280713-5db1-55a7-8f03-69a712384370" estrellas="2" especie="pleurotus_ostreatus"/></extensions>
   </wpt>
   <wpt lat="37.84088" lon="-5.11435">
-    <time>2025-12-13T23:23:39T00:00:00Z</time>
+    <time>2025-12-13T00:00:00Z</time>
     <name>L. deliciosus 13/12/25</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6566819898. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="18db1071-2686-5722-b3f8-c06efffcab90" estrellas="3" especie="lactarius_deliciosus"/></extensions>
   </wpt>
   <wpt lat="37.84076" lon="-5.11452">
-    <time>2025-12-13T13:18:08T00:00:00Z</time>
+    <time>2025-12-13T00:00:00Z</time>
     <name>O. olearius 13/12/25</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5932824507. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="f30dec13-d638-5728-96e6-918f7ca513fc" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -607,7 +607,7 @@
     <extensions><setas:sitio id="45b102f1-fdcd-5cc0-a310-2e6e6be4b1cf" estrellas="1" especie="suillus_granulatus"/></extensions>
   </wpt>
   <wpt lat="37.23686" lon="-5.97887">
-    <time>2025-12-12T17:06:43T00:00:00Z</time>
+    <time>2025-12-12T00:00:00Z</time>
     <name>L. deliciosus 12/12/25</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6567509110. Precisión: 609 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="7bba3d51-c34d-5d68-8ed9-1ddeb1574bfb" estrellas="3" especie="lactarius_deliciosus"/></extensions>
@@ -661,13 +661,13 @@
     <extensions><setas:sitio id="2f414684-9aba-5624-9142-c4f9471fec5c" estrellas="1" especie="russula_cyanoxantha"/></extensions>
   </wpt>
   <wpt lat="37.98088" lon="-4.79826">
-    <time>2025-12-07T13:13:22T00:00:00Z</time>
+    <time>2025-12-07T00:00:00Z</time>
     <name>M. procera 07/12/25</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5932760301. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="6d4baecd-cd4a-528f-8cb5-8072bfbccc80" estrellas="3" especie="macrolepiota_procera"/></extensions>
   </wpt>
   <wpt lat="36.23394" lon="-5.58158">
-    <time>2025-12-07T12:52:44T00:00:00Z</time>
+    <time>2025-12-07T00:00:00Z</time>
     <name>A. pantherina 07/12/25</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5932250075. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="2f5ecc2a-d55b-5a71-8b96-748bf7d5c715" estrellas="3" especie="amanita_pantherina"/></extensions>
@@ -685,7 +685,7 @@
     <extensions><setas:sitio id="dac84c63-c742-53a1-b67b-0ca3b63069b4" estrellas="1" especie="suillus_collinitus"/></extensions>
   </wpt>
   <wpt lat="36.69532" lon="-5.44322">
-    <time>2025-12-06T12:13:02T00:00:00Z</time>
+    <time>2025-12-06T00:00:00Z</time>
     <name>O. olearius 06/12/25</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5920186005. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="0a19c482-9f3e-5892-8db4-19f0226bff6f" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -709,7 +709,7 @@
     <extensions><setas:sitio id="64bd8679-077d-5e71-9d9e-77778c2ddf07" estrellas="1" especie="lepiota_brunneoincarnata"/></extensions>
   </wpt>
   <wpt lat="37.41862" lon="-5.99523">
-    <time>2025-12-05T17:49:06T00:00:00Z</time>
+    <time>2025-12-05T00:00:00Z</time>
     <name>O. olearius 05/12/25</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5920019844. Precisión: 205 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="a5810677-d37e-5e52-b5ed-ccd67ee5b16a" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -745,7 +745,7 @@
     <extensions><setas:sitio id="0ea0cbd5-4043-5774-8034-0571f4e4f7ca" estrellas="1" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="36.61798" lon="-6.29680">
-    <time>2025-12-01T15:47:23T00:00:00Z</time>
+    <time>2025-12-01T00:00:00Z</time>
     <name>S. collinitus 01/12/25</name>
     <desc>Cita de Suillus collinitus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5908813599. Precisión: 14 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="086f8bea-c146-54b5-9a81-d86157f85eeb" estrellas="3" especie="suillus_collinitus"/></extensions>
@@ -775,7 +775,7 @@
     <extensions><setas:sitio id="118a9f83-4300-5e56-8b0d-c6d9b5725ba1" estrellas="1" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="37.83066" lon="-5.10917">
-    <time>2025-11-29T08:51:26T00:00:00Z</time>
+    <time>2025-11-29T00:00:00Z</time>
     <name>M. procera 29/11/25</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5908817164. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="e35d3f3d-73fe-5323-a029-b9f1a503669e" estrellas="3" especie="macrolepiota_procera"/></extensions>
@@ -805,13 +805,13 @@
     <extensions><setas:sitio id="dc8eb667-ca9e-5fe0-8ae5-96f3c479bf81" estrellas="1" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.97957" lon="-4.86734">
-    <time>2025-11-23T12:54T00:00:00Z</time>
+    <time>2025-11-23T00:00:00Z</time>
     <name>M. procera 23/11/25</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5903832683. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="72b460e9-cab1-52d8-8b9b-41210ab5846b" estrellas="3" especie="macrolepiota_procera"/></extensions>
   </wpt>
   <wpt lat="37.97566" lon="-4.86739">
-    <time>2025-11-23T11:08:09T00:00:00Z</time>
+    <time>2025-11-23T00:00:00Z</time>
     <name>M. procera 23/11/25</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5903895890. Precisión: 140 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="dac1f88d-9c63-57f8-9886-6e82e0f928dd" estrellas="3" especie="macrolepiota_procera"/></extensions>
@@ -847,7 +847,7 @@
     <extensions><setas:sitio id="884b6cb6-86f1-59bf-9684-abed1a505acb" estrellas="1" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="37.26513" lon="-3.08032">
-    <time>2025-11-22T13:05:49T00:00:00Z</time>
+    <time>2025-11-22T00:00:00Z</time>
     <name>A. muscaria 22/11/25</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6579480596. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="0e7b88b5-a3ed-5ee4-9ad7-560a1efa837f" estrellas="3" especie="amanita_muscaria"/></extensions>
@@ -865,13 +865,13 @@
     <extensions><setas:sitio id="d5306bac-95c0-5386-b8e7-9f3a3959bcf4" estrellas="1" especie="suillus_bellinii"/></extensions>
   </wpt>
   <wpt lat="36.11251" lon="-5.50153">
-    <time>2025-11-20T13:31T00:00:00Z</time>
+    <time>2025-11-20T00:00:00Z</time>
     <name>A. caesarea 20/11/25</name>
     <desc>Cita de Amanita caesarea. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5903712767. Precisión: 4 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="2131f4c7-d9d3-5349-b842-3b10e8dfe82f" estrellas="3" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="36.96030" lon="-3.37346">
-    <time>2025-11-19T14:51:12T00:00:00Z</time>
+    <time>2025-11-19T00:00:00Z</time>
     <name>P. eryngii 19/11/25</name>
     <desc>Cita de Pleurotus eryngii. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6498920423. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="8e0747a6-5032-5de1-96d0-94a0ad42d434" estrellas="3" especie="pleurotus_eryngii"/></extensions>
@@ -895,7 +895,7 @@
     <extensions><setas:sitio id="2ed6635d-8b2b-5ed0-85b8-b3601a844865" estrellas="1" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="37.23998" lon="-3.52356">
-    <time>2025-11-16T13:47T00:00:00Z</time>
+    <time>2025-11-16T00:00:00Z</time>
     <name>L. deliciosus 16/11/25</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5936405625. Precisión: 28 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="0a934f96-4b21-59ee-a78e-a87dfabb7d9c" estrellas="3" especie="lactarius_deliciosus"/></extensions>
@@ -913,7 +913,7 @@
     <extensions><setas:sitio id="5b65a2f9-dc1f-5dd9-9b9a-4c829ea8372a" estrellas="1" especie="pleurotus_ostreatus"/></extensions>
   </wpt>
   <wpt lat="38.14212" lon="-4.00746">
-    <time>2025-11-15T15:07:14T00:00:00Z</time>
+    <time>2025-11-15T00:00:00Z</time>
     <name>P. eryngii 15/11/25</name>
     <desc>Cita de Pleurotus eryngii. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5897791252. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="af10eac3-fba4-5566-a264-bce842cd0684" estrellas="3" especie="pleurotus_eryngii"/></extensions>
@@ -931,7 +931,7 @@
     <extensions><setas:sitio id="60e60471-126e-590a-a310-66036ae71ea2" estrellas="1" especie="pleurotus_eryngii"/></extensions>
   </wpt>
   <wpt lat="36.95607" lon="-3.37329">
-    <time>2025-11-08T16:23:54T00:00:00Z</time>
+    <time>2025-11-08T00:00:00Z</time>
     <name>P. eryngii 08/11/25</name>
     <desc>Cita de Pleurotus eryngii. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6498556723. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="eceeb599-d3ab-58b7-9199-66a7a6228f1e" estrellas="3" especie="pleurotus_eryngii"/></extensions>
@@ -943,13 +943,13 @@
     <extensions><setas:sitio id="baa2f556-8c84-557d-8797-792f4271f101" estrellas="1" especie="pleurotus_eryngii"/></extensions>
   </wpt>
   <wpt lat="36.51890" lon="-5.64042">
-    <time>2025-11-07T16:22:41T00:00:00Z</time>
+    <time>2025-11-07T00:00:00Z</time>
     <name>P. ostreatus 07/11/25</name>
     <desc>Cita de Pleurotus ostreatus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5892890846. Precisión: 57 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="c577128d-53ce-55d3-917c-cd22204587c6" estrellas="3" especie="pleurotus_ostreatus"/></extensions>
   </wpt>
   <wpt lat="36.58886" lon="-5.38680">
-    <time>2025-11-06T13:29:49T00:00:00Z</time>
+    <time>2025-11-06T00:00:00Z</time>
     <name>A. campestris 06/11/25</name>
     <desc>Cita de Agaricus campestris. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6480284899. Precisión: 6 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="67b9f31d-0317-514d-928e-ac454179a5d4" estrellas="3" especie="agaricus_campestris"/></extensions>
@@ -979,32 +979,32 @@
     <extensions><setas:sitio id="c2f9d2b2-247a-5c3a-8941-d3b9dabb58ab" estrellas="1" especie="pleurotus_ostreatus"/></extensions>
   </wpt>
   <wpt lat="37.16198" lon="-3.51863">
-    <time>2025-11-02T16:46T00:00:00Z</time>
+    <time>2025-11-02T00:00:00Z</time>
     <name>B. reticulatus 02/11/25</name>
     <desc>Cita de Boletus reticulatus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5892427822. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="479b26a5-e9d0-53b8-a793-b391a7d4ee84" estrellas="3" especie="boletus_reticulatus"/></extensions>
   </wpt>
   <wpt lat="36.95846" lon="-3.37465">
-    <time>2025-11-02T12:57:16T00:00:00Z</time>
+    <time>2025-11-02T00:00:00Z</time>
     <name>P. eryngii 02/11/25</name>
     <desc>Cita de Pleurotus eryngii. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6500319847. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="5a119be6-f4d9-5b25-837b-1e91f0730b70" estrellas="3" especie="pleurotus_eryngii"/></extensions>
   </wpt>
   <wpt lat="36.57000" lon="-5.41000">
-    <time>2025-11T00:00:00Z</time>
-    <name>A. caesarea /11/25</name>
+    <time>2026-11-07T00:00:00Z</time>
+    <name>A. caesarea 11/25</name>
     <desc>Cita de Amanita caesarea. Fuente: Cortes de la Frontera y parques de Grazalema / Alcornocales (salidas de las jornadas) (comarca (aprox.)). URL: https://www.malagahoy.es/provincia/setas-mundo-oculto-hongos_0_2005292014.html. Precisión: 15000 m. Confianza: media.</desc>
     <extensions><setas:sitio id="97a958b9-101e-58bc-9e64-616c16caa681" estrellas="2" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="36.57000" lon="-5.41000">
-    <time>2025-11T00:00:00Z</time>
-    <name>B. aereus /11/25</name>
+    <time>2026-11-07T00:00:00Z</time>
+    <name>B. aereus 11/25</name>
     <desc>Cita de Boletus aereus. Fuente: Cortes de la Frontera y parques de Grazalema / Alcornocales (salidas de las jornadas) (comarca (aprox.)). URL: https://www.malagahoy.es/provincia/setas-mundo-oculto-hongos_0_2005292014.html. Precisión: 15000 m. Confianza: media.</desc>
     <extensions><setas:sitio id="97a958b9-101e-58bc-9e64-616c16caa681" estrellas="2" especie="boletus_aereus"/></extensions>
   </wpt>
   <wpt lat="36.85580" lon="-3.87680">
-    <time>2025-11T00:00:00Z</time>
-    <name>B. aereus /11/25</name>
+    <time>2026-11-07T00:00:00Z</time>
+    <name>B. aereus 11/25</name>
     <desc>Cita de Boletus aereus. Fuente: Sierras de Tejeda, Almijara y Alhama (sierra (centroide Nominatim)). URL: https://www.malagahoy.es/la-farola/guia-completa-setas-malaga-rutas-especies-consejos-seguridad_0_2005216146.html. Precisión: 15000 m. Confianza: baja.</desc>
     <extensions><setas:sitio id="696327ab-5815-55d4-a5b3-b0439b75c28e" estrellas="1" especie="boletus_aereus"/></extensions>
   </wpt>
@@ -1033,49 +1033,49 @@
     <extensions><setas:sitio id="45f71bc8-25a3-5de2-86ab-e5ebc4fc1ed3" estrellas="1" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="37.11099" lon="-3.17151">
-    <time>2025-10-18T15:01:23T00:00:00Z</time>
+    <time>2025-10-18T00:00:00Z</time>
     <name>L. deliciosus 18/10/25</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6566417869. Precisión: 28447 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="600ffe13-da03-50a0-bd98-76bbd389b571" estrellas="3" especie="lactarius_deliciosus"/></extensions>
   </wpt>
   <wpt lat="37.12518" lon="-3.17396">
-    <time>2025-10-18T12:59:53T00:00:00Z</time>
+    <time>2025-10-18T00:00:00Z</time>
     <name>P. eryngii 18/10/25</name>
     <desc>Cita de Pleurotus eryngii. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6499804654. Precisión: 28447 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="4c2ce608-7224-5849-823e-4b6e9aa1f848" estrellas="3" especie="pleurotus_eryngii"/></extensions>
   </wpt>
   <wpt lat="37.17832" lon="-3.16404">
-    <time>2025-10-18T12:30T00:00:00Z</time>
+    <time>2025-10-18T00:00:00Z</time>
     <name>A. phalloides 18/10/25</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6518951768. Precisión: 948 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="6f6fe69a-4bbd-58fe-ab65-668b579651a1" estrellas="3" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="37.03685" lon="-3.10266">
-    <time>2025-10-18T12:28:13T00:00:00Z</time>
+    <time>2025-10-18T00:00:00Z</time>
     <name>A. phalloides 18/10/25</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6170882659. Precisión: 28447 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="173f1b6b-faf0-5f43-bd63-9d6059a93c16" estrellas="3" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="37.13362" lon="-3.17586">
-    <time>2025-10-18T11:07:36T00:00:00Z</time>
+    <time>2025-10-18T00:00:00Z</time>
     <name>S. luteus 18/10/25</name>
     <desc>Cita de Suillus luteus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6171045006. Precisión: 28447 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="8c4135e6-1e2c-57e8-9085-4367e9219c9d" estrellas="3" especie="suillus_luteus"/></extensions>
   </wpt>
   <wpt lat="37.07060" lon="-3.09797">
-    <time>2025-10-18T10:58:05T00:00:00Z</time>
+    <time>2025-10-18T00:00:00Z</time>
     <name>S. luteus 18/10/25</name>
     <desc>Cita de Suillus luteus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6170895511. Precisión: 28447 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="285542da-84f1-575f-8719-1320a80167d1" estrellas="3" especie="suillus_luteus"/></extensions>
   </wpt>
   <wpt lat="37.17962" lon="-3.16266">
-    <time>2025-10-18T10:57T00:00:00Z</time>
+    <time>2025-10-18T00:00:00Z</time>
     <name>S. luteus 18/10/25</name>
     <desc>Cita de Suillus luteus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6518767399. Precisión: 948 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="a07d9840-25aa-5634-8983-744072ef612e" estrellas="3" especie="suillus_luteus"/></extensions>
   </wpt>
   <wpt lat="37.04441" lon="-3.12679">
-    <time>2025-10-18T10:53:23T00:00:00Z</time>
+    <time>2025-10-18T00:00:00Z</time>
     <name>S. luteus 18/10/25</name>
     <desc>Cita de Suillus luteus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6184819319. Precisión: 28447 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="9c701a46-0638-53a3-8ff2-82af16e23a40" estrellas="3" especie="suillus_luteus"/></extensions>
@@ -1105,14 +1105,14 @@
     <extensions><setas:sitio id="8fe688fb-f77d-5dd4-9df7-84882619d2e2" estrellas="2" especie="chlorophyllum_rhacodes"/></extensions>
   </wpt>
   <wpt lat="37.92880" lon="-4.90260">
-    <time>2025-06 (guía)T00:00:00Z</time>
-    <name>A. caesarea (g/06/25</name>
+    <time>2026-11-07T00:00:00Z</time>
+    <name>A. caesarea 06/25</name>
     <desc>Cita de Amanita caesarea. Fuente: Sierra de Córdoba / Santa María de Trassierra (alcornocales) (paraje (centroide Nominatim; ~2h15)). URL: https://www.studocu.com/es/document/universidad-de-cordoba-espana/micologia/guia-micologica-del-municipio-de-cordoba-hongos-de-la-sierra-cordobesa/129740932?origin=related-document. Precisión: 1000 m. Confianza: baja.</desc>
     <extensions><setas:sitio id="51f2faf5-e1b7-545c-ad19-cbf904b83cf6" estrellas="1" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="37.92880" lon="-4.90260">
-    <time>2025-06 (guía)T00:00:00Z</time>
-    <name>B. aereus (g/06/25</name>
+    <time>2026-11-07T00:00:00Z</time>
+    <name>B. aereus 06/25</name>
     <desc>Cita de Boletus aereus. Fuente: Sierra de Córdoba / Santa María de Trassierra (alcornocales) (paraje (centroide Nominatim; ~2h15)). URL: https://www.studocu.com/es/document/universidad-de-cordoba-espana/micologia/guia-micologica-del-municipio-de-cordoba-hongos-de-la-sierra-cordobesa/129740932?origin=related-document. Precisión: 1000 m. Confianza: baja.</desc>
     <extensions><setas:sitio id="51f2faf5-e1b7-545c-ad19-cbf904b83cf6" estrellas="1" especie="boletus_aereus"/></extensions>
   </wpt>
@@ -1141,25 +1141,25 @@
     <extensions><setas:sitio id="5858b4c9-211a-559c-b900-5d706697556a" estrellas="1" especie="morchella_spp"/></extensions>
   </wpt>
   <wpt lat="36.86405" lon="-3.97065">
-    <time>2025-04-16T17:42:12T00:00:00Z</time>
+    <time>2025-04-16T00:00:00Z</time>
     <name>M. esculenta 16/04/25</name>
     <desc>Cita de Morchella esculenta. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6188565001. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="94de3f98-2448-58de-b223-deac2ca96962" estrellas="3" especie="morchella_spp"/></extensions>
   </wpt>
   <wpt lat="37.69349" lon="-5.55122">
-    <time>2025-04-15T14:08T00:00:00Z</time>
+    <time>2025-04-15T00:00:00Z</time>
     <name>L. deliciosus 15/04/25</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6567256689. Precisión: 3226 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="b06fd3b3-95e7-5f0e-a7e9-5eaab91bee88" estrellas="3" especie="lactarius_deliciosus"/></extensions>
   </wpt>
   <wpt lat="36.86400" lon="-3.97072">
-    <time>2025-04-14T13:11:46T00:00:00Z</time>
+    <time>2025-04-14T00:00:00Z</time>
     <name>M. esculenta 14/04/25</name>
     <desc>Cita de Morchella esculenta. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5133691335. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="66d7df95-2f29-5caa-9e4d-93db3ec75618" estrellas="3" especie="morchella_spp"/></extensions>
   </wpt>
   <wpt lat="36.65567" lon="-6.11409">
-    <time>2025-04-14T11:36T00:00:00Z</time>
+    <time>2025-04-14T00:00:00Z</time>
     <name>P. ostreatus 14/04/25</name>
     <desc>Cita de Pleurotus ostreatus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5133721080. Precisión: 1 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="ebda2e94-00db-5893-9fcd-6a0e3a8a43a3" estrellas="3" especie="pleurotus_ostreatus"/></extensions>
@@ -1225,7 +1225,7 @@
     <extensions><setas:sitio id="7af19669-9059-5d75-8884-6bb8c95392ee" estrellas="1" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="36.26969" lon="-5.39658">
-    <time>2025-03-09T10:15:58T00:00:00Z</time>
+    <time>2025-03-09T00:00:00Z</time>
     <name>L. deliciosus 09/03/25</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5104289273. Precisión: 29 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="94f5826d-4a4d-5af5-a948-95883b2bb431" estrellas="3" especie="lactarius_deliciosus"/></extensions>
@@ -1249,7 +1249,7 @@
     <extensions><setas:sitio id="2fbfcf91-8757-53cd-9c08-4e2b868cc9a0" estrellas="3" especie="lactarius_sanguifluus"/></extensions>
   </wpt>
   <wpt lat="36.47488" lon="-5.54196">
-    <time>2025-03-01T13:52:23T00:00:00Z</time>
+    <time>2025-03-01T00:00:00Z</time>
     <name>C. cornucopioides 01/03/25</name>
     <desc>Cita de Craterellus cornucopioides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5760213356. Precisión: 28534 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="ec8d87f2-64cc-5d81-8a8f-37dce8adf228" estrellas="3" especie="craterellus_cornucopioides"/></extensions>
@@ -1261,7 +1261,7 @@
     <extensions><setas:sitio id="061758fc-af88-579f-ae9d-ced8892ddec4" estrellas="1" especie="pleurotus_eryngii"/></extensions>
   </wpt>
   <wpt lat="36.85553" lon="-3.97955">
-    <time>2025-02-18T12:29:19T00:00:00Z</time>
+    <time>2025-02-18T00:00:00Z</time>
     <name>S. collinitus 18/02/25</name>
     <desc>Cita de Suillus collinitus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5070061517. Precisión: 14 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="771288cd-0dc7-50d1-96a5-eb5f4667e65f" estrellas="3" especie="suillus_collinitus"/></extensions>
@@ -1273,13 +1273,13 @@
     <extensions><setas:sitio id="8e851c0f-0810-58d2-8ee7-ad8f8734a2db" estrellas="3" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="36.30849" lon="-5.31713">
-    <time>2025-02-14T18:50:20T00:00:00Z</time>
+    <time>2025-02-14T00:00:00Z</time>
     <name>A. muscaria 14/02/25</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5069903869. Precisión: 5 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="ded776fa-682d-5f9f-8e0d-98b92a2e8cf7" estrellas="3" especie="amanita_muscaria"/></extensions>
   </wpt>
   <wpt lat="36.26965" lon="-5.39609">
-    <time>2025-02-09T11:18:13T00:00:00Z</time>
+    <time>2025-02-09T00:00:00Z</time>
     <name>L. deliciosus 09/02/25</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6566640819. Precisión: 358 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="ddd450e0-b0ce-59fe-95a2-07db13dbf75b" estrellas="3" especie="lactarius_deliciosus"/></extensions>
@@ -1333,7 +1333,7 @@
     <extensions><setas:sitio id="d3566247-f9e6-5e83-a880-fb3213b631d9" estrellas="2" especie="hydnum_repandum"/></extensions>
   </wpt>
   <wpt lat="36.18426" lon="-5.95984">
-    <time>2025-01-07T16:50:06T00:00:00Z</time>
+    <time>2025-01-07T00:00:00Z</time>
     <name>L. deliciosus 07/01/25</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6566379873. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="7072008f-5031-5c79-a086-17d5e244e533" estrellas="3" especie="lactarius_deliciosus"/></extensions>
@@ -1351,7 +1351,7 @@
     <extensions><setas:sitio id="e2f55fb8-3fb9-5407-88f3-6141f065788e" estrellas="1" especie="pleurotus_ostreatus"/></extensions>
   </wpt>
   <wpt lat="36.26829" lon="-5.29249">
-    <time>2024-12-31T09:46:22T00:00:00Z</time>
+    <time>2024-12-31T00:00:00Z</time>
     <name>M. procera 31/12/24</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5007113490. Precisión: 12 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="0fb5efc6-3900-5eff-b989-513944410b49" estrellas="3" especie="macrolepiota_procera"/></extensions>
@@ -1369,7 +1369,7 @@
     <extensions><setas:sitio id="243d155c-2264-53ea-89fc-e911681dc754" estrellas="1" especie="craterellus_cornucopioides"/></extensions>
   </wpt>
   <wpt lat="36.97389" lon="-6.48067">
-    <time>2024-12-17T10:34:28T00:00:00Z</time>
+    <time>2024-12-17T00:00:00Z</time>
     <name>A. muscaria 17/12/24</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5008244777. Precisión: 42 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="abb2677e-41cf-56fb-b8e9-78b128656632" estrellas="3" especie="amanita_muscaria"/></extensions>
@@ -1387,7 +1387,7 @@
     <extensions><setas:sitio id="1554c579-3693-5238-af31-72536a4bf61b" estrellas="3" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="37.73414" lon="-6.14534">
-    <time>2024-12-14T12:47:19T00:00:00Z</time>
+    <time>2024-12-14T00:00:00Z</time>
     <name>A. muscaria 14/12/24</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5006941031. Precisión: 8 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="9e952782-dfe5-5ff2-97c7-db4c9e944810" estrellas="3" especie="amanita_muscaria"/></extensions>
@@ -1399,13 +1399,13 @@
     <extensions><setas:sitio id="bcade7b2-24c2-5a5e-87d3-90605d88adb5" estrellas="3" especie="lactarius_sanguifluus"/></extensions>
   </wpt>
   <wpt lat="36.55776" lon="-6.13970">
-    <time>2024-12-11T12:56T00:00:00Z</time>
+    <time>2024-12-11T00:00:00Z</time>
     <name>L. deliciosus 11/12/24</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5087113589. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="c1c9160d-12f1-5f3c-97eb-4b34811f45c8" estrellas="3" especie="lactarius_deliciosus"/></extensions>
   </wpt>
   <wpt lat="36.25600" lon="-5.22146">
-    <time>2024-12-11T11:24:52T00:00:00Z</time>
+    <time>2024-12-11T00:00:00Z</time>
     <name>B. aereus 11/12/24</name>
     <desc>Cita de Boletus aereus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5006809497. Precisión: 28563 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="11b11b4e-6dab-5302-b28d-ba5af0250fa5" estrellas="3" especie="boletus_aereus"/></extensions>
@@ -1435,37 +1435,37 @@
     <extensions><setas:sitio id="7292ffa3-2db2-5772-81fa-5fe24e97c302" estrellas="2" especie="amanita_pantherina"/></extensions>
   </wpt>
   <wpt lat="36.24994" lon="-5.41887">
-    <time>2024-12-09T13:46T00:00:00Z</time>
+    <time>2024-12-09T00:00:00Z</time>
     <name>A. phalloides 09/12/24</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5759966093. Precisión: 244 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="b98d18ac-b9b1-50fe-aaa1-8822612ac2c8" estrellas="3" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="36.24880" lon="-5.41600">
-    <time>2024-12-09T12:24:12T00:00:00Z</time>
+    <time>2024-12-09T00:00:00Z</time>
     <name>A. pantherina 09/12/24</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994091721. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="f63dadd3-d3b4-59d1-9b92-b5d79dfe001b" estrellas="3" especie="amanita_pantherina"/></extensions>
   </wpt>
   <wpt lat="36.25070" lon="-5.42220">
-    <time>2024-12-09T11:34:25T00:00:00Z</time>
+    <time>2024-12-09T00:00:00Z</time>
     <name>A. phalloides 09/12/24</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994461098. Precisión: 5 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="2ebac3ee-422b-5e61-b2e7-26d46976189e" estrellas="3" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="36.24943" lon="-5.41750">
-    <time>2024-12-09T11:12:02T00:00:00Z</time>
+    <time>2024-12-09T00:00:00Z</time>
     <name>A. pantherina 09/12/24</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994413424. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="28ee1253-f4d0-5aa3-96ad-5e193ff09d86" estrellas="3" especie="amanita_pantherina"/></extensions>
   </wpt>
   <wpt lat="36.33384" lon="-5.38126">
-    <time>2024-12-09T10:54:56T00:00:00Z</time>
+    <time>2024-12-09T00:00:00Z</time>
     <name>A. caesarea 09/12/24</name>
     <desc>Cita de Amanita caesarea. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994023646. Precisión: 533 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="9789c13a-947a-5cfb-ba5d-991151884b54" estrellas="3" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="36.25829" lon="-5.43438">
-    <time>2024-12-09T10:52:02T00:00:00Z</time>
+    <time>2024-12-09T00:00:00Z</time>
     <name>R. cyanoxantha 09/12/24</name>
     <desc>Cita de Russula cyanoxantha. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994366544. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="0a34ec7d-c9d9-5d83-ad5f-286ea8646904" estrellas="3" especie="russula_cyanoxantha"/></extensions>
@@ -1477,49 +1477,49 @@
     <extensions><setas:sitio id="b22eaeda-23bf-589c-bacd-85e9b4b2efd2" estrellas="3" especie="amanita_pantherina"/></extensions>
   </wpt>
   <wpt lat="36.26634" lon="-5.42307">
-    <time>2024-12-08T12:42T00:00:00Z</time>
+    <time>2024-12-08T00:00:00Z</time>
     <name>A. pantherina 08/12/24</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5063077567. Precisión: 31 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="99dd178d-2c6b-527e-bb21-9ebd6075766f" estrellas="3" especie="amanita_pantherina"/></extensions>
   </wpt>
   <wpt lat="36.26581" lon="-5.41921">
-    <time>2024-12-08T12:18:49T00:00:00Z</time>
+    <time>2024-12-08T00:00:00Z</time>
     <name>A. pantherina 08/12/24</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994042355. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="b878f75a-160d-5f55-a894-d493b912997c" estrellas="3" especie="amanita_pantherina"/></extensions>
   </wpt>
   <wpt lat="36.33163" lon="-5.58923">
-    <time>2024-12-08T11:55:55T00:00:00Z</time>
+    <time>2024-12-08T00:00:00Z</time>
     <name>P. ostreatus 08/12/24</name>
     <desc>Cita de Pleurotus ostreatus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4993758486. Precisión: 8 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="f493c5cf-4931-5635-a1cf-d4ff7503c816" estrellas="3" especie="pleurotus_ostreatus"/></extensions>
   </wpt>
   <wpt lat="36.33181" lon="-5.58949">
-    <time>2024-12-08T11:43:52T00:00:00Z</time>
+    <time>2024-12-08T00:00:00Z</time>
     <name>A. phalloides 08/12/24</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4993856189. Precisión: 7 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="7cdd36c9-bf90-5515-a8fd-04663ad8bbed" estrellas="3" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="36.33311" lon="-5.58553">
-    <time>2024-12-08T11:15:23T00:00:00Z</time>
+    <time>2024-12-08T00:00:00Z</time>
     <name>O. olearius 08/12/24</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994366311. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="82f7e1d7-54b8-51ec-807e-71263684d42d" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="36.26634" lon="-5.42307">
-    <time>2024-12-08T10:56T00:00:00Z</time>
+    <time>2024-12-08T00:00:00Z</time>
     <name>A. phalloides 08/12/24</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5063105711. Precisión: 31 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="ca01446b-14fe-54cb-9788-6d0b67ee1e64" estrellas="3" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="36.26432" lon="-5.42623">
-    <time>2024-12-08T10:06:38T00:00:00Z</time>
+    <time>2024-12-08T00:00:00Z</time>
     <name>A. phalloides 08/12/24</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4993932493. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="02c73100-0ac7-5990-9994-e07044b5b371" estrellas="3" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="36.26371" lon="-5.42707">
-    <time>2024-12-08T09:54:03T00:00:00Z</time>
+    <time>2024-12-08T00:00:00Z</time>
     <name>A. phalloides 08/12/24</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994312741. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="b43b2347-de14-5039-9ced-54de19977b38" estrellas="3" especie="amanita_phalloides"/></extensions>
@@ -1531,25 +1531,25 @@
     <extensions><setas:sitio id="4e7165bf-f99b-5eca-afb9-c4793621dc8c" estrellas="3" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="36.26335" lon="-5.42737">
-    <time>2024-12-07T17:08:12T00:00:00Z</time>
+    <time>2024-12-07T00:00:00Z</time>
     <name>A. phalloides 07/12/24</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994402906. Precisión: 4 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="33a5acfc-4def-50d4-960e-b2080bb1c06a" estrellas="3" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="36.26355" lon="-5.42696">
-    <time>2024-12-07T15:54:24T00:00:00Z</time>
+    <time>2024-12-07T00:00:00Z</time>
     <name>B. aereus 07/12/24</name>
     <desc>Cita de Boletus aereus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994357322. Precisión: 5 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="c1a944b2-483c-5dea-acaf-26c58d13cbca" estrellas="3" especie="boletus_aereus"/></extensions>
   </wpt>
   <wpt lat="37.54133" lon="-6.30009">
-    <time>2024-12-07T12:49:20T00:00:00Z</time>
+    <time>2024-12-07T00:00:00Z</time>
     <name>L. chrysorrheus 07/12/24</name>
     <desc>Cita de Lactarius chrysorrheus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6579189549. Precisión: 25 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="538d9d95-830d-5807-8f5d-69d01f9fef8d" estrellas="3" especie="lactarius_chrysorrheus"/></extensions>
   </wpt>
   <wpt lat="36.22724" lon="-5.61135">
-    <time>2024-12-07T10:08:55T00:00:00Z</time>
+    <time>2024-12-07T00:00:00Z</time>
     <name>A. pantherina 07/12/24</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994050840. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="dd7c9f84-206c-557d-9815-787b4d28941f" estrellas="3" especie="amanita_pantherina"/></extensions>
@@ -1567,25 +1567,25 @@
     <extensions><setas:sitio id="bb1f2782-4a65-5547-adfa-8d6ee4fe92a2" estrellas="2" especie="amanita_pantherina"/></extensions>
   </wpt>
   <wpt lat="36.16043" lon="-5.58002">
-    <time>2024-12-06T16:11T00:00:00Z</time>
+    <time>2024-12-06T00:00:00Z</time>
     <name>C. cornucopioides 06/12/24</name>
     <desc>Cita de Craterellus cornucopioides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5062983686. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="735dce22-3abd-58b0-988e-93dce76fa03f" estrellas="3" especie="craterellus_cornucopioides"/></extensions>
   </wpt>
   <wpt lat="36.16044" lon="-5.58009">
-    <time>2024-12-06T16:10:29T00:00:00Z</time>
+    <time>2024-12-06T00:00:00Z</time>
     <name>A. pantherina 06/12/24</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994419328. Precisión: 8 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="b42acf10-35aa-5a6d-8810-90f91988dc76" estrellas="3" especie="amanita_pantherina"/></extensions>
   </wpt>
   <wpt lat="36.16750" lon="-5.48974">
-    <time>2024-12-06T15:49:19T00:00:00Z</time>
+    <time>2024-12-06T00:00:00Z</time>
     <name>A. phalloides 06/12/24</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994157588. Precisión: 3500 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="09059528-aa37-53b9-9425-5d984f7a2fa9" estrellas="3" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="36.22892" lon="-5.60233">
-    <time>2024-12-06T12:14:38T00:00:00Z</time>
+    <time>2024-12-06T00:00:00Z</time>
     <name>R. cyanoxantha 06/12/24</name>
     <desc>Cita de Russula cyanoxantha. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994174749. Precisión: 1 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="f6e975f0-a187-5dd7-ab46-d9322cdccdf3" estrellas="3" especie="russula_cyanoxantha"/></extensions>
@@ -1603,73 +1603,73 @@
     <extensions><setas:sitio id="d9b5f4e9-e4ae-56eb-ac29-d6e427e93576" estrellas="3" especie="lactarius_chrysorrheus"/></extensions>
   </wpt>
   <wpt lat="36.76361" lon="-5.39667">
-    <time>2024-12-05T15:38:52T00:00:00Z</time>
+    <time>2024-12-05T00:00:00Z</time>
     <name>L. deliciosus 05/12/24</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994648349. Precisión: 1742 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="ea251724-f3c5-5382-928d-df3a9148d1f8" estrellas="3" especie="lactarius_deliciosus"/></extensions>
   </wpt>
   <wpt lat="36.76361" lon="-5.39667">
-    <time>2024-12-05T14:55:58T00:00:00Z</time>
+    <time>2024-12-05T00:00:00Z</time>
     <name>L. brunneoincarnata 05/12/24</name>
     <desc>Cita de Lepiota brunneoincarnata. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4993956498. Precisión: 1742 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="faeaf644-19f3-57ec-b0e4-9a5e30cab492" estrellas="3" especie="lepiota_brunneoincarnata"/></extensions>
   </wpt>
   <wpt lat="36.27957" lon="-5.39202">
-    <time>2024-12-05T12:48T00:00:00Z</time>
+    <time>2024-12-05T00:00:00Z</time>
     <name>A. pantherina 05/12/24</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5063081709. Precisión: 31 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="a67afeb6-fcfa-5d9b-9af4-c96f6a5e178c" estrellas="3" especie="amanita_pantherina"/></extensions>
   </wpt>
   <wpt lat="36.28126" lon="-5.39107">
-    <time>2024-12-05T12:00:21T00:00:00Z</time>
+    <time>2024-12-05T00:00:00Z</time>
     <name>B. aereus 05/12/24</name>
     <desc>Cita de Boletus aereus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994119002. Precisión: 20 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="c5f43a37-d6a4-54f5-a9e8-c859acc545b9" estrellas="3" especie="boletus_aereus"/></extensions>
   </wpt>
   <wpt lat="36.29710" lon="-5.43536">
-    <time>2024-12-05T11:59:46T00:00:00Z</time>
+    <time>2024-12-05T00:00:00Z</time>
     <name>B. aereus 05/12/24</name>
     <desc>Cita de Boletus aereus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994653504. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="829ef90d-652f-5a2c-8ea2-d6aef77bd84e" estrellas="3" especie="boletus_aereus"/></extensions>
   </wpt>
   <wpt lat="36.28211" lon="-5.39178">
-    <time>2024-12-05T11:24:29T00:00:00Z</time>
+    <time>2024-12-05T00:00:00Z</time>
     <name>L. chrysorrheus 05/12/24</name>
     <desc>Cita de Lactarius chrysorrheus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994077091. Precisión: 9 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="c4d70e29-b99c-5ae3-86a5-a24d7625d092" estrellas="3" especie="lactarius_chrysorrheus"/></extensions>
   </wpt>
   <wpt lat="36.28307" lon="-5.39338">
-    <time>2024-12-05T11:11:29T00:00:00Z</time>
+    <time>2024-12-05T00:00:00Z</time>
     <name>A. phalloides 05/12/24</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994349755. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="a44aa4ee-0ff0-56d2-a80f-db8af00460e8" estrellas="3" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="36.28406" lon="-5.39236">
-    <time>2024-12-05T10:55:38T00:00:00Z</time>
+    <time>2024-12-05T00:00:00Z</time>
     <name>A. phalloides 05/12/24</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994142163. Precisión: 32 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="192de9ad-71bc-5809-b0d4-0602117c5649" estrellas="3" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="36.28338" lon="-5.39142">
-    <time>2024-12-05T10:42:40T00:00:00Z</time>
+    <time>2024-12-05T00:00:00Z</time>
     <name>A. phalloides 05/12/24</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5909106468. Precisión: 7 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="3a836555-2cb9-5e1a-bb47-9a5287b176e0" estrellas="3" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="36.28337" lon="-5.39154">
-    <time>2024-12-05T10:37:20T00:00:00Z</time>
+    <time>2024-12-05T00:00:00Z</time>
     <name>S. citrinum 05/12/24</name>
     <desc>Cita de Scleroderma citrinum. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5007878976. Precisión: 8 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="724de60b-5611-5a22-af12-64a5d8cefa39" estrellas="3" especie="scleroderma_citrinum"/></extensions>
   </wpt>
   <wpt lat="36.28382" lon="-5.39135">
-    <time>2024-12-05T10:27:11T00:00:00Z</time>
+    <time>2024-12-05T00:00:00Z</time>
     <name>A. pantherina 05/12/24</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5006761231. Precisión: 8 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="70210838-935f-5f96-90d3-8810a8dbeaa5" estrellas="3" especie="amanita_pantherina"/></extensions>
   </wpt>
   <wpt lat="36.25327" lon="-5.34646">
-    <time>2024-12-05T10:14T00:00:00Z</time>
+    <time>2024-12-05T00:00:00Z</time>
     <name>S. citrinum 05/12/24</name>
     <desc>Cita de Scleroderma citrinum. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5007879264. Precisión: 31 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="17ad7a9f-3b52-56e1-8f74-333245d7e410" estrellas="3" especie="scleroderma_citrinum"/></extensions>
@@ -1711,13 +1711,13 @@
     <extensions><setas:sitio id="4513acc7-cc8a-5bbd-aace-b99edc842629" estrellas="3" especie="macrolepiota_procera"/></extensions>
   </wpt>
   <wpt lat="36.64358" lon="-5.91571">
-    <time>2024-11-30T13:31:35T00:00:00Z</time>
+    <time>2024-11-30T00:00:00Z</time>
     <name>L. deliciosus 30/11/24</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994178080. Precisión: 2942 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="49bcb251-c89f-5cda-89df-2eb89fc71f2e" estrellas="3" especie="lactarius_deliciosus"/></extensions>
   </wpt>
   <wpt lat="36.63207" lon="-5.90261">
-    <time>2024-11-30T11:44:52T00:00:00Z</time>
+    <time>2024-11-30T00:00:00Z</time>
     <name>S. bellinii 30/11/24</name>
     <desc>Cita de Suillus bellinii. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4993921400. Precisión: 7 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="5e642c59-121d-5923-bea3-6e9ba9aef02a" estrellas="3" especie="suillus_bellinii"/></extensions>
@@ -1777,13 +1777,13 @@
     <extensions><setas:sitio id="af3d7470-7532-5af8-8b6d-31fcb9605ccc" estrellas="1" especie="suillus_collinitus"/></extensions>
   </wpt>
   <wpt lat="37.27366" lon="-3.66636">
-    <time>2024-11-24T20:41T00:00:00Z</time>
+    <time>2024-11-24T00:00:00Z</time>
     <name>L. deliciosus 24/11/24</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4987561471. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="62b24a0a-2991-5891-ab19-a952fbcce217" estrellas="3" especie="lactarius_deliciosus"/></extensions>
   </wpt>
   <wpt lat="36.26930" lon="-5.38703">
-    <time>2024-11-24T09:26T00:00:00Z</time>
+    <time>2024-11-24T00:00:00Z</time>
     <name>L. sanguifluus 24/11/24</name>
     <desc>Cita de Lactarius sanguifluus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6567054395. Precisión: 146 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="6ab18f7e-760c-5379-b9bd-c0cea88c3419" estrellas="3" especie="lactarius_sanguifluus"/></extensions>
@@ -1801,31 +1801,31 @@
     <extensions><setas:sitio id="b9ac63e1-3acd-5278-bf18-7bc44e287b0a" estrellas="2" especie="amanita_pantherina"/></extensions>
   </wpt>
   <wpt lat="36.27055" lon="-5.38760">
-    <time>2024-11-23T17:18T00:00:00Z</time>
+    <time>2024-11-23T00:00:00Z</time>
     <name>M. procera 23/11/24</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4987727083. Precisión: 164 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="23011c14-7a3a-5403-99b4-5d3cdb11e280" estrellas="3" especie="macrolepiota_procera"/></extensions>
   </wpt>
   <wpt lat="36.27053" lon="-5.38451">
-    <time>2024-11-23T17:17T00:00:00Z</time>
+    <time>2024-11-23T00:00:00Z</time>
     <name>A. phalloides 23/11/24</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994559342. Precisión: 128 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="bb0d3858-2278-57c4-849a-4fb242537045" estrellas="3" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="37.93834" lon="-4.89553">
-    <time>2024-11-23T11:48:54T00:00:00Z</time>
+    <time>2024-11-23T00:00:00Z</time>
     <name>O. olearius 23/11/24</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4987644734. Precisión: 164 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="5971e6cb-48e6-5faf-afa8-3355b689a7b2" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="36.27063" lon="-5.38438">
-    <time>2024-11-22T17:16T00:00:00Z</time>
+    <time>2024-11-22T00:00:00Z</time>
     <name>A. phalloides 22/11/24</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4993840107. Precisión: 238 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="d5b7e6fe-f357-5c45-863d-c26747f6fcd9" estrellas="3" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="36.28181" lon="-5.39472">
-    <time>2024-11-22T16:58T00:00:00Z</time>
+    <time>2024-11-22T00:00:00Z</time>
     <name>M. procera 22/11/24</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4987729065. Precisión: 164 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="f6e84ba1-bb0a-573b-9a20-203d23ba0225" estrellas="3" especie="macrolepiota_procera"/></extensions>
@@ -1837,7 +1837,7 @@
     <extensions><setas:sitio id="1d786e60-4ddb-5bd7-b362-fb497b6592aa" estrellas="2" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="35.90849" lon="-5.35744">
-    <time>2024-11-21T12:20:46T00:00:00Z</time>
+    <time>2024-11-21T00:00:00Z</time>
     <name>A. caesarea 21/11/24</name>
     <desc>Cita de Amanita caesarea. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994013137. Precisión: 21 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="892f21d2-2535-5bf2-8267-a043ff984f8c" estrellas="3" especie="amanita_caesarea"/></extensions>
@@ -1879,7 +1879,7 @@
     <extensions><setas:sitio id="c18c8dbb-adb7-5916-8b5d-b0bd3c65a7d5" estrellas="1" especie="pleurotus_eryngii"/></extensions>
   </wpt>
   <wpt lat="36.68978" lon="-6.15148">
-    <time>2024-11-19T10:50:42T00:00:00Z</time>
+    <time>2024-11-19T00:00:00Z</time>
     <name>O. olearius 19/11/24</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5008234163. Precisión: 7 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="d724f5ef-e734-5115-be4e-cf4a02f40fd3" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -1909,7 +1909,7 @@
     <extensions><setas:sitio id="e547032f-757c-572f-a720-78896cee1d16" estrellas="1" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="37.42734" lon="-4.28852">
-    <time>2024-11-18T11:35:25T00:00:00Z</time>
+    <time>2024-11-18T00:00:00Z</time>
     <name>O. olearius 18/11/24</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4993890602. Precisión: 4 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="f8bddd25-a05c-5a5c-871f-d8c7c4680d8e" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -1945,25 +1945,25 @@
     <extensions><setas:sitio id="3dfa7a9a-cefa-5f8d-bd9e-f4ef755a53fb" estrellas="1" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.57179" lon="-4.34626">
-    <time>2024-11-17T15:32T00:00:00Z</time>
+    <time>2024-11-17T00:00:00Z</time>
     <name>O. olearius 17/11/24</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4981910987. Precisión: 10 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="60fb583d-ec4f-55cb-bd93-d8faba67d15d" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.97081" lon="-4.84321">
-    <time>2024-11-17T13:42:27T00:00:00Z</time>
+    <time>2024-11-17T00:00:00Z</time>
     <name>L. sanguifluus 17/11/24</name>
     <desc>Cita de Lactarius sanguifluus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6566683664. Precisión: 140 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="c2e6dd75-ffe8-5ed4-ab59-a6bbcd519d98" estrellas="3" especie="lactarius_sanguifluus"/></extensions>
   </wpt>
   <wpt lat="36.60128" lon="-5.11787">
-    <time>2024-11-17T12:37:54T00:00:00Z</time>
+    <time>2024-11-17T00:00:00Z</time>
     <name>A. caesarea 17/11/24</name>
     <desc>Cita de Amanita caesarea. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4994577209. Precisión: 3 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="a68b3b16-087f-5682-969b-ef63e409ccb1" estrellas="3" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="36.74720" lon="-4.39508">
-    <time>2024-11-17T10:55:33T00:00:00Z</time>
+    <time>2024-11-17T00:00:00Z</time>
     <name>O. olearius 17/11/24</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4987611407. Precisión: 9 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="cf4a5300-5884-58e7-a5be-b1828d07478b" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -2005,7 +2005,7 @@
     <extensions><setas:sitio id="b917dba5-b679-52b4-9d9f-2bb65fc5f8d4" estrellas="2" especie="lactarius_deliciosus"/></extensions>
   </wpt>
   <wpt lat="37.30351" lon="-5.92811">
-    <time>2024-11-16T14:37:18T00:00:00Z</time>
+    <time>2024-11-16T00:00:00Z</time>
     <name>O. olearius 16/11/24</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4982230958. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="f7a9aec8-1284-5768-8c0b-3689cc6ba61a" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -2053,13 +2053,13 @@
     <extensions><setas:sitio id="9af9afb2-7d30-511c-9404-d889df7d3a13" estrellas="2" especie="amanita_muscaria"/></extensions>
   </wpt>
   <wpt lat="36.28112" lon="-5.41284">
-    <time>2024-11-14T13:00:51T00:00:00Z</time>
+    <time>2024-11-14T00:00:00Z</time>
     <name>L. sanguifluus 14/11/24</name>
     <desc>Cita de Lactarius sanguifluus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4982250582. Precisión: 2 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="89e43737-3631-5197-9b93-35e94c04dc08" estrellas="3" especie="lactarius_sanguifluus"/></extensions>
   </wpt>
   <wpt lat="36.28103" lon="-5.41275">
-    <time>2024-11-14T12:59:28T00:00:00Z</time>
+    <time>2024-11-14T00:00:00Z</time>
     <name>A. pantherina 14/11/24</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4982043100. Precisión: 6 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="a30a31ad-d47f-552b-938d-505e597613bb" estrellas="3" especie="amanita_pantherina"/></extensions>
@@ -2113,7 +2113,7 @@
     <extensions><setas:sitio id="cd1f5c40-8e94-5a92-ab3a-da16175ba87f" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="36.43328" lon="-5.61315">
-    <time>2024-11-12T15:45T00:00:00Z</time>
+    <time>2024-11-12T00:00:00Z</time>
     <name>A. phalloides 12/11/24</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5897135622. Precisión: 977 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="c9c9cf6e-3d64-59a3-a279-f90475c97bf0" estrellas="3" especie="amanita_phalloides"/></extensions>
@@ -2173,19 +2173,19 @@
     <extensions><setas:sitio id="c3ae144f-143b-579f-a45c-c15d4deae4e7" estrellas="2" especie="chlorophyllum_rhacodes"/></extensions>
   </wpt>
   <wpt lat="37.25838" lon="-3.50655">
-    <time>2024-11-10T16:52:05T00:00:00Z</time>
+    <time>2024-11-10T00:00:00Z</time>
     <name>L. deliciosus 10/11/24</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6567190423. Precisión: 523 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="656cbc52-27e4-5320-8f38-042254f067f3" estrellas="3" especie="lactarius_deliciosus"/></extensions>
   </wpt>
   <wpt lat="36.53730" lon="-5.38185">
-    <time>2024-11-10T16:07:59T00:00:00Z</time>
+    <time>2024-11-10T00:00:00Z</time>
     <name>O. olearius 10/11/24</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4980656226. Precisión: 8 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="a4f57111-4297-53b4-99ca-27a87502b20b" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.95287" lon="-5.62383">
-    <time>2024-11-10T08:34:27T00:00:00Z</time>
+    <time>2024-11-10T00:00:00Z</time>
     <name>A. pantherina 10/11/24</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4980585961. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="04917da9-9712-544d-9bae-d6b45e425571" estrellas="3" especie="amanita_pantherina"/></extensions>
@@ -2203,7 +2203,7 @@
     <extensions><setas:sitio id="d3d99a42-2c1a-5356-9072-70c9ab89af96" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.23510" lon="-5.97412">
-    <time>2024-11-09T13:01:28T00:00:00Z</time>
+    <time>2024-11-09T00:00:00Z</time>
     <name>O. olearius 09/11/24</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4980522620. Precisión: 741 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="d1fd1e95-3f59-5bf8-83b3-c749f029555b" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -2257,19 +2257,19 @@
     <extensions><setas:sitio id="8aee30d5-3705-55c7-81bb-eb383091efbf" estrellas="1" especie="suillus_collinitus"/></extensions>
   </wpt>
   <wpt lat="36.77310" lon="-3.83921">
-    <time>2024-11-08T12:16:57T00:00:00Z</time>
+    <time>2024-11-08T00:00:00Z</time>
     <name>O. olearius 08/11/24</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4980490264. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="3f0d9d15-5e35-549c-908c-5fbec461912e" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="36.55305" lon="-5.39087">
-    <time>2024-11-07T23:10T00:00:00Z</time>
+    <time>2024-11-07T00:00:00Z</time>
     <name>A. pantherina 07/11/24</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4987387872. Precisión: 61 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="52730bce-ec60-5f46-b73d-2fc13741f63d" estrellas="3" especie="amanita_pantherina"/></extensions>
   </wpt>
   <wpt lat="36.14462" lon="-5.34584">
-    <time>2024-11-07T14:17:55T00:00:00Z</time>
+    <time>2024-11-07T00:00:00Z</time>
     <name>O. olearius 07/11/24</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4981947190. Precisión: 30 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="1e1f2f1b-6bfe-53be-94b1-16ff0afa57d7" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -2287,13 +2287,13 @@
     <extensions><setas:sitio id="2493c6e3-c220-55c6-8240-8f0c11d5a520" estrellas="1" especie="suillus_bellinii"/></extensions>
   </wpt>
   <wpt lat="37.31902" lon="-6.06773">
-    <time>2024-11-05T14:04:15T00:00:00Z</time>
+    <time>2024-11-05T00:00:00Z</time>
     <name>O. olearius 05/11/24</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4980709153. Precisión: 1572 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="6774eea7-3ef6-59b1-8117-c48766ebbee9" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="36.69428" lon="-4.81899">
-    <time>2024-11-05T00:00T00:00:00Z</time>
+    <time>2024-11-05T00:00:00Z</time>
     <name>M. procera 05/11/24</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 6ac3f774-d9fb-4796-b3e9-92bf6c81c084 (NABU|naturgucker). URL: https://www.gbif.org/occurrence/5023685255. Precisión: 250 m. Confianza: media.</desc>
     <extensions><setas:sitio id="5d77675e-437b-598c-beb5-05675cd746bf" estrellas="2" especie="macrolepiota_procera"/></extensions>
@@ -2431,7 +2431,7 @@
     <extensions><setas:sitio id="a3b9bb96-e396-5ca4-ba27-8cb4040679f6" estrellas="1" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="36.62773" lon="-5.34383">
-    <time>2024-10-21T16:44:41T00:00:00Z</time>
+    <time>2024-10-21T00:00:00Z</time>
     <name>S. collinitus 21/10/24</name>
     <desc>Cita de Suillus collinitus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6480429931. Precisión: 4 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="fd94168a-833c-5f9a-810a-6aa0c036782d" estrellas="3" especie="suillus_collinitus"/></extensions>
@@ -2455,7 +2455,7 @@
     <extensions><setas:sitio id="80598ea9-27e1-519b-a5af-661972746644" estrellas="1" especie="caloboletus_radicans"/></extensions>
   </wpt>
   <wpt lat="36.35357" lon="-6.16830">
-    <time>2024-10-13T15:55:40T00:00:00Z</time>
+    <time>2024-10-13T00:00:00Z</time>
     <name>S. collinitus 13/10/24</name>
     <desc>Cita de Suillus collinitus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4954426116. Precisión: 9 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="e1b4e85c-926b-5ffe-9ce1-5807618a092f" estrellas="3" especie="suillus_collinitus"/></extensions>
@@ -2467,7 +2467,7 @@
     <extensions><setas:sitio id="cec575fc-6317-5a4f-907e-333b914e4bb0" estrellas="1" especie="suillus_luteus"/></extensions>
   </wpt>
   <wpt lat="36.81534" lon="-5.13369">
-    <time>2024-09-21T16:48:47T00:00:00Z</time>
+    <time>2024-09-21T00:00:00Z</time>
     <name>P. ostreatus 21/09/24</name>
     <desc>Cita de Pleurotus ostreatus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5229997543. Precisión: 6 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="481bc12f-306f-543e-a49a-272f1fe6a88c" estrellas="3" especie="pleurotus_ostreatus"/></extensions>
@@ -2491,7 +2491,7 @@
     <extensions><setas:sitio id="89b2e1e7-bf17-5819-8415-79204958884d" estrellas="3" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="37.12867" lon="-6.51755">
-    <time>2024-03-27T11:17:54T00:00:00Z</time>
+    <time>2024-03-27T00:00:00Z</time>
     <name>A. muscaria 27/03/24</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4606723317. Precisión: 4 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="a6abceb6-91da-5483-9132-c13661221a6a" estrellas="3" especie="amanita_muscaria"/></extensions>
@@ -2503,7 +2503,7 @@
     <extensions><setas:sitio id="5a268e2f-e45b-5023-bde8-34a5d320f51a" estrellas="2" especie="pleurotus_eryngii"/></extensions>
   </wpt>
   <wpt lat="37.95795" lon="-5.62140">
-    <time>2024-03-23T23:25T00:00:00Z</time>
+    <time>2024-03-23T00:00:00Z</time>
     <name>M. esculenta 23/03/24</name>
     <desc>Cita de Morchella esculenta. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4600127498. Precisión: 1182 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="d758e0c3-7696-5794-bc0b-13ef2ef8c4a3" estrellas="3" especie="morchella_spp"/></extensions>
@@ -2521,7 +2521,7 @@
     <extensions><setas:sitio id="6247928c-835c-5ef3-871d-639e9756a3a0" estrellas="2" especie="russula_cyanoxantha"/></extensions>
   </wpt>
   <wpt lat="37.02509" lon="-3.62297">
-    <time>2024-03-21T00:01T00:00:00Z</time>
+    <time>2024-03-21T00:00:00Z</time>
     <name>M. esculenta 21/03/24</name>
     <desc>Cita de Morchella esculenta. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4908305139. Precisión: 619 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="c34e99ed-b840-5bed-a8bd-c9d51ac0d7df" estrellas="3" especie="morchella_spp"/></extensions>
@@ -2563,7 +2563,7 @@
     <extensions><setas:sitio id="2ca8cf3b-d92c-5101-84f8-c81b2388a61d" estrellas="2" especie="hydnum_repandum"/></extensions>
   </wpt>
   <wpt lat="36.74543" lon="-3.66219">
-    <time>2024-02-10T17:30:17T00:00:00Z</time>
+    <time>2024-02-10T00:00:00Z</time>
     <name>S. collinitus 10/02/24</name>
     <desc>Cita de Suillus collinitus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4522709788. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="c52f4e1a-2ec8-574a-8064-b99d594065b6" estrellas="3" especie="suillus_collinitus"/></extensions>
@@ -2683,13 +2683,13 @@
     <extensions><setas:sitio id="51da4005-ca7a-542e-ae5d-278d48ae00ef" estrellas="1" especie="suillus_granulatus"/></extensions>
   </wpt>
   <wpt lat="37.12387" lon="-6.49761">
-    <time>2023-12-25T15:06:22T00:00:00Z</time>
+    <time>2023-12-25T00:00:00Z</time>
     <name>A. muscaria 25/12/23</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4506347805. Precisión: 9 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="28bfd3ea-8f1c-5856-b39b-e75a217d31c3" estrellas="3" especie="amanita_muscaria"/></extensions>
   </wpt>
   <wpt lat="37.45709" lon="-6.71734">
-    <time>2023-12-25T11:17T00:00:00Z</time>
+    <time>2023-12-25T00:00:00Z</time>
     <name>L. sanguifluus 25/12/23</name>
     <desc>Cita de Lactarius sanguifluus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6567489827. Precisión: 190 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="bfc5953a-f643-5bb9-9fdb-1f323bb19d4c" estrellas="3" especie="lactarius_sanguifluus"/></extensions>
@@ -2791,19 +2791,19 @@
     <extensions><setas:sitio id="b75acb50-cdc1-568e-b133-47e9b220e56e" estrellas="2" especie="pleurotus_ostreatus"/></extensions>
   </wpt>
   <wpt lat="36.55756" lon="-6.14200">
-    <time>2023-12-06T13:07:02T00:00:00Z</time>
+    <time>2023-12-06T00:00:00Z</time>
     <name>L. deliciosus 06/12/23</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4599772249. Precisión: 4 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="a6067735-7214-55b4-bc3f-1b3856492ec1" estrellas="3" especie="lactarius_deliciosus"/></extensions>
   </wpt>
   <wpt lat="36.55821" lon="-6.14461">
-    <time>2023-12-06T12:42:50T00:00:00Z</time>
+    <time>2023-12-06T00:00:00Z</time>
     <name>L. chrysorrheus 06/12/23</name>
     <desc>Cita de Lactarius chrysorrheus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4507925325. Precisión: 8 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="ba4a3d66-b480-53b2-9735-dac1a758c23a" estrellas="3" especie="lactarius_chrysorrheus"/></extensions>
   </wpt>
   <wpt lat="36.55225" lon="-6.13690">
-    <time>2023-12-06T11:50:57T00:00:00Z</time>
+    <time>2023-12-06T00:00:00Z</time>
     <name>A. pantherina 06/12/23</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4465434626. Precisión: 9 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="54904df6-106b-5822-99ca-c654fe520e0b" estrellas="3" especie="amanita_pantherina"/></extensions>
@@ -2845,7 +2845,7 @@
     <extensions><setas:sitio id="fc7de390-8d5a-5174-8eab-1212ba6fc0a0" estrellas="1" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="36.57069" lon="-5.42760">
-    <time>2023-11-30T11:56T00:00:00Z</time>
+    <time>2023-11-30T00:00:00Z</time>
     <name>O. olearius 30/11/23</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6498260694. Precisión: 28534 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="6d87634a-9c08-5f77-862e-e0a7ef9f29ae" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -2959,7 +2959,7 @@
     <extensions><setas:sitio id="202ea871-728a-57a0-a551-e656c05f512c" estrellas="1" especie="macrolepiota_procera"/></extensions>
   </wpt>
   <wpt lat="36.77159" lon="-5.48741">
-    <time>2023-11-12T13:21:33T00:00:00Z</time>
+    <time>2023-11-12T00:00:00Z</time>
     <name>O. olearius 12/11/23</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4903812813. Precisión: 358 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="f52e7aae-5a28-5366-8bf8-306fa8353613" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -3007,13 +3007,13 @@
     <extensions><setas:sitio id="2f99d9f3-b93d-5e73-a49d-9af9ee1e3ced" estrellas="2" especie="suillus_collinitus"/></extensions>
   </wpt>
   <wpt lat="37.25735" lon="-3.53141">
-    <time>2023-11-11T18:02:22T00:00:00Z</time>
+    <time>2023-11-11T00:00:00Z</time>
     <name>M. procera 11/11/23</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4440874864. Precisión: 386 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="6a35a987-6536-5111-8054-4239dad72756" estrellas="3" especie="macrolepiota_procera"/></extensions>
   </wpt>
   <wpt lat="36.45647" lon="-5.68590">
-    <time>2023-11-11T11:45:45T00:00:00Z</time>
+    <time>2023-11-11T00:00:00Z</time>
     <name>A. caesarea 11/11/23</name>
     <desc>Cita de Amanita caesarea. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4465717044. Precisión: 10441 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="474f21b4-6a1d-52d5-909d-cb46b5c70cc2" estrellas="3" especie="amanita_caesarea"/></extensions>
@@ -3097,7 +3097,7 @@
     <extensions><setas:sitio id="8fde291f-87b2-5b8e-845b-bf2eafe8100e" estrellas="3" especie="lepiota_brunneoincarnata"/></extensions>
   </wpt>
   <wpt lat="36.75115" lon="-5.38041">
-    <time>2023-11-04T13:55:11T00:00:00Z</time>
+    <time>2023-11-04T00:00:00Z</time>
     <name>M. procera 04/11/23</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4439036314. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="d5b829bd-98b9-569b-a75b-4cdaf27354a9" estrellas="3" especie="macrolepiota_procera"/></extensions>
@@ -3157,7 +3157,7 @@
     <extensions><setas:sitio id="37df7141-96c8-5c86-ab29-c5bcd4174845" estrellas="1" especie="suillus_collinitus"/></extensions>
   </wpt>
   <wpt lat="37.96021" lon="-4.81536">
-    <time>2023-10-29T15:32:47T00:00:00Z</time>
+    <time>2023-10-29T00:00:00Z</time>
     <name>M. procera 29/10/23</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6195339229. Precisión: 4 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="fb2b5e2d-f94a-554b-bf98-4e968788ff0b" estrellas="3" especie="macrolepiota_procera"/></extensions>
@@ -3169,7 +3169,7 @@
     <extensions><setas:sitio id="3ff5fab6-fad7-5739-8e8e-b02a7596fa13" estrellas="1" especie="suillus_bellinii"/></extensions>
   </wpt>
   <wpt lat="37.93322" lon="-5.50432">
-    <time>2023-10-28T11:27T00:00:00Z</time>
+    <time>2023-10-28T00:00:00Z</time>
     <name>A. pantherina 28/10/23</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4863697974. Precisión: 100 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="3d3f3d37-33e1-58ed-96d2-a09a54c6ecab" estrellas="3" especie="amanita_pantherina"/></extensions>
@@ -3187,7 +3187,7 @@
     <extensions><setas:sitio id="d0ee8b81-b31f-5096-a886-e4e443c1743c" estrellas="1" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="37.11139" lon="-3.43530">
-    <time>2023-10-21T13:49:23T00:00:00Z</time>
+    <time>2023-10-21T00:00:00Z</time>
     <name>M. procera 21/10/23</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4440843950. Precisión: 4 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="255981b4-8b0f-5327-ae63-ec75eb5a107e" estrellas="3" especie="macrolepiota_procera"/></extensions>
@@ -3217,7 +3217,7 @@
     <extensions><setas:sitio id="119e4a8a-ee66-52d2-8bc3-f92693b0911f" estrellas="1" especie="suillus_luteus"/></extensions>
   </wpt>
   <wpt lat="37.10401" lon="-3.41045">
-    <time>2023-10-13T13:10:10T00:00:00Z</time>
+    <time>2023-10-13T00:00:00Z</time>
     <name>A. muscaria 13/10/23</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4855398938. Precisión: 386 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="35eb174e-729b-5c93-8325-dda18dbbf09c" estrellas="3" especie="amanita_muscaria"/></extensions>
@@ -3241,7 +3241,7 @@
     <extensions><setas:sitio id="71832836-4982-52ac-afb8-e61af7a8b356" estrellas="1" especie="chlorophyllum_rhacodes"/></extensions>
   </wpt>
   <wpt lat="37.51914" lon="-6.26813">
-    <time>2023-03-11T12:31T00:00:00Z</time>
+    <time>2023-03-11T00:00:00Z</time>
     <name>A. ponderosa 11/03/23</name>
     <desc>Cita de Amanita ponderosa. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4121121503. Precisión: 1090 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="a57b7d1f-3864-53fc-a66d-f4e5e9175495" estrellas="3" especie="amanita_ponderosa"/></extensions>
@@ -3253,7 +3253,7 @@
     <extensions><setas:sitio id="5708c7fd-951a-5d4c-bce8-7c0dbf5e3678" estrellas="2" especie="craterellus_cornucopioides"/></extensions>
   </wpt>
   <wpt lat="37.20982" lon="-6.08968">
-    <time>2023-02-01T18:10T00:00:00Z</time>
+    <time>2023-02-01T00:00:00Z</time>
     <name>L. chrysorrheus 01/02/23</name>
     <desc>Cita de Lactarius chrysorrheus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6579595814. Precisión: 28417 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="69618f43-ce88-51a2-903a-d7fc1e2ec5d3" estrellas="3" especie="lactarius_chrysorrheus"/></extensions>
@@ -3295,7 +3295,7 @@
     <extensions><setas:sitio id="aa18d318-d0f2-57da-84fa-3be7dfbf6752" estrellas="1" especie="suillus_collinitus"/></extensions>
   </wpt>
   <wpt lat="37.58564" lon="-4.66614">
-    <time>2023-01-04T17:54:33T00:00:00Z</time>
+    <time>2023-01-04T00:00:00Z</time>
     <name>O. olearius 04/01/23</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4028620135. Precisión: 3 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="8705ed7c-db8d-5db4-b754-a52e1d65ad53" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -3313,7 +3313,7 @@
     <extensions><setas:sitio id="fbdcb3d8-b80b-5017-ba50-d6da67ab9d9d" estrellas="2" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="36.59022" lon="-5.38430">
-    <time>2022-12-30T11:33T00:00:00Z</time>
+    <time>2022-12-30T00:00:00Z</time>
     <name>A. pantherina 30/12/22</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4015291336. Precisión: 122 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="1e7cad23-3459-5235-862d-7f3874b8eee6" estrellas="3" especie="amanita_pantherina"/></extensions>
@@ -3331,7 +3331,7 @@
     <extensions><setas:sitio id="4ddf38f1-43af-51df-b22a-1218bdc66410" estrellas="2" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="37.95055" lon="-4.69139">
-    <time>2022-12-27T13:07:08T00:00:00Z</time>
+    <time>2022-12-27T00:00:00Z</time>
     <name>L. deliciosus 27/12/22</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6566971493. Precisión: 16 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="5beb581c-2b9d-52b8-a53f-cbde2fda9bd9" estrellas="3" especie="lactarius_deliciosus"/></extensions>
@@ -3373,7 +3373,7 @@
     <extensions><setas:sitio id="fc39e31b-f447-5848-a29a-bfbe326593bb" estrellas="1" especie="suillus_granulatus"/></extensions>
   </wpt>
   <wpt lat="36.46349" lon="-5.65698">
-    <time>2022-12-20T12:34T00:00:00Z</time>
+    <time>2022-12-20T00:00:00Z</time>
     <name>O. olearius 20/12/22</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4421054672. Precisión: 335 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="f66eb616-4fc9-5190-9c41-d3b43db3ba5e" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -3403,7 +3403,7 @@
     <extensions><setas:sitio id="e7d26262-95f3-5b6a-81aa-83fab1cf6f94" estrellas="2" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="37.11278" lon="-6.76713">
-    <time>2022-12-18T12:47:54T00:00:00Z</time>
+    <time>2022-12-18T00:00:00Z</time>
     <name>S. bellinii 18/12/22</name>
     <desc>Cita de Suillus bellinii. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4009888754. Precisión: 61 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="05e8228c-5951-5be6-ac40-1d0f06300057" estrellas="3" especie="suillus_bellinii"/></extensions>
@@ -3415,25 +3415,25 @@
     <extensions><setas:sitio id="a94b21d4-c43e-5a23-b126-b6c9af2274a7" estrellas="1" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="37.86590" lon="-6.07895">
-    <time>2022-12-17T14:17:45T00:00:00Z</time>
+    <time>2022-12-17T00:00:00Z</time>
     <name>L. chrysorrheus 17/12/22</name>
     <desc>Cita de Lactarius chrysorrheus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4018167711. Precisión: 8 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="a49a21c7-aba4-5ba9-b42f-f401485ecb06" estrellas="3" especie="lactarius_chrysorrheus"/></extensions>
   </wpt>
   <wpt lat="37.84539" lon="-6.07719">
-    <time>2022-12-17T13:17:59T00:00:00Z</time>
+    <time>2022-12-17T00:00:00Z</time>
     <name>O. olearius 17/12/22</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4006694965. Precisión: 5 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="ff4c1ca0-f382-5bc5-9961-a9c72abbc5a0" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.84875" lon="-6.09303">
-    <time>2022-12-17T12:31:51T00:00:00Z</time>
+    <time>2022-12-17T00:00:00Z</time>
     <name>M. procera 17/12/22</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4006690971. Precisión: 8 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="b5d66580-4744-5767-a10a-fcac63e027a3" estrellas="3" especie="macrolepiota_procera"/></extensions>
   </wpt>
   <wpt lat="37.01875" lon="-6.58187">
-    <time>2022-12-16T17:33T00:00:00Z</time>
+    <time>2022-12-16T00:00:00Z</time>
     <name>A. muscaria 16/12/22</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4011556694. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="0d384a49-9e2a-50de-9096-63aacb7f833b" estrellas="3" especie="amanita_muscaria"/></extensions>
@@ -3481,7 +3481,7 @@
     <extensions><setas:sitio id="5034b1f6-7f1d-5efd-b23b-e4cf4e85e650" estrellas="2" especie="amanita_muscaria"/></extensions>
   </wpt>
   <wpt lat="37.26844" lon="-6.38196">
-    <time>2022-12-04T15:03T00:00:00Z</time>
+    <time>2022-12-04T00:00:00Z</time>
     <name>L. chrysorrheus 04/12/22</name>
     <desc>Cita de Lactarius chrysorrheus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6579935469. Precisión: 28417 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="12b28484-16a0-5a3c-9869-0d00085f1a24" estrellas="3" especie="lactarius_chrysorrheus"/></extensions>
@@ -3529,13 +3529,13 @@
     <extensions><setas:sitio id="9e7a32e3-0164-5ff0-b8c1-dbd39c67a2dd" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.23663" lon="-6.23877">
-    <time>2022-11-19T14:13:14T00:00:00Z</time>
+    <time>2022-11-19T00:00:00Z</time>
     <name>A. campestris 19/11/22</name>
     <desc>Cita de Agaricus campestris. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3985896735. Precisión: 24 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="c20c41eb-1aa7-5afc-bdb8-b8bf7185b5ce" estrellas="3" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="37.24410" lon="-6.24225">
-    <time>2022-11-19T13:11:05T00:00:00Z</time>
+    <time>2022-11-19T00:00:00Z</time>
     <name>A. pantherina 19/11/22</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4945771688. Precisión: 125 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="c82cc208-9b3d-592d-91a3-761f2cef5ef5" estrellas="3" especie="amanita_pantherina"/></extensions>
@@ -3553,25 +3553,25 @@
     <extensions><setas:sitio id="b4d0b803-9868-5e45-a582-50a34de3a2ac" estrellas="1" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.11362" lon="-3.02836">
-    <time>2022-11-01T14:46T00:00:00Z</time>
+    <time>2022-11-01T00:00:00Z</time>
     <name>A. muscaria 01/11/22</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3963511074. Precisión: 15 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="ab5b167d-b92c-566a-ba01-9ea784568bc0" estrellas="3" especie="amanita_muscaria"/></extensions>
   </wpt>
   <wpt lat="37.10542" lon="-3.02427">
-    <time>2022-11-01T12:45T00:00:00Z</time>
+    <time>2022-11-01T00:00:00Z</time>
     <name>S. luteus 01/11/22</name>
     <desc>Cita de Suillus luteus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3988633614. Precisión: 61 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="a359dcac-34f1-57e9-be6b-795021c3d083" estrellas="3" especie="suillus_luteus"/></extensions>
   </wpt>
   <wpt lat="37.11107" lon="-3.02766">
-    <time>2022-11-01T12:36T00:00:00Z</time>
+    <time>2022-11-01T00:00:00Z</time>
     <name>L. deliciosus 01/11/22</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3963276020. Precisión: 61 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="bb847845-161c-5ed1-95be-15b100b9c5ab" estrellas="3" especie="lactarius_deliciosus"/></extensions>
   </wpt>
   <wpt lat="37.10618" lon="-3.02521">
-    <time>2022-11-01T12:29T00:00:00Z</time>
+    <time>2022-11-01T00:00:00Z</time>
     <name>A. muscaria 01/11/22</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3963230050. Precisión: 61 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="8458823b-aeaf-5262-94ff-dd356d8cc65c" estrellas="3" especie="amanita_muscaria"/></extensions>
@@ -3607,7 +3607,7 @@
     <extensions><setas:sitio id="bcc2bcfc-4ac2-5816-a91f-3683aabb0f1a" estrellas="1" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="37.11646" lon="-2.81661">
-    <time>2022-09-03T12:16T00:00:00Z</time>
+    <time>2022-09-03T00:00:00Z</time>
     <name>C. radicans 03/09/22</name>
     <desc>Cita de Caloboletus radicans. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3947441811. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="2ab76041-7a7c-55f3-9e49-31495b730d8d" estrellas="3" especie="caloboletus_radicans"/></extensions>
@@ -3625,7 +3625,7 @@
     <extensions><setas:sitio id="a93da1ec-24cb-5b88-aaba-6252ca7067c1" estrellas="2" especie="morchella_spp"/></extensions>
   </wpt>
   <wpt lat="36.77897" lon="-5.39916">
-    <time>2022-05-08T14:12:55T00:00:00Z</time>
+    <time>2022-05-08T00:00:00Z</time>
     <name>P. eryngii 08/05/22</name>
     <desc>Cita de Pleurotus eryngii. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3773362741. Precisión: 9 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="9873a747-cf5e-592c-b649-b00728af3890" estrellas="3" especie="pleurotus_eryngii"/></extensions>
@@ -3661,7 +3661,7 @@
     <extensions><setas:sitio id="8108023c-4742-5626-b669-0075d6099e25" estrellas="1" especie="suillus_collinitus"/></extensions>
   </wpt>
   <wpt lat="37.12288" lon="-6.49234">
-    <time>2022-04-14T20:39T00:00:00Z</time>
+    <time>2022-04-14T00:00:00Z</time>
     <name>A. muscaria 14/04/22</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3764473807. Precisión: 15 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="0c358f92-9d80-5624-9643-4711046a5624" estrellas="3" especie="amanita_muscaria"/></extensions>
@@ -3709,7 +3709,7 @@
     <extensions><setas:sitio id="1245c6c8-d524-5cbb-8b77-071ff9044459" estrellas="1" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="37.24723" lon="-6.24600">
-    <time>2022-04-09T10:53:55T00:00:00Z</time>
+    <time>2022-04-09T00:00:00Z</time>
     <name>B. aereus 09/04/22</name>
     <desc>Cita de Boletus aereus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3773232521. Precisión: 24 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="c8f0be1c-d71d-5d91-984b-384054120c6c" estrellas="3" especie="boletus_aereus"/></extensions>
@@ -3901,7 +3901,7 @@
     <extensions><setas:sitio id="2ba8372a-e061-5dfb-ae89-47e0f61088d2" estrellas="1" especie="chlorophyllum_rhacodes"/></extensions>
   </wpt>
   <wpt lat="37.96278" lon="-4.84420">
-    <time>2021-12-23T11:44:38T00:00:00Z</time>
+    <time>2021-12-23T00:00:00Z</time>
     <name>O. olearius 23/12/21</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4046761100. Precisión: 4 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="c0ae43b9-2102-519a-9015-a115edad2c19" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -3925,9 +3925,9 @@
     <extensions><setas:sitio id="e69aac68-940a-55b0-9a84-15e023d71fa0" estrellas="1" especie="suillus_granulatus"/></extensions>
   </wpt>
   <wpt lat="36.52834" lon="-5.58610">
-    <time>2021-12-09T11:13:10T00:00:00Z</time>
+    <time>2021-12-09T00:00:00Z</time>
     <name>A. pantherina 09/12/21</name>
-    <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3859811872. Precisión: 1.40082e+06 m. Confianza: alta.</desc>
+    <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3859811872. Precisión: 1400824 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="82ffad29-5134-5d7f-af06-cb3e0e85cbca" estrellas="3" especie="amanita_pantherina"/></extensions>
   </wpt>
   <wpt lat="37.93617" lon="-4.82324">
@@ -3997,7 +3997,7 @@
     <extensions><setas:sitio id="fc3d637f-32e1-5c6e-9823-7f2b934fb853" estrellas="1" especie="macrolepiota_procera"/></extensions>
   </wpt>
   <wpt lat="36.57497" lon="-4.88944">
-    <time>2021-11-23T10:53:45T00:00:00Z</time>
+    <time>2021-11-23T00:00:00Z</time>
     <name>L. deliciosus 23/11/21</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6566658117. Precisión: 12 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="91fddaff-76c4-5ed0-a437-7655d8810cac" estrellas="3" especie="lactarius_deliciosus"/></extensions>
@@ -4009,7 +4009,7 @@
     <extensions><setas:sitio id="bf154b66-3aa5-53bc-89f6-7799bd1b9eac" estrellas="1" especie="macrolepiota_procera"/></extensions>
   </wpt>
   <wpt lat="37.98087" lon="-4.80020">
-    <time>2021-11-14T11:46:21T00:00:00Z</time>
+    <time>2021-11-14T00:00:00Z</time>
     <name>M. procera 14/11/21</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5062518454. Precisión: 565 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="599e7a5e-712c-5cf7-b401-eb54a009571c" estrellas="3" especie="macrolepiota_procera"/></extensions>
@@ -4033,8 +4033,8 @@
     <extensions><setas:sitio id="721265a2-4eef-5ac1-9ba8-2cdfe533d702" estrellas="1" especie="suillus_collinitus"/></extensions>
   </wpt>
   <wpt lat="36.60340" lon="-5.24330">
-    <time>2021-11T00:00:00Z</time>
-    <name>A. caesarea /11/21</name>
+    <time>2026-11-07T00:00:00Z</time>
+    <name>A. caesarea 11/21</name>
     <desc>Cita de Amanita caesarea. Fuente: Valle del Genal (tras lluvia sobre incendio de Sierra Bermeja) (comarca (Nominatim)). URL: https://www.surinenglish.com/malaga/ronda/mushrooming-mountains-20211126100121-ntvo.html. Precisión: 15000 m. Confianza: media.</desc>
     <extensions><setas:sitio id="d0c568b3-76d7-5061-a021-e73ec3cf46dc" estrellas="2" especie="amanita_caesarea"/></extensions>
   </wpt>
@@ -4045,13 +4045,13 @@
     <extensions><setas:sitio id="fe8d8b4e-a02d-5783-9b30-2c9ca9d4b342" estrellas="3" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="36.57479" lon="-4.89032">
-    <time>2021-10-04T12:44:33T00:00:00Z</time>
+    <time>2021-10-04T00:00:00Z</time>
     <name>M. procera 04/10/21</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3399173087. Precisión: 2853 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="7252edce-2159-5dda-93a5-65484a5df444" estrellas="3" especie="macrolepiota_procera"/></extensions>
   </wpt>
   <wpt lat="36.57821" lon="-4.88464">
-    <time>2021-10-04T11:35:13T00:00:00Z</time>
+    <time>2021-10-04T00:00:00Z</time>
     <name>R. satanas 04/10/21</name>
     <desc>Cita de Rubroboletus satanas. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3391695654. Precisión: 16 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="683fc42f-811e-55e3-899d-e4dbbb1ebafd" estrellas="3" especie="rubroboletus_satanas"/></extensions>
@@ -4069,7 +4069,7 @@
     <extensions><setas:sitio id="f392577c-ac3e-508e-b4c0-0ea86acf9bdf" estrellas="1" especie="suillus_granulatus"/></extensions>
   </wpt>
   <wpt lat="37.34409" lon="-6.35086">
-    <time>2021-09-29T19:20:24T00:00:00Z</time>
+    <time>2021-09-29T00:00:00Z</time>
     <name>S. citrinum 29/09/21</name>
     <desc>Cita de Scleroderma citrinum. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4407107391. Precisión: 6 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="76d76387-113a-5742-8fb1-161505f82969" estrellas="3" especie="scleroderma_citrinum"/></extensions>
@@ -4159,7 +4159,7 @@
     <extensions><setas:sitio id="ebd1d769-5696-5d16-af40-b07d9566179e" estrellas="1" especie="macrolepiota_procera"/></extensions>
   </wpt>
   <wpt lat="36.63077" lon="-6.38735">
-    <time>2020-12-25T11:47T00:00:00Z</time>
+    <time>2020-12-25T00:00:00Z</time>
     <name>S. luteus 25/12/20</name>
     <desc>Cita de Suillus luteus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3018088645. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="758c1bf2-f750-5076-973d-c35f0dbf9e67" estrellas="3" especie="suillus_luteus"/></extensions>
@@ -4225,13 +4225,13 @@
     <extensions><setas:sitio id="4f1a88b9-fc58-50f7-972b-b3e8ad79bc00" estrellas="2" especie="suillus_collinitus"/></extensions>
   </wpt>
   <wpt lat="37.56209" lon="-6.16381">
-    <time>2020-12-12T13:20T00:00:00Z</time>
+    <time>2020-12-12T00:00:00Z</time>
     <name>A. muscaria 12/12/20</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3005217732. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="1e22355a-cbbb-5718-a85c-05bbb8592c7d" estrellas="3" especie="amanita_muscaria"/></extensions>
   </wpt>
   <wpt lat="37.56172" lon="-6.16754">
-    <time>2020-12-12T13:07T00:00:00Z</time>
+    <time>2020-12-12T00:00:00Z</time>
     <name>M. procera 12/12/20</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3061740478. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="b7cdf4c5-7e29-502f-955e-284d4df5293d" estrellas="3" especie="macrolepiota_procera"/></extensions>
@@ -4267,7 +4267,7 @@
     <extensions><setas:sitio id="5e042719-cc02-5834-9d83-2e69f59dd1bd" estrellas="3" especie="amanita_pantherina"/></extensions>
   </wpt>
   <wpt lat="37.30933" lon="-6.44194">
-    <time>2020-12-01T13:18:12T00:00:00Z</time>
+    <time>2020-12-01T00:00:00Z</time>
     <name>A. muscaria 01/12/20</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/2992818985. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="8e8ff63d-af15-5b4e-89c5-1158dd05f07d" estrellas="3" especie="amanita_muscaria"/></extensions>
@@ -4279,7 +4279,7 @@
     <extensions><setas:sitio id="5d08937f-89a1-5fa8-b6da-315319e4c7d4" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="36.74289" lon="-4.86468">
-    <time>2020-11-29T11:26:29T00:00:00Z</time>
+    <time>2020-11-29T00:00:00Z</time>
     <name>O. olearius 29/11/20</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3455342883. Precisión: 6 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="0f85e3c6-7e56-5088-a45a-ef2e609232d4" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -4309,7 +4309,7 @@
     <extensions><setas:sitio id="11649eac-71fc-58f0-aaac-50d0d0bdd5d8" estrellas="2" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="36.74323" lon="-4.86406">
-    <time>2020-11-15T11:36:14T00:00:00Z</time>
+    <time>2020-11-15T00:00:00Z</time>
     <name>S. collinitus 15/11/20</name>
     <desc>Cita de Suillus collinitus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3455173862. Precisión: 4 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="c1fd17bf-2c87-56d1-8c4b-3361705736e8" estrellas="3" especie="suillus_collinitus"/></extensions>
@@ -4441,7 +4441,7 @@
     <extensions><setas:sitio id="732b9213-90da-5499-905d-f1052db4de61" estrellas="2" especie="amanita_muscaria"/></extensions>
   </wpt>
   <wpt lat="37.52981" lon="-4.31869">
-    <time>2019-12-08T15:51:21T00:00:00Z</time>
+    <time>2019-12-08T00:00:00Z</time>
     <name>A. pantherina 08/12/19</name>
     <desc>Cita de Amanita pantherina. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/2574202433. Precisión: 600 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="187fb0df-7177-5f0d-a539-8fc4d67acbef" estrellas="3" especie="amanita_pantherina"/></extensions>
@@ -4453,7 +4453,7 @@
     <extensions><setas:sitio id="a896c222-b8c7-503e-851b-614976868b35" estrellas="2" especie="lactarius_chrysorrheus"/></extensions>
   </wpt>
   <wpt lat="36.65814" lon="-6.11446">
-    <time>2019-12-07T12:55ZT00:00:00Z</time>
+    <time>2019-12-07T00:00:00Z</time>
     <name>O. olearius 07/12/19</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3455487297. Precisión: 322 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="9af83ccb-68f3-599b-9906-7b36b84da8ef" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -4519,7 +4519,7 @@
     <extensions><setas:sitio id="f5f10600-81d6-54e2-8e95-8da53054e8bd" estrellas="2" especie="lactarius_chrysorrheus"/></extensions>
   </wpt>
   <wpt lat="36.50860" lon="-5.50230">
-    <time>2018-12-08T17:09:45T00:00:00Z</time>
+    <time>2018-12-08T00:00:00Z</time>
     <name>A. caesarea 08/12/18</name>
     <desc>Cita de Amanita caesarea. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4145684184. Precisión: 28534 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="e48f2144-098a-5625-b8b1-f72417785f21" estrellas="3" especie="amanita_caesarea"/></extensions>
@@ -4651,7 +4651,7 @@
     <extensions><setas:sitio id="eb3c3f90-0f56-5259-bf1b-a28d93dd7167" estrellas="3" especie="lactarius_deliciosus"/></extensions>
   </wpt>
   <wpt lat="36.33970" lon="-5.82176">
-    <time>2018-11-18T14:15:49T00:00:00Z</time>
+    <time>2018-11-18T00:00:00Z</time>
     <name>O. olearius 18/11/18</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3466340330. Precisión: 175 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="49138705-ce5f-593d-ab6b-aece0bafc4ff" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -4675,7 +4675,7 @@
     <extensions><setas:sitio id="8f9b4efb-91ab-505f-86a0-6695db13a389" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.01139" lon="-4.59960">
-    <time>2018-11-11T14:28T00:00:00Z</time>
+    <time>2018-11-11T00:00:00Z</time>
     <name>O. olearius 11/11/18</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/2901571324. Precisión: 31 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="bfd029db-0d30-5ffb-87fe-14df64c0815f" estrellas="3" especie="omphalotus_olearius"/></extensions>
@@ -4837,7 +4837,7 @@
     <extensions><setas:sitio id="fa774bf8-842d-594d-9ddb-9872349e2109" estrellas="2" especie="morchella_spp"/></extensions>
   </wpt>
   <wpt lat="37.24888" lon="-6.23848">
-    <time>2018-01-21T11:48T00:00:00Z</time>
+    <time>2018-01-21T00:00:00Z</time>
     <name>S. bellinii 21/01/18</name>
     <desc>Cita de Suillus bellinii. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4535884681. Precisión: 61 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="a13b6606-5ed9-51fe-aed1-dc3c9393c40e" estrellas="3" especie="suillus_bellinii"/></extensions>
@@ -4885,61 +4885,61 @@
     <extensions><setas:sitio id="494119d8-8b26-5723-b211-bf4fd4afcdcd" estrellas="1" especie="macrolepiota_procera"/></extensions>
   </wpt>
   <wpt lat="37.14285" lon="-3.46590">
-    <time>2018-01-02T10:13T00:00:00Z</time>
+    <time>2018-01-02T00:00:00Z</time>
     <name>L. deliciosus 02/01/18</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6566645533. Precisión: 2 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="d44938d6-d27a-5e35-b093-d1fee237f646" estrellas="3" especie="lactarius_deliciosus"/></extensions>
   </wpt>
   <wpt lat="37.14284" lon="-3.46589">
-    <time>2018-01-02T09:47T00:00:00Z</time>
+    <time>2018-01-02T00:00:00Z</time>
     <name>M. procera 02/01/18</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4980421678. Precisión: 4 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="5eb4705a-689f-5b72-87b8-271aa5644323" estrellas="3" especie="macrolepiota_procera"/></extensions>
   </wpt>
   <wpt lat="36.22470" lon="-5.62070">
-    <time>2018T00:00:00Z</time>
-    <name>B. edulis //18</name>
+    <time>2026-11-07T00:00:00Z</time>
+    <name>B. edulis 2018</name>
     <desc>Cita de Boletus edulis. Fuente: Valdeinfierno (alcornocal) (paraje (Nominatim)). URL: https://pmc.ncbi.nlm.nih.gov/articles/PMC9145171/. Precisión: 1000 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="8e8e034a-3951-5f7c-844e-d8e94dce4965" estrellas="3" especie="boletus_edulis"/></extensions>
   </wpt>
   <wpt lat="36.22470" lon="-5.62070">
-    <time>2018T00:00:00Z</time>
-    <name>B. aereus //18</name>
+    <time>2026-11-07T00:00:00Z</time>
+    <name>B. aereus 2018</name>
     <desc>Cita de Boletus aereus. Fuente: Valdeinfierno (alcornocal) (paraje (Nominatim)). URL: https://pmc.ncbi.nlm.nih.gov/articles/PMC9145171/. Precisión: 1000 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="8e8e034a-3951-5f7c-844e-d8e94dce4965" estrellas="3" especie="boletus_aereus"/></extensions>
   </wpt>
   <wpt lat="36.08040" lon="-5.53770">
-    <time>2018T00:00:00Z</time>
-    <name>A. caesarea //18</name>
+    <time>2026-11-07T00:00:00Z</time>
+    <name>A. caesarea 2018</name>
     <desc>Cita de Amanita caesarea. Fuente: Sendero El Palancar (alcornocal) (paraje (Nominatim por nombre; ambiguo, verificar)). URL: https://pmc.ncbi.nlm.nih.gov/articles/PMC9145171/. Precisión: 1000 m. Confianza: baja.</desc>
     <extensions><setas:sitio id="8e8e034a-3951-5f7c-844e-d8e94dce4965" estrellas="1" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="36.57000" lon="-5.41000">
-    <time>2018T00:00:00Z</time>
-    <name>A. caesarea //18</name>
+    <time>2026-11-07T00:00:00Z</time>
+    <name>A. caesarea 2018</name>
     <desc>Cita de Amanita caesarea. Fuente: Cortes de la Frontera (alcornocal, muestreo con asociacion) (municipio (aprox.)). URL: https://pmc.ncbi.nlm.nih.gov/articles/PMC9145171/. Precisión: 5000 m. Confianza: media.</desc>
     <extensions><setas:sitio id="8e8e034a-3951-5f7c-844e-d8e94dce4965" estrellas="2" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="36.55960" lon="-5.60120">
-    <time>2017-2018T00:00:00Z</time>
-    <name>A. caesarea 8/20/17</name>
+    <time>2026-11-07T00:00:00Z</time>
+    <name>A. caesarea 20/17</name>
     <desc>Cita de Amanita caesarea. Fuente: Puerto de Galiz (alcornocal) (paraje (Nominatim; sin coord. en la fuente)). URL: https://pmc.ncbi.nlm.nih.gov/articles/PMC9145171/. Precisión: 1000 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="8e8e034a-3951-5f7c-844e-d8e94dce4965" estrellas="3" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="36.55960" lon="-5.60120">
-    <time>2017-2018T00:00:00Z</time>
-    <name>B. edulis 8/20/17</name>
+    <time>2026-11-07T00:00:00Z</time>
+    <name>B. edulis 20/17</name>
     <desc>Cita de Boletus edulis. Fuente: Puerto de Galiz (alcornocal) (paraje (Nominatim; sin coord. en la fuente)). URL: https://pmc.ncbi.nlm.nih.gov/articles/PMC9145171/. Precisión: 1000 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="8e8e034a-3951-5f7c-844e-d8e94dce4965" estrellas="3" especie="boletus_edulis"/></extensions>
   </wpt>
   <wpt lat="36.55960" lon="-5.60120">
-    <time>2017-2018T00:00:00Z</time>
-    <name>B. aereus 8/20/17</name>
+    <time>2026-11-07T00:00:00Z</time>
+    <name>B. aereus 20/17</name>
     <desc>Cita de Boletus aereus. Fuente: Puerto de Galiz (alcornocal) (paraje (Nominatim; sin coord. en la fuente)). URL: https://pmc.ncbi.nlm.nih.gov/articles/PMC9145171/. Precisión: 1000 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="8e8e034a-3951-5f7c-844e-d8e94dce4965" estrellas="3" especie="boletus_aereus"/></extensions>
   </wpt>
   <wpt lat="36.78086" lon="-3.11002">
-    <time>2017-12-25T13:16T00:00:00Z</time>
+    <time>2017-12-25T00:00:00Z</time>
     <name>A. campestris 25/12/17</name>
     <desc>Cita de Agaricus campestris. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3915348369. Precisión: 8 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="2c0b48e5-87b9-5189-99ae-e39d084aa236" estrellas="3" especie="agaricus_campestris"/></extensions>
@@ -5101,13 +5101,13 @@
     <extensions><setas:sitio id="5289b11c-1c07-5a30-b254-2da42e39305c" estrellas="2" especie="suillus_bellinii"/></extensions>
   </wpt>
   <wpt lat="37.99760" lon="-6.07449">
-    <time>2016-12-28T18:51T00:00:00Z</time>
+    <time>2016-12-28T00:00:00Z</time>
     <name>C. rhacodes 28/12/16</name>
     <desc>Cita de Chlorophyllum rhacodes. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/1948782904. Precisión: 508 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="b0dc7e2c-9b36-5648-913b-3b7541c4c24b" estrellas="3" especie="chlorophyllum_rhacodes"/></extensions>
   </wpt>
   <wpt lat="37.99760" lon="-6.07449">
-    <time>2016-12-28T17:15T00:00:00Z</time>
+    <time>2016-12-28T00:00:00Z</time>
     <name>M. procera 28/12/16</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/1948782751. Precisión: 508 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="3ce9faa3-462f-59ee-911d-df30f0142f00" estrellas="3" especie="macrolepiota_procera"/></extensions>
@@ -5149,7 +5149,7 @@
     <extensions><setas:sitio id="063cb70d-3167-5a0f-8a6a-715a8d8d443d" estrellas="1" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="37.22522" lon="-6.28261">
-    <time>2016-12-11T17:31T00:00:00Z</time>
+    <time>2016-12-11T00:00:00Z</time>
     <name>A. phalloides 11/12/16</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3415373075. Precisión: 9072 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="95fbb890-f39b-5c97-b54d-b437b76ba658" estrellas="3" especie="amanita_phalloides"/></extensions>
@@ -5161,7 +5161,7 @@
     <extensions><setas:sitio id="9ecde5e7-ed7d-5fd6-bd39-9bbbd87a3217" estrellas="3" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="37.22522" lon="-6.28261">
-    <time>2016-12-08T18:07T00:00:00Z</time>
+    <time>2016-12-08T00:00:00Z</time>
     <name>L. deliciosus 08/12/16</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3784740383. Precisión: 9072 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="58a72617-a699-549e-85e5-baa1c9cf005d" estrellas="3" especie="lactarius_deliciosus"/></extensions>
@@ -5197,7 +5197,7 @@
     <extensions><setas:sitio id="2dd8cef0-64da-5d84-bff5-6a82d94d9b62" estrellas="2" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="36.33276" lon="-6.09673">
-    <time>2016-11-11T10:24:15T00:00:00Z</time>
+    <time>2016-11-11T00:00:00Z</time>
     <name>S. granulatus 11/11/16</name>
     <desc>Cita de Suillus granulatus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/1453209414. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="3320d9ef-5dc8-50a4-87c2-c881c7e4b36c" estrellas="3" especie="suillus_granulatus"/></extensions>
@@ -5227,7 +5227,7 @@
     <extensions><setas:sitio id="d25ab498-9924-5dd1-9e57-8ea73193aca6" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.24798" lon="-6.23841">
-    <time>2016-10-16T12:50T00:00:00Z</time>
+    <time>2016-10-16T00:00:00Z</time>
     <name>L. sanguifluus 16/10/16</name>
     <desc>Cita de Lactarius sanguifluus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4599712823. Precisión: 204 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="357fa839-af79-5474-8b31-46a6cab3e4d7" estrellas="3" especie="lactarius_sanguifluus"/></extensions>
@@ -5329,7 +5329,7 @@
     <extensions><setas:sitio id="69ea3e93-afc7-54eb-b77a-6cf825d395a1" estrellas="2" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.11761" lon="-2.81181">
-    <time>2015-11-08T11:49T00:00:00Z</time>
+    <time>2015-11-08T00:00:00Z</time>
     <name>A. phalloides 08/11/15</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3039474718. Precisión: 15 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="d61d485a-319b-590d-8eed-f430b1579904" estrellas="3" especie="amanita_phalloides"/></extensions>
@@ -5563,7 +5563,7 @@
     <extensions><setas:sitio id="bdbac560-cbd1-518f-93b4-6fd376e9c617" estrellas="2" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="37.96598" lon="-6.04707">
-    <time>2014-12-26T14:37T00:00:00Z</time>
+    <time>2014-12-26T00:00:00Z</time>
     <name>L. deliciosus 26/12/14</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/1950007370. Precisión: 126 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="5a99519d-4bfa-576b-b18f-966d1e9f666b" estrellas="3" especie="lactarius_deliciosus"/></extensions>
@@ -5749,7 +5749,7 @@
     <extensions><setas:sitio id="0e9d3783-6ed8-5b1a-8a00-a557c3b75568" estrellas="2" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.21335" lon="-6.04582">
-    <time>2014-11-30T14:39T00:00:00Z</time>
+    <time>2014-11-30T00:00:00Z</time>
     <name>S. bellinii 30/11/14</name>
     <desc>Cita de Suillus bellinii. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/5892900156. Precisión: 28417 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="80677060-1346-5ec5-bbb9-6fd63cbb1339" estrellas="3" especie="suillus_bellinii"/></extensions>
@@ -5953,7 +5953,7 @@
     <extensions><setas:sitio id="eb2e6a05-ec62-5f8f-83bc-45b182c8d6c4" estrellas="2" especie="rubroboletus_satanas"/></extensions>
   </wpt>
   <wpt lat="37.83283" lon="-6.34089">
-    <time>2014-10-04T10:59T00:00:00Z</time>
+    <time>2014-10-04T00:00:00Z</time>
     <name>R. satanas 04/10/14</name>
     <desc>Cita de Rubroboletus satanas. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4011553737. Precisión: 566 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="5178398a-b990-5b7a-a11c-5f61ef1ca097" estrellas="3" especie="rubroboletus_satanas"/></extensions>
@@ -6331,7 +6331,7 @@
     <extensions><setas:sitio id="0a413c89-610a-5bde-b8c6-758a8f21d017" estrellas="2" especie="morchella_spp"/></extensions>
   </wpt>
   <wpt lat="36.83797" lon="-2.90472">
-    <time>2013-03-24T18:35T00:00:00Z</time>
+    <time>2013-03-24T00:00:00Z</time>
     <name>P. eryngii 24/03/13</name>
     <desc>Cita de Pleurotus eryngii. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3947063394. Precisión: 31 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="b605ce7e-404f-5c6b-9a56-f7d750d71872" estrellas="3" especie="pleurotus_eryngii"/></extensions>
@@ -6643,13 +6643,13 @@
     <extensions><setas:sitio id="d898e9ba-920f-5f58-83f6-63da0e7cc045" estrellas="2" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="37.35548" lon="-5.93610">
-    <time>2012-11-26T15:15T00:00:00Z</time>
+    <time>2012-11-26T00:00:00Z</time>
     <name>O. olearius 26/11/12</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/2988558198. Precisión: 4 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="467fabcb-1b58-502b-a4a4-de4a591098fe" estrellas="3" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.10862" lon="-2.78400">
-    <time>2012-11-25T23:12T00:00:00Z</time>
+    <time>2012-11-25T00:00:00Z</time>
     <name>S. bellinii 25/11/12</name>
     <desc>Cita de Suillus bellinii. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3963247369. Precisión: 122 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="806b2d63-f88a-5bbd-9ff5-43db099bb5eb" estrellas="3" especie="suillus_bellinii"/></extensions>
@@ -6691,7 +6691,7 @@
     <extensions><setas:sitio id="bb92d4d2-12e8-59a9-92e3-3eb81b5e1459" estrellas="2" especie="pleurotus_ostreatus"/></extensions>
   </wpt>
   <wpt lat="36.78204" lon="-3.11275">
-    <time>2012-11-24T19:09T00:00:00Z</time>
+    <time>2012-11-24T00:00:00Z</time>
     <name>B. aereus 24/11/12</name>
     <desc>Cita de Boletus aereus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3039470720. Precisión: 4 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="553985db-7d4f-5735-83a7-4ee3a6b9a567" estrellas="3" especie="boletus_aereus"/></extensions>
@@ -7327,13 +7327,13 @@
     <extensions><setas:sitio id="a4dd6767-3cde-5ac6-ab29-e1c11bb4ef46" estrellas="2" especie="suillus_granulatus"/></extensions>
   </wpt>
   <wpt lat="36.34859" lon="-5.60375">
-    <time>2011-12-06T14:53T00:00:00Z</time>
+    <time>2011-12-06T00:00:00Z</time>
     <name>A. caesarea 06/12/11</name>
     <desc>Cita de Amanita caesarea. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3307303054. Precisión: 684 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="e8b18683-bcff-50c2-97d1-1522c526509f" estrellas="3" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="36.34859" lon="-5.60375">
-    <time>2011-12-06T13:51T00:00:00Z</time>
+    <time>2011-12-06T00:00:00Z</time>
     <name>A. phalloides 06/12/11</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3307337593. Precisión: 684 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="f0216182-9cd4-5ab6-a4c3-e15b44e826f6" estrellas="3" especie="amanita_phalloides"/></extensions>
@@ -7675,7 +7675,7 @@
     <extensions><setas:sitio id="40bb6965-78bc-5ea6-ba23-1ab4fb7ce88c" estrellas="2" especie="amanita_ponderosa"/></extensions>
   </wpt>
   <wpt lat="37.79495" lon="-5.77212">
-    <time>2011-03-23T10:21T00:00:00Z</time>
+    <time>2011-03-23T00:00:00Z</time>
     <name>A. ponderosa 23/03/11</name>
     <desc>Cita de Amanita ponderosa. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/1640040045. Precisión: 13157 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="51a85d2b-66c4-5bcc-a329-545ef8e7edfd" estrellas="3" especie="amanita_ponderosa"/></extensions>
@@ -7927,7 +7927,7 @@
     <extensions><setas:sitio id="4c007b6e-9aa5-555a-a008-24136c2647e4" estrellas="2" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="36.27506" lon="-5.29218">
-    <time>2010-10-16T16:48T00:00:00Z</time>
+    <time>2010-10-16T00:00:00Z</time>
     <name>A. caesarea 16/10/10</name>
     <desc>Cita de Amanita caesarea. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6567513683. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="938c6637-9feb-5006-9aae-3875c53bf06a" estrellas="3" especie="amanita_caesarea"/></extensions>
@@ -8179,7 +8179,7 @@
     <extensions><setas:sitio id="8a13731e-09aa-5acf-87b2-c3de3ccf5b8f" estrellas="1" especie="macrolepiota_procera"/></extensions>
   </wpt>
   <wpt lat="37.94613" lon="-4.79194">
-    <time>2007-12-08T11:48T00:00:00Z</time>
+    <time>2007-12-08T00:00:00Z</time>
     <name>M. procera 08/12/07</name>
     <desc>Cita de Macrolepiota procera. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/2862293619. Precisión: 191 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="4dfbf2ce-ddfd-5b64-81d4-2f93b3ca7188" estrellas="3" especie="macrolepiota_procera"/></extensions>
@@ -8293,7 +8293,7 @@
     <extensions><setas:sitio id="926d5a56-f830-585c-96e2-c7fd0c199f12" estrellas="2" especie="lepista_nuda"/></extensions>
   </wpt>
   <wpt lat="37.15441" lon="-6.54541">
-    <time>2006-01-01T00:00T00:00:00Z</time>
+    <time>2006-01-01T00:00:00Z</time>
     <name>A. muscaria 01/01/06</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/3772860400. Precisión: 1953 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="c8eb5f89-b705-5dbe-83e4-b5e7f1ad0636" estrellas="3" especie="amanita_muscaria"/></extensions>
@@ -8311,7 +8311,7 @@
     <extensions><setas:sitio id="eba6d248-ac24-5905-b116-d101eac3c9c7" estrellas="3" especie="pleurotus_ostreatus"/></extensions>
   </wpt>
   <wpt lat="36.08180" lon="-5.53004">
-    <time>2005-11-26T17:54T00:00:00Z</time>
+    <time>2005-11-26T00:00:00Z</time>
     <name>L. deliciosus 26/11/05</name>
     <desc>Cita de Lactarius deliciosus. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/6566946033. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="a55470c4-131f-531b-9e6c-daa7ed4c49fd" estrellas="3" especie="lactarius_deliciosus"/></extensions>
@@ -8365,13 +8365,13 @@
     <extensions><setas:sitio id="185c759d-da7e-559d-a942-7208e2fa9271" estrellas="1" especie="cantharellus_cibarius"/></extensions>
   </wpt>
   <wpt lat="37.76746" lon="-5.71160">
-    <time>2005-01-01T00:45:43T00:00:00Z</time>
+    <time>2005-01-01T00:00:00Z</time>
     <name>A. ponderosa 01/01/05</name>
     <desc>Cita de Amanita ponderosa. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/1640040075. Precisión: 526 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="36e6764f-ecc8-5274-8522-cb96ed9c8b32" estrellas="3" especie="amanita_ponderosa"/></extensions>
   </wpt>
   <wpt lat="36.20205" lon="-5.35417">
-    <time>2004-12-04T16:44T00:00:00Z</time>
+    <time>2004-12-04T00:00:00Z</time>
     <name>A. muscaria 04/12/04</name>
     <desc>Cita de Amanita muscaria. Fuente: GBIF dataset 50c9509d-22c7-4a22-a47d-8c48425ef4a7 (iNaturalist). URL: https://www.gbif.org/occurrence/4465674986. Precisión: no declarada. Confianza: alta.</desc>
     <extensions><setas:sitio id="ae9f82b6-cc04-5e80-aa94-a0720696d7b2" estrellas="3" especie="amanita_muscaria"/></extensions>
@@ -11095,8 +11095,8 @@
     <extensions><setas:sitio id="eade9a62-d74d-5009-afa2-2afa0dad76ae" estrellas="3" especie="pleurotus_ostreatus"/></extensions>
   </wpt>
   <wpt lat="38.00000" lon="-5.73600">
-    <time>1990T00:00:00Z</time>
-    <name>A. ponderosa //90</name>
+    <time>2026-11-07T00:00:00Z</time>
+    <name>A. ponderosa 1990</name>
     <desc>Cita de Amanita ponderosa. Fuente: GBIF dataset 85b2fcd8-f762-11e1-a439-00145eb45e9a (MA). URL: https://www.gbif.org/occurrence/78472424. Precisión: 707 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="b6ad96c6-f887-50b9-bcb7-0023440b1a0f" estrellas="3" especie="amanita_ponderosa"/></extensions>
   </wpt>
@@ -11149,116 +11149,139 @@
     <extensions><setas:sitio id="0504b5ee-3e92-5cf9-a7c3-6a36034b5505" estrellas="3" especie="pleurotus_eryngii"/></extensions>
   </wpt>
   <wpt lat="37.14000" lon="-3.39000">
+    <time>2026-11-07T00:00:00Z</time>
     <name>H. repandum s/f</name>
     <desc>Cita de Hydnum repandum. Fuente: GBIF dataset 83598aa6-f762-11e1-a439-00145eb45e9a (Fl.Mycol.Iber.). URL: https://www.gbif.org/occurrence/1275133689. Precisión: 700 m. Confianza: media.</desc>
     <extensions><setas:sitio id="8fc20e53-0a5e-5832-b461-7ad9f2a90296" estrellas="2" especie="hydnum_repandum"/></extensions>
   </wpt>
   <wpt lat="37.72000" lon="-3.76000">
+    <time>2026-11-07T00:00:00Z</time>
     <name>A. campestris s/f</name>
     <desc>Cita de Agaricus campestris. Fuente: GBIF dataset 83598aa6-f762-11e1-a439-00145eb45e9a (Fl.Mycol.Iber.). URL: https://www.gbif.org/occurrence/1275113712. Precisión: 700 m. Confianza: media.</desc>
     <extensions><setas:sitio id="ddeb9427-fd66-59ee-9ac7-48ded0340a22" estrellas="2" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="37.72000" lon="-3.76000">
+    <time>2026-11-07T00:00:00Z</time>
     <name>A. campestris s/f</name>
     <desc>Cita de Agaricus campestris. Fuente: GBIF dataset 83598aa6-f762-11e1-a439-00145eb45e9a (Fl.Mycol.Iber.). URL: https://www.gbif.org/occurrence/1275124818. Precisión: 700 m. Confianza: media.</desc>
     <extensions><setas:sitio id="aae77690-8cd9-58e4-8e7b-de54d42576ab" estrellas="2" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="37.14000" lon="-3.45000">
+    <time>2026-11-07T00:00:00Z</time>
     <name>A. campestris s/f</name>
     <desc>Cita de Agaricus campestris. Fuente: GBIF dataset 83598aa6-f762-11e1-a439-00145eb45e9a (Fl.Mycol.Iber.). URL: https://www.gbif.org/occurrence/1275144239. Precisión: 700 m. Confianza: media.</desc>
     <extensions><setas:sitio id="b33692d5-0d6f-5c88-8dd2-6de7533de334" estrellas="2" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="36.87000" lon="-3.45000">
+    <time>2026-11-07T00:00:00Z</time>
     <name>A. campestris s/f</name>
     <desc>Cita de Agaricus campestris. Fuente: GBIF dataset 83598aa6-f762-11e1-a439-00145eb45e9a (Fl.Mycol.Iber.). URL: https://www.gbif.org/occurrence/1275144377. Precisión: 700 m. Confianza: media.</desc>
     <extensions><setas:sitio id="a04321e0-17f5-55d9-8b7e-530c576b1fff" estrellas="2" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="37.05000" lon="-3.56000">
+    <time>2026-11-07T00:00:00Z</time>
     <name>A. campestris s/f</name>
     <desc>Cita de Agaricus campestris. Fuente: GBIF dataset 83598aa6-f762-11e1-a439-00145eb45e9a (Fl.Mycol.Iber.). URL: https://www.gbif.org/occurrence/1275144480. Precisión: 700 m. Confianza: media.</desc>
     <extensions><setas:sitio id="95a57cd0-5c08-5bfd-aa30-e597b1184099" estrellas="2" especie="agaricus_campestris"/></extensions>
   </wpt>
   <wpt lat="36.87000" lon="-3.45000">
+    <time>2026-11-07T00:00:00Z</time>
     <name>A. phalloides s/f</name>
     <desc>Cita de Amanita phalloides. Fuente: GBIF dataset 83598aa6-f762-11e1-a439-00145eb45e9a (Fl.Mycol.Iber.). URL: https://www.gbif.org/occurrence/1275139475. Precisión: 700 m. Confianza: media.</desc>
     <extensions><setas:sitio id="d74e9b65-ed7d-598a-9f03-552c274e3322" estrellas="2" especie="amanita_phalloides"/></extensions>
   </wpt>
   <wpt lat="37.14000" lon="-3.45000">
+    <time>2026-11-07T00:00:00Z</time>
     <name>O. olearius s/f</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 83598aa6-f762-11e1-a439-00145eb45e9a (Fl.Mycol.Iber.). URL: https://www.gbif.org/occurrence/1275141080. Precisión: 700 m. Confianza: media.</desc>
     <extensions><setas:sitio id="cfbd982a-4b5f-59c8-9711-8bb1879782c0" estrellas="2" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.14000" lon="-3.45000">
+    <time>2026-11-07T00:00:00Z</time>
     <name>O. olearius s/f</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 83598aa6-f762-11e1-a439-00145eb45e9a (Fl.Mycol.Iber.). URL: https://www.gbif.org/occurrence/1275141101. Precisión: 700 m. Confianza: media.</desc>
     <extensions><setas:sitio id="598fab0c-fff6-5bda-ad18-0426d31ef7dd" estrellas="2" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="36.53000" lon="-5.65000">
+    <time>2026-11-07T00:00:00Z</time>
     <name>O. olearius s/f</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 83598aa6-f762-11e1-a439-00145eb45e9a (Fl.Mycol.Iber.). URL: https://www.gbif.org/occurrence/1275142324. Precisión: 700 m. Confianza: media.</desc>
     <extensions><setas:sitio id="7a6a03cd-bece-5654-a6fb-5f2cc4a57bdf" estrellas="2" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.25000" lon="-3.50000">
+    <time>2026-11-07T00:00:00Z</time>
     <name>O. olearius s/f</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 83598aa6-f762-11e1-a439-00145eb45e9a (Fl.Mycol.Iber.). URL: https://www.gbif.org/occurrence/1275142356. Precisión: 700 m. Confianza: media.</desc>
     <extensions><setas:sitio id="7b30b0c6-8b15-5556-b4de-938632d72f3b" estrellas="2" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.22000" lon="-3.52000">
+    <time>2026-11-07T00:00:00Z</time>
     <name>O. olearius s/f</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 83598aa6-f762-11e1-a439-00145eb45e9a (Fl.Mycol.Iber.). URL: https://www.gbif.org/occurrence/1275142366. Precisión: 700 m. Confianza: media.</desc>
     <extensions><setas:sitio id="bd33a691-f453-53df-9adb-1b8320078449" estrellas="2" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="36.67000" lon="-3.94000">
+    <time>2026-11-07T00:00:00Z</time>
     <name>O. olearius s/f</name>
     <desc>Cita de Omphalotus olearius. Fuente: GBIF dataset 83598aa6-f762-11e1-a439-00145eb45e9a (Fl.Mycol.Iber.). URL: https://www.gbif.org/occurrence/1275142396. Precisión: 700 m. Confianza: media.</desc>
     <extensions><setas:sitio id="e9b758e2-ac4b-5e68-a072-1caac0ee0143" estrellas="2" especie="omphalotus_olearius"/></extensions>
   </wpt>
   <wpt lat="37.21000" lon="-3.44000">
+    <time>2026-11-07T00:00:00Z</time>
     <name>C. cornucopioides s/f</name>
     <desc>Cita de Craterellus cornucopioides. Fuente: GBIF dataset 83598aa6-f762-11e1-a439-00145eb45e9a (Fl.Mycol.Iber.). URL: https://www.gbif.org/occurrence/1275150380. Precisión: 700 m. Confianza: media.</desc>
     <extensions><setas:sitio id="7528258d-a3c5-5216-b368-2e9fc7cb43e6" estrellas="2" especie="craterellus_cornucopioides"/></extensions>
   </wpt>
   <wpt lat="38.00000" lon="-5.56400">
+    <time>2026-11-07T00:00:00Z</time>
     <name>S. citrinum s/f</name>
     <desc>Cita de Scleroderma citrinum. Fuente: GBIF dataset 85b2fcd8-f762-11e1-a439-00145eb45e9a (MA). URL: https://www.gbif.org/occurrence/78522831. Precisión: 707 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="bb934fde-6336-5c35-9a7e-6d153b949a78" estrellas="3" especie="scleroderma_citrinum"/></extensions>
   </wpt>
   <wpt lat="38.00000" lon="-5.51900">
+    <time>2026-11-07T00:00:00Z</time>
     <name>M. esculenta s/f</name>
     <desc>Cita de Morchella esculenta. Fuente: GBIF dataset 85b2fcd8-f762-11e1-a439-00145eb45e9a (MA). URL: https://www.gbif.org/occurrence/78506312. Precisión: 707 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="5f55c4b0-b56d-5886-9175-e77e2af15599" estrellas="3" especie="morchella_spp"/></extensions>
   </wpt>
   <wpt lat="36.64550" lon="-5.15390">
+    <time>2026-11-07T00:00:00Z</time>
     <name>A. caesarea s/f</name>
     <desc>Cita de Amanita caesarea. Fuente: Cartajima (castañares del Genal) (municipio (Nominatim)). URL: https://www.colectivoginer.com/htm/carpeta-setas.pdf. Precisión: 5000 m. Confianza: media.</desc>
     <extensions><setas:sitio id="14b99694-e30d-5e7e-9c99-b228f4947ecf" estrellas="2" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="36.61620" lon="-5.18820">
+    <time>2026-11-07T00:00:00Z</time>
     <name>B. reticulatus s/f</name>
     <desc>Cita de Boletus reticulatus. Fuente: Faraján (castañares) (municipio (Nominatim)). URL: https://www.colectivoginer.com/htm/carpeta-setas.pdf. Precisión: 5000 m. Confianza: media.</desc>
     <extensions><setas:sitio id="14b99694-e30d-5e7e-9c99-b228f4947ecf" estrellas="2" especie="boletus_reticulatus"/></extensions>
   </wpt>
   <wpt lat="36.63150" lon="-5.12120">
+    <time>2026-11-07T00:00:00Z</time>
     <name>A. caesarea s/f</name>
     <desc>Cita de Amanita caesarea. Fuente: Igualeja (castañares del Genal) (municipio (Nominatim)). URL: https://www.colectivoginer.com/htm/carpeta-setas.pdf. Precisión: 5000 m. Confianza: media.</desc>
     <extensions><setas:sitio id="14b99694-e30d-5e7e-9c99-b228f4947ecf" estrellas="2" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="36.43270" lon="-5.45270">
+    <time>2026-11-07T00:00:00Z</time>
     <name>B. aereus s/f</name>
     <desc>Cita de Boletus aereus. Fuente: Jimena de la Frontera / Campo de Gibraltar (alcornocal-quejigal, pinar) (municipio (Nominatim)). URL: https://institutoecg.es/wp-content/uploads/2019/01/14noelias%C3%A1nchezalcaide-1.pdf. Precisión: 5000 m. Confianza: media.</desc>
     <extensions><setas:sitio id="6820c236-475a-5aa2-bffd-8cdb020d7469" estrellas="2" especie="boletus_aereus"/></extensions>
   </wpt>
   <wpt lat="36.62560" lon="-5.17080">
+    <time>2026-11-07T00:00:00Z</time>
     <name>B. reticulatus s/f</name>
     <desc>Cita de Boletus reticulatus. Fuente: Júzcar (castañares) (municipio (Nominatim)). URL: https://www.colectivoginer.com/htm/carpeta-setas.pdf. Precisión: 5000 m. Confianza: media.</desc>
     <extensions><setas:sitio id="14b99694-e30d-5e7e-9c99-b228f4947ecf" estrellas="2" especie="boletus_reticulatus"/></extensions>
   </wpt>
   <wpt lat="36.39430" lon="-5.61630">
+    <time>2026-11-07T00:00:00Z</time>
     <name>A. caesarea s/f</name>
     <desc>Cita de Amanita caesarea. Fuente: Parque Natural Los Alcornocales (espacio protegido (Nominatim)). URL: https://www.juntadeandalucia.es/medioambiente/portal/documents/20151/392598/Medida_PB10_Desarrollo_micologico.pdf/011bffd7-bc2a-ca33-0c24-6921a3aa7133?t=1338294378000. Precisión: 10000 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="2256369c-a9e1-537f-b46f-1874893eed5a" estrellas="3" especie="amanita_caesarea"/></extensions>
   </wpt>
   <wpt lat="36.60340" lon="-5.24330">
+    <time>2026-11-07T00:00:00Z</time>
     <name>A. caesarea s/f</name>
     <desc>Cita de Amanita caesarea. Fuente: Valle del Genal (castañares, municipios del valle) (comarca (Nominatim)). URL: https://www.colectivoginer.com/htm/carpeta-setas.pdf. Precisión: 15000 m. Confianza: alta.</desc>
     <extensions><setas:sitio id="14b99694-e30d-5e7e-9c99-b228f4947ecf" estrellas="3" especie="amanita_caesarea"/></extensions>

@@ -21,6 +21,7 @@ import {
 } from "./limite";
 import { MAX_BYTES_CUERPO_EXPLORAR, cuerpoGeminiExplorar, postProcesarExplorar, validarPeticionExplorar } from "./explorar";
 import { manejarChat } from "./chat";
+import { manejarResolverEnlace } from "./mapas-enlace";
 
 export interface Env {
   GEMINI_API_KEY?: string;
@@ -42,6 +43,8 @@ export interface Env {
   CHAT_PETICIONES_DIA?: string;
   /** Gasto máximo del chat por IP y día en USD (que una sola IP no agote el tope global). */
   CHAT_IP_DAILY_USD?: string;
+  /** Enlaces cortos de Google Maps resueltos por IP y día (POST /resolver-enlace). */
+  MAPAS_DAILY_LIMIT?: string;
   RATE_LIMIT?: KVNamespace;
 }
 
@@ -61,7 +64,8 @@ export default {
 
     const esExplorar = url.pathname === "/explorar";
     const esChat = url.pathname === "/chat";
-    if (url.pathname !== "/identificar" && !esExplorar && !esChat) {
+    const esEnlace = url.pathname === "/resolver-enlace";
+    if (url.pathname !== "/identificar" && !esExplorar && !esChat && !esEnlace) {
       return respuestaError(new ErrorHttp(404, "ruta_no_encontrada", "Ruta no encontrada."), cors);
     }
     if (request.method === "OPTIONS") {
@@ -77,6 +81,7 @@ export default {
         throw new ErrorHttp(415, "tipo_contenido_no_soportado", "Envía Content-Type: application/json.");
       }
       if (esChat) return await manejarChat(request, env, cors);
+      if (esEnlace) return await manejarResolverEnlace(request, env, cors);
       if (!env.GEMINI_API_KEY) {
         throw new ErrorHttp(500, "configuracion_incompleta", "El servicio no está configurado.");
       }

@@ -22,7 +22,8 @@ export type CodigoError =
   | "tope_gasto"
   | "claude_tiempo_agotado"
   | "claude_saturado"
-  | "claude_error";
+  | "claude_error"
+  | "enlace_no_resuelto";
 
 export class ErrorHttp extends Error {
   constructor(

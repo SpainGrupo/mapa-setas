@@ -43,6 +43,10 @@ CHAT_MONTHLY_USD = "25"
 # (IPv6 agrupadas por /64) y hay tope de gasto por IP, para que una sola IP no agote el tope global del día.
 CHAT_PETICIONES_DIA = "150"
 CHAT_IP_DAILY_USD = "0.5"
+# Fotos y enlaces de Maps en el chat (2026-11-08): POST /resolver-enlace sigue enlaces cortos de Google Maps (solo hosts de
+# Google, máx. 5 saltos) y devuelve lat/lon. Enlaces resueltos por IP y día. Las fotos (≤3 por mensaje, ≤1,5 MB cada una,
+# solo base64) pagan tokens reales: cuentan en CHAT_IP_DAILY_USD y en el tope global como cualquier otra consulta.
+MAPAS_DAILY_LIMIT = "60"
 
 # Contador del límite diario. Crear con `npx wrangler kv namespace create RATE_LIMIT`
 # y pegar aquí el id que devuelve. Con REQUIRE_KV="true", sin este binding el Worker responde 503.

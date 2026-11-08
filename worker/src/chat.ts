@@ -17,7 +17,16 @@ import {
 } from "./chat-gasto";
 import type { Env } from "./index";
 
+/** Tope del cuerpo SIN contar las fotos en base64 (texto, contexto, resultados de herramientas). */
 export const MAX_BYTES_CHAT = 200 * 1024;
+/** Fotos por petición, tamaño máximo de cada una ya decodificada y tipos admitidos. Solo base64 (nunca URL). */
+export const MAX_FOTOS = 3;
+export const MAX_BYTES_FOTO = Math.round(1.5 * 1024 * 1024);
+export const TIPOS_FOTO = ["image/jpeg", "image/png", "image/webp"] as const;
+/** Tope del cuerpo bruto: el texto (MAX_BYTES_CHAT) más MAX_FOTOS fotos en base64 y su envoltorio JSON. */
+export const MAX_BYTES_CUERPO_CHAT = MAX_BYTES_CHAT + MAX_FOTOS * (Math.ceil((MAX_BYTES_FOTO * 4) / 3) + 200);
+/** Lo que ve Claude en lugar de las fotos de consultas anteriores (no se pagan tokens repetidos). */
+export const TEXTO_FOTO_ANTERIOR = "[foto enviada antes]";
 export const MAX_MENSAJES = 40;
 export const MAX_RONDAS = 6;
 export const CHAT_DIARIO_POR_DEFECTO = 30;
@@ -52,13 +61,56 @@ function textoAcotado(v: unknown, i: number, que: string): string {
   return v;
 }
 
+const BASE64 = /^[A-Za-z0-9+/]+={0,2}$/;
+
+/** Bytes que ocupa un base64 ya validado (sin decodificarlo). */
+export function bytesDeBase64(b64: string): number {
+  const pad = b64.endsWith("==") ? 2 : b64.endsWith("=") ? 1 : 0;
+  return (b64.length / 4) * 3 - pad;
+}
+
+/** Firma de los primeros bytes: el tipo declarado tiene que ser el real (la API rechazaría el resto). */
+function firmaCoincide(tipo: string, b64: string): boolean {
+  let cab: string;
+  try {
+    cab = atob(b64.slice(0, 24));
+  } catch {
+    return false;
+  }
+  if (tipo === "image/jpeg") return cab.startsWith("\xFF\xD8\xFF");
+  if (tipo === "image/png") return cab.startsWith("\x89PNG\r\n\x1a\n");
+  return cab.startsWith("RIFF") && cab.slice(8, 12) === "WEBP";
+}
+
 /**
- * Bloques de un mensaje user, reconstruidos campo a campo: solo `text` y `tool_result` con contenido de texto.
- * Nada de imágenes ni documentos (un `document`/`image` con URL dentro de un tool_result haría que la API
- * descargara y cobrara contenido arbitrario) ni campos extra como `cache_control`.
+ * Foto de un mensaje user. SOLO `source.type: "base64"` (con `url` la API descargaría y cobraría cualquier
+ * cosa), tipo en lista blanca, base64 estricto, ≤ MAX_BYTES_FOTO decodificada y firma acorde al tipo.
+ */
+function bloqueImagen(b: Bloque, i: number): Bloque {
+  const s = b.source;
+  if (!esObjeto(s) || s.type !== "base64") throw invalida(`Las fotos solo se admiten en base64 (mensaje ${i}).`);
+  if (typeof s.media_type !== "string" || !(TIPOS_FOTO as readonly string[]).includes(s.media_type)) {
+    throw invalida(`Tipo de foto no admitido en el mensaje ${i} (jpeg, png o webp).`);
+  }
+  const data = s.data;
+  if (typeof data !== "string" || data.length === 0 || data.length % 4 !== 0 || !BASE64.test(data)) {
+    throw invalida(`Foto no válida en el mensaje ${i}.`);
+  }
+  if (bytesDeBase64(data) > MAX_BYTES_FOTO) {
+    throw new ErrorHttp(413, "carga_demasiado_grande", `Cada foto puede pesar como máximo ${Math.round(MAX_BYTES_FOTO / 1024 / 1024 * 10) / 10} MB.`);
+  }
+  if (!firmaCoincide(s.media_type, data)) throw invalida(`La foto del mensaje ${i} no es del tipo que dice ser.`);
+  return { type: "image", source: { type: "base64", media_type: s.media_type, data } };
+}
+
+/**
+ * Bloques de un mensaje user, reconstruidos campo a campo: `text`, `image` en base64 y `tool_result` con contenido
+ * de texto. Nada de documentos ni de imágenes por URL (dentro de un tool_result, haría que la API descargara y
+ * cobrara contenido arbitrario) ni campos extra como `cache_control`.
  */
 function bloqueUser(b: Bloque, i: number): Bloque {
   if (b.type === "text") return { type: "text", text: textoAcotado(b.text, i, "Bloque text") };
+  if (b.type === "image") return bloqueImagen(b, i);
   if (b.type === "tool_result") {
     if (typeof b.tool_use_id !== "string" || !ID_HERRAMIENTA.test(b.tool_use_id)) {
       throw invalida(`tool_result sin tool_use_id válido en el mensaje ${i}.`);
@@ -138,7 +190,47 @@ export function validarMensajes(cuerpo: unknown): Mensaje[] {
     return { role: m.role, content };
   });
   if (msgs.length % 2 === 0) throw invalida("La conversación debe terminar en un mensaje user.");
-  return salida;
+  return soloFotosDeLaConsulta(salida);
+}
+
+const esFoto = (b: Bloque) => b.type === "image";
+
+/**
+ * Máximo MAX_FOTOS fotos en toda la petición. Solo llegan completas las del mensaje de la consulta en curso (el último
+ * user con texto y sin tool_result: sigue siéndolo durante las rondas de herramientas); las demás, en cualquier otro
+ * mensaje, se sustituyen por TEXTO_FOTO_ANTERIOR para no pagar tokens repetidos ni colar fotos en las rondas.
+ */
+function soloFotosDeLaConsulta(msgs: Mensaje[]): Mensaje[] {
+  let total = 0;
+  for (const m of msgs) if (typeof m.content !== "string") total += m.content.filter(esFoto).length;
+  if (total === 0) return msgs;
+  if (total > MAX_FOTOS) throw invalida(`Máximo ${MAX_FOTOS} fotos por mensaje.`);
+  let ancla = -1;
+  for (let i = msgs.length - 1; i >= 0; i--) {
+    const m = msgs[i]!;
+    if (m.role === "user" && tieneTexto(m) && !tieneResultado(m)) {
+      ancla = i;
+      break;
+    }
+  }
+  return msgs.map((m, i) =>
+    i === ancla || typeof m.content === "string" || !m.content.some(esFoto)
+      ? m
+      : { role: m.role, content: m.content.map((b) => (esFoto(b) ? { type: "text", text: TEXTO_FOTO_ANTERIOR } : b)) },
+  );
+}
+
+/** Bytes de base64 de fotos que lleva el cuerpo, para no contarlos en el tope de texto. */
+export function caracteresDeFotos(cuerpo: unknown): number {
+  if (!esObjeto(cuerpo) || !Array.isArray(cuerpo.messages)) return 0;
+  let n = 0;
+  for (const m of cuerpo.messages as unknown[]) {
+    if (!esObjeto(m) || !Array.isArray(m.content)) continue;
+    for (const b of m.content as unknown[]) {
+      if (esObjeto(b) && b.type === "image" && esObjeto(b.source) && typeof b.source.data === "string") n += b.source.data.length;
+    }
+  }
+  return n;
 }
 
 function bloques(m: Mensaje): Bloque[] {
@@ -228,12 +320,16 @@ export async function manejarChat(
   if (!env.ANTHROPIC_API_KEY) {
     throw new ErrorHttp(503, "asistente_no_activado", "El asistente no está activado todavía.");
   }
-  const texto = await leerCuerpoLimitado(request, MAX_BYTES_CHAT);
+  const texto = await leerCuerpoLimitado(request, MAX_BYTES_CUERPO_CHAT);
   let cuerpo: unknown;
   try {
     cuerpo = JSON.parse(texto);
   } catch {
     throw invalida("El cuerpo no es JSON válido.");
+  }
+  // El tope de MAX_BYTES_CHAT vale para todo lo que no son fotos: las fotos no dejan más sitio al texto.
+  if (new TextEncoder().encode(texto).byteLength - caracteresDeFotos(cuerpo) > MAX_BYTES_CHAT) {
+    throw new ErrorHttp(413, "carga_demasiado_grande", `La solicitud supera el máximo de ${MAX_BYTES_CHAT} bytes sin contar las fotos.`);
   }
   const msgs = validarMensajes(cuerpo);
   const nueva = esConsultaNueva(msgs);

@@ -122,6 +122,40 @@ export const HERRAMIENTAS = [
       },
     },
   },
+  {
+    name: "estado_en_punto",
+    description:
+      "Qué dice la app en unas coordenadas concretas (por ejemplo una ubicación compartida por el usuario): para cada seta de la región, semáforo, probabilidad estimada y motivo ese día; si el punto es monte público o privado; y aparcamiento y tiempo a pie. Solo lectura.",
+    strict: true,
+    input_schema: {
+      type: "object",
+      additionalProperties: false,
+      required: ["lat", "lon", "dia"],
+      properties: {
+        lat: { type: "number", description: "Latitud en grados decimales (la de la ubicación compartida)." },
+        lon: { type: "number", description: "Longitud en grados decimales." },
+        dia,
+      },
+    },
+  },
+  {
+    name: "proponer_guardar_ubicacion",
+    description:
+      "Cuando el usuario cuenta un hallazgo en una ubicación que compartió («aquí estaban», «con gusanos»), propone guardarla en Mis sitios. NO guarda nada: la app enseña un botón «Guardar» y solo guarda si el usuario lo pulsa. Las coordenadas deben ser las de una ubicación compartida en esta conversación.",
+    strict: true,
+    input_schema: {
+      type: "object",
+      additionalProperties: false,
+      required: ["lat", "lon", "especie", "nota", "estrellas"],
+      properties: {
+        lat: { type: "number", description: "Latitud de la ubicación compartida." },
+        lon: { type: "number", description: "Longitud de la ubicación compartida." },
+        especie: { type: ["string", "null"], description: "Id de especie de la región si el usuario la dijo; null si no." },
+        nota: { type: ["string", "null"], description: "Nota breve con lo que contó el usuario (máximo 200 caracteres), p. ej. «Con gusanos»." },
+        estrellas: { type: ["integer", "null"], description: "1, 2 o 3. null = 1." },
+      },
+    },
+  },
 ] as const;
 
 export type NombreHerramienta = (typeof HERRAMIENTAS)[number]["name"];

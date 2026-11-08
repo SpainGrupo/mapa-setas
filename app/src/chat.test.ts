@@ -286,3 +286,81 @@ describe('validarConversacion', () => {
     ['turno raro', { ...buena, turnos: [{ rol: 'otro' }] }],
   ])('rechaza %s', (_n, x) => { expect(validarConversacion(x)).toBeNull(); });
 });
+
+describe('fotos y ubicaciones compartidas', () => {
+  const FOTO = { media_type: 'image/jpeg', data: '/9j/4AAQSkZJRgABAQ'.padEnd(2000, 'A') };
+  const UBI = { lat: 36.631531, lon: -4.792421, origen: 'enlace' as const };
+
+  it('el mensaje lleva contexto, <ubicacion_compartida>, las fotos como base64 y al final el texto', () => {
+    const m = mensajeUsuario(construirContexto(DATOS), 'aquí estaban', { fotos: [FOTO], ubicaciones: [UBI, { lat: 36.5, lon: -4.5, origen: 'foto' }] });
+    const b = m.content as Bloque[];
+    expect(b.map((x) => x.type)).toEqual(['text', 'text', 'text', 'image', 'text']);
+    expect(String(b[0].text)).toMatch(/^<contexto_app>/);
+    expect(b[1].text).toBe('<ubicacion_compartida origen="enlace de Google Maps">Ubicación compartida: 36.63153, -4.79242</ubicacion_compartida>');
+    expect(String(b[2].text)).toContain('origen="GPS de la foto"');
+    expect(b[3]).toEqual({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: FOTO.data } });
+    expect(b[4].text).toBe('aquí estaban');
+  });
+  it('sin adjuntos el mensaje es el de siempre (contexto + texto)', () => {
+    expect((mensajeUsuario(construirContexto(DATOS), 'hola').content as Bloque[]).map((x) => x.type)).toEqual(['text', 'text']);
+  });
+  it('como mucho 3 fotos por mensaje', () => {
+    const m = mensajeUsuario(construirContexto(DATOS), 'x', { fotos: [FOTO, FOTO, FOTO, FOTO, FOTO] });
+    expect((m.content as Bloque[]).filter((x) => x.type === 'image')).toHaveLength(3);
+  });
+
+  it('enviar: la foto viaja en la petición pero el historial guardado solo conserva la marca (sin base64)', async () => {
+    const { env, cuerpos } = entorno([() => respuesta(fin('Parece una seta; una foto no basta para identificarla.'))]);
+    const conv = conversacionNueva();
+    const r = await enviar(conv, 'aquí estaban con gusanos ya', env, { fotos: [FOTO, FOTO], ubicaciones: [UBI] });
+    expect(r.ok).toBe(true);
+    // lo enviado lleva las 2 imágenes
+    expect((cuerpos[0].messages[0].content as Bloque[]).filter((b) => b.type === 'image')).toHaveLength(2);
+    // lo guardado, no
+    expect(JSON.stringify(conv)).not.toContain(FOTO.data);
+    expect(JSON.stringify(conv.mensajes)).not.toContain('"image"');
+    expect((conv.mensajes[0].content as Bloque[]).filter((b) => b.type === 'text' && b.text === '[foto enviada antes]')).toHaveLength(2);
+    expect(conv.turnos[0]).toEqual({ rol: 'usuario', texto: 'aquí estaban con gusanos ya', fotos: 2, ubicaciones: [UBI] });
+  });
+  it('la segunda consulta reenvía la foto anterior como «[foto enviada antes]», no como imagen', async () => {
+    const { env, cuerpos } = entorno([() => respuesta(fin('uno')), () => respuesta(fin('dos'))]);
+    const conv = conversacionNueva();
+    await enviar(conv, 'mira', env, { fotos: [FOTO] });
+    await enviar(conv, 'otra cosa', env);
+    expect(JSON.stringify(cuerpos[1])).not.toContain(FOTO.data);
+    expect((cuerpos[1].messages[0].content as Bloque[]).some((b) => b.text === '[foto enviada antes]')).toBe(true);
+  });
+  it('durante las rondas de herramientas la foto sigue en la consulta en curso', async () => {
+    const { env, cuerpos } = entorno([() => respuesta(usar(['tu_1', 'estado_en_punto', { lat: 36.6, lon: -4.8, dia: 0 }])), () => respuesta(fin('listo'))]);
+    const conv = conversacionNueva();
+    await enviar(conv, 'mira', env, { fotos: [FOTO], ubicaciones: [UBI] });
+    expect(JSON.stringify(cuerpos[1].messages[0])).toContain(FOTO.data);
+    expect(JSON.stringify(conv)).not.toContain(FOTO.data);
+  });
+  it('una consulta fallida deja la conversación como estaba (sin fotos ni turnos)', async () => {
+    const { env } = entorno([() => respuesta({ error: { codigo: 'x', mensaje: 'no' } }, 413)]);
+    const conv = conversacionNueva();
+    const r = await enviar(conv, 'mira', env, { fotos: [FOTO] });
+    expect(r.ok).toBe(false);
+    expect(conv.mensajes).toEqual([]);
+    expect(conv.turnos).toEqual([]);
+  });
+  it('con foto y sin texto se envía una pregunta por defecto; sin foto ni texto, error', async () => {
+    const { env, cuerpos } = entorno([() => respuesta(fin('vale'))]);
+    const conv = conversacionNueva();
+    expect((await enviar(conv, '   ', env, {})).ok).toBe(false);
+    expect((await enviar(conv, '   ', env, { fotos: [FOTO] })).ok).toBe(true);
+    const ult = (cuerpos[0].messages[0].content as Bloque[]).at(-1)!;
+    expect(String(ult.text)).toMatch(/foto/);
+  });
+  it('una conversación guardada con imágenes (de una versión rota) se limpia al cargarla', () => {
+    const sucia = { mensajes: [
+      { role: 'user', content: [{ type: 'text', text: 'a' }, { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: FOTO.data } }] },
+      { role: 'assistant', content: [{ type: 'text', text: 'b' }] },
+    ], turnos: [{ rol: 'usuario', texto: 'a', fotos: 1 }, { rol: 'asistente', texto: 'b', tarjetas: [], acciones: [] }], restantes: 3 };
+    const c = validarConversacion(sucia)!;
+    expect(JSON.stringify(c)).not.toContain(FOTO.data);
+    expect(validarConversacion({ ...sucia, turnos: [{ rol: 'usuario', texto: 'a', fotos: 9 }, ...sucia.turnos.slice(1)] })).toBeNull();
+    expect(validarConversacion({ ...sucia, turnos: [{ rol: 'usuario', texto: 'a', ubicaciones: [{ lat: 'x' }] }, ...sucia.turnos.slice(1)] })).toBeNull();
+  });
+});

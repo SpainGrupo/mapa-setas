@@ -75,3 +75,29 @@ body[data-zona] .fab-chat { bottom: calc(var(--pie) + var(--tz-alto, 172px) + 16
 .chat-pie-form { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 48px; }
 .chat-pie-form .nota { font-weight: 800; color: var(--peligro-tx); min-width: 0; }
 .chat-pie-form .btn { min-height: 48px; padding: 6px 14px; font-size: 15.5px; flex: none; margin-left: auto; }
+
+/* ---------------------------------------------------------------- fotos y ubicaciones */
+.chat-pie-form .chat-foto { display: inline-flex; align-items: center; gap: 6px; margin-left: 0; }
+.chat-pie-form .chat-foto .ico { width: 22px; height: 22px; }
+.chat-pie-form #chat-estado { flex: 1; }
+.chat-foto[disabled] { opacity: 0.5; }
+.chat-adjuntos { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chat-miniatura { position: relative; width: 64px; height: 64px; flex: none; }
+.chat-miniatura img { width: 64px; height: 64px; object-fit: cover; border-radius: 12px; border: 1.5px solid var(--regla); display: block; }
+.chat-miniatura .btn-x { position: absolute; top: -10px; right: -10px; width: 48px; height: 48px; }
+.chat-miniatura .btn-x::before { content: ''; position: absolute; width: 26px; height: 26px; border-radius: 999px; background: var(--hoja); border: 1.5px solid var(--tinta); }
+.chat-miniatura .btn-x .ico { position: relative; width: 16px; height: 16px; }
+.chip-ubicacion { display: inline-flex; align-items: center; gap: 4px; min-height: 48px; padding: 4px 4px 4px 12px; border-radius: 999px; background: var(--bosque-t); color: var(--bosque-tx); font-weight: 800; font-size: 15px; }
+.chip-ubicacion .btn-x { width: 40px; height: 40px; }
+.chip-ubicacion .btn-x .ico { width: 16px; height: 16px; }
+.chat-usuario-bloque { display: grid; gap: 6px; justify-items: end; justify-self: end; max-width: 86%; }
+.chat-usuario-bloque .chat-usuario { max-width: 100%; }
+.chat-usuario-fotos { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.chat-usuario-fotos img { width: 72px; height: 72px; object-fit: cover; border-radius: 12px; }
+.chat-usuario-fotos .nota { margin: 0; padding: 6px 10px; border-radius: 12px; background: var(--velo); font-weight: 700; }
+.chat-ver-mapa { min-height: 48px; padding: 6px 14px; font-size: 15.5px; font-weight: 800; }
+/* propuesta de guardar una ubicación: pide confirmación */
+.chat-accion[data-tipo=propuesta] { flex-wrap: wrap; background: var(--velo); color: var(--tinta); }
+.chat-accion[data-tipo=propuesta] > span { flex: 1 1 100%; }
+.chat-accion .ca-botones { display: flex; gap: 8px; width: 100%; }
+.chat-accion .ca-botones .btn { flex: 1; }

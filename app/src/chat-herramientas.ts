@@ -20,11 +20,11 @@ import { ORDEN_DIFICULTAD, textoDistancia, type Dificultad } from './ruta';
 import { AGUACERO_MM, bandaAltitud, humedadAcumulada, semaforo, sumarDias, textoBanda, type Estado, type Reglas, type ResultadoSemaforo } from './semaforo';
 import { edadHoras, type DatosMeteo, type PuntoMeteo } from './meteo';
 import type { Fiabilidad } from './fiabilidad';
-import { esPublico, textoTitularidad, type ClaseTitularidad } from './titularidad';
+import { esPublico, textoTitularidad, type ClaseTitularidad, type Titularidad } from './titularidad';
 import { textoCitado } from './citas';
 import { resumen, textoResumen, type Track } from './grabacion';
 
-export const NOMBRES_HERRAMIENTAS_APP = ['buscar_sitios', 'semaforo', 'ruta_a', 'mostrar_en_mapa', 'guardar_en_mis_sitios', 'notas_de_ruta', 'proponer_sitios_nuevos'] as const;
+export const NOMBRES_HERRAMIENTAS_APP = ['buscar_sitios', 'semaforo', 'ruta_a', 'mostrar_en_mapa', 'guardar_en_mis_sitios', 'notas_de_ruta', 'proponer_sitios_nuevos', 'estado_en_punto', 'proponer_guardar_ubicacion'] as const;
 export type NombreHerramientaApp = (typeof NOMBRES_HERRAMIENTAS_APP)[number];
 
 // ---------------------------------------------------------------- límites (spec §4)
@@ -81,6 +81,12 @@ export interface ContextoHerramientas {
   ahora: () => Date;
   /** Texto del aviso de recinto restringido (manifest.chip_sitio_restringido). */
   textoRestringido?: string | null;
+  /** Punto del tiempo más cercano a unas coordenadas y a cuántos km; null si no hay ninguno dentro del alcance. */
+  puntoMeteoCerca?: (lat: number, lon: number) => { id: number; km: number } | null;
+  /** Titularidad del monte en unas coordenadas (null = sin dato). */
+  titularidadEn?: (lat: number, lon: number) => Promise<Titularidad | null>;
+  /** Ubicaciones que el usuario ha compartido en esta conversación (enlace de Maps o GPS de una foto). */
+  ubicacionesCompartidas?: () => { lat: number; lon: number }[];
 }
 
 /** Lo que enseña (y lo que ve Claude de) un sitio: la tarjeta del chat se pinta con esto y nada más. */
@@ -107,13 +113,27 @@ export interface Tarjeta {
   aparcamiento?: { lat: number; lon: number; via: string };
 }
 
-/** Efecto reversible que el chat enseña con «Deshacer». */
+/** Datos de un sitio que Claude propone guardar y que solo se guarda si el usuario pulsa «Guardar». */
+export interface PropuestaGuardado {
+  lat: number;
+  lon: number;
+  nota: string;
+  /** Id de especie ('' = sin especificar). */
+  especie: string;
+  estrellas: 1 | 2 | 3;
+}
+
+/**
+ * Lo que el chat enseña bajo una respuesta. `guardado`: efecto reversible con «Deshacer». `propuesta`: Claude sugiere
+ * guardar una ubicación; NO está guardada hasta que el usuario pulsa «Guardar» (entonces pasa a `guardado`).
+ */
 export interface AccionChat {
-  tipo: 'guardado';
+  tipo: 'guardado' | 'propuesta';
   texto: string;
-  /** Id del sitio creado en Mis sitios. */
+  /** Id del sitio creado en Mis sitios ('' mientras sea una propuesta). */
   sitioId: string;
   deshecho?: boolean;
+  propuesta?: PropuestaGuardado;
 }
 
 export interface ResultadoHerramienta {
@@ -371,6 +391,21 @@ const mostrarEnMapa: Manejador = async (entrada, ctx) => {
 
 // ---------------------------------------------------------------- guardar_en_mis_sitios
 
+/** Crea el sitio en Mis sitios (con su acceso a pie si se puede calcular). null si ya había uno igual. */
+async function crearSitio(ctx: ContextoHerramientas, d: { lat: number; lon: number; estrellas: 1 | 2 | 3; nota: string; especie: string }): Promise<{ sitio: Sitio; conAcceso: boolean } | null> {
+  const lat = r5(d.lat), lon = r5(d.lon);
+  const ya = (await ctx.misSitios()).some((x) => Math.abs(x.lat - lat) < 5e-5 && Math.abs(x.lon - lon) < 5e-5 && x.nota === d.nota && x.especie === d.especie);
+  if (ya) return null;
+  let acceso: AccesoSitio | undefined;
+  try { const a = await ctx.acceso(lat, lon); if (a.estado === 'ok' && a.acceso) acceso = a.acceso; } catch { /* se guarda sin acceso */ }
+  const nuevo: Sitio = { id: ctx.nuevoId(), lat, lon, estrellas: d.estrellas, nota: d.nota, especie: d.especie, fecha: ctx.ahora().toISOString(), ...(acceso ? { acceso } : {}) };
+  await ctx.guardarSitio(nuevo);
+  return { sitio: nuevo, conAcceso: !!acceso };
+}
+
+const textoGuardado = (ctx: ContextoHerramientas, especie: string, nota: string) =>
+  `Guardado en Mis sitios: ${especie ? ctx.nombreEspecie(especie) : 'Ubicación'}${nota ? ` · ${nota}` : ''}`;
+
 const guardarEnMisSitios: Manejador = async (entrada, ctx) => {
   const e = objeto(entrada);
   const { especie, sitio, id } = sitioDe(ctx, e.sitio_id);
@@ -378,17 +413,17 @@ const guardarEnMisSitios: Manejador = async (entrada, ctx) => {
   if (!esNulo(e.nota) && typeof e.nota !== 'string') falla('nota debe ser un texto o null.');
   const nota = typeof e.nota === 'string' ? e.nota.trim() : '';
   if (nota.length > NOTA_MAX) return falla(`La nota admite como máximo ${NOTA_MAX} caracteres (tiene ${nota.length}).`);
-  const lat = r5(sitio.lat), lon = r5(sitio.lon);
-  const ya = (await ctx.misSitios()).some((x) => Math.abs(x.lat - lat) < 5e-5 && Math.abs(x.lon - lon) < 5e-5 && x.nota === nota && x.especie === especie);
-  if (ya) return ok({ guardado: false, ya_estaba: true, sitio_id: id });
-  let acceso: AccesoSitio | undefined;
-  try { const a = await ctx.acceso(lat, lon); if (a.estado === 'ok' && a.acceso) acceso = a.acceso; } catch { /* se guarda sin acceso */ }
-  const nuevo: Sitio = { id: ctx.nuevoId(), lat, lon, estrellas, nota, especie, fecha: ctx.ahora().toISOString(), ...(acceso ? { acceso } : {}) };
-  await ctx.guardarSitio(nuevo);
-  const nombre = ctx.nombreEspecie(especie);
-  return ok({ guardado: true, sitio_id: id, estrellas, con_acceso: !!acceso, deshacer: 'El usuario ve un botón «Deshacer» en el chat.' }, [],
-    [{ tipo: 'guardado', texto: `Guardado en Mis sitios: ${nombre}${nota ? ` · ${nota}` : ''}`, sitioId: nuevo.id }]);
+  const r = await crearSitio(ctx, { lat: sitio.lat, lon: sitio.lon, estrellas, nota, especie });
+  if (!r) return ok({ guardado: false, ya_estaba: true, sitio_id: id });
+  return ok({ guardado: true, sitio_id: id, estrellas, con_acceso: r.conAcceso, deshacer: 'El usuario ve un botón «Deshacer» en el chat.' }, [],
+    [{ tipo: 'guardado', texto: textoGuardado(ctx, especie, nota), sitioId: r.sitio.id }]);
 };
+
+/** El usuario ha pulsado «Guardar» en una propuesta: la guarda y devuelve la acción reversible (null si ya estaba). */
+export async function guardarPropuesta(p: PropuestaGuardado, ctx: ContextoHerramientas): Promise<AccionChat | null> {
+  const r = await crearSitio(ctx, p);
+  return r ? { tipo: 'guardado', texto: textoGuardado(ctx, p.especie, p.nota), sitioId: r.sitio.id } : null;
+}
 
 // ---------------------------------------------------------------- notas_de_ruta
 
@@ -472,6 +507,100 @@ const proponerNuevos: Manejador = async (entrada, ctx) => {
   }, tarjetas);
 };
 
+// ---------------------------------------------------------------- estado_en_punto
+
+function coordenada(v: unknown, nombre: string, max: number): number {
+  if (!num(v) || Math.abs(v) > max) return falla(`${nombre} debe ser un número entre -${max} y ${max}.`);
+  return v;
+}
+const recortar = (t: string, n: number) => (t.length > n ? `${t.slice(0, n - 1)}…` : t);
+/** Alcance de los datos del tiempo: igual que el mapa (main.ts DISTANCIA_MAX_KM). */
+export const MAX_KM_METEO = 12;
+export const MAX_ESPECIES_PUNTO = 12;
+
+const estadoEnPunto: Manejador = async (entrada, ctx) => {
+  const e = objeto(entrada);
+  const lat = coordenada(e.lat, 'lat', 90), lon = coordenada(e.lon, 'lon', 180);
+  const dia = entero(e.dia, 'dia', 0, DIA_MAX);
+  const fecha = sumarDias(ctx.hoy, dia);
+  const cerca = ctx.puntoMeteoCerca?.(lat, lon) ?? null;
+  const dentro = !!cerca && cerca.km <= MAX_KM_METEO;
+  const d = diaCon(ctx, dia, false, null);
+  const punto = { lat: r5(lat), lon: r5(lon) };
+
+  const especies = ctx.especies.map((id) => {
+    const r = dentro ? estadoPuntoCon(ctx, cerca!.id, id, fecha) : null;
+    // Sitio candidato del pipeline que coincide con el punto (a ≤ RADIO_CONOCIDO_M): su puntuación incluye hábitat.
+    let mejor: { s: SitioCandidato; m: number } | null = null;
+    for (const s of ctx.datos?.especies[id] ?? []) {
+      const m = distanciaM(punto, s);
+      if (m <= RADIO_CONOCIDO_M && (!mejor || m < mejor.m)) mejor = { s, m };
+    }
+    const ent = mejor ? puntuar(id, mejor.s, d.opciones) : null;
+    return {
+      especie: id, nombre: ctx.nombreEspecie(id), estado: r?.estado ?? 'gris',
+      ...(r?.probabilidad != null ? { probabilidad_pct: r.probabilidad } : {}),
+      motivo: recortar(r?.motivo ?? (dentro ? 'Sin reglas ni datos del tiempo para esta seta.' : 'Sin datos del tiempo para este punto.'), 220),
+      ...(mejor && ent ? { sitio_candidato: { sitio_id: `${id}:${mejor.s.id}`, a_m: Math.round(mejor.m), puntuacion: ent.puntuacion, dificultad: ent.dificultad } } : {}),
+    };
+  }).sort((a, b) => (b.probabilidad_pct ?? -1) - (a.probabilidad_pct ?? -1)).slice(0, MAX_ESPECIES_PUNTO);
+
+  let titularidad: { clase: ClaseTitularidad; texto: string; publico: boolean } | null = null;
+  try {
+    const t = ctx.titularidadEn ? await ctx.titularidadEn(lat, lon) : null;
+    if (t) titularidad = { clase: t.clase, texto: textoTitularidad(t), publico: esPublico(t) };
+  } catch { /* sin dato */ }
+
+  let acceso: Record<string, unknown>;
+  try {
+    const a = await ctx.acceso(lat, lon);
+    acceso = a.estado === 'ok' && a.acceso
+      ? { aparcar_en: a.acceso.via, a_pie_min: a.acceso.tiempo_min, subida_m: a.acceso.subida_m, aviso: 'Estimación con rejilla de 100 m: puede cruzar fincas, vallas o barrancos.' }
+      : { sin_acceso_calculado: a.texto };
+  } catch { acceso = { sin_acceso_calculado: 'No se pudo calcular el acceso a pie.' }; }
+
+  return ok({
+    punto, fecha, dia,
+    ...(dentro ? { tiempo_a_km: r1(cerca!.km) } : { aviso_tiempo: 'El punto queda fuera del alcance de los datos del tiempo de la app (o aún no están descargados): sin semáforo ni probabilidad.' }),
+    especies,
+    titularidad, ...(titularidad ? {} : { aviso_titularidad: 'Sin dato de titularidad del monte para este punto: no digas que es público ni privado.' }),
+    acceso,
+  });
+};
+
+// ---------------------------------------------------------------- proponer_guardar_ubicacion
+
+export const RADIO_COMPARTIDA_M = 150;
+
+const proponerGuardarUbicacion: Manejador = async (entrada, ctx) => {
+  const e = objeto(entrada);
+  const lat = coordenada(e.lat, 'lat', 90), lon = coordenada(e.lon, 'lon', 180);
+  const compartidas = ctx.ubicacionesCompartidas?.() ?? [];
+  let cerca: { lat: number; lon: number } | null = null, mejor = Infinity;
+  for (const c of compartidas) { const m = distanciaM({ lat, lon }, c); if (m < mejor) { mejor = m; cerca = c; } }
+  if (!cerca || mejor > RADIO_COMPARTIDA_M) {
+    return falla('Solo puedo proponer guardar una ubicación que el usuario haya compartido en esta conversación (usa las coordenadas exactas de <ubicacion_compartida>).');
+  }
+  let especie = '';
+  if (!esNulo(e.especie)) {
+    if (typeof e.especie !== 'string') return falla('especie debe ser un id de especie o null.');
+    if (e.especie !== '') {
+      if (!ctx.especies.includes(e.especie)) return falla(`Especie desconocida: ${e.especie}. Las de esta región: ${ctx.especies.join(', ')}. Usa null si no la dijo.`);
+      especie = e.especie;
+    }
+  }
+  if (!esNulo(e.nota) && typeof e.nota !== 'string') return falla('nota debe ser un texto o null.');
+  const nota = typeof e.nota === 'string' ? e.nota.trim() : '';
+  if (nota.length > NOTA_MAX) return falla(`La nota admite como máximo ${NOTA_MAX} caracteres (tiene ${nota.length}).`);
+  const estrellas = entero(e.estrellas, 'estrellas', 1, 3, 1) as 1 | 2 | 3;
+  const guardado = r5(cerca.lat), g2 = r5(cerca.lon);
+  const ya = (await ctx.misSitios()).some((x) => Math.abs(x.lat - guardado) < 5e-5 && Math.abs(x.lon - g2) < 5e-5 && x.nota === nota && x.especie === especie);
+  if (ya) return ok({ propuesta: false, ya_estaba: true });
+  const texto = `¿Guardar esta ubicación en Mis sitios?${especie ? ` ${ctx.nombreEspecie(especie)}.` : ''}${nota ? ` «${nota}»` : ''}`;
+  return ok({ propuesta_mostrada: true, guardado: false, aviso: 'NO está guardado: el usuario ve un botón «Guardar» y solo se guarda si lo pulsa. Díselo en una frase.' }, [],
+    [{ tipo: 'propuesta', texto, sitioId: '', propuesta: { lat: guardado, lon: g2, nota, especie, estrellas } }]);
+};
+
 // ---------------------------------------------------------------- despacho
 
 export const MANEJADORES: Record<NombreHerramientaApp, Manejador> = {
@@ -482,6 +611,8 @@ export const MANEJADORES: Record<NombreHerramientaApp, Manejador> = {
   guardar_en_mis_sitios: guardarEnMisSitios,
   notas_de_ruta: notasDeRuta,
   proponer_sitios_nuevos: proponerNuevos,
+  estado_en_punto: estadoEnPunto,
+  proponer_guardar_ubicacion: proponerGuardarUbicacion,
 };
 
 /** Ejecuta una herramienta. Nunca lanza: los errores de entrada y los fallos internos son un resultado `error: true`. */

@@ -6,10 +6,12 @@
 import './chat.css';
 import { Hoja } from './hoja';
 import {
-  AVISO_CHAT, MENSAJE_SIN_CONEXION, borrarConversacion, construirContexto, conversacionNueva, enviar, guardarConversacion, leerConversacion,
+  AVISO_CHAT, MENSAJE_SIN_CONEXION, TEXTO_SOLO_FOTO, borrarConversacion, construirContexto, conversacionNueva, enviar, guardarConversacion, leerConversacion,
   urlChat, type Conversacion, type DatosContexto, type Turno,
 } from './chat';
-import { ejecutarHerramienta, type AccionChat, type ContextoHerramientas, type Tarjeta } from './chat-herramientas';
+import { ejecutarHerramienta, guardarPropuesta, type AccionChat, type ContextoHerramientas, type Tarjeta } from './chat-herramientas';
+import { MAX_FOTOS, adjuntarFotos, type FotoAdjunta } from './chat-fotos';
+import { resolvedorWorker, ubicacionesDeEnlaces, type UbicacionCompartida } from './enlace-maps';
 import { NOMBRE_ESTADO } from './zona';
 import { NOMBRE_DIFICULTAD } from './ruta';
 import { textoSubida, textoTiempo, urlGoogleCoche } from './acceso';
@@ -43,7 +45,15 @@ let cargada = false;
 let ocupado = false;
 let error = '';
 let pestanaOrigen = 'mapa';
-let pensando: { fase: 'pensando' | 'herramientas'; pregunta: string } | null = null;
+let pensando: { fase: 'pensando' | 'herramientas'; pregunta: string; miniaturas: string[]; ubicaciones: UbicacionCompartida[] } | null = null;
+/** Fotos adjuntas al mensaje que se está escribiendo (JPEG reducido en memoria; nunca se guardan). */
+let fotos: FotoAdjunta[] = [];
+/** Fotos cuya ubicación (GPS del EXIF) el usuario ha quitado. */
+const sinGps = new Set<string>();
+/** Miniaturas (URL blob:) de los mensajes de esta sesión, por índice de turno. Tras recargar solo queda la marca «N fotos». */
+const miniaturasTurno = new Map<number, string[]>();
+/** Ubicaciones del mensaje que se está enviando (aún no están en conv.turnos). */
+let ubicacionesEnCurso: UbicacionCompartida[] = [];
 
 // ---------------------------------------------------------------- estado de los botones
 
@@ -93,7 +103,7 @@ export function nodosDeTexto(texto: string): HTMLElement[] {
 
 // ---------------------------------------------------------------- tarjetas
 
-function boton(texto: string, f: () => void, clase = 'btn') {
+function boton(texto: string, f: (ev: MouseEvent) => void, clase = 'btn') {
   const b = document.createElement('button'); b.type = 'button'; b.className = clase; b.textContent = texto; b.onclick = f;
   return b;
 }
@@ -136,14 +146,43 @@ function accionDom(a: AccionChat, turno: number, i: number): HTMLElement {
   const d = document.createElement('div'); d.className = 'chat-accion'; d.dataset.tipo = a.tipo;
   const t = document.createElement('span'); t.textContent = a.deshecho ? `${a.texto} (deshecho)` : a.texto;
   d.append(t);
+  if (a.tipo === 'propuesta') {
+    // Claude propone, el usuario decide: no se guarda nada hasta que pulsa «Guardar».
+    const bs = document.createElement('div'); bs.className = 'ca-botones';
+    const si = boton('Guardar en Mis sitios', (ev) => { void confirmarPropuesta(turno, i, ev.currentTarget as HTMLButtonElement); }, 'btn btn-primario ca-guardar');
+    const no = boton('Ahora no', () => { void descartarPropuesta(turno, i); }, 'btn ca-descartar');
+    bs.append(si, no); d.append(bs);
+    return d;
+  }
   if (!a.deshecho) d.append(boton('Deshacer', () => deshacer(turno, i), 'btn ca-deshacer'));
   return d;
 }
 
 // ---------------------------------------------------------------- pintado
 
+/** Burbuja del usuario; con fotos o ubicaciones, dentro de un bloque con las miniaturas y «📍 Ver en el mapa». */
+function usuarioDom(texto: string, nFotos: number, miniaturas: string[], ubicaciones: UbicacionCompartida[]): HTMLElement {
+  const p = document.createElement('p'); p.className = 'chat-usuario'; p.textContent = texto;
+  if (!nFotos && !ubicaciones.length) return p;
+  const b = document.createElement('div'); b.className = 'chat-usuario-bloque';
+  if (nFotos) {
+    const f = document.createElement('div'); f.className = 'chat-usuario-fotos';
+    if (miniaturas.length) for (const u of miniaturas) { const im = document.createElement('img'); im.src = u; im.alt = 'Foto enviada'; f.append(im); }
+    else { const n = document.createElement('p'); n.className = 'nota'; n.textContent = `📷 ${nFotos === 1 ? '1 foto' : `${nFotos} fotos`}`; f.append(n); }
+    b.append(f);
+  }
+  b.append(p);
+  for (const u of ubicaciones) {
+    const ver = boton('📍 Ver en el mapa', () => mostrar([{ lat: u.lat, lon: u.lon }]), 'btn chat-ver-mapa');
+    ver.setAttribute('aria-label', u.origen === 'foto' ? 'Ver en el mapa la ubicación de la foto' : 'Ver en el mapa la ubicación compartida');
+    ver.dataset.lat = String(u.lat); ver.dataset.lon = String(u.lon);
+    b.append(ver);
+  }
+  return b;
+}
+
 function turnoDom(t: Turno, idx: number): HTMLElement {
-  if (t.rol === 'usuario') { const p = document.createElement('p'); p.className = 'chat-usuario'; p.textContent = t.texto; return p; }
+  if (t.rol === 'usuario') return usuarioDom(t.texto, t.fotos ?? 0, miniaturasTurno.get(idx) ?? [], t.ubicaciones ?? []);
   const art = document.createElement('article'); art.className = 'chat-asistente';
   const b = document.createElement('div'); b.className = 'chat-burbuja'; b.append(...nodosDeTexto(t.texto));
   if (t.cortado) { const n = document.createElement('p'); n.className = 'nota'; n.textContent = 'La respuesta se cortó por longitud; pídele que continúe.'; b.append(n); }
@@ -169,7 +208,7 @@ function pintar(desplazar = true) {
   }
   conv.turnos.forEach((t, i) => cont.append(turnoDom(t, i)));
   if (pensando) {
-    const u = document.createElement('p'); u.className = 'chat-usuario'; u.textContent = pensando.pregunta; cont.append(u);
+    cont.append(usuarioDom(pensando.pregunta, pensando.miniaturas.length, pensando.miniaturas, pensando.ubicaciones));
     const p = document.createElement('p'); p.className = 'chat-pensando'; p.setAttribute('role', 'status');
     p.textContent = pensando.fase === 'herramientas' ? 'Consultando los datos de la app…' : 'Pensando…';
     cont.append(p);
@@ -189,7 +228,57 @@ function pintarEstado() {
   env.classList.toggle('atenuado', sin);
   $<HTMLTextAreaElement>('#chat-texto').disabled = ocupado;
   $<HTMLButtonElement>('#chat-nueva').disabled = ocupado;
+  $<HTMLButtonElement>('#chat-foto').disabled = ocupado;
   $('#chat-sugerencias').hidden = !!conv.turnos.length || ocupado;
+}
+
+const coordCorta = (v: number) => v.toFixed(4);
+/** Miniaturas de las fotos adjuntas (con «quitar») y, si alguna trae GPS, el chip de «ubicación de la foto» (quitable). */
+function pintarAdjuntos() {
+  const cont = $('#chat-adjuntos');
+  cont.replaceChildren();
+  for (const f of fotos) {
+    const m = document.createElement('div'); m.className = 'chat-miniatura';
+    const im = document.createElement('img'); im.src = f.miniatura; im.alt = 'Foto adjunta';
+    const x = document.createElement('button'); x.type = 'button'; x.className = 'btn-x'; x.setAttribute('aria-label', 'Quitar la foto');
+    x.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-cerrar"/></svg>';
+    x.onclick = () => { quitarFoto(f.id); };
+    m.append(im, x); cont.append(m);
+  }
+  for (const f of fotos) {
+    if (!f.gps || sinGps.has(f.id)) continue;
+    const c = document.createElement('span'); c.className = 'chip-ubicacion'; c.dataset.foto = f.id;
+    c.append(`📍 Ubicación de la foto (${coordCorta(f.gps.lat)}, ${coordCorta(f.gps.lon)})`);
+    const x = document.createElement('button'); x.type = 'button'; x.className = 'btn-x'; x.setAttribute('aria-label', 'No enviar la ubicación de la foto');
+    x.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-cerrar"/></svg>';
+    x.onclick = () => { sinGps.add(f.id); pintarAdjuntos(); };
+    c.append(x); cont.append(c);
+  }
+  cont.hidden = !fotos.length;
+}
+function quitarFoto(id: string) {
+  const f = fotos.find((x) => x.id === id);
+  if (f) URL.revokeObjectURL(f.miniatura);
+  fotos = fotos.filter((x) => x.id !== id);
+  sinGps.delete(id);
+  pintarAdjuntos();
+}
+async function elegirFotos(archivos: File[]) {
+  if (!archivos.length) return;
+  const r = await adjuntarFotos(archivos, fotos.length);
+  fotos.push(...r.fotos);
+  if (r.sobran) ctx.avisar(`Máximo ${MAX_FOTOS} fotos por mensaje.`);
+  if (r.fallidas) ctx.avisar(r.fallidas === 1 ? 'No se pudo leer una de las fotos.' : 'No se pudieron leer algunas fotos.');
+  pintarAdjuntos();
+}
+
+/** Une sin repetir (a ~10 m) y deja como mucho MAX_FOTOS ubicaciones. */
+export function unirUbicaciones(...listas: UbicacionCompartida[][]): UbicacionCompartida[] {
+  const sal: UbicacionCompartida[] = [];
+  for (const u of listas.flat()) {
+    if (!sal.some((x) => Math.abs(x.lat - u.lat) < 1e-4 && Math.abs(x.lon - u.lon) < 1e-4)) sal.push(u);
+  }
+  return sal.slice(0, MAX_FOTOS);
 }
 
 function pintarSugerencias() {
@@ -214,7 +303,36 @@ function mostrar(puntos: { lat: number; lon: number }[]) {
 
 async function herramientasCtx(): Promise<ContextoHerramientas> {
   const c = await ctx.herramientas();
-  return { ...c, mostrarEnMapa: (p) => { mostrar(p); c.mostrarEnMapa(p); } };
+  return { ...c, mostrarEnMapa: (p) => { mostrar(p); c.mostrarEnMapa(p); }, ubicacionesCompartidas };
+}
+
+/** Ubicaciones que el usuario ha compartido en esta conversación (las de la consulta en curso incluidas). */
+function ubicacionesCompartidas(): { lat: number; lon: number }[] {
+  const todas: { lat: number; lon: number }[] = [...ubicacionesEnCurso];
+  for (const t of conv.turnos) if (t.rol === 'usuario') todas.push(...(t.ubicaciones ?? []));
+  return todas;
+}
+
+async function confirmarPropuesta(turno: number, i: number, bt: HTMLButtonElement) {
+  const t = conv.turnos[turno];
+  const a = t?.rol === 'asistente' ? t.acciones[i] : null;
+  if (!t || t.rol !== 'asistente' || !a || a.tipo !== 'propuesta' || !a.propuesta) return;
+  bt.disabled = true;
+  try {
+    const r = await guardarPropuesta(a.propuesta, await herramientasCtx());
+    if (r) t.acciones[i] = r; else t.acciones.splice(i, 1);
+    await guardarConversacion(conv);
+    pintar(false);
+    ctx.avisar(r ? 'Guardado en Mis sitios' : 'Ya estaba en Mis sitios');
+  } catch { ctx.avisar('No se pudo guardar el sitio.'); } finally { bt.disabled = false; }
+}
+
+async function descartarPropuesta(turno: number, i: number) {
+  const t = conv.turnos[turno];
+  if (t?.rol !== 'asistente' || t.acciones[i]?.tipo !== 'propuesta') return;
+  t.acciones.splice(i, 1);
+  await guardarConversacion(conv);
+  pintar(false);
 }
 
 async function guardar(t: Tarjeta, bt: HTMLButtonElement) {
@@ -247,13 +365,24 @@ async function deshacer(turno: number, i: number) {
 
 async function enviarTexto(texto: string) {
   const q = texto.trim();
-  if (!q || ocupado) return;
+  if ((!q && !fotos.length) || ocupado) return;
   if (!navigator.onLine) { ctx.avisar(MENSAJE_SIN_CONEXION); pintarEstado(); return; }
   const url = ctx.urlWorker();
   if (!url) { error = 'El chat no está configurado en esta copia de la app.'; pintar(); return; }
   ocupado = true; error = '';
-  pensando = { fase: 'pensando', pregunta: q };
+  const adjuntas = fotos;
+  const miniaturas = adjuntas.map((f) => f.miniatura);
+  pensando = { fase: 'pensando', pregunta: q || TEXTO_SOLO_FOTO, miniaturas, ubicaciones: [] };
   $<HTMLTextAreaElement>('#chat-texto').value = ''; ajustarAlto();
+  pintar();
+  // Ubicaciones: enlaces de Google Maps del texto (los cortos los resuelve el Worker) + GPS de las fotos que el usuario no quitó.
+  const enlaces = await ubicacionesDeEnlaces(q, resolvedorWorker(url));
+  if (enlaces.sinResolver.length) ctx.avisar('No he podido sacar la ubicación del enlace de Google Maps; va como texto.', 5000);
+  const ubicaciones = unirUbicaciones(enlaces.ubicaciones,
+    adjuntas.filter((f) => f.gps && !sinGps.has(f.id)).map((f): UbicacionCompartida => ({ lat: f.gps!.lat, lon: f.gps!.lon, origen: 'foto' })));
+  ubicacionesEnCurso = ubicaciones;
+  if (pensando) pensando.ubicaciones = ubicaciones;
+  const indice = conv.turnos.length;
   pintar();
   const salida = await enviar(conv, q, {
     url: urlChat(url),
@@ -261,10 +390,13 @@ async function enviarTexto(texto: string) {
     contexto: () => construirContexto({ ...ctx.datosContexto(pestanaOrigen), enLinea: navigator.onLine }),
     ejecutar: async (n, e) => ejecutarHerramienta(n, e, await herramientasCtx()),
     alProgreso: (fase) => { if (pensando) { pensando.fase = fase; pintar(); } },
-  });
-  ocupado = false; pensando = null;
-  if (salida.ok) await guardarConversacion(conv);
-  else { error = salida.error; $<HTMLTextAreaElement>('#chat-texto').value = q; ajustarAlto(); }
+  }, { fotos: adjuntas.map((f) => ({ media_type: f.media_type, data: f.data })), ubicaciones });
+  ocupado = false; pensando = null; ubicacionesEnCurso = [];
+  if (salida.ok) {
+    if (miniaturas.length) miniaturasTurno.set(indice, miniaturas);
+    fotos = []; sinGps.clear(); pintarAdjuntos();
+    await guardarConversacion(conv);
+  } else { error = salida.error; $<HTMLTextAreaElement>('#chat-texto').value = q; ajustarAlto(); }
   pintar();
 }
 
@@ -278,6 +410,10 @@ function ajustarAlto() {
 async function nueva() {
   if (ocupado) return;
   conv = conversacionNueva(); error = '';
+  for (const urls of miniaturasTurno.values()) for (const u of urls) URL.revokeObjectURL(u);
+  miniaturasTurno.clear();
+  for (const f of fotos) URL.revokeObjectURL(f.miniatura);
+  fotos = []; sinGps.clear(); pintarAdjuntos();
   await borrarConversacion();
   ctx.limpiarMapa();
   pintar();
@@ -302,7 +438,7 @@ export async function abrirChat(desde?: string, precarga?: string) {
 export function cerrarChat() { $('#chat').hidden = true; }
 
 /** Estado para el e2e (window.__setas.chat). */
-export const estadoChat = () => ({ abierto: !$('#chat').hidden, ocupado, error, turnos: conv.turnos.map((t) => ({ ...t })), mensajes: conv.mensajes.length, restantes: conv.restantes });
+export const estadoChat = () => ({ abierto: !$('#chat').hidden, ocupado, error, turnos: conv.turnos.map((t) => ({ ...t })), mensajes: conv.mensajes.length, restantes: conv.restantes, adjuntas: fotos.length });
 
 export function iniciarChat(c: ContextoChatUi) {
   ctx = c;
@@ -312,6 +448,9 @@ export function iniciarChat(c: ContextoChatUi) {
   $('#chat-cerrar').addEventListener('click', cerrarChat);
   $('#chat-nueva').addEventListener('click', () => { void nueva(); });
   pintarSugerencias();
+  const entrada = $<HTMLInputElement>('#chat-foto-input');
+  $('#chat-foto').addEventListener('click', () => { if (fotos.length >= MAX_FOTOS) ctx.avisar(`Máximo ${MAX_FOTOS} fotos por mensaje.`); else entrada.click(); });
+  entrada.addEventListener('change', () => { const f = [...(entrada.files ?? [])]; entrada.value = ''; void elegirFotos(f); });
   const form = $<HTMLFormElement>('#chat-form'), texto = $<HTMLTextAreaElement>('#chat-texto');
   form.addEventListener('submit', (ev) => { ev.preventDefault(); void enviarTexto(texto.value); });
   texto.addEventListener('input', ajustarAlto);

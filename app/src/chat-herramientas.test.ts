@@ -1,7 +1,7 @@
 // Herramientas del chat «Pregunta a Claude» (chat-herramientas.ts) sobre fixtures: ids válidos e inválidos, rangos,
 // filtros, sin GPS, «proponer_sitios_nuevos» (excluye top, Mis sitios y notas), guardar + deshacer.
 import { describe, expect, it, vi } from 'vitest';
-import { MANEJADORES, NOMBRES_HERRAMIENTAS_APP, ejecutarHerramienta, type AccesoCalculado, type ContextoHerramientas, type ResultadoHerramienta } from './chat-herramientas';
+import { MANEJADORES, NOMBRES_HERRAMIENTAS_APP, ejecutarHerramienta, guardarPropuesta, type AccesoCalculado, type ContextoHerramientas, type ResultadoHerramienta } from './chat-herramientas';
 import { NOMBRES_HERRAMIENTAS } from '../../worker/src/chat-herramientas';
 import { topEspecie, type SitioCandidato, type SitiosJson } from './ranking';
 import { sumarDias, type Reglas } from './semaforo';
@@ -433,5 +433,99 @@ describe('tarjetas solo desde resultados', () => {
     const r = await lanzar('guardar_en_mis_sitios', { sitio_id: 'x:1', nota: null, estrellas: 1 }, b.ctx);
     expect(r.tarjetas).toEqual([]);
     expect(espia).not.toHaveBeenCalled();
+  });
+});
+
+describe('estado_en_punto (ubicación compartida)', () => {
+  const punto = (o: object = {}) => ({ lat: 36.631531, lon: -4.792421, dia: 0, ...o });
+  const conMeteo = { puntoMeteoCerca: () => ({ id: 1, km: 0.8 }), titularidadEn: async () => ({ clase: 'monte_junta' as const, monte: 'Sierra Blanca' }) };
+
+  it('devuelve por especie semáforo, probabilidad y motivo; monte público y acceso', async () => {
+    const b = banco(conMeteo);
+    const r = await lanzar('estado_en_punto', punto(), b.ctx);
+    expect(r.error).toBe(false);
+    const j = json(r);
+    expect(j.punto).toEqual({ lat: 36.63153, lon: -4.79242 });
+    expect(j.tiempo_a_km).toBe(0.8);
+    expect(j.especies).toHaveLength(ESPECIES.length);
+    const a = j.especies.find((x: { especie: string }) => x.especie === 'boletus_aereus');
+    expect(a).toMatchObject({ nombre: 'Boleto negro', estado: 'verde' });
+    expect(typeof a.motivo).toBe('string');
+    expect(j.titularidad).toMatchObject({ clase: 'monte_junta', publico: true });
+    expect(j.acceso).toMatchObject({ aparcar_en: 'pista de la Fuensanta', a_pie_min: 22, subida_m: 90 });
+    expect(r.tarjetas).toEqual([]);   // solo lectura: sin tarjetas ni efectos
+    expect(b.sitios).toEqual([]);
+  });
+  it('si el punto coincide con un sitio candidato (≤300 m) da su puntuación', async () => {
+    const r = await lanzar('estado_en_punto', punto({ lat: 36.5001, lon: -4.9001 }), banco(conMeteo).ctx);
+    const a = json(r).especies.find((x: { especie: string }) => x.especie === 'boletus_aereus');
+    expect(a.sitio_candidato).toMatchObject({ sitio_id: 'boletus_aereus:1' });
+    expect(a.sitio_candidato.a_m).toBeLessThanOrEqual(300);
+    expect(typeof a.sitio_candidato.puntuacion).toBe('number');
+    const lejos = json(await lanzar('estado_en_punto', punto(), banco(conMeteo).ctx)).especies.find((x: { especie: string }) => x.especie === 'boletus_aereus');
+    expect(lejos.sitio_candidato).toBeUndefined();
+  });
+  it('fuera del alcance del tiempo (o sin puntos): estado gris y aviso, nunca inventa', async () => {
+    for (const ctx of [banco({ puntoMeteoCerca: () => ({ id: 1, km: 40 }) }).ctx, banco({ puntoMeteoCerca: () => null }).ctx, banco().ctx]) {
+      const j = json(await lanzar('estado_en_punto', punto(), ctx));
+      expect(j.aviso_tiempo).toMatch(/fuera del alcance/);
+      expect(j.especies.every((x: { estado: string; probabilidad_pct?: number }) => x.estado === 'gris' && x.probabilidad_pct === undefined)).toBe(true);
+    }
+  });
+  it('sin dato de titularidad lo dice; un fallo del acceso no rompe la herramienta', async () => {
+    const j = json(await lanzar('estado_en_punto', punto(), banco({ ...conMeteo, titularidadEn: async () => null, acceso: async () => { throw new Error('x'); } }).ctx));
+    expect(j.titularidad).toBeNull();
+    expect(j.aviso_titularidad).toMatch(/no digas/);
+    expect(j.acceso.sin_acceso_calculado).toBeTruthy();
+  });
+  it('entradas fuera de rango -> error sin efectos', async () => {
+    const ctx = banco(conMeteo).ctx;
+    for (const e of [punto({ lat: 91 }), punto({ lon: -181 }), punto({ lat: 'x' }), punto({ dia: 16 }), punto({ dia: 0.5 }), null, {}]) {
+      expect((await lanzar('estado_en_punto', e, ctx)).error, JSON.stringify(e)).toBe(true);
+    }
+  });
+});
+
+describe('proponer_guardar_ubicacion (hallazgo en una ubicación compartida)', () => {
+  const COMPARTIDA = { lat: 36.631531, lon: -4.792421 };
+  const ent = (o: object = {}) => ({ lat: 36.63153, lon: -4.79242, especie: null, nota: 'Con gusanos', estrellas: null, ...o });
+  const con = (o: Partial<ContextoHerramientas> = {}, ini = {}) => banco({ ubicacionesCompartidas: () => [COMPARTIDA], ...o }, ini);
+
+  it('NO guarda: devuelve una propuesta que el usuario debe confirmar', async () => {
+    const b = con();
+    const r = await lanzar('proponer_guardar_ubicacion', ent({ especie: 'boletus_edulis' }), b.ctx);
+    expect(r.error).toBe(false);
+    expect(b.sitios).toEqual([]);
+    expect(json(r)).toMatchObject({ propuesta_mostrada: true, guardado: false });
+    expect(r.acciones).toHaveLength(1);
+    expect(r.acciones[0]).toMatchObject({ tipo: 'propuesta', sitioId: '', propuesta: { lat: 36.63153, lon: -4.79242, nota: 'Con gusanos', especie: 'boletus_edulis', estrellas: 1 } });
+  });
+  it('solo ubicaciones compartidas: coordenadas inventadas, lejanas o sin nada compartido -> error', async () => {
+    expect((await lanzar('proponer_guardar_ubicacion', ent({ lat: 36.7 }), con().ctx)).error).toBe(true);
+    expect((await lanzar('proponer_guardar_ubicacion', ent(), banco().ctx)).error).toBe(true);
+    expect((await lanzar('proponer_guardar_ubicacion', ent(), banco({ ubicacionesCompartidas: () => [] }).ctx)).error).toBe(true);
+  });
+  it('especie desconocida, nota larga o estrellas fuera de rango -> error', async () => {
+    const ctx = con().ctx;
+    expect((await lanzar('proponer_guardar_ubicacion', ent({ especie: 'seta_inventada' }), ctx)).error).toBe(true);
+    expect((await lanzar('proponer_guardar_ubicacion', ent({ nota: 'x'.repeat(201) }), ctx)).error).toBe(true);
+    expect((await lanzar('proponer_guardar_ubicacion', ent({ estrellas: 4 }), ctx)).error).toBe(true);
+  });
+  it('si ya está en Mis sitios no propone nada', async () => {
+    const ya: Sitio = { id: 's1', lat: 36.63153, lon: -4.79242, estrellas: 1, nota: 'Con gusanos', especie: '', fecha: AHORA.toISOString() };
+    const r = await lanzar('proponer_guardar_ubicacion', ent(), con({}, { sitios: [ya] }).ctx);
+    expect(json(r)).toMatchObject({ propuesta: false, ya_estaba: true });
+    expect(r.acciones).toEqual([]);
+  });
+  it('guardarPropuesta (el botón «Guardar») crea el sitio con las coordenadas compartidas y el acceso, y devuelve «Deshacer»', async () => {
+    const b = con();
+    const p = (await lanzar('proponer_guardar_ubicacion', ent({ especie: 'boletus_edulis', estrellas: 2 }), b.ctx)).acciones[0].propuesta!;
+    const a = await guardarPropuesta(p, b.ctx);
+    expect(a).toMatchObject({ tipo: 'guardado', sitioId: 'nuevo-1' });
+    expect(a!.texto).toContain('Boleto edulis');
+    expect(b.sitios).toHaveLength(1);
+    expect(b.sitios[0]).toMatchObject({ lat: 36.63153, lon: -4.79242, estrellas: 2, nota: 'Con gusanos', especie: 'boletus_edulis', acceso: { via: 'pista de la Fuensanta' } });
+    expect(await guardarPropuesta(p, b.ctx)).toBeNull();   // pulsar dos veces no duplica
+    expect(b.sitios).toHaveLength(1);
   });
 });

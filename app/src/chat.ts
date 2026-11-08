@@ -10,6 +10,7 @@ import { createStore, del, get, set } from 'idb-keyval';
 import type { AccionChat, ResultadoHerramienta, Tarjeta } from './chat-herramientas';
 import type { Dificultad } from './ruta';
 import type { Estado } from './semaforo';
+import type { UbicacionCompartida } from './enlace-maps';
 
 export const MAX_RONDAS = 6;
 export const MAX_TARJETAS = 10;
@@ -23,7 +24,7 @@ export interface MensajeApi { role: 'user' | 'assistant'; content: string | Bloq
 
 /** Lo que se enseña de cada mensaje (la API solo recibe `mensajes`). */
 export type Turno =
-  | { rol: 'usuario'; texto: string }
+  | { rol: 'usuario'; texto: string; /** Fotos que adjuntó (solo cuántas: las imágenes no se guardan). */ fotos?: number; /** Ubicaciones que compartió (enlace de Maps o GPS de la foto). */ ubicaciones?: UbicacionCompartida[] }
   | { rol: 'asistente'; texto: string; tarjetas: Tarjeta[]; acciones: AccionChat[]; cortado?: boolean };
 
 export interface Conversacion {
@@ -81,12 +82,39 @@ export function horaMadrid(d: Date): string {
   return new Intl.DateTimeFormat('es-ES', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(d);
 }
 
-/** Mensaje del usuario: el contexto como bloque de texto delante de su pregunta. */
-export function mensajeUsuario(contexto: ContextoApp, texto: string): MensajeApi {
-  return { role: 'user', content: [
-    { type: 'text', text: `<contexto_app>${JSON.stringify(contexto)}</contexto_app>` },
-    { type: 'text', text: texto },
-  ] };
+// ---------------------------------------------------------------- fotos y ubicaciones
+
+/** Una foto lista para enviar: JPEG/PNG/WebP en base64 sin prefijo. */
+export interface FotoEnvio { media_type: string; data: string }
+export interface AdjuntosChat { fotos?: FotoEnvio[]; ubicaciones?: UbicacionCompartida[] }
+/** Lo que ve Claude en lugar de una foto de una consulta anterior (igual que hace el Worker). */
+export const TEXTO_FOTO_ANTERIOR = '[foto enviada antes]';
+export const TEXTO_SOLO_FOTO = '¿Qué puedes decirme de esta foto?';
+export const MAX_FOTOS_MENSAJE = 3;
+const ORIGEN_UBICACION = { enlace: 'enlace de Google Maps', foto: 'GPS de la foto' } as const;
+
+const coord5 = (v: number) => String(Math.round(v * 1e5) / 1e5);
+/** «Ubicación compartida: 36.63153, -4.79242» para el modelo. */
+export const textoUbicacion = (u: UbicacionCompartida) => `Ubicación compartida: ${coord5(u.lat)}, ${coord5(u.lon)}`;
+
+/** Mensaje del usuario: contexto, ubicaciones compartidas, fotos y su pregunta (las fotos van antes del texto). */
+export function mensajeUsuario(contexto: ContextoApp, texto: string, adjuntos: AdjuntosChat = {}): MensajeApi {
+  const content: Bloque[] = [{ type: 'text', text: `<contexto_app>${JSON.stringify(contexto)}</contexto_app>` }];
+  for (const u of adjuntos.ubicaciones ?? []) {
+    content.push({ type: 'text', text: `<ubicacion_compartida origen="${ORIGEN_UBICACION[u.origen]}">${textoUbicacion(u)}</ubicacion_compartida>` });
+  }
+  for (const f of (adjuntos.fotos ?? []).slice(0, MAX_FOTOS_MENSAJE)) {
+    content.push({ type: 'image', source: { type: 'base64', media_type: f.media_type, data: f.data } });
+  }
+  content.push({ type: 'text', text: texto });
+  return { role: 'user', content };
+}
+
+/** Copia de los mensajes sin imágenes (cada foto pasa a un texto): lo que se guarda y se reenvía en consultas siguientes. */
+export function sinFotos(mensajes: MensajeApi[]): MensajeApi[] {
+  return mensajes.map((m) => typeof m.content === 'string' || !m.content.some((b) => b?.type === 'image')
+    ? m
+    : { role: m.role, content: m.content.map((b) => (b?.type === 'image' ? { type: 'text', text: TEXTO_FOTO_ANTERIOR } : b)) });
 }
 
 // ---------------------------------------------------------------- URL del Worker
@@ -120,6 +148,7 @@ interface RespuestaWorker { content: Bloque[]; stop_reason: string; texto: strin
 const MENSAJE_NO_ACTIVADO = 'El asistente no está activado todavía.';
 const MENSAJE_HTTP: Record<number, string> = {
   400: 'La consulta no es válida. Empieza una conversación nueva.',
+  413: 'Las fotos pesan demasiado. Prueba con menos fotos o con otras.',
   403: 'Esta copia de la app no puede usar el chat.',
   429: 'Has llegado al límite de consultas. Vuelve a probar más tarde.',
   404: MENSAJE_NO_ACTIVADO,
@@ -167,12 +196,14 @@ const usosDe = (c: Bloque[]) => c.filter((b) => b.type === 'tool_use') as (Bloqu
  * Envía la pregunta y resuelve las rondas de herramientas hasta la respuesta final (máximo MAX_RONDAS).
  * Si sale bien, añade a `conv` los mensajes y turnos de la consulta; si falla, `conv` queda como estaba.
  */
-export async function enviar(conv: Conversacion, texto: string, env: EntornoChat): Promise<SalidaEnvio> {
-  const pregunta = texto.trim();
+export async function enviar(conv: Conversacion, texto: string, env: EntornoChat, adjuntos: AdjuntosChat = {}): Promise<SalidaEnvio> {
+  const fotos = (adjuntos.fotos ?? []).slice(0, MAX_FOTOS_MENSAJE);
+  const ubicaciones = adjuntos.ubicaciones ?? [];
+  const pregunta = texto.trim() || (fotos.length ? TEXTO_SOLO_FOTO : '');
   if (!pregunta) return { ok: false, error: 'Escribe una pregunta.', codigo: 'vacio' };
   if (!env.enLinea()) return { ok: false, error: MENSAJE_SIN_CONEXION, codigo: 'sin_conexion' };
 
-  const trabajo: MensajeApi[] = [...conv.mensajes, mensajeUsuario(env.contexto(), pregunta)];
+  const trabajo: MensajeApi[] = [...conv.mensajes, mensajeUsuario(env.contexto(), pregunta, { fotos, ubicaciones })];
   const tarjetas = new Map<string, Tarjeta>();
   const acciones: AccionChat[] = [];
   let restantes = conv.restantes;
@@ -210,8 +241,8 @@ export async function enviar(conv: Conversacion, texto: string, env: EntornoChat
         rol: 'asistente', texto: r.texto.trim() || 'Claude no ha escrito respuesta. Prueba a preguntarlo de otra forma.',
         tarjetas: [...tarjetas.values()].slice(0, MAX_TARJETAS), acciones, ...(r.stop_reason === 'max_tokens' ? { cortado: true } : {}),
       };
-      conv.mensajes = trabajo;
-      conv.turnos = [...conv.turnos, { rol: 'usuario', texto: pregunta }, turno];
+      conv.mensajes = sinFotos(trabajo);   // las imágenes base64 no se guardan ni se reenvían: solo la marca
+      conv.turnos = [...conv.turnos, { rol: 'usuario', texto: pregunta, ...(fotos.length ? { fotos: fotos.length } : {}), ...(ubicaciones.length ? { ubicaciones } : {}) }, turno];
       conv.restantes = restantes;
       return { ok: true, turno };
     }
@@ -230,9 +261,15 @@ let almacen: ReturnType<typeof createStore> | null = null;
 const tienda = () => (almacen ??= createStore('setas-chat', 'conversacion'));
 const CLAVE = 'ultima';
 
+const esUbicacion = (u: unknown): u is UbicacionCompartida => {
+  const o = u as UbicacionCompartida | null;
+  return !!o && typeof o === 'object' && Number.isFinite(o.lat) && Number.isFinite(o.lon) && Math.abs(o.lat) <= 90 && Math.abs(o.lon) <= 180 && (o.origen === 'enlace' || o.origen === 'foto');
+};
 const esTurno = (t: unknown): t is Turno => {
   const o = t as Turno | null;
-  return !!o && typeof o === 'object' && ((o.rol === 'usuario' && typeof o.texto === 'string')
+  return !!o && typeof o === 'object' && ((o.rol === 'usuario' && typeof o.texto === 'string'
+    && (o.fotos === undefined || (Number.isInteger(o.fotos) && o.fotos >= 0 && o.fotos <= MAX_FOTOS_MENSAJE))
+    && (o.ubicaciones === undefined || (Array.isArray(o.ubicaciones) && o.ubicaciones.every(esUbicacion))))
     || (o.rol === 'asistente' && typeof o.texto === 'string' && Array.isArray(o.tarjetas) && Array.isArray(o.acciones)));
 };
 
@@ -244,7 +281,7 @@ export function validarConversacion(x: unknown): Conversacion | null {
   if (ms.some((m) => !m || (m.role !== 'user' && m.role !== 'assistant') || !(typeof m.content === 'string' || Array.isArray(m.content)))) return null;
   if (ms.length && (ms[0].role !== 'user' || ms[ms.length - 1].role !== 'assistant')) return null;   // una consulta completa acaba en el asistente
   if (!o.turnos.every(esTurno)) return null;
-  return { mensajes: ms, turnos: o.turnos as Turno[], restantes: typeof o.restantes === 'number' && Number.isFinite(o.restantes) ? o.restantes : null };
+  return { mensajes: sinFotos(ms), turnos: o.turnos as Turno[], restantes: typeof o.restantes === 'number' && Number.isFinite(o.restantes) ? o.restantes : null };
 }
 
 export async function leerConversacion(): Promise<Conversacion> {

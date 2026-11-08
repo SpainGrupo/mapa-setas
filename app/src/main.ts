@@ -1680,6 +1680,11 @@ async function contextoHerramientas(): Promise<ContextoHerramientas> {
     guardarSitio: async (s) => { await guardarSitio(s); await refrescarSitios(); },
     mostrarEnMapa: () => { /* lo hace chat-ui.ts (necesita saber cuánto tapa la hoja) */ },
     nuevoId, ahora: () => new Date(), textoRestringido: m?.chip_sitio_restringido ?? null,
+    puntoMeteoCerca: (lat, lon) => {
+      const p = puntoMasCercano(puntosMeteo, lat, lon);
+      return p ? { id: p.id, km: Math.hypot(p.lat - lat, (p.lon - lon) * Math.cos((lat * Math.PI) / 180)) * 111.2 } : null;
+    },
+    titularidadEn: async (lat, lon) => (m && M ? M.titularidadEn(m, lat, lon).catch(() => null) : null),
   };
 }
 iniciarChat({

@@ -158,12 +158,15 @@
         <div id="chat-mensajes" data-clarity-mask="true" class="hoja-cuerpo chat-mensajes" role="log" aria-live="polite" aria-label="Conversación"></div>
         <form id="chat-form" class="chat-form" autocomplete="off">
           <div id="chat-sugerencias" class="chat-sugerencias" role="group" aria-label="Preguntas rápidas"></div>
+          <div id="chat-adjuntos" class="chat-adjuntos" data-clarity-mask="true" aria-label="Adjuntos del mensaje" hidden></div>
           <div class="chat-fila">
             <label class="sr" for="chat-texto">Tu pregunta</label>
-            <textarea id="chat-texto" data-clarity-mask="true" rows="1" maxlength="600" enterkeyhint="send" placeholder="Escribe tu pregunta…"></textarea>
+            <input id="chat-foto-input" class="sr" type="file" accept="image/*" multiple tabindex="-1" aria-hidden="true" hidden>
+            <textarea id="chat-texto" data-clarity-mask="true" rows="1" maxlength="600" enterkeyhint="send" placeholder="Pregunta o pega un enlace de Maps…"></textarea>
             <button id="chat-enviar" class="btn btn-primario" type="submit">Enviar</button>
           </div>
           <div class="chat-pie-form">
+            <button id="chat-foto" class="btn chat-foto" type="button" aria-label="Adjuntar una foto" title="Adjuntar una foto (hasta 3)"><svg class="ico" aria-hidden="true"><use href="#i-camara"/></svg><span>Foto</span></button>
             <span id="chat-estado" class="nota" role="status"></span>
             <button id="chat-nueva" class="btn" type="button">Conversación nueva</button>
           </div>

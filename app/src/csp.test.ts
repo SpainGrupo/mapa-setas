@@ -18,4 +18,12 @@ describe('Content-Security-Policy del build', () => {
     expect(directiva('form-action')).toBe("form-action 'self'");
     expect(directiva('frame-src')).toBe("frame-src 'none'");
   });
+  it('las miniaturas de las fotos del chat (blob:) caben en img-src sin abrir más: ni comodín ni http:', () => {
+    const img = directiva('img-src');
+    expect(img).toContain('blob:');
+    expect(img).toContain('data:');
+    expect(img).not.toMatch(/ \*(?: |$)|http:(?!\/)|'unsafe/);
+    // script-src sigue sin blob: ni data: (las miniaturas no necesitan ejecutar nada)
+    expect(directiva('script-src')).not.toMatch(/blob:|data:/);
+  });
 });

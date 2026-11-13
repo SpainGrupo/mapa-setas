@@ -1,0 +1,72 @@
+{
+ "version": 2,
+ "crs": "EPSG:25830",
+ "res_m": 100.0,
+ "origen_xy": [
+  577600.0,
+  4369700.0
+ ],
+ "ancho": 2101,
+ "alto": 2201,
+ "orden": "filas de norte a sur, columnas de oeste a este; indice = fila*ancho + col",
+ "endianness": "little",
+ "capas": {
+  "origen_id": {
+   "dtype": "uint32",
+   "offset": 0,
+   "bytes": 18497204,
+   "nodata": 4294967295
+  },
+  "tiempo_pie_min": {
+   "dtype": "uint16",
+   "offset": 18497204,
+   "bytes": 9248602,
+   "nodata": 65535
+  },
+  "subida_m": {
+   "dtype": "uint16",
+   "offset": 27745808,
+   "bytes": 9248602,
+   "nodata": 65535
+  },
+  "direccion": {
+   "dtype": "uint8",
+   "offset": 36994412,
+   "bytes": 4624301,
+   "nodata": 255
+  },
+  "altitud": {
+   "dtype": "uint16",
+   "offset": 41618716,
+   "bytes": 9248602,
+   "nodata": 65535
+  }
+ },
+ "bbox_wgs84": [
+  -2.1222,
+  37.44854,
+  0.34239,
+  39.47339
+ ],
+ "direccion_codigos": {
+  "0": "aparcamiento (celda de vía)",
+  "255": "sin dato",
+  "1": "N (dfila=-1, dcol=0)",
+  "2": "NE (dfila=-1, dcol=1)",
+  "3": "E (dfila=0, dcol=1)",
+  "4": "SE (dfila=1, dcol=1)",
+  "5": "S (dfila=1, dcol=0)",
+  "6": "SW (dfila=1, dcol=-1)",
+  "7": "W (dfila=0, dcol=-1)",
+  "8": "NW (dfila=-1, dcol=-1)"
+ },
+ "modelo": {
+  "calculo_m": 50.0,
+  "tobler": "6·exp(-3.5·|dz/dx+0.05|) km/h por paso",
+  "mult_sendero": 1.0,
+  "mult_campo": 1.6,
+  "aparcamiento_bloque_m": 300.0,
+  "nota": "tiempo y subida son de ida (del coche a la celda)"
+ },
+ "bytes": 50867320
+}

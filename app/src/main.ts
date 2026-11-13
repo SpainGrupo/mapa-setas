@@ -1598,6 +1598,12 @@ iniciarObservaciones({
   },
 });
 
+/** «Cómo llegar en coche»: Google Maps hasta el aparcamiento estimado del punto. */
+const llegarEnCoche = async (lat: number, lon: number) => {
+  const c = await calcularAcceso(lat, lon);
+  if (c.acceso) abrirEnlace(urlGoogleCoche(c.acceso.lat, c.acceso.lon));
+  else avisar(`Sin aparcamiento estimado: ${c.texto}`, 5000);
+};
 iniciarHoy({
   irAlSitio,
   manifest: () => manifest,
@@ -1614,10 +1620,12 @@ iniciarHoy({
     mostrarAcceso(lat, lon);
   },
   rutaAPie: (_especie, lat, lon) => abrirRuta(lat, lon),
-  coche: async (lat, lon) => {
-    const c = await calcularAcceso(lat, lon);
-    if (c.acceso) abrirEnlace(urlGoogleCoche(c.acceso.lat, c.acceso.lon));
-    else avisar(`Sin aparcamiento estimado: ${c.texto}`, 5000);
+  coche: llegarEnCoche,
+  // Minutos en coche (coche-ui.ts): se llega hasta el aparcamiento del sitio (aparcamiento_id); sin él, hasta el propio punto.
+  destinoCoche: async (ap, lat, lon) => {
+    const d = ap != null && manifest ? await datosAcceso(manifest).catch(() => null) : null;
+    const a = d && ap != null ? aparcamiento(d.aparcamientos, ap) : null;
+    return a ? { lat: a.lat, lon: a.lon } : { lat, lon };
   },
   guardar: (especie, lat, lon) => abrirSitio(null, { lat, lon }, { especie }),
   hayFicha: async (especie) => !!(await cargarGuia()) && hayFicha(fichaDeEspecieMapa(especie)),
@@ -1632,6 +1640,7 @@ iniciarHoy({
   soloPublicos,
 });
 iniciarHoyMapa({ manifest: () => manifest, abrirEnlace, irAlSitio, rutaAPie: (lat, lon) => abrirRuta(lat, lon),
+  coche: llegarEnCoche,
   guardar: (lat, lon, titulo) => { guardarPunto({ lat, lon, nota: titulo }).then((r) => avisar(r === 'ya' ? 'Ya estaba en Mis sitios' : 'Guardado en Mis sitios')); } });
 // ---------------------------------------------------------------- «Pregunta a Claude» (chat-ui.ts, chat.ts, chat-herramientas.ts)
 

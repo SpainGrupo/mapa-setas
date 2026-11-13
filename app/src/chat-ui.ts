@@ -15,6 +15,7 @@ import { resolvedorWorker, ubicacionesDeEnlaces, type UbicacionCompartida } from
 import { NOMBRE_ESTADO } from './zona';
 import { NOMBRE_DIFICULTAD } from './ruta';
 import { textoSubida, textoTiempo, urlGoogleCoche } from './acceso';
+import { cifraCoche } from './coche-ui';
 
 export interface ContextoChatUi {
   /** URL del Worker (la de Gemini o la base); '' si esta copia de la app no lo tiene. */
@@ -121,7 +122,7 @@ function tarjetaDom(t: Tarjeta): HTMLElement {
     + (t.distancia_km !== null ? ` · a ${km(t.distancia_km)} km` : ''));
   const tit = document.createElement('p'); tit.className = 'chip-titularidad ct-titularidad'; tit.dataset.clase = t.titularidad.clase;
   const tb = document.createElement('b'); tb.textContent = t.titularidad.texto; tit.append(tb);
-  li.append(cab, datos, tit);
+  li.append(cab, datos, cifraCoche({ lat: t.lat, lon: t.lon, destino: t.aparcamiento ? { lat: t.aparcamiento.lat, lon: t.aparcamiento.lon } : undefined }), tit);
   if (t.restriccion) { const r = document.createElement('p'); r.className = 'chip-restriccion ct-restriccion'; r.textContent = t.restriccion; li.append(r); }
   if (t.aparcamiento) { const a = document.createElement('p'); a.className = 'ct-aparcar'; a.textContent = `Aparcar en ${t.aparcamiento.via}`; li.append(a); }
   if (t.por_que_nuevo) { const n = document.createElement('p'); n.className = 'ct-nuevo'; n.textContent = t.por_que_nuevo; li.append(n); }

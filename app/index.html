@@ -294,15 +294,23 @@
           <label class="campo"><span class="etq">Seta</span><select id="hoy-especie"></select></label>
           <button id="hoy-ver-ficha" class="btn" type="button" hidden><svg class="ico" aria-hidden="true"><use href="#i-libro"/></svg>Ficha</button>
         </div>
-        <div id="hoy-vista" class="vista-top" role="group" aria-label="Ver por">
-          <button class="chip" type="button" data-vista="seta" aria-pressed="true">Por seta</button><button class="chip" type="button" data-vista="sitio" aria-pressed="false">Por sitio</button>
+        <div class="vista-fila">
+          <div id="hoy-vista" class="vista-top" role="group" aria-label="Ver por">
+            <button class="chip" type="button" data-vista="seta" aria-pressed="true">Por seta</button><button class="chip" type="button" data-vista="sitio" aria-pressed="false">Por sitio</button>
+          </div>
+          <div id="hoy-modo" class="vista-top" role="group" aria-label="Mostrar como">
+            <button class="chip" type="button" data-modo="lista" aria-pressed="true">Lista</button><button class="chip" type="button" data-modo="mapa" aria-pressed="false" aria-controls="hoy-mapa">Mapa</button>
+          </div>
         </div>
         <p id="hoy-vista-nota" class="nota" hidden></p>
+        <div id="hoy-coche" class="coche-barra">
+          <button id="hoy-ubicacion" class="chip" type="button"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>Usar mi ubicación</button>
+          <p id="hoy-ubicacion-estado" class="nota" role="status"></p>
+        </div>
         <ol id="top-especie" class="tops"></ol>
+        <section id="hoy-mapa" class="hoy-mapa" hidden aria-label="Mapa de los sitios del listado"></section>
         <button id="hoy-exportar" class="btn btn-ancho" type="button" aria-expanded="false" aria-controls="exportar-dia"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg>Exportar día</button>
         <section id="exportar-dia" class="exportar-dia" hidden aria-label="Exportar los sitios del día"></section>
-        <button id="hoy-ver-mapa" class="btn btn-ancho" type="button" aria-expanded="false" aria-controls="hoy-mapa"><svg class="ico" aria-hidden="true"><use href="#i-mapa"/></svg>Ver en el mapa</button>
-        <section id="hoy-mapa" class="hoy-mapa" hidden aria-label="Mapa de los sitios del listado"></section>
         <h2 id="tit-calendario">Calendario</h2>
         <p class="nota">Meses de temporada de cada seta y cómo va el día elegido. Toca una seta para ver su ficha y cuándo sale; «Sitios» te lleva a sus mejores sitios.</p>
         <div id="calendario" class="calendario"></div>

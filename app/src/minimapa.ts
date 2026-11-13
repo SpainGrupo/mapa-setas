@@ -70,6 +70,9 @@ export function miniMapa(manifest: ManifestApp | null): Promise<MapaML | null> {
   return promesa;
 }
 
+/** Fábrica de chinchetas HTML sobre el mini-mapa (carga MapLibre la primera vez, aunque ya lo trae el mapa). */
+export const fabricaMarcadores = () => import('./mapa').then((M) => M.crearMarcador);
+
 export const mapaListo = () => (mapa && mapa.getSource('top-hoy') ? mapa : null);
 
 /** Pone el mini-mapa en el hueco `hueco` (lo saca de donde estuviera). */

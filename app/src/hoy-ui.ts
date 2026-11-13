@@ -22,6 +22,7 @@ import { AVISO_LIGNICOLA, esLignicola } from './como-buscar';
 import { RADIO_ZONA_M, zonasDelDia, type Zona } from './zonas';
 import { ayudaIndicador, crearPercentil, textoIndicador, veces, type Validacion } from './indicador';
 import { especiesDeValor, esValorGrupo, grupoDe, gruposDe, topGrupo, valorGrupo } from './grupos';
+import { bloqueCoche, iniciarCoche, pedir as pedirMinutos, posicionUsuario } from './coche-ui';
 import { AYUDA_MY_MAPS, generarKml, nombreArchivoKml, nombrePlacemark, seleccionarSitios, textoCompartir, urlRutaGoogle,
   urlSitioGoogle, type SitioExport } from './exportar-dia';
 
@@ -41,6 +42,8 @@ export interface ContextoHoy {
   verEnMapa: (especie: string, lat: number, lon: number) => void;
   rutaAPie: (especie: string, lat: number, lon: number) => void;
   coche: (lat: number, lon: number) => void;
+  /** Destino en coche de un sitio: su aparcamiento (aparcamiento_id) si se conoce; si no, el propio punto (minutos en coche). */
+  destinoCoche: (ap: number | null, lat: number, lon: number) => Promise<{ lat: number; lon: number }>;
   guardar: (especie: string, lat: number, lon: number) => void;
   hayFicha: (especie: string) => Promise<boolean>;
   verFicha: (especie: string) => void;
@@ -89,7 +92,7 @@ const nombreComunId = (id: string) => { const e = ctx.manifest()?.especies.find(
 const fiab = (id: string): Fiabilidad => nivelFiabilidad(ctx.manifest()?.especies.find((e) => e.id === id)?.fiabilidad);
 
 function textoLejania(p: { lat: number; lon: number }): string {
-  const yo = ctx.posicion();
+  const yo = posicionUsuario();
   const region = ctx.manifest()?.region;
   const desde = yo ?? region?.origen;
   if (!desde) return '';
@@ -149,8 +152,8 @@ function bloqueCitas(c: CitasSitio, prefijo: string): HTMLElement {
   return caja;
 }
 
-/** Origen de las distancias: tu GPS o, sin él, el origen de la región (null = PENDIENTE). */
-const origenDistancias = (): { lat: number; lon: number } | null => ctx.posicion() ?? ctx.manifest()?.region?.origen ?? null;
+/** Origen de las distancias: tu ubicación (GPS de la app o «Usar mi ubicación») o, sin él, el origen de la región (null = PENDIENTE). */
+const origenDistancias = (): { lat: number; lon: number } | null => posicionUsuario() ?? ctx.manifest()?.region?.origen ?? null;
 
 export const ordenTop = (): OrdenTop => { const v = leer(CLAVE_ORDEN); return esOrdenTop(v) ? v : 'probabilidad'; };
 
@@ -201,6 +204,7 @@ export function pintarListaTop(ul: HTMLElement, items: ItemTop[], ind?: Contexto
     .forEach((x, i) => ul.append(fila(x.principal, x.entradas, i + 1, x.zona, ind)));
   ul.dataset.orden = ordenTop();
   if (ul.id === 'top-especie') { cerrarExportar(); alRepintarTop?.(); }
+  pedirMinutos();
 }
 
 /** Aviso al mapa del Top (hoy-mapa.ts) cada vez que se repinta «Los 10 mejores por seta». */
@@ -352,6 +356,8 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number, zona?: Zona,
     r.textContent = ctx.manifest()?.chip_sitio_restringido ?? '';
     li.append(r);
   }
+  // Minutos en coche (coche-ui.ts) con «Cómo llegar en coche» al lado: la cifra sale al usar «Usar mi ubicación».
+  li.append(bloqueCoche({ lat: s.lat, lon: s.lon, ap: s.aparcamiento_id }, () => ctx.coche(s.lat, s.lon)));
   const acc = document.createElement('div'); acc.className = 'tf-acciones';
   const esp = principal.especie;
   const ruta = boton('Ruta a pie', () => ctx.rutaAPie(esp, s.lat, s.lon), 'btn btn-primario');
@@ -360,8 +366,7 @@ function fila(principal: Entrada, entradas: Entrada[], pos: number, zona?: Zona,
   mas.setAttribute('aria-label', 'Más acciones'); mas.setAttribute('aria-expanded', 'false');
   mas.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-puntos"/></svg>';
   const menu = document.createElement('div'); menu.className = 'tf-menu'; menu.hidden = true;
-  menu.append(boton('Ver en mapa', () => ctx.verEnMapa(esp, s.lat, s.lon), ''), boton('Cómo llegar en coche', () => ctx.coche(s.lat, s.lon), ''),
-    boton('Guardar', () => ctx.guardar(esp, s.lat, s.lon), ''));
+  menu.append(boton('Ver en mapa', () => ctx.verEnMapa(esp, s.lat, s.lon), ''), boton('Guardar', () => ctx.guardar(esp, s.lat, s.lon), ''));
   if (ctx.irAlSitio) menu.append(boton('Navegar aquí', () => ctx.irAlSitio!(s.lat, s.lon, entradas.map((e) => nombre(e.especie)).join(' · ')), 'tf-navegar'));
   mas.onclick = () => { menu.hidden = !menu.hidden; mas.setAttribute('aria-expanded', String(!menu.hidden)); };
   acc.append(ruta, mas, menu);
@@ -873,7 +878,7 @@ export function topActualMapa() {
   const origen = origenDistancias();
   const items = ul ? ordenarTops(listas.get(ul)?.items ?? [], ordenTop(), (x) => clavesItem(x, origen)) : [];
   return { fecha: ultimo?.fecha ?? acotarDia(ctx.hoy(), fechaSel), filtro: textoFiltro(),
-    sitios: items.map((it, i) => ({ ...sitioExport(it), pos: i + 1, id: it.principal.sitio.id, especies: it.entradas.map((e) => e.especie),
+    sitios: items.map((it, i) => ({ ...sitioExport(it), pos: i + 1, id: it.principal.sitio.id, ap: it.principal.sitio.aparcamiento_id, especies: it.entradas.map((e) => e.especie),
       nombres: it.entradas.map((e) => nombre(e.especie)), lejania: textoLejania(it.principal.sitio) })) };
 }
 
@@ -911,6 +916,7 @@ export function resumenHoy() {
 
 export function iniciarHoy(c: ContextoHoy) {
   ctx = c;
+  iniciarCoche({ destino: c.destinoCoche, posicionGps: () => c.posicion(), alCambiarOrigen: repintarListas });
   $<HTMLInputElement>('#hoy-fecha').addEventListener('change', (ev) => {
     const v = (ev.target as HTMLInputElement).value;
     if (v) elegirDia(v);

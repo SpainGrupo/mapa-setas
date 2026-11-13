@@ -445,3 +445,8 @@ export function crearMiniMapa(contenedor: HTMLElement, m: ManifestApp): MapaML {
   mapa.once('load', () => contenedor.querySelector('.maplibregl-compact-show')?.classList.remove('maplibregl-compact-show'));
   return mapa;
 }
+
+/** Chincheta-etiqueta HTML (la del mapa del Top de Hoy, hoy-mapa.ts): `el` anclado por abajo en [lon, lat]. */
+export function crearMarcador(mapa: MapaML, el: HTMLElement, lon: number, lat: number): maplibregl.Marker {
+  return new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat([lon, lat]).addTo(mapa);
+}

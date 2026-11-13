@@ -7,7 +7,6 @@
 /* ---------------------------------------------------------------- mapa del Top (Hoy) */
 .hoy-mapa { margin-top: 12px; padding: 12px; background: var(--hoja); border-radius: 22px; border: 1px solid oklch(62% 0.017 158 / 0.4); display: grid; gap: 10px; }
 .hm-titulo { margin: 0; font-weight: 700; }
-.hm-hueco { height: min(58vh, 420px); }
 .hm-leyenda { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: 14px; }
 .hm-leyenda span { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--hoja); box-shadow: 0 0 0 1px var(--regla); margin-left: 6px; }
 .hm-leyenda span:first-child { margin-left: 0; }
@@ -15,15 +14,51 @@
 .hm-leyenda span[data-estado=amarillo] { background: #fab219; }
 .hm-leyenda span[data-estado=rojo] { background: #d03b3b; }
 .hm-leyenda span[data-estado=gris] { background: #8a8a86; }
-.hm-tarjeta { display: grid; gap: 8px; padding: 12px; border-radius: 18px; background: var(--papel); border: 1px solid oklch(62% 0.017 158 / 0.4); }
-.hm-tarjeta p { margin: 0; }
-.hm-cab { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; }
+.hm-lienzo { position: relative; height: max(540px, min(78vh, 700px)); border-radius: 18px; overflow: hidden; background: var(--lavado); }
+.hm-hueco { height: 100%; }
+.hm-hueco .minimapa { border-radius: 0; min-height: 0; }
+
+/* Carrusel de tarjetas sobre el mapa (estilo Airbnb): scroll-snap horizontal, una tarjeta centrada y un asomo de las vecinas.
+   Deja 30 px abajo para que se vea la atribución del mapa. */
+.hm-carrusel { position: absolute; z-index: 3; left: 0; right: 0; bottom: 30px; margin: 0; padding: 4px 8% 6px; list-style: none;
+  display: flex; align-items: flex-end; gap: 10px; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; outline: none; }
+.hm-carrusel::-webkit-scrollbar { display: none; }
+.hm-card { flex: 0 0 100%; min-width: 0; scroll-snap-align: center; scroll-snap-stop: always; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; align-content: start;
+  padding: 12px; border-radius: 20px; background: var(--vidrio-tinte-denso);
+  -webkit-backdrop-filter: var(--vidrio-filtro); backdrop-filter: var(--vidrio-filtro);
+  box-shadow: var(--vidrio-brillo), 0 0 0 0.5px oklch(20% 0.02 160 / 0.14), var(--vidrio-sombra-gr); transition: box-shadow 160ms; }
+.hm-card.sel { box-shadow: var(--vidrio-brillo), 0 0 0 2px var(--tinta), var(--vidrio-sombra-gr); }
+.hm-card p { margin: 0; }
+.hm-cab { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; }
 .hm-tit { display: grid; gap: 4px; min-width: 0; }
 .hm-tit b { font-size: 17px; overflow-wrap: anywhere; }
-.hm-puntos { font-weight: 700; font-size: 15px; }
-.hm-acceso { font-size: 15px; color: var(--tinta-2); }
-.hm-acciones { display: flex; flex-wrap: wrap; gap: 8px; }
-.hm-acciones .btn { flex: 1 1 120px; }
+.hm-puntos { font-weight: 700; font-size: 13.5px; }
+.hm-card .tf-titularidad { font-size: 13px; line-height: 1.3; padding: 5px 10px; }
+.hm-card .tf-minis .miniatura-especie { width: 46px; height: 46px; }
+.hm-card .tf-minis .miniatura-especie + .miniatura-especie { margin-left: -22px; }
+.hm-card .chip-estado { font-size: 13px; padding: 2px 9px; white-space: nowrap; }
+.hm-card .coche-min { font-size: 15px; white-space: nowrap; }
+.hm-card .coche-desde { white-space: nowrap; }
+.hm-card .coche-ir { min-height: 40px; padding: 4px 9px; font-size: 13px; white-space: nowrap; }
+.hm-acciones { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr); gap: 6px; }
+.hm-acciones .btn { min-height: 42px; padding: 4px 4px; font-size: 13px; white-space: nowrap; }
+
+/* Chincheta-etiqueta del mapa: el elemento es el de MapLibre (no se le pone transform); la píldora de dentro se agranda al elegirla. */
+.hm-pin { display: none; border: 0; background: none; padding: 0 0 8px; margin: 0; font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+#hm-hueco .hm-pin { display: block; }
+.hm-pin-txt { --c: #8a8a86; position: relative; display: block; box-sizing: border-box; min-width: 56px; height: 34px; padding: 0 11px;
+  border-radius: 999px; border: 2px solid #fff; background: var(--c); color: #0d1a13; font-weight: 800; font-size: 14px; line-height: 30px;
+  text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums; box-shadow: 0 2px 7px rgb(0 0 0 / 0.4);
+  transform-origin: 50% 100%; transition: transform 140ms var(--entrada, ease-out); }
+.hm-pin-txt::after { content: ''; position: absolute; left: 50%; bottom: -7px; width: 10px; height: 10px; background: var(--c);
+  border-right: 2px solid #fff; border-bottom: 2px solid #fff; transform: translateX(-50%) rotate(45deg); }
+.hm-pin[data-estado=verde] .hm-pin-txt { --c: #0ca30c; }
+.hm-pin[data-estado=amarillo] .hm-pin-txt { --c: #fab219; }
+.hm-pin[data-estado=rojo] .hm-pin-txt { --c: #d03b3b; color: #fff; }
+.hm-pin.sel .hm-pin-txt { transform: scale(1.2); border-color: #0d1a13; box-shadow: 0 0 0 2px #fff, 0 3px 10px rgb(0 0 0 / 0.5); }
+.hm-pin:focus-visible .hm-pin-txt { outline: 3px solid var(--ruta, #1565c0); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .hm-pin-txt, .hm-card { transition: none; } }
 
 /* ---------------------------------------------------------------- «Navegar aquí» en las tarjetas del mapa */
 .tarjeta-zona #tz-navegar { min-height: var(--toque); }
@@ -245,3 +280,20 @@ body[data-grabando] .mapa-cab { top: calc(var(--sup) + 140px); }
 .ob-form select, .ob-form textarea { font: inherit; border-radius: 12px; padding: 8px 10px; border: 1px solid var(--regla); background: var(--papel); color: var(--tinta); }
 .ob-form select { min-height: var(--toque); }
 .ob-form label[hidden] { display: none; }
+
+/* ---------------------------------------------------------------- Lista | Mapa y minutos en coche (Hoy, 2026-11-13) */
+.vista-fila { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 12px; }
+.tops[hidden] { display: none; }
+.coche-barra { display: grid; justify-items: start; gap: 4px; margin: 6px 0 4px; }
+.coche-barra p { margin: 0; }
+.coche-barra .chip { display: inline-flex; align-items: center; gap: 6px; }
+.coche-barra .chip .ico { width: 18px; height: 18px; }
+.tf-coche { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 10px; margin: 0; }
+.tf-coche-solo { justify-content: flex-start; }
+.tf-coche:has(.coche-min:empty):has(.coche-ir) { justify-content: flex-end; }
+.tf-coche-solo:has(.coche-min:empty) { display: none; }
+.coche-min { font-weight: 800; font-size: 17px; color: var(--tinta); font-variant-numeric: tabular-nums; }
+.coche-min:empty { display: none; }
+.coche-desde { flex-basis: 100%; order: 3; font-size: 13px; color: var(--tinta-2); }
+.coche-desde[hidden] { display: none; }
+.coche-ir { flex: 0 0 auto; font-size: 15px; padding: 8px 12px; }

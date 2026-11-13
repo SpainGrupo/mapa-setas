@@ -43,7 +43,8 @@ try {
         puntos ??= await (await fetch(new URL('data/marbella/meteo_puntos.json', BASE))).json();
         const u = new URL(r.request().url());
         const lat = u.searchParams.get('latitude').split(',').map(Number), lon = u.searchParams.get('longitude').split(',').map(Number);
-        const rel = Array.from({ length: 46 }, (_, i) => i - 30);
+        const pas = Number(u.searchParams.get('past_days') ?? 30);   // los días pasados que pide la app (DIAS_PASADOS)
+  const rel = Array.from({ length: pas + 16 }, (_, i) => i - pas);
         const una = (la, i) => ({ latitude: la, longitude: lon[i], elevation: puntos.find((q) => q.lat === la && q.lon === lon[i])?.alt_media ?? 0,
           daily: { time: rel.map((k) => sumar(HOY, k)), precipitation_sum: rel.map((k) => FIXTURE.lluvia[k] ?? 0),
             temperature_2m_max: rel.map(() => FIXTURE.tmax), temperature_2m_min: rel.map(() => FIXTURE.tmin),

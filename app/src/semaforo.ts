@@ -338,7 +338,7 @@ export function semaforo(serie: Dia[], reglas: Reglas, hoy: string,
       res = { estado: 'rojo', episodio: serie[ult.i].fecha, lluvia_mm: ult.mm,
         motivo: `Ventana pasada: la última lluvia buena fue el ${ddmm(serie[ult.i].fecha)}, hace ${hoyI - ult.i} días.` };
     } else {
-      res = { estado: 'rojo', motivo: `Seco: sin lluvia de ${reglas.episodio_mm} mm o más en 30 días.` };
+      res = { estado: 'rojo', motivo: `Seco: sin lluvia de ${reglas.episodio_mm} mm o más en ${hoyI} días.` };
     }
   }
   return temporada(res, p, reglas, hoy, sinHumedad, P);

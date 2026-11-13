@@ -55,7 +55,7 @@ const nav = await chromium.launch();
 const ctx = await nav.newContext({ ...devices['Pixel 7'], geolocation: PUNTO, permissions: ['geolocation'],
   acceptDownloads: true, locale: 'es-ES', timezoneId: 'Europe/Madrid' });
 
-// Open-Meteo falso: 30 días pasados + 16 de previsión (hoy incluido) alrededor de hoy (Madrid), elevación = alt_media del punto.
+// Open-Meteo falso: los días pasados que pida la app (past_days; 60) + 16 de previsión (hoy incluido) alrededor de hoy (Madrid), elevación = alt_media del punto.
 const sumar = (iso, n) => new Date(Date.parse(iso + 'T00:00:00Z') + n * 864e5).toISOString().slice(0, 10);
 let puntosMeteo = null, consultasMeteo = 0;
 await ctx.route('**/api.open-meteo.com/**', async (r) => {
@@ -65,7 +65,8 @@ await ctx.route('**/api.open-meteo.com/**', async (r) => {
   const lat = u.searchParams.get('latitude').split(',').map(Number), lon = u.searchParams.get('longitude').split(',').map(Number);
   const hoy = HOY_E2E;
   if (u.searchParams.get('forecast_days') !== '16') throw new Error(`forecast_days=${u.searchParams.get('forecast_days')}`);
-  const rel = Array.from({ length: 46 }, (_, i) => i - 30);
+  const pas = Number(u.searchParams.get('past_days') ?? 30);   // los días pasados que pide la app (DIAS_PASADOS)
+  const rel = Array.from({ length: pas + 16 }, (_, i) => i - pas);
   const una = (la, i) => ({ latitude: la, longitude: lon[i],
     elevation: puntosMeteo.find((p) => p.lat === la && p.lon === lon[i])?.alt_media ?? 0,
     daily: { time: rel.map((k) => sumar(hoy, k)), precipitation_sum: rel.map((k) => FIXTURE.lluvia[k] ?? 0),

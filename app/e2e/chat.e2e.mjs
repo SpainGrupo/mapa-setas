@@ -35,14 +35,15 @@ const ctx = await nav.newContext({ ...devices['iPhone 14 Pro Max'], viewport: { 
   locale: 'es-ES', timezoneId: 'Europe/Madrid' });
 await ctx.addInitScript((u) => { try { localStorage.setItem('setas:e2e-worker-url', u); } catch { /* sin almacenamiento */ } }, URL_WORKER);
 
-// Open-Meteo falso (como offline.e2e.mjs): 30 días pasados + 16 de previsión alrededor de «hoy».
+// Open-Meteo falso (como offline.e2e.mjs): past_days (60) días pasados + 16 de previsión alrededor de «hoy».
 const sumar = (iso, n) => new Date(Date.parse(iso + 'T00:00:00Z') + n * 864e5).toISOString().slice(0, 10);
 let puntosMeteo = null;
 await ctx.route('**/api.open-meteo.com/**', async (r) => {
   puntosMeteo ??= await (await fetch(new URL('data/marbella/meteo_puntos.json', BASE))).json();
   const u = new URL(r.request().url());
   const lat = u.searchParams.get('latitude').split(',').map(Number), lon = u.searchParams.get('longitude').split(',').map(Number);
-  const rel = Array.from({ length: 46 }, (_, i) => i - 30);
+  const pas = Number(u.searchParams.get('past_days') ?? 30);   // los días pasados que pide la app (DIAS_PASADOS)
+  const rel = Array.from({ length: pas + 16 }, (_, i) => i - pas);
   const una = (la, i) => ({ latitude: la, longitude: lon[i], elevation: puntosMeteo.find((p) => p.lat === la && p.lon === lon[i])?.alt_media ?? 0,
     daily: { time: rel.map((k) => sumar(HOY_E2E, k)), precipitation_sum: rel.map((k) => FIXTURE.lluvia[k] ?? 0),
       temperature_2m_max: rel.map(() => FIXTURE.tmax), temperature_2m_min: rel.map(() => FIXTURE.tmin),

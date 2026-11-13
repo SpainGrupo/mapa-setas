@@ -12,7 +12,7 @@ export interface Dia {
 export interface DatosMeteo {
   fecha_consulta: string;              // ISO 8601 (UTC) del momento de la consulta
   hoy: string;                         // YYYY-MM-DD en Europe/Madrid al consultar
-  puntos: Record<string, Dia[]>;       // id del punto → 30 días pasados + 16 de previsión (hoy incluido)
+  puntos: Record<string, Dia[]>;       // id del punto → DIAS_PASADOS días pasados + 16 de previsión (hoy incluido)
   /** forecast_days de la consulta; las cachés anteriores a la fase 9 no lo traen (eran 7). */
   prevision_dias?: number;
 }
@@ -24,6 +24,9 @@ export const REFRESCO_H = 3;
 export const CADUCIDAD_H = 72;
 /** Máximo de la Forecast API (comprobado el 2026-10-14: con 17 responde «Allowed range 0 to 16»). Hoy cuenta como día 1. */
 export const PREVISION_DIAS = 16;
+/** Días de historia (2026-11-13): 60 para que las especies de ventana larga (níscalos, Tricholoma 20–40 días, Terfezia
+ * 20–45) vean la lluvia que las dispara. La humedad acumulada sigue mirando solo los últimos 30. */
+export const DIAS_PASADOS = 60;
 const GRADIENTE = -0.65 / 100;         // °C por metro
 
 export function lotes<T>(xs: T[], n = LOTE): T[][] {
@@ -43,7 +46,7 @@ export function urlOpenMeteo(ps: PuntoMeteo[]): string {
     longitude: ps.map((p) => p.lon).join(','),
     daily: DIARIAS.join(','),
     hourly: 'soil_moisture_9_to_27cm',   // la Forecast API no la da agregada por día: se promedia aquí
-    past_days: '30',
+    past_days: String(DIAS_PASADOS),
     forecast_days: String(PREVISION_DIAS),
     timezone: 'Europe/Madrid',
   });

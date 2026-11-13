@@ -30,7 +30,7 @@ describe('lotes y URL', () => {
     expect(u.searchParams.get('longitude')).toBe('-5.01,-5.02');
     expect(u.searchParams.get('daily')).toBe('precipitation_sum,temperature_2m_max,temperature_2m_min,et0_fao_evapotranspiration,relative_humidity_2m_min');
     expect(u.searchParams.get('hourly')).toBe('soil_moisture_9_to_27cm');
-    expect(u.searchParams.get('past_days')).toBe('30');
+    expect(u.searchParams.get('past_days')).toBe('60');
     expect(u.searchParams.get('forecast_days')).toBe('16');
     expect(u.searchParams.get('timezone')).toBe('Europe/Madrid');
   });

@@ -242,8 +242,8 @@ async function campo(man: any) {
     return { e, l };
   }) }));
   const pts = puntos.filter((p: any) => ids.has(p.id));
-  // Como la app, pero con 40 días pasados para que el 03/11 tenga sus 30 días de historia.
-  const met = await consultar(pts, (u: string) => fetch(u.replace('past_days=30', 'past_days=40')));
+  // Como la app (60 días pasados desde el 13/11; antes se forzaban 40 para que el 03/11 tuviera 30 de historia).
+  const met = await consultar(pts, (u: string) => fetch(u));
   const out: string[] = [];
   out.push(`Consulta Forecast API: ${met.fecha_consulta} (hoy en Madrid: ${met.hoy})`, '');
   out.push('| Caso | Especie | Sitio (km al punto) | Punto meteo | Fecha | v2 | v3 | Motivo v3 |', '|---|---|---|---|---|---|---|---|');

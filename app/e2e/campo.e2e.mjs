@@ -72,43 +72,37 @@ try {
   await p.locator('.pestanas [data-p=p-hoy]').click();
   await p.waitForSelector('#top-especie .top-fila');
   const nFilas = await p.locator('#top-especie .top-fila').count();
-  await p.locator('#hoy-ver-mapa').click();
+  await p.locator('#hoy-modo [data-modo=mapa]').click();
   await p.waitForFunction(() => document.body.dataset.minimapa === 'listo', null, { timeout: 30000 });
   await p.waitForFunction((n) => document.querySelector('#hoy-mapa')?.dataset.n === String(n), nFilas);
-  comprobar(await p.locator('#hoy-mapa .minimapa canvas').isVisible(), `«Ver en el mapa» abre el mini-mapa con los ${nFilas} sitios del listado`);
-  await p.waitForFunction(() => { const m = window.__setas.miniMapa(); return m && m.loaded() && m.queryRenderedFeatures({ layers: ['top-hoy'] }).length > 0; }, null, { timeout: 30000 });
+  comprobar(await p.locator('#hoy-mapa .minimapa canvas').isVisible() && await p.locator('#top-especie').isHidden(),
+    `«Mapa» cambia el listado por el mini-mapa con los ${nFilas} sitios`);
+  await p.waitForFunction((n) => document.querySelectorAll('#hm-hueco .hm-pin').length === n, nFilas, { timeout: 30000 });
   await p.evaluate(() => document.querySelector('#hm-hueco').scrollIntoView({ block: 'center' }));
   await p.waitForTimeout(300);
-  const punto = await p.evaluate(() => {
-    const m = window.__setas.miniMapa();
-    const f = m.queryRenderedFeatures({ layers: ['top-hoy'] }).find((x) => x.properties.pos === 1);
-    const px = m.project(f.geometry.coordinates); const r = m.getCanvas().getBoundingClientRect();
-    return { x: r.left + px.x, y: r.top + px.y, estado: f.properties.estado, lon: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] };
-  });
   const estadoFila1 = await p.locator('#top-especie .top-fila').first().getAttribute('data-estado');
-  comprobar(punto.estado === estadoFila1, `el marcador 1 lleva el color del semáforo de la fila 1 (${punto.estado})`);
-  await p.mouse.click(punto.x, punto.y);
-  await p.waitForSelector('#hm-tarjeta:not([hidden])');
-  const tarjeta = await p.locator('#hm-tarjeta').innerText();
-  const razon1 = (await p.locator('#top-especie .top-fila').first().locator('.tf-razon').textContent()).trim();
-  comprobar(await p.locator('#hm-tarjeta').getAttribute('data-pos') === '1' && tarjeta.includes('Puntuación del día') && tarjeta.includes('Acceso:')
-    && tarjeta.includes(razon1) && await p.locator('#hm-tarjeta .tf-titularidad').count() === 1
-    && await p.locator('#hm-tarjeta .miniatura-especie').count() >= 1,
-    'tocar el marcador 1 abre su tarjeta: miniatura, puntuación, razón, acceso y titularidad');
+  comprobar(await p.locator('.hm-pin[data-pos="1"]').getAttribute('data-estado') === estadoFila1,
+    `la chincheta 1 lleva el color del semáforo de la fila 1 (${estadoFila1})`);
+  comprobar(await p.locator('.hm-card.sel').getAttribute('data-pos') === '1', 'al abrir el mapa está elegido el sitio 1');
+  const pt = await p.locator('.hm-pin[data-pos="1"]').boundingBox();
+  await p.mouse.click(pt.x + pt.width / 2, pt.y + pt.height / 2);
+  const tarjeta = await p.locator('.hm-card.sel').innerText();
+  const punt1 = await p.locator('#top-especie .top-fila').first().getAttribute('data-puntuacion');
+  comprobar(tarjeta.includes(`Puntuación del día: ${punt1} de 100`) && await p.locator('.hm-card.sel .tf-titularidad').count() === 1
+    && await p.locator('.hm-card.sel .miniatura-especie').count() >= 1 && await p.locator('.hm-card.sel .coche-ir').count() === 1,
+    'tarjeta del sitio 1: miniatura, puntuación, titularidad y «Cómo llegar en coche»');
   comprobar(!PROHIBIDO.test(tarjeta), 'la tarjeta no dice «comestible»');
-  await p.locator('#hm-tarjeta .hm-google').click();
-  const gUrl = await p.evaluate(() => window.__abierto);
-  comprobar(/google\.com\/maps\/search\/\?api=1&query=36\.\d+%2C-?\d/.test(gUrl), `botón Google Maps → ${gUrl}`);
   // Orden: al cambiarlo, la numeración del mapa sigue al listado.
   await p.locator('#top-especie').locator('xpath=preceding-sibling::div[contains(@class,"orden-top")][1]').locator('[data-orden=distancia]').click();
   await p.waitForFunction(() => document.querySelector('#top-especie')?.dataset.orden === 'distancia');
+  await p.waitForFunction((n) => document.querySelectorAll('#hm-hueco .hm-pin').length === n && document.querySelector('.hm-card.sel'), nFilas);
   await p.evaluate(() => window.__setas.elegirEnMapaTop(1));
-  const razonD = (await p.locator('#top-especie .top-fila').first().locator('.tf-razon').textContent()).trim();
-  comprobar((await p.locator('#hm-tarjeta').innerText()).includes(razonD), 'con «Distancia» el sitio 1 del mapa es la fila 1 del nuevo orden');
+  const puntD = await p.locator('#top-especie .top-fila').first().getAttribute('data-puntuacion');
+  comprobar((await p.locator('.hm-card.sel').innerText()).includes(`Puntuación del día: ${puntD} de 100`), 'con «Distancia» el sitio 1 del mapa es la fila 1 del nuevo orden');
   await p.screenshot({ path: join(CAPTURAS, 'hoy-mapa.png') });
 
   // ------------------------------------------------------------ 2. «Navegar aquí»
-  await p.locator('#hm-tarjeta .hm-navegar').click();
+  await p.locator('.hm-card.sel .hm-navegar').click();
   await p.waitForSelector('#dlg-ir[open]');
   await p.waitForFunction(() => { const e = window.__setas.ir(); return e && e.pos && e.sendero !== undefined && document.querySelector('#dlg-ir').dataset.sendero !== 'buscando'; }, null, { timeout: 30000 });
   let e = await ir();

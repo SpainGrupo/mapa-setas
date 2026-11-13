@@ -24,3 +24,7 @@ Barrido de fotos del bosque para «Explorar aquí». Contrato completo, errores 
 - **Privacidad:** `lat`/`lon` a 2 decimales (redondeados en la app y otra vez en el Worker); no se guardan fotos en el servidor; solo los contadores de cuota.
 - **Cuota propia** (aparte de `/identificar`): `EXPLORAR_DAILY_LIMIT = 10` por IP y día, `EXPLORAR_GLOBAL_LIMIT = 60` al día; 429 con mensaje de «barridos».
 - **Verify:** `cd worker && npm test && npm run typecheck` (incluye `test/explorar.test.ts`). Antes de desplegar, security-review del Worker y code-review (high), como el resto de la etapa. Pendiente de Alexander: confirmar que la clave de Gemini es de pago (con la gratuita Google puede usar las fotos enviadas).
+
+## `POST /chat` — «Pregunta a Claude» (2026-11-13)
+El mismo Worker sirve el chat con Claude (`worker/src`, `CLAUDE_MODEL` en `wrangler.toml`). Topes, saneado del historial y hallazgos de la auditoría del 8/11/2026: `../../knowledge/reference/pregunta-a-claude.md` y `../../docs/investigacion/2026-11-08-auditoria-seguridad.md`. Tests: `cd worker && npm test && npm run typecheck`.
+- PENDIENTE: PentAGI contra app y Worker desde Windows (`../../HANDOFF-PENTAGI-WINDOWS.md`); Turnstile y tope global atómico propuestos, sin decidir.

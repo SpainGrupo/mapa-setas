@@ -15,3 +15,6 @@ Integrar Open-Meteo, indicadores de lluvia y temperatura y semáforo por especie
 
 ## Verify
 Puerta de revisión: code-review (high). Antes de dar la etapa por hecha, verification-before-completion.
+
+## Estado a 2026-11-13
+Semáforo v3 con probabilidad estimada (0–100) y color derivado de ella; aviso diario de ventanas con `--region`. Detalle y calibración (281 citas, 843 controles): `../../knowledge/reference/vistas-y-puntuacion.md` y `../../docs/investigacion/2026-11-07-semaforo-probabilidad.md`.

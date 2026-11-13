@@ -15,3 +15,6 @@ Ejecutar las tareas 0–10 del plan de la Fase 1: descargar fuentes, generar cap
 
 ## Verify
 Puerta de revisión: code-review (high) + revisión del informe de calibración con Alexander. Antes de dar la etapa por hecha, verification-before-completion.
+
+## Estado a 2026-11-13
+Regiones Marbella y Alicante activas (`../../knowledge/reference/multi-region.md`); comodidad del terreno por sitio y terciles por región (`sitios.json` v5, ver `vistas-y-puntuacion.md`); citas exportables con `docs/citas` y calibración en `calibracion-con-citas.md`. Rutas de Wikiloc y zonas abiertas: `../../docs/investigacion/2026-11-07-rutas-setas-wikiloc.md`, `2026-10-25-zonas-setas-abiertas.md`.

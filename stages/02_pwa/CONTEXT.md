@@ -28,3 +28,8 @@ Spec: `../../docs/specs/2026-10-20-explorar-aqui-design.md`. Plan: `../../docs/s
   - Lo desconocido se muestra «sin dato»; ningún componente sin dato (`no_se_ve`, confianza baja, sin perfil) suma ni resta en la puntuación.
   - La mejor dirección la decide la app (`explorar.ts`: pesos árbol 0,5 / copas 0,2 / humedad 0,2 / sotobosque 0,1; total = 0,5·observado + 0,5·modelo); Gemini solo describe.
   - En apaisado **no hay disparo automático** del barrido (`beta` cambia de eje): queda el botón «Foto ahora». El campo de visión (`FOV_H`/`FOV_V`) es **provisional**, sin medir en iPhone (fase 0).
+
+## Estado a 2026-11-13
+- Actualización automática de la PWA, Clarity con consentimiento y CSP del build: `../../knowledge/reference/pwa-actualizacion-y-privacidad.md`. Chat «Pregunta a Claude»: `../../knowledge/reference/pregunta-a-claude.md`. «Explorar aquí»: `../../knowledge/reference/explorar-aqui.md`.
+- Modo campo con rutas a pie por desnivel (MDT25, A* con Tobler), «Navegar aquí» y grabación de rutas: `../../knowledge/reference/modo-campo.md` y `enlaces-a-puntos.md`.
+- Auditoría de UI del 7/11 (`../../docs/investigacion/2026-11-07-auditoria-impeccable.md`): objetivos táctiles de 48 px y contraste 7:1 aplicados; el resto de la estructura propuesta, sin decidir.
